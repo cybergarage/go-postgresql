@@ -18,7 +18,7 @@ import (
 	"net"
 	"strconv"
 
-	"go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // Server represents a PostgreSQL protocol server.
