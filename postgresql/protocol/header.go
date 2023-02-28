@@ -58,7 +58,7 @@ func (header *Header) Length() uint32 {
 // ParseBytes parses the specified bytes.
 func (header *Header) ParseBytes(frame []byte) error {
 	if len(frame) < HeaderSize {
-		return fmt.Errorf(errorShortHeaderLength, len(frame), hex.EncodeToString(frame))
+		return fmt.Errorf(errhortHeaderLength, len(frame), hex.EncodeToString(frame))
 	}
 
 	header.msgType = MessageType(frame[0])
