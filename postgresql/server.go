@@ -23,29 +23,17 @@ import (
 
 // Server represents a PostgreSQL protocol server.
 type Server struct {
-	addr        string
-	port        int
+	*Config
 	tcpListener net.Listener
 }
 
 // NewServer returns a new server instance.
 func NewServer() *Server {
 	server := &Server{
-		addr:        "",
-		port:        DefaultPort,
+		Config:      NewDefaultConfig(),
 		tcpListener: nil,
 	}
 	return server
-}
-
-// SetPort sets a listen port.
-func (server *Server) SetPort(port int) {
-	server.port = port
-}
-
-// Port returns a listent port.
-func (server *Server) Port() int {
-	return server.port
 }
 
 // Start starts the server.
@@ -88,7 +76,7 @@ func (server *Server) Restart() error {
 // open opens a listen socket.
 func (server *Server) open() error {
 	var err error
-	addr := net.JoinHostPort(server.addr, strconv.Itoa(server.port))
+	addr := net.JoinHostPort(server.host, strconv.Itoa(server.port))
 	server.tcpListener, err = net.Listen("tcp", addr)
 	if err != nil {
 		return err
