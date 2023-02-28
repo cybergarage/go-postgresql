@@ -21,9 +21,9 @@ const (
 
 // Config stores server configuration parammeters.
 type Config struct {
-	host     string
-	port     int
-	Database string
+	host string
+	port int
+	db   string
 }
 
 // NewDefaultConfig returns a default configuration instance.
@@ -35,22 +35,32 @@ func NewDefaultConfig() *Config {
 	return config
 }
 
-// SetHost sets a host address.
+// SetHost sets a host address to the configuration.
 func (config *Config) SetHost(host string) {
 	config.host = host
 }
 
-// SetPort sets a listen port.
+// SetPort sets a listen port to the configuration.
 func (config *Config) SetPort(port int) {
 	config.port = port
 }
 
-// Host returns a host address.
+// SetDatabase sets a database to the configuration.
+func (config *Config) SetDatabase(db string) {
+	config.db = db
+}
+
+// Host returns a host address from the configuration.
 func (config *Config) Host() string {
 	return config.host
 }
 
-// SetPort sets a listen port.
+// Port returns a port from the configuration.
 func (config *Config) Port() int {
 	return config.port
+}
+
+// Database returns a database from the configuration.
+func (config *Config) Database() string {
+	return config.db
 }
