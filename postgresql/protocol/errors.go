@@ -15,5 +15,5 @@
 package protocol
 
 const (
-	errorShortHeaderLength = "Short header length (%d) : %s"
+	errhortHeaderLength = "short header length (%d) : %s"
 )
