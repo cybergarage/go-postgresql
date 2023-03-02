@@ -1,0 +1,6 @@
+#!/bin/bash
+
+YCSB=ycsb-0.17.0
+
+${YCSB}/bin/ycsb.sh load jdbc -s -P ${YCSB}/workloads/workloada -P db.properties
+${YCSB}/bin/ycsb.sh run jdbc -s -P ${YCSB}/workloads/workloada -P db.properties
