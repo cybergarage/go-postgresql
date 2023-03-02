@@ -16,11 +16,10 @@
 YCSB=ycsb-0.17.0
 YCSB_JDBC_LIB=${YCSB}/jdbc-binding/lib
 
-MYSQL_CONNECTOR=postgresql-connector-java-8.0.30.jar
+PGSQL_CONNECTOR=postgresql-42.5.4.jar
 
-if [ ! -f ${MYSQL_CONNECTOR} ]; then
-  echo "${MYSQL_CONNECTOR} is not found"
-  exit
+if [ ! -f ${PGSQL_CONNECTOR} ]; then
+  wget https://jdbc.postgresql.org/download/${PGSQL_CONNECTOR}
 fi
 
 if [ ! -d ${YCSB} ]; then
@@ -28,8 +27,8 @@ if [ ! -d ${YCSB} ]; then
   tar xvfx ${YCSB}.tar.gz
 fi
 
-if [ ! -f ${YCSB_JDBC_LIB}/${MYSQL_CONNECTOR} ]; then
-  cp ${MYSQL_CONNECTOR} ${YCSB_JDBC_LIB}
+if [ ! -f ${YCSB_JDBC_LIB}/${PGSQL_CONNECTOR} ]; then
+  cp ${PGSQL_CONNECTOR} ${YCSB_JDBC_LIB}
 fi
 
 export YCSB_ROOT=`pwd`/${YCSB}
@@ -37,4 +36,4 @@ export YCSB_DB_PROPERTIES=`pwd`/postgresqltest/ycsb/db.properties
 
 echo "YCSB_ROOT          : ${YCSB_ROOT}"
 echo "YCSB_DB_PROPERTIES : ${YCSB_DB_PROPERTIES}"
-echo "MYSQL_CONNECTOR    : ${YCSB_JDBC_LIB}/${MYSQL_CONNECTOR}"
+echo "PGSQL_CONNECTOR    : ${YCSB_JDBC_LIB}/${PGSQL_CONNECTOR}"
