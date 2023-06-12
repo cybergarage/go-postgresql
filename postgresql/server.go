@@ -19,11 +19,13 @@ import (
 	"strconv"
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-tracing/tracer"
 )
 
 // Server represents a PostgreSQL protocol server.
 type Server struct {
 	*Config
+	tracer.Tracer
 	tcpListener net.Listener
 }
 
@@ -31,6 +33,7 @@ type Server struct {
 func NewServer() *Server {
 	server := &Server{
 		Config:      NewDefaultConfig(),
+		Tracer:      tracer.NullTracer,
 		tcpListener: nil,
 	}
 	return server
@@ -124,10 +127,16 @@ func (server *Server) receive(conn net.Conn) error {
 
 	var err error
 	for err == nil {
-		_, err = server.readMessage(conn)
+		loopSpan := server.Tracer.StartSpan(PackageName)
+		handlerConn := NewConnWith(loopSpan)
+		loopSpan.StartSpan("parse")
+
+		reqMsg, err := server.readMessage(conn)
 		if err != nil {
 			break
 		}
+
+		server.handleMessage(handlerConn, reqMsg)
 	}
 
 	return err
@@ -135,5 +144,9 @@ func (server *Server) receive(conn net.Conn) error {
 
 // readMessage handles client messages.
 func (server *Server) readMessage(conn net.Conn) (protocol.Message, error) {
+	return nil, nil
+}
+
+func (server *Server) handleMessage(conn *Conn, reqMsg protocol.Message) (protocol.Message, error) {
 	return nil, nil
 }
