@@ -16,24 +16,23 @@ package postgresql
 
 import (
 	"time"
+
+	"github.com/cybergarage/go-tracing/tracer"
 )
 
 // Conn represents a connection of PostgreSQL binary protocol.
 type Conn struct {
 	Database string
 	ts       time.Time
+	tracer.Context
 }
 
-// newConn returns a connection with a default empty connection.
-func newConn() *Conn {
-	return NewConnWithConn()
-}
-
-// NewConnWithConn returns a connection with a raw connection.
-func NewConnWithConn() *Conn {
+// NewConnWith returns a connection with a raw connection.
+func NewConnWith(ctx tracer.Context) *Conn {
 	conn := &Conn{
 		Database: "",
 		ts:       time.Now(),
+		Context:  ctx,
 	}
 	return conn
 }
@@ -41,4 +40,9 @@ func NewConnWithConn() *Conn {
 // Timestamp returns the creation time of the connection.
 func (conn *Conn) Timestamp() time.Time {
 	return conn.ts
+}
+
+// SpanContext returns the tracer span context of the connection.
+func (conn *Conn) SpanContext() tracer.Context {
+	return conn.Context
 }
