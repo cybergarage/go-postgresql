@@ -1,4 +1,11 @@
 github.com/cybergarage/go-logger v1.3.0 h1:5NYcPLBpmKfkC+oH0GPZXoOggHO/tBZCE9RW3kKwLyQ=
 github.com/cybergarage/go-logger v1.3.0/go.mod h1:4N4xo4/FUVjvc0mILUwFItBGhVglCPN4hSLK38zRLTk=
+github.com/cybergarage/go-logger v1.3.3/go.mod h1:2iMjinHam5oqyKEGsKIzeQQmmOPxpCgro95LOlEC2ks=
+github.com/cybergarage/go-logger v1.3.4 h1:UTgYZr/LwQtYVOncS3NJ64We5kCe7ce6L85y/MOYfrM=
+github.com/cybergarage/go-logger v1.3.4/go.mod h1:2iMjinHam5oqyKEGsKIzeQQmmOPxpCgro95LOlEC2ks=
+github.com/cybergarage/go-sqltest v0.9.5 h1:RAHvKvlOwI1mDvQkLVfJiijPPWIsgJ4SnrdBYKHkNuE=
+github.com/cybergarage/go-sqltest v0.9.5/go.mod h1:CQkUZIyjHsxe0YqRRSvxiWanbDgLcFYAhz/6FQP7vqs=
 github.com/lib/pq v1.10.7 h1:p7ZhMD+KsSRozJr34udlUrhboJwWAgCg34+/ZZNvZZw=
 github.com/lib/pq v1.10.7/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
+github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
