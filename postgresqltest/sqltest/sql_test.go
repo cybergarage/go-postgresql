@@ -21,7 +21,7 @@ import (
 	"github.com/cybergarage/go-sqltest/sqltest"
 )
 
-// TestSQLTest is a temporary debug test to check only the specified test cases.
+// TestSQLTest tests the SQL test.
 func TestSQLTest(t *testing.T) {
 	server := server.NewServer()
 	err := server.Start()
