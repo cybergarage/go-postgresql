@@ -17,19 +17,28 @@ package sqltest
 import (
 	"testing"
 
-	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresqltest/server"
+	"github.com/cybergarage/go-sqltest/sqltest"
 )
 
-// TestSQLTestSuite runs already passed scenario test files.
-func TestSQLTestSuite(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
-
+// TestSQLTest is a temporary debug test to check only the specified test cases.
+func TestSQLTest(t *testing.T) {
 	server := server.NewServer()
 	err := server.Start()
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	client := sqltest.NewPostgresClient()
+
+	testNames := []string{
+		"SimpAlterAdd",
+	}
+
+	if err := sqltest.RunEmbedSuites(t, client, testNames...); err != nil {
+		t.Error(err)
+	}
+
 	defer server.Stop()
 }
