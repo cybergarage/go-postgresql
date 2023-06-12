@@ -22,18 +22,20 @@ package protocol
 type MessageType byte
 
 // Message represents an operation message.
-type Message interface {
-	// Type returns the message type.
-	Type() MessageType
-	// Length returns the payload size.
-	Length() uint32
+type Message struct {
+	*Header
+	Data []byte
 }
 
-// NewMessageWithBytes returns a parsed message of the specified bytes.
-func NewMessageWithBytes(msg []byte) (Message, error) {
-	header, err := NewHeaderWithBytes(msg)
-	if err != nil {
-		return nil, err
-	}
-	return header, nil
+// NewMessage returns a new message instance.
+func NewMessageWith(header *Header, msg []byte) (*Message, error) {
+	return &Message{
+		Header: header,
+		Data:   msg,
+	}, nil
+}
+
+// Bytes returns the message bytes.
+func (msg *Message) Bytes() []byte {
+	return msg.Data
 }
