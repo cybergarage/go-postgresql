@@ -15,6 +15,8 @@
 package postgresql
 
 const (
+	// PackageName is the package name.
+	PackageName = "go-postgresql"
 	// DefaultPort is the default port for PostgreSQL protocol server.
 	DefaultPort = 5432
 )
