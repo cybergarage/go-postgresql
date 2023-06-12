@@ -18,6 +18,7 @@ import (
 	"net"
 	"strconv"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -143,10 +144,33 @@ func (server *Server) receive(conn net.Conn) error {
 }
 
 // readMessage handles client messages.
-func (server *Server) readMessage(conn net.Conn) (protocol.Message, error) {
-	return nil, nil
+func (server *Server) readMessage(conn net.Conn) (*protocol.Message, error) {
+	headerBytes := make([]byte, protocol.HeaderSize)
+	nRead, err := conn.Read(headerBytes)
+	if err != nil {
+		if nRead <= 0 {
+			return nil, err
+		}
+		log.Error(err)
+		return nil, err
+	}
+	header, err := protocol.NewHeaderWithBytes(headerBytes)
+	if err != nil {
+		return nil, err
+	}
+	msgBytes := make([]byte, header.Length())
+	nRead, err = conn.Read(msgBytes)
+	if err != nil {
+		if nRead <= 0 {
+			return nil, err
+		}
+		log.Error(err)
+		return nil, err
+	}
+	return protocol.NewMessageWith(header, msgBytes)
 }
 
-func (server *Server) handleMessage(conn *Conn, reqMsg protocol.Message) (protocol.Message, error) {
+// handleMessage handles client messages.
+func (server *Server) handleMessage(conn *Conn, reqMsg *protocol.Message) (*protocol.Message, error) {
 	return nil, nil
 }
