@@ -14,13 +14,13 @@
 
 package protocol
 
-// 55.7. Frontend/Backend Protocol - Message Formats
+// PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 // MessageType represents a message type.
 type MessageType byte
 
-// Frontend (F)
+// Frontend (F).
 const (
 	BindMessage                MessageType = 'B'
 	CancelRequestMessage       MessageType = ' ' // Int32(16)
@@ -43,7 +43,7 @@ const (
 	TerminateMessage           MessageType = 'F'
 )
 
-// Backend (B)
+// Backend (B).
 const (
 	AuthenticationOkMessage                MessageType = 'R'
 	AuthenticationKerberosV5Message        MessageType = 'R'
@@ -77,7 +77,7 @@ const (
 	RowDescriptionMessage                  MessageType = 'T'
 )
 
-// Both (F & B)
+// Both (F & B).
 const (
 	CopyDataMessage MessageType = 'd'
 	CopyDoneMessage MessageType = 'c'
