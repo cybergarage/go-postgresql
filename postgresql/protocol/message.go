@@ -14,6 +14,10 @@
 
 package protocol
 
+import (
+	"bufio"
+)
+
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
@@ -21,18 +25,13 @@ package protocol
 // Message represents an operation message.
 type Message struct {
 	*Header
-	Data []byte
+	*bufio.Reader
 }
 
-// NewMessage returns a new message instance.
-func NewMessageWith(header *Header, msg []byte) (*Message, error) {
+// NewFrontendMessage returns a new frontend message instance.
+func NewFrontendMessage(header *Header, reader *bufio.Reader) *Message {
 	return &Message{
 		Header: header,
-		Data:   msg,
-	}, nil
-}
-
-// Bytes returns the message bytes.
-func (msg *Message) Bytes() []byte {
-	return msg.Data
+		Reader: reader,
+	}
 }
