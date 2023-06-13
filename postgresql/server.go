@@ -133,9 +133,9 @@ func (server *Server) receive(conn net.Conn) error {
 		handlerConn := NewConnWith(loopSpan)
 		loopSpan.StartSpan("parse")
 
-		reqMsg, err := server.prepareFrontendMessage(conn)
+		reqMsg, err := server.prepareFrontendOneMessage(conn)
 		if err != nil {
-			break
+			return err
 		}
 
 		server.handleMessage(handlerConn, reqMsg)
@@ -145,7 +145,7 @@ func (server *Server) receive(conn net.Conn) error {
 }
 
 // prepareMessage prepares a request frontend messages.
-func (server *Server) prepareFrontendMessage(conn net.Conn) (*protocol.Message, error) {
+func (server *Server) prepareFrontendOneMessage(conn net.Conn) (*protocol.Message, error) {
 	headerBytes := make([]byte, protocol.HeaderSize)
 	nRead, err := conn.Read(headerBytes)
 	if err != nil {
