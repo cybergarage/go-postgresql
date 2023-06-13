@@ -43,3 +43,8 @@ func (reader *Reader) ReadInt32() (int, error) {
 	v := uint32(intBytes[0])<<24 | uint32(intBytes[1])<<16 | uint32(intBytes[2])<<8 | uint32(intBytes[3])
 	return int(v), nil
 }
+
+// ReadString reads a string.
+func (reader *Reader) ReadString() (string, error) {
+	return reader.Reader.ReadString(0x00)
+}
