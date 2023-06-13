@@ -100,3 +100,9 @@ install: build
 
 clean:
 	go clean -i ${ALL_PKGS}
+
+watchtest:
+	fswatch -o . -e ".*" -i "\\.go$$" | xargs -n1 -I{} make test
+
+watchlint:
+	fswatch -o . -e ".*" -i "\\.go$$" | xargs -n1 -I{} make lint
