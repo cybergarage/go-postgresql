@@ -127,18 +127,34 @@ func (server *Server) serve() error {
 func (server *Server) receive(conn net.Conn) error {
 	defer conn.Close()
 
+	isStartupMessage := true
 	var err error
 	for err == nil {
 		loopSpan := server.Tracer.StartSpan(PackageName)
-		handlerConn := NewConnWith(loopSpan)
+		// handlerConn := NewConnWith(loopSpan)
 		loopSpan.StartSpan("parse")
 
 		reqMsg, err := server.prepareFrontendOneMessage(conn)
 		if err != nil {
+			loopSpan.FinishSpan()
 			return err
 		}
 
-		server.handleMessage(handlerConn, reqMsg)
+		if isStartupMessage {
+			isStartupMessage = false
+			_, err := reqMsg.ParseStartupMessage()
+			if err != nil {
+				loopSpan.FinishSpan()
+				return err
+			}
+		}
+
+		// loopSpan.StartSpan("response")
+		// var respMsg *protocol.Message
+
+		// loopSpan.FinishSpan()
+
+		loopSpan.FinishSpan()
 	}
 
 	return err
@@ -160,9 +176,4 @@ func (server *Server) prepareFrontendOneMessage(conn net.Conn) (*protocol.Messag
 		return nil, err
 	}
 	return protocol.NewFrontendMessage(header, bufio.NewReader(conn)), nil
-}
-
-// handleMessage handles frontend messages.
-func (server *Server) handleMessage(conn *Conn, reqMsg *protocol.Message) (*protocol.Message, error) {
-	return nil, nil
 }
