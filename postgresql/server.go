@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"bufio"
 	"net"
 	"strconv"
 
@@ -132,7 +133,7 @@ func (server *Server) receive(conn net.Conn) error {
 		handlerConn := NewConnWith(loopSpan)
 		loopSpan.StartSpan("parse")
 
-		reqMsg, err := server.readMessage(conn)
+		reqMsg, err := server.prepareFrontendMessage(conn)
 		if err != nil {
 			break
 		}
@@ -143,8 +144,8 @@ func (server *Server) receive(conn net.Conn) error {
 	return err
 }
 
-// readMessage handles client messages.
-func (server *Server) readMessage(conn net.Conn) (*protocol.Message, error) {
+// prepareMessage prepares a request frontend messages.
+func (server *Server) prepareFrontendMessage(conn net.Conn) (*protocol.Message, error) {
 	headerBytes := make([]byte, protocol.HeaderSize)
 	nRead, err := conn.Read(headerBytes)
 	if err != nil {
@@ -158,19 +159,10 @@ func (server *Server) readMessage(conn net.Conn) (*protocol.Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	msgBytes := make([]byte, header.Length())
-	nRead, err = conn.Read(msgBytes)
-	if err != nil {
-		if nRead <= 0 {
-			return nil, err
-		}
-		log.Error(err)
-		return nil, err
-	}
-	return protocol.NewMessageWith(header, msgBytes)
+	return protocol.NewFrontendMessage(header, bufio.NewReader(conn)), nil
 }
 
-// handleMessage handles client messages.
+// handleMessage handles frontend messages.
 func (server *Server) handleMessage(conn *Conn, reqMsg *protocol.Message) (*protocol.Message, error) {
 	return nil, nil
 }
