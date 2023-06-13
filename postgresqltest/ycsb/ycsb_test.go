@@ -52,11 +52,14 @@ func TestYCSB(t *testing.T) {
 	}
 
 	for _, setupQuery := range setUpQueries {
-		rs, err := client.Query(setupQuery)
+		rows, err := client.Query(setupQuery)
 		if err != nil {
 			t.Error(err)
 		}
-		defer rs.Close()
+		if rows.Err() != nil {
+			t.Error(err)
+		}
+		defer rows.Close()
 	}
 
 	err = client.Close()

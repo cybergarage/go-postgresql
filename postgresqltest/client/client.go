@@ -40,6 +40,9 @@ func (client *Client) CreateDatabase(name string) error {
 	if err != nil {
 		return err
 	}
+	if rows.Err() != nil {
+		return rows.Err()
+	}
 	defer rows.Close()
 	return nil
 }
@@ -50,6 +53,9 @@ func (client *Client) DropDatabase(name string) error {
 	rows, err := client.Query(query)
 	if err != nil {
 		return err
+	}
+	if rows.Err() != nil {
+		return rows.Err()
 	}
 	defer rows.Close()
 	return nil
