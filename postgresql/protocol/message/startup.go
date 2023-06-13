@@ -14,18 +14,36 @@
 
 package message
 
-import (
-	"bufio"
-)
-
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
+// Startup represents a startup message.
 type Startup struct {
+	MajorVersion  int
+	MinorVersion  int
+	MessageLength int
 }
 
-func NewStartupWith(reader *bufio.Reader) (*Startup, error) {
-	return &Startup{}, nil
+// NewStartup returns a new startup message.
+func NewStartupWith(reader *Reader) (*Startup, error) {
+	msgLen, err := reader.ReadInt32()
+	if err != nil {
+		return nil, err
+	}
+
+	ver, err := reader.ReadInt32()
+	if err != nil {
+		return nil, err
+	}
+
+	majorVer := ver >> 16
+	minorVer := ver & 0xFFFF
+
+	return &Startup{
+		MessageLength: msgLen,
+		MajorVersion:  majorVer,
+		MinorVersion:  minorVer,
+	}, nil
 }
