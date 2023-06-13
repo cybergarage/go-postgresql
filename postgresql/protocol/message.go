@@ -37,3 +37,7 @@ func NewFrontendMessage(header *Header, reader *bufio.Reader) *Message {
 		Reader: message.NewReaderWith(reader),
 	}
 }
+
+func (msg *Message) ParseStartupMessage() (*message.Startup, error) {
+	return message.NewStartupWith(msg.Reader)
+}
