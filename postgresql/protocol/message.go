@@ -16,10 +16,7 @@ package protocol
 
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
-// https://www.postgresql.org/docs/9.3/protocol-overview.html
-
-// MessageType represents a message type.
-type MessageType byte
+// https://www.postgresql.org/docs/16/protocol-overview.html
 
 // Message represents an operation message.
 type Message struct {
