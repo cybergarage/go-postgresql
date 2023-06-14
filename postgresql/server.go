@@ -28,6 +28,7 @@ type Server struct {
 	*Config
 	tracer.Tracer
 	tcpListener net.Listener
+	Executor
 }
 
 // NewServer returns a new server instance.
@@ -36,8 +37,14 @@ func NewServer() *Server {
 		Config:      NewDefaultConfig(),
 		Tracer:      tracer.NullTracer,
 		tcpListener: nil,
+		Executor:    NewBaseExecutor(),
 	}
 	return server
+}
+
+// SetExecutor sets a executor.
+func (server *Server) SetExecutor(e Executor) {
+	server.Executor = e
 }
 
 // Start starts the server.
