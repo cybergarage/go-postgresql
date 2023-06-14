@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package protocol
+package message
 
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 // MessageType represents a message type.
 type MessageType byte
+
+const (
+	NoneMessage = 0x00
+)
 
 // Frontend (F).
 const (
