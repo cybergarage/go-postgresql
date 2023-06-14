@@ -53,12 +53,12 @@ func (reader *Reader) ReadString() (string, error) {
 }
 
 // ReadType reads a message type.
-func (reader *Reader) ReadType() (MessageType, error) {
+func (reader *Reader) ReadType() (Type, error) {
 	t, err := reader.ReadByte()
 	if err != nil {
 		return 0, err
 	}
-	return MessageType(t), nil
+	return Type(t), nil
 }
 
 // ReadLength reads a message length.
