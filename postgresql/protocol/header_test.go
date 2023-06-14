@@ -20,7 +20,7 @@ import (
 
 func TestNewHeader(t *testing.T) {
 	var msgType MessageType = 2
-	var msgLen uint32 = 1
+	var msgLen = 1
 	b := []byte{byte(msgType), 0, 0, 0, byte(msgLen)}
 
 	header, err := NewHeaderWithBytes(b)
