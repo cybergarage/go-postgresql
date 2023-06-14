@@ -12,46 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package protocol
-
-import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-)
+package message
 
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
-// ResponseMessage represents a backend response message.
-type ResponseMessage struct {
-	Type message.Type
-	*message.Writer
+// Response represents a backend response.
+type Response struct {
+	Type Type
+	*Writer
 }
 
-// NewResponseMessageWith returns a new request message with the specified reader.
-func NewResponseMessage() *ResponseMessage {
-	return &ResponseMessage{
-		Type:   message.NoneMessage,
-		Writer: message.NewWriter(),
+// NewResponse returns a new request message with the specified reader.
+func NewResponse() *Response {
+	return &Response{
+		Type:   NoneMessage,
+		Writer: NewWriter(),
 	}
 }
 
 // SetType sets a message type.
-func (msg *ResponseMessage) SetType(t message.Type) {
+func (msg *Response) SetType(t Type) {
 	msg.Type = t
 }
 
 // Bytes returns the message bytes.
-func (msg *ResponseMessage) Bytes() ([]byte, error) {
+func (msg *Response) Bytes() ([]byte, error) {
 	msgBytes, err := msg.Writer.Bytes()
 	if err != nil {
 		return nil, err
 	}
 	l := len(msgBytes)
 	b := make([]byte, 0, l+1+4)
-	if msg.Type != message.NoneMessage {
+	if msg.Type != NoneMessage {
 		b = append(b, byte(msg.Type))
 	}
-	b = append(b, message.Int32ToBytes(int32(l))...)
+	b = append(b, Int32ToBytes(int32(l))...)
 	return append(b, msgBytes...), nil
 }
