@@ -42,6 +42,11 @@ func NewServer() *Server {
 	return server
 }
 
+// SetTracer sets a tracing tracer.
+func (server *Server) SetTracer(t tracer.Tracer) {
+	server.Tracer = t
+}
+
 // SetExecutor sets a executor.
 func (server *Server) SetExecutor(e Executor) {
 	server.Executor = e
