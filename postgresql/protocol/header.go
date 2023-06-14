@@ -17,6 +17,8 @@ package protocol
 import (
 	"encoding/hex"
 	"fmt"
+
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
 const (
@@ -27,7 +29,7 @@ const (
 // Header represents a standard header of PostgreSQL packet.
 type Header struct {
 	msgType   MessageType
-	msgLength uint32
+	msgLength int
 }
 
 // NewHeader returns a new header instance.
@@ -51,7 +53,7 @@ func (header *Header) Type() MessageType {
 }
 
 // Length returns the message length .
-func (header *Header) Length() uint32 {
+func (header *Header) Length() int {
 	return header.msgLength
 }
 
@@ -62,7 +64,7 @@ func (header *Header) ParseBytes(frame []byte) error {
 	}
 
 	header.msgType = MessageType(frame[0])
-	header.msgLength = uint32(frame[1])<<24 | uint32(frame[2])<<16 | uint32(frame[3])<<8 | uint32(frame[4])
+	header.msgLength = message.Int32BytesToInt(frame[1:])
 
 	return nil
 }
