@@ -15,7 +15,6 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
@@ -29,6 +28,6 @@ func NewBaseExecutor() *BaseExecutor {
 }
 
 // Executor represents a frontend message executor.
-func (executor *BaseExecutor) Startup(*Conn, *message.Startup) (*protocol.ResponseMessage, error) {
+func (executor *BaseExecutor) Startup(*Conn, *message.Startup) (*message.Response, error) {
 	return nil, newErrNotSupported("Startup")
 }

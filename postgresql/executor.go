@@ -15,11 +15,10 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
 // Executor represents a frontend message executor.
 type Executor interface {
-	Startup(*Conn, *message.Startup) (*protocol.ResponseMessage, error)
+	Startup(*Conn, *message.Startup) (*message.Response, error)
 }
