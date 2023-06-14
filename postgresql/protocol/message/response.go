@@ -24,10 +24,15 @@ type Response struct {
 	*Writer
 }
 
-// NewResponse returns a new request message with the specified reader.
+// NewResponse returns a new request message.
 func NewResponse() *Response {
+	return NewResponseWith(NoneMessage)
+}
+
+// NewResponseWith returns a new request message with the specified message type.
+func NewResponseWith(t Type) *Response {
 	return &Response{
-		Type:   NoneMessage,
+		Type:   t,
 		Writer: NewWriter(),
 	}
 }
