@@ -15,13 +15,20 @@
 package postgresql
 
 import (
-	"errors"
-	"fmt"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
-// ErrNotSupported is returned when the operation is not supported.
-var ErrNotSupported = errors.New("not supported")
+// BaseExecutor represents a base frontend message executor.
+type BaseExecutor struct {
+}
 
-func newErrNotSupported(msg string) error {
-	return fmt.Errorf("%s is %w", msg, ErrNotSupported)
+// NewBaseExecutor returns a base frontend message executor.
+func NewBaseExecutor() *BaseExecutor {
+	return &BaseExecutor{}
+}
+
+// Executor represents a frontend message executor.
+func (executor *BaseExecutor) Startup(*Conn, *message.Startup) (*protocol.ResponseMessage, error) {
+	return nil, newErrNotSupported("Startup")
 }
