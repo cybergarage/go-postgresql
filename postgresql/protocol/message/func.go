@@ -15,7 +15,17 @@
 package message
 
 // Int32BytesToInt converts the specified byte array to an integer.
-func Int32BytesToInt(b []byte) int {
-	v := uint32(b[0])<<24 | uint32(b[1])<<16 | uint32(b[2])<<8 | uint32(b[3])
-	return int(v)
+func Int32BytesToInt(b []byte) int32 {
+	v := int32(b[0])<<24 | int32(b[1])<<16 | int32(b[2])<<8 | int32(b[3])
+	return v
+}
+
+// Int32ToBytes converts the specified integer to a byte array.
+func Int32ToBytes(v int32) []byte {
+	b := make([]byte, 4)
+	b[0] = byte(v >> 24)
+	b[1] = byte(v >> 16)
+	b[2] = byte(v >> 8)
+	b[3] = byte(v)
+	return b
 }
