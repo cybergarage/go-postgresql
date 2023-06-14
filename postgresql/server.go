@@ -19,7 +19,6 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -131,15 +130,9 @@ func (server *Server) receive(conn net.Conn) error {
 	var err error
 	for err == nil {
 		loopSpan := server.Tracer.StartSpan(PackageName)
-		// handlerConn := NewConnWith(loopSpan)
 		loopSpan.StartSpan("parse")
 
-		reqMsg, err := server.prepareFrontendOneMessage(conn)
-		if err != nil {
-			loopSpan.FinishSpan()
-			return err
-		}
-
+		reqMsg := protocol.NewMessageWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			_, err := reqMsg.ParseStartupMessage()
@@ -158,22 +151,4 @@ func (server *Server) receive(conn net.Conn) error {
 	}
 
 	return err
-}
-
-// prepareMessage prepares a request frontend messages.
-func (server *Server) prepareFrontendOneMessage(conn net.Conn) (*protocol.Message, error) {
-	headerBytes := make([]byte, protocol.HeaderSize)
-	nRead, err := conn.Read(headerBytes)
-	if err != nil {
-		if nRead <= 0 {
-			return nil, err
-		}
-		log.Error(err)
-		return nil, err
-	}
-	header, err := protocol.NewHeaderWithBytes(headerBytes)
-	if err != nil {
-		return nil, err
-	}
-	return protocol.NewFrontendMessage(header, bufio.NewReader(conn)), nil
 }
