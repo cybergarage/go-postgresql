@@ -32,16 +32,15 @@ func NewReaderWith(reader *bufio.Reader) *Reader {
 
 // ReadInt32 reads a 32-bit integer.
 func (reader *Reader) ReadInt32() (int, error) {
-	intBytes := make([]byte, 4)
-	nRead, err := reader.Read(intBytes)
+	int32Bytes := make([]byte, 4)
+	nRead, err := reader.Read(int32Bytes)
 	if err != nil {
 		return 0, err
 	}
 	if nRead != 4 {
 		return 0, newShortMessageErrorWith(4, nRead)
 	}
-	v := uint32(intBytes[0])<<24 | uint32(intBytes[1])<<16 | uint32(intBytes[2])<<8 | uint32(intBytes[3])
-	return int(v), nil
+	return Int32BytesToInt(int32Bytes), nil
 }
 
 // ReadString reads a string.
