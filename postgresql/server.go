@@ -19,7 +19,7 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -144,7 +144,7 @@ func (server *Server) receive(conn net.Conn) error {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		loopSpan.StartSpan("parse")
 
-		reqMsg := protocol.NewRequestMessageWith(bufio.NewReader(conn))
+		reqMsg := message.NewRequestWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			_, err := reqMsg.ParseStartupMessage()

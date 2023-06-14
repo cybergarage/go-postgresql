@@ -12,49 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package protocol
+package message
 
 import (
 	"bufio"
-
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
-// RequestMessage represents a frontend request message.
-type RequestMessage struct {
-	*message.Reader
-	Type   message.Type
+// Request represents a frontend request.
+type Request struct {
+	*Reader
+	Type   Type
 	Length int32
 }
 
-// NewRequestMessageWith returns a new request message with the specified reader.
-func NewRequestMessageWith(reader *bufio.Reader) *RequestMessage {
-	return &RequestMessage{
-		Reader: message.NewReaderWith(reader),
+// NewRequestWith returns a new request message with the specified reader.
+func NewRequestWith(reader *bufio.Reader) *Request {
+	return &Request{
+		Reader: NewReaderWith(reader),
 		Type:   0,
 		Length: 0,
 	}
 }
 
 // ReadType reads a message type.
-func (msg *RequestMessage) ReadType() (message.Type, error) {
+func (msg *Request) ReadType() (Type, error) {
 	var err error
 	msg.Type, err = msg.Reader.ReadType()
 	return msg.Type, err
 }
 
 // ReadLength reads a message length.
-func (msg *RequestMessage) ReadLength() (int32, error) {
+func (msg *Request) ReadLength() (int32, error) {
 	var err error
 	msg.Length, err = msg.Reader.ReadLength()
 	return msg.Length, err
 }
 
-// ParseStartupMessage parses a startup message.
-func (msg *RequestMessage) ParseStartupMessage() (*message.Startup, error) {
-	return message.NewStartupWith(msg.Reader)
+// ParseStartupMessage parses a startup.
+func (msg *Request) ParseStartupMessage() (*Startup, error) {
+	return NewStartupWith(msg.Reader)
 }
