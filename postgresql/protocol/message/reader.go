@@ -45,5 +45,9 @@ func (reader *Reader) ReadInt32() (int, error) {
 
 // ReadString reads a string.
 func (reader *Reader) ReadString() (string, error) {
-	return reader.Reader.ReadString(0x00)
+	b, err := reader.Reader.ReadBytes(0x00)
+	if err != nil {
+		return "", err
+	}
+	return string(b[:len(b)-1]), nil
 }
