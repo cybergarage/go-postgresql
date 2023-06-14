@@ -24,12 +24,29 @@ import (
 
 // ResponseMessage represents a backend response message.
 type ResponseMessage struct {
+	Type message.MessageType
 	*message.Writer
 }
 
 // NewResponseMessageWith returns a new request message with the specified reader.
 func NewResponseMessage() *ResponseMessage {
 	return &ResponseMessage{
+		Type:   message.NoneMessage,
 		Writer: message.NewWriter(),
 	}
+}
+
+// Bytes returns the message bytes.
+func (msg *ResponseMessage) Bytes() ([]byte, error) {
+	msgBytes, err := msg.Writer.Bytes()
+	if err != nil {
+		return nil, err
+	}
+	l := len(msgBytes)
+	b := make([]byte, 0, l+1+4)
+	if msg.Type != message.NoneMessage {
+		b = append(b, byte(msg.Type))
+	}
+	b = append(b, message.Int32ToBytes(int32(l))...)
+	return append(b, msgBytes...), nil
 }
