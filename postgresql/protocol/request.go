@@ -24,16 +24,16 @@ import (
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
-// Message represents an operation message.
-type Message struct {
+// RequestMessage represents a frontend request message.
+type RequestMessage struct {
 	*message.Reader
 	Type   MessageType
 	Length int
 }
 
-// NewMessageWith returns a new Message with the specified reader.
-func NewMessageWith(reader *bufio.Reader) *Message {
-	return &Message{
+// NewRequestMessageWith returns a new request message with the specified reader.
+func NewRequestMessageWith(reader *bufio.Reader) *RequestMessage {
+	return &RequestMessage{
 		Reader: message.NewReaderWith(reader),
 		Type:   0,
 		Length: 0,
@@ -41,7 +41,7 @@ func NewMessageWith(reader *bufio.Reader) *Message {
 }
 
 // ReadType reads a message type.
-func (msg *Message) ReadType() (MessageType, error) {
+func (msg *RequestMessage) ReadType() (MessageType, error) {
 	t, err := msg.ReadByte()
 	if err != nil {
 		return 0, err
@@ -51,7 +51,7 @@ func (msg *Message) ReadType() (MessageType, error) {
 }
 
 // ReadLength reads a message length.
-func (msg *Message) ReadLength() (int, error) {
+func (msg *RequestMessage) ReadLength() (int, error) {
 	l, err := msg.ReadInt32()
 	if err != nil {
 		return 0, err
@@ -61,6 +61,6 @@ func (msg *Message) ReadLength() (int, error) {
 }
 
 // ParseStartupMessage parses a startup message.
-func (msg *Message) ParseStartupMessage() (*message.Startup, error) {
+func (msg *RequestMessage) ParseStartupMessage() (*message.Startup, error) {
 	return message.NewStartupWith(msg.Reader)
 }
