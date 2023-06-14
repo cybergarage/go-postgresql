@@ -24,6 +24,7 @@ type Startup struct {
 	MajorVersion  int
 	MinorVersion  int
 	MessageLength int
+	Parameters    map[string]string
 }
 
 // NewStartup returns a new startup message.
@@ -41,9 +42,22 @@ func NewStartupWith(reader *Reader) (*Startup, error) {
 	majorVer := ver >> 16
 	minorVer := ver & 0xFFFF
 
+	params := make(map[string]string)
+
+	k, err := reader.ReadString()
+	if err != nil {
+		return nil, err
+	}
+	v, err := reader.ReadString()
+	if err != nil {
+		return nil, err
+	}
+	params[k] = v
+
 	return &Startup{
 		MessageLength: msgLen,
 		MajorVersion:  majorVer,
 		MinorVersion:  minorVer,
+		Parameters:    params,
 	}, nil
 }
