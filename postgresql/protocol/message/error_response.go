@@ -41,3 +41,22 @@ func NewErrorResponse() *ErrorResponse {
 		Response: NewResponseWith(ErrorResponseMessage),
 	}
 }
+
+// AppendTerminator appends a null terminator.
+func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
+	if err := msg.AppendByte(byte(t)); err != nil {
+		return err
+	}
+	if _, err := msg.AppendString(v); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Bytes returns the message bytes.
+func (msg *ErrorResponse) Bytes() ([]byte, error) {
+	if err := msg.AppendTerminator(); err != nil {
+		return nil, err
+	}
+	return msg.Response.Bytes()
+}
