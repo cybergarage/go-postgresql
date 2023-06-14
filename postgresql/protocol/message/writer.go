@@ -46,7 +46,20 @@ func (writer *Writer) AppendByte(c byte) error {
 
 // AppendString appends the specified string.
 func (writer *Writer) AppendString(s string) (int, error) {
-	return writer.Writer.WriteString(s)
+	n, err := writer.Writer.WriteString(s)
+	if err != nil {
+		return n, err
+	}
+	err = writer.AppendTerminator()
+	if err != nil {
+		return n, err
+	}
+	return (n + 1), nil
+}
+
+// AppendTerminator appends a null terminator.
+func (writer *Writer) AppendTerminator() error {
+	return writer.Writer.WriteByte(0x00)
 }
 
 // Bytes returns the message bytes.
