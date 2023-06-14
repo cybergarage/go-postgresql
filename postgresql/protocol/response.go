@@ -24,7 +24,7 @@ import (
 
 // ResponseMessage represents a backend response message.
 type ResponseMessage struct {
-	Type message.MessageType
+	Type message.Type
 	*message.Writer
 }
 

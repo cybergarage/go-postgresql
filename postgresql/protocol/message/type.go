@@ -17,8 +17,8 @@ package message
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
-// MessageType represents a message type.
-type MessageType byte
+// Type represents a message type.
+type Type byte
 
 const (
 	NoneMessage = 0x00
@@ -26,63 +26,63 @@ const (
 
 // Frontend (F).
 const (
-	BindMessage                MessageType = 'B'
-	CancelRequestMessage       MessageType = ' ' // Int32(16)
-	CloseMessage               MessageType = 'C'
-	CopyFailMessage            MessageType = 'f'
-	DescribeMessage            MessageType = 'D'
-	ExecuteMessage             MessageType = 'E'
-	FlushMessage               MessageType = 'H'
-	FunctionCallMessage        MessageType = 'F'
-	GSSENCRequestMessage       MessageType = ' ' // Int32(8)
-	GSSResponseMessage         MessageType = 'p'
-	ParseMessage               MessageType = 'P'
-	PasswordMessage            MessageType = 'p'
-	QueryMessage               MessageType = 'F'
-	SASLInitialResponseMessage MessageType = 'p'
-	SASLResponseMessage        MessageType = 'p'
-	SSLRequestMessage          MessageType = ' ' // Int32(8)
-	StartupMessage             MessageType = ' ' // Int32
-	SyncMessage                MessageType = 'S'
-	TerminateMessage           MessageType = 'F'
+	BindMessage                Type = 'B'
+	CancelRequestMessage       Type = ' ' // Int32(16)
+	CloseMessage               Type = 'C'
+	CopyFailMessage            Type = 'f'
+	DescribeMessage            Type = 'D'
+	ExecuteMessage             Type = 'E'
+	FlushMessage               Type = 'H'
+	FunctionCallMessage        Type = 'F'
+	GSSENCRequestMessage       Type = ' ' // Int32(8)
+	GSSResponseMessage         Type = 'p'
+	ParseMessage               Type = 'P'
+	PasswordMessage            Type = 'p'
+	QueryMessage               Type = 'F'
+	SASLInitialResponseMessage Type = 'p'
+	SASLResponseMessage        Type = 'p'
+	SSLRequestMessage          Type = ' ' // Int32(8)
+	StartupMessage             Type = ' ' // Int32
+	SyncMessage                Type = 'S'
+	TerminateMessage           Type = 'F'
 )
 
 // Backend (B).
 const (
-	AuthenticationOkMessage                MessageType = 'R'
-	AuthenticationKerberosV5Message        MessageType = 'R'
-	AuthenticationCleartextPasswordMessage MessageType = 'R'
-	AuthenticationMD5PasswordMessage       MessageType = 'R'
-	AuthenticationGSSMessage               MessageType = 'R'
-	AuthenticationSSPIMessage              MessageType = 'R'
-	AuthenticationSASLMessage              MessageType = 'R'
-	AuthenticationSASLContinueMessage      MessageType = 'R'
-	AuthenticationSASLFinalMessage         MessageType = 'R'
-	BackendKeyDataMessage                  MessageType = 'K'
-	BindCompleteMessage                    MessageType = '2'
-	CloseCompleteMessage                   MessageType = '3'
-	CommandCompleteMessage                 MessageType = 'C'
-	CopyInResponseMessage                  MessageType = 'G'
-	CopyOutResponseMessage                 MessageType = 'H'
-	CopyBothResponseMessage                MessageType = 'W'
-	DataRowMessage                         MessageType = 'D'
-	EmptyQueryResponseMessage              MessageType = 'I'
-	ErrorResponseMessage                   MessageType = 'E'
-	FunctionCallResponseMessage            MessageType = 'V'
-	NegotiateProtocolVersionMessage        MessageType = 'v'
-	NoDataMessage                          MessageType = 'n'
-	NoticeResponseMessage                  MessageType = 'N'
-	NotificationResponseMessage            MessageType = 'A'
-	ParameterDescriptionMessage            MessageType = 't'
-	ParameterStatusMessage                 MessageType = 'S'
-	ParseCompleteMessage                   MessageType = 'B'
-	PortalSuspendedMessage                 MessageType = 's'
-	ReadyForQueryMessage                   MessageType = 'Z'
-	RowDescriptionMessage                  MessageType = 'T'
+	AuthenticationOkMessage                Type = 'R'
+	AuthenticationKerberosV5Message        Type = 'R'
+	AuthenticationCleartextPasswordMessage Type = 'R'
+	AuthenticationMD5PasswordMessage       Type = 'R'
+	AuthenticationGSSMessage               Type = 'R'
+	AuthenticationSSPIMessage              Type = 'R'
+	AuthenticationSASLMessage              Type = 'R'
+	AuthenticationSASLContinueMessage      Type = 'R'
+	AuthenticationSASLFinalMessage         Type = 'R'
+	BackendKeyDataMessage                  Type = 'K'
+	BindCompleteMessage                    Type = '2'
+	CloseCompleteMessage                   Type = '3'
+	CommandCompleteMessage                 Type = 'C'
+	CopyInResponseMessage                  Type = 'G'
+	CopyOutResponseMessage                 Type = 'H'
+	CopyBothResponseMessage                Type = 'W'
+	DataRowMessage                         Type = 'D'
+	EmptyQueryResponseMessage              Type = 'I'
+	ErrorResponseMessage                   Type = 'E'
+	FunctionCallResponseMessage            Type = 'V'
+	NegotiateProtocolVersionMessage        Type = 'v'
+	NoDataMessage                          Type = 'n'
+	NoticeResponseMessage                  Type = 'N'
+	NotificationResponseMessage            Type = 'A'
+	ParameterDescriptionMessage            Type = 't'
+	ParameterStatusMessage                 Type = 'S'
+	ParseCompleteMessage                   Type = 'B'
+	PortalSuspendedMessage                 Type = 's'
+	ReadyForQueryMessage                   Type = 'Z'
+	RowDescriptionMessage                  Type = 'T'
 )
 
 // Both (F & B).
 const (
-	CopyDataMessage MessageType = 'd'
-	CopyDoneMessage MessageType = 'c'
+	CopyDataMessage Type = 'd'
+	CopyDoneMessage Type = 'c'
 )

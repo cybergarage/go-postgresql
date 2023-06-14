@@ -27,7 +27,7 @@ import (
 // RequestMessage represents a frontend request message.
 type RequestMessage struct {
 	*message.Reader
-	Type   message.MessageType
+	Type   message.Type
 	Length int32
 }
 
@@ -41,7 +41,7 @@ func NewRequestMessageWith(reader *bufio.Reader) *RequestMessage {
 }
 
 // ReadType reads a message type.
-func (msg *RequestMessage) ReadType() (message.MessageType, error) {
+func (msg *RequestMessage) ReadType() (message.Type, error) {
 	var err error
 	msg.Type, err = msg.Reader.ReadType()
 	return msg.Type, err
