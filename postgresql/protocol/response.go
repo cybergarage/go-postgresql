@@ -36,6 +36,11 @@ func NewResponseMessage() *ResponseMessage {
 	}
 }
 
+// SetType sets a message type.
+func (msg *ResponseMessage) SetType(t message.Type) {
+	msg.Type = t
+}
+
 // Bytes returns the message bytes.
 func (msg *ResponseMessage) Bytes() ([]byte, error) {
 	msgBytes, err := msg.Writer.Bytes()
