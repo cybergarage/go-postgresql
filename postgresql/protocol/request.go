@@ -27,8 +27,8 @@ import (
 // RequestMessage represents a frontend request message.
 type RequestMessage struct {
 	*message.Reader
-	Type   MessageType
-	Length int
+	Type   message.MessageType
+	Length int32
 }
 
 // NewRequestMessageWith returns a new request message with the specified reader.
@@ -41,23 +41,17 @@ func NewRequestMessageWith(reader *bufio.Reader) *RequestMessage {
 }
 
 // ReadType reads a message type.
-func (msg *RequestMessage) ReadType() (MessageType, error) {
-	t, err := msg.ReadByte()
-	if err != nil {
-		return 0, err
-	}
-	msg.Type = MessageType(t)
-	return msg.Type, nil
+func (msg *RequestMessage) ReadType() (message.MessageType, error) {
+	var err error
+	msg.Type, err = msg.Reader.ReadType()
+	return msg.Type, err
 }
 
 // ReadLength reads a message length.
-func (msg *RequestMessage) ReadLength() (int, error) {
-	l, err := msg.ReadInt32()
-	if err != nil {
-		return 0, err
-	}
-	msg.Length = l
-	return msg.Length, nil
+func (msg *RequestMessage) ReadLength() (int32, error) {
+	var err error
+	msg.Length, err = msg.Reader.ReadLength()
+	return msg.Length, err
 }
 
 // ParseStartupMessage parses a startup message.
