@@ -26,18 +26,41 @@ import (
 
 // Message represents an operation message.
 type Message struct {
-	*Header
 	*message.Reader
+	Type   MessageType
+	Length int
 }
 
-// NewFrontendMessage returns a new frontend message instance.
-func NewFrontendMessage(header *Header, reader *bufio.Reader) *Message {
+// NewMessageWith returns a new Message with the specified reader.
+func NewMessageWith(reader *bufio.Reader) *Message {
 	return &Message{
-		Header: header,
 		Reader: message.NewReaderWith(reader),
+		Type:   0,
+		Length: 0,
 	}
 }
 
+// ReadType reads a message type.
+func (msg *Message) ReadType() (MessageType, error) {
+	t, err := msg.ReadByte()
+	if err != nil {
+		return 0, err
+	}
+	msg.Type = MessageType(t)
+	return msg.Type, nil
+}
+
+// ReadLength reads a message length.
+func (msg *Message) ReadLength() (int, error) {
+	l, err := msg.ReadInt32()
+	if err != nil {
+		return 0, err
+	}
+	msg.Length = l
+	return msg.Length, nil
+}
+
+// ParseStartupMessage parses a startup message.
 func (msg *Message) ParseStartupMessage() (*message.Startup, error) {
 	return message.NewStartupWith(msg.Reader)
 }
