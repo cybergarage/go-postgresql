@@ -23,7 +23,7 @@ package message
 type Startup struct {
 	MajorVersion  int
 	MinorVersion  int
-	MessageLength int
+	MessageLength int32
 	Parameters    map[string]string
 }
 
@@ -47,7 +47,7 @@ func NewStartupWith(reader *Reader) (*Startup, error) {
 
 	params := make(map[string]string)
 
-	for readLen < msgLen {
+	for readLen < int(msgLen) {
 		k, err := reader.ReadString()
 		if err != nil {
 			return nil, err
@@ -67,8 +67,8 @@ func NewStartupWith(reader *Reader) (*Startup, error) {
 
 	return &Startup{
 		MessageLength: msgLen,
-		MajorVersion:  majorVer,
-		MinorVersion:  minorVer,
+		MajorVersion:  int(majorVer),
+		MinorVersion:  int(minorVer),
 		Parameters:    params,
 	}, nil
 }
