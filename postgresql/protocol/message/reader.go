@@ -31,7 +31,7 @@ func NewReaderWith(reader *bufio.Reader) *Reader {
 }
 
 // ReadInt32 reads a 32-bit integer.
-func (reader *Reader) ReadInt32() (int, error) {
+func (reader *Reader) ReadInt32() (int32, error) {
 	int32Bytes := make([]byte, 4)
 	nRead, err := reader.Read(int32Bytes)
 	if err != nil {
@@ -50,4 +50,22 @@ func (reader *Reader) ReadString() (string, error) {
 		return "", err
 	}
 	return string(b[:len(b)-1]), nil
+}
+
+// ReadType reads a message type.
+func (reader *Reader) ReadType() (MessageType, error) {
+	t, err := reader.ReadByte()
+	if err != nil {
+		return 0, err
+	}
+	return MessageType(t), nil
+}
+
+// ReadLength reads a message length.
+func (reader *Reader) ReadLength() (int32, error) {
+	l, err := reader.ReadInt32()
+	if err != nil {
+		return 0, err
+	}
+	return l, nil
 }
