@@ -132,7 +132,7 @@ func (server *Server) receive(conn net.Conn) error {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		loopSpan.StartSpan("parse")
 
-		reqMsg := protocol.NewMessageWith(bufio.NewReader(conn))
+		reqMsg := protocol.NewRequestMessageWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			_, err := reqMsg.ParseStartupMessage()
