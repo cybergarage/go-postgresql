@@ -47,7 +47,7 @@ func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
 	if err := msg.AppendByte(byte(t)); err != nil {
 		return err
 	}
-	if _, err := msg.AppendString(v); err != nil {
+	if err := msg.AppendString(v); err != nil {
 		return err
 	}
 	return nil
