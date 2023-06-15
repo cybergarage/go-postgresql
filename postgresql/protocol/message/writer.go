@@ -34,14 +34,15 @@ func NewWriter() *Writer {
 	}
 }
 
-// AppendBytes appends the specified bytes.
-func (writer *Writer) AppendBytes(p []byte) (int, error) {
-	return writer.Writer.Write(p)
-}
-
 // AppendByte appends the specified byte.
 func (writer *Writer) AppendByte(c byte) error {
 	return writer.Writer.WriteByte(c)
+}
+
+// AppendBytes appends the specified bytes.
+func (writer *Writer) AppendBytes(p []byte) error {
+	_, err := writer.Writer.Write(p)
+	return err
 }
 
 // AppendString appends the specified string.
