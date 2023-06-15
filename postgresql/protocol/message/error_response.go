@@ -42,6 +42,12 @@ func NewErrorResponse() *ErrorResponse {
 	}
 }
 
+// NewErrorResponseWith returns a new error response instance with the specified error.
+func NewErrorResponseWith(err error) (*ErrorResponse, error) {
+	msg := NewErrorResponse()
+	return msg, msg.AddError(err)
+}
+
 // AppendField appends an error field to the error response.
 func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
 	if err := msg.AppendByte(byte(t)); err != nil {
