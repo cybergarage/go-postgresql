@@ -22,6 +22,14 @@ import (
 // ErrShortMessage is returned when the message is too short.
 var ErrShortMessage = errors.New("short message")
 
+// ErrNotSupported is returned when the message is not supported.
+var ErrNotSupported = errors.New("not supported")
+
 func newShortMessageErrorWith(expected int, actual int) error {
 	return fmt.Errorf("%w: %d < %d", ErrShortMessage, actual, expected)
+}
+
+// NewMessageNotSuppoted returns a new message not supported error.
+func NewMessageNotSuppoted(t Type) error {
+	return fmt.Errorf("message type (%c) is %w", t, ErrNotSupported)
 }
