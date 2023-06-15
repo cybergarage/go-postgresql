@@ -42,7 +42,7 @@ func NewErrorResponse() *ErrorResponse {
 	}
 }
 
-// AppendTerminator appends a null terminator.
+// AppendField appends an error field to the error response.
 func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
 	if err := msg.AppendByte(byte(t)); err != nil {
 		return err
@@ -50,12 +50,20 @@ func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
 	return msg.AppendString(v)
 }
 
-// AppendTerminator appends a null terminator.
+// AddCode adds an error code to the error response.
 func (msg *ErrorResponse) AddCode(code int32) error {
 	if err := msg.AppendByte(byte(CodeError)); err != nil {
 		return err
 	}
 	return msg.AppendInt32(code)
+}
+
+// AddError adds an error message to the error response.
+func (msg *ErrorResponse) AddError(err error) error {
+	if err := msg.AppendByte(byte(MessageError)); err != nil {
+		return err
+	}
+	return msg.AppendString(err.Error())
 }
 
 // Bytes returns the message bytes after adding a null terminator.
