@@ -19,6 +19,7 @@ import (
 	"net"
 	"strconv"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -144,14 +145,34 @@ func (server *Server) receive(conn net.Conn) error {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		loopSpan.StartSpan("parse")
 
+		responseError := func(err error) {
+			errMsg, err := message.NewErrorResponseWith(err)
+			if err != nil {
+				log.Error(err)
+				return
+			}
+			errBytes, err := errMsg.Bytes()
+			if err != nil {
+				log.Error(err)
+				return
+			}
+			if _, err := conn.Write(errBytes); err != nil {
+				log.Error(err)
+			}
+		}
+
+		// var resMsg *message.Response
 		reqMsg := message.NewRequestWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			_, err := reqMsg.ParseStartupMessage()
 			if err != nil {
 				loopSpan.FinishSpan()
+				responseError(err)
 				return err
 			}
+		} else {
+			responseError(err)
 		}
 
 		// loopSpan.StartSpan("response")
