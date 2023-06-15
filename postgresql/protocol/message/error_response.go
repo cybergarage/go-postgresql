@@ -47,13 +47,18 @@ func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
 	if err := msg.AppendByte(byte(t)); err != nil {
 		return err
 	}
-	if err := msg.AppendString(v); err != nil {
-		return err
-	}
-	return nil
+	return msg.AppendString(v)
 }
 
-// Bytes returns the message bytes.
+// AppendTerminator appends a null terminator.
+func (msg *ErrorResponse) AddCode(code int32) error {
+	if err := msg.AppendByte(byte(CodeError)); err != nil {
+		return err
+	}
+	return msg.AppendInt32(code)
+}
+
+// Bytes returns the message bytes after adding a null terminator.
 func (msg *ErrorResponse) Bytes() ([]byte, error) {
 	if err := msg.AppendTerminator(); err != nil {
 		return nil, err
