@@ -140,10 +140,22 @@ func (server *Server) receive(conn net.Conn) error {
 	defer conn.Close()
 
 	isStartupMessage := true
-	var err error
-	for err == nil {
+	var lastErr error
+	for lastErr == nil {
 		loopSpan := server.Tracer.StartSpan(PackageName)
+		exConn := NewConnWith(loopSpan)
 		loopSpan.StartSpan("parse")
+
+		responseMessage := func(resMsg *message.Response) error {
+			resBytes, err := resMsg.Bytes()
+			if err != nil {
+				return err
+			}
+			if _, err := conn.Write(resBytes); err != nil {
+				return err
+			}
+			return nil
+		}
 
 		responseError := func(err error) {
 			errMsg, err := message.NewErrorResponseWith(err)
@@ -165,14 +177,30 @@ func (server *Server) receive(conn net.Conn) error {
 		reqMsg := message.NewRequestWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
-			_, err := reqMsg.ParseStartupMessage()
+			msg, err := reqMsg.ParseStartupMessage()
 			if err != nil {
-				loopSpan.FinishSpan()
-				responseError(err)
-				return err
+				responseError(lastErr)
+				lastErr = err
+			}
+			resMsg, err := server.Executor.Startup(exConn, msg)
+			if err != nil {
+				responseError(lastErr)
+				lastErr = err
+			}
+			err = responseMessage(resMsg)
+			if err != nil {
+				lastErr = err
 			}
 		} else {
-			responseError(err)
+			reqType, err := reqMsg.ReadType()
+			if err != nil {
+				responseError(err)
+				lastErr = err
+			}
+			switch reqType {
+			default:
+				responseError(message.NewMessageNotSuppoted(reqType))
+			}
 		}
 
 		// loopSpan.StartSpan("response")
@@ -183,5 +211,5 @@ func (server *Server) receive(conn net.Conn) error {
 		loopSpan.FinishSpan()
 	}
 
-	return err
+	return lastErr
 }
