@@ -143,7 +143,7 @@ func (server *Server) receive(conn net.Conn) error {
 	var lastErr error
 	for lastErr == nil {
 		loopSpan := server.Tracer.StartSpan(PackageName)
-		exConn := NewConnWith(loopSpan)
+		exConn := NewConnWith(conn, loopSpan)
 		loopSpan.StartSpan("parse")
 
 		responseMessage := func(resMsg *message.Response) error {

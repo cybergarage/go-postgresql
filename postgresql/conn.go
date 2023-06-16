@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"net"
 	"time"
 
 	"github.com/cybergarage/go-tracing/tracer"
@@ -25,16 +26,23 @@ type Conn struct {
 	Database string
 	ts       time.Time
 	tracer.Context
+	conn net.Conn
 }
 
 // NewConnWith returns a connection with a raw connection.
-func NewConnWith(ctx tracer.Context) *Conn {
+func NewConnWith(c net.Conn, t tracer.Context) *Conn {
 	conn := &Conn{
 		Database: "",
 		ts:       time.Now(),
-		Context:  ctx,
+		Context:  t,
+		conn:     c,
 	}
 	return conn
+}
+
+// Conn returns the raw connection.
+func (conn *Conn) Conn() net.Conn {
+	return conn.conn
 }
 
 // Timestamp returns the creation time of the connection.
