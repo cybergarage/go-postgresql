@@ -182,15 +182,7 @@ func (server *Server) receive(conn net.Conn) error {
 				responseError(lastErr)
 				lastErr = err
 			}
-			resMsg, err := server.Executor.Startup(exConn, msg)
-			if err != nil {
-				responseError(lastErr)
-				lastErr = err
-			}
-			err = responseMessage(resMsg)
-			if err != nil {
-				lastErr = err
-			}
+			_ = server.Executor.Authenticate(exConn, msg)
 		} else {
 			reqType, err := reqMsg.ReadType()
 			if err != nil {

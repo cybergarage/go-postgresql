@@ -18,7 +18,12 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
+// Authenticator represents a frontend message authenticator.
+type Authenticator interface {
+	Authenticate(*Conn, *message.Startup) bool
+}
+
 // Executor represents a frontend message executor.
 type Executor interface {
-	Startup(*Conn, *message.Startup) (*message.Response, error)
+	Authenticator
 }

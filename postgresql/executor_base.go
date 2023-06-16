@@ -27,7 +27,7 @@ func NewBaseExecutor() *BaseExecutor {
 	return &BaseExecutor{}
 }
 
-// Executor represents a frontend message executor.
-func (executor *BaseExecutor) Startup(*Conn, *message.Startup) (*message.Response, error) {
-	return nil, newErrNotSupported("Startup")
+// Authenticate authenticates the connection with the startup message.
+func (executor *BaseExecutor) Authenticate(*Conn, *message.Startup) bool {
+	return true
 }
