@@ -7,14 +7,58 @@
 
 package message
 
+const (
+	ApplicationName = "application_name"
+	ClientEncoding  = "client_encoding"
+	ServerEncoding  = "server_ encoding"
+	DateStyle       = "DateStyle"
+	TimeZone        = "TimeZone"
+	IntervalStyle   = "IntervalStyle"
+)
+
+// on/off parameters
+const (
+	DefaultTransactiOnReadOnly = "default_transaction_read_only"
+	InHotStandby               = "in_hot_standby"
+	IsSuperuser                = "is_superuser"
+	OntegerDatetimes           = "integer_datetimes"
+)
+
+const (
+	ServerVersion             = "#server_version"
+	StandardConformingStrings = "#standard_conforming_strings"
+)
+
+const (
+	EncodingUTF8 = "UTF8"
+)
+
+const (
+	DateStyleISO = "ISO, MDY.S"
+)
+
 // ParameterStatus represents an error response message.
 type ParameterStatus struct {
-	*StringResponse
+	*Response
 }
 
 // NewParameterStatus returns a new error response instance.
 func NewParameterStatus() *ParameterStatus {
 	return &ParameterStatus{
-		StringResponse: NewStringResponseWith(ParameterStatusMessage),
+		Response: NewResponseWith(ParameterStatusMessage),
 	}
+}
+
+// AppendString appends the specified string.
+func (msg *ParameterStatus) AppendParameter(s ...string) error {
+	for _, v := range s {
+		err := msg.AppendString(v)
+		if err != nil {
+			return err
+		}
+	}
+	if 1 < len(s) {
+		return nil
+	}
+	return msg.AppendTerminator()
 }

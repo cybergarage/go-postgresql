@@ -32,13 +32,13 @@ const (
 
 // ErrorResponse represents an error response message.
 type ErrorResponse struct {
-	*StringResponse
+	*Response
 }
 
 // NewErrorResponse returns a new error response instance.
 func NewErrorResponse() *ErrorResponse {
 	return &ErrorResponse{
-		StringResponse: NewStringResponseWith(ErrorResponseMessage),
+		Response: NewResponseWith(ErrorResponseMessage),
 	}
 }
 
@@ -70,4 +70,12 @@ func (msg *ErrorResponse) AddError(err error) error {
 		return err
 	}
 	return msg.AppendString(err.Error())
+}
+
+// Bytes returns the message bytes after adding a null terminator.
+func (msg *ErrorResponse) Bytes() ([]byte, error) {
+	if err := msg.AppendTerminator(); err != nil {
+		return nil, err
+	}
+	return msg.Response.Bytes()
 }
