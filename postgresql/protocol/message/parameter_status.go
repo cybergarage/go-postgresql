@@ -2,8 +2,6 @@
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
-// PostgreSQL: Documentation: 16: 55.8. Error and Notice Message Fields
-// https://www.postgresql.org/docs/16/protocol-error-fields.html
 
 package message
 
@@ -16,7 +14,7 @@ const (
 	IntervalStyle   = "IntervalStyle"
 )
 
-// on/off parameters
+// on/off parameters.
 const (
 	DefaultTransactiOnReadOnly = "default_transaction_read_only"
 	InHotStandby               = "in_hot_standby"
@@ -61,4 +59,19 @@ func (msg *ParameterStatus) AppendParameter(s ...string) error {
 		return nil
 	}
 	return msg.AppendTerminator()
+}
+
+// AppendString appends the specified string.
+func (msg *ParameterStatus) AppendParameters(m map[string]string) error {
+	for k, v := range m {
+		err := msg.AppendString(k)
+		if err != nil {
+			return err
+		}
+		err = msg.AppendString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
