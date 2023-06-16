@@ -37,7 +37,7 @@ func NewResponse() *Response {
 	return NewResponseWith(NoneMessage)
 }
 
-// NewResponseWith returns a new request message with the specified message type.
+// NewResponseWith returns a new response message with the specified message type.
 func NewResponseWith(t Type) *Response {
 	return &Response{
 		typ:    t,
@@ -68,4 +68,24 @@ func (msg *Response) Bytes() ([]byte, error) {
 	}
 	b = append(b, Int32ToBytes(int32(l))...)
 	return append(b, msgBytes...), nil
+}
+
+// StringResponse represents a backend string response instance.
+type StringResponse struct {
+	*Response
+}
+
+// NewStringResponseWith returns a new string response message with the specified message type.
+func NewStringResponseWith(t Type) *StringResponse {
+	return &StringResponse{
+		Response: NewResponseWith(t),
+	}
+}
+
+// Bytes returns the message bytes after adding a null terminator.
+func (msg *StringResponse) Bytes() ([]byte, error) {
+	if err := msg.AppendTerminator(); err != nil {
+		return nil, err
+	}
+	return msg.Response.Bytes()
 }
