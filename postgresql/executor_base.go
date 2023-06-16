@@ -31,3 +31,11 @@ func NewBaseExecutor() *BaseExecutor {
 func (executor *BaseExecutor) Authenticate(*Conn, *message.Startup) bool {
 	return true
 }
+
+// ParameterStatus returns the parameter status.
+func (executor *BaseExecutor) ParameterStatus(*Conn) map[string]string {
+	m := map[string]string{}
+	m[message.ClientEncoding] = message.EncodingUTF8
+	m[message.ServerEncoding] = message.EncodingUTF8
+	return m
+}

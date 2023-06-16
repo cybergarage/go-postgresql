@@ -35,16 +35,26 @@ const (
 	DateStyleISO = "ISO, MDY.S"
 )
 
-// ParameterStatus represents an error response message.
+// ParameterStatus represents a parameter status response message.
 type ParameterStatus struct {
 	*Response
 }
 
-// NewParameterStatus returns a new error response instance.
+// NewParameterStatus returns a parameter status response instance.
 func NewParameterStatus() *ParameterStatus {
 	return &ParameterStatus{
 		Response: NewResponseWith(ParameterStatusMessage),
 	}
+}
+
+// NewParameterStatusWith returns a parameter status response instance with the specified parameter statuses.
+func NewParameterStatusWith(m map[string]string) (*ParameterStatus, error) {
+	msg := NewParameterStatus()
+	err := msg.AppendParameters(m)
+	if err != nil {
+		return nil, err
+	}
+	return msg, nil
 }
 
 // AppendString appends the specified string.
