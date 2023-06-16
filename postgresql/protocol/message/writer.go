@@ -52,9 +52,11 @@ func (writer *Writer) AppendInt32(v int32) error {
 
 // AppendString appends the specified string.
 func (writer *Writer) AppendString(s string) error {
-	_, err := writer.Writer.WriteString(s)
-	if err != nil {
-		return err
+	if 0 < len(s) {
+		_, err := writer.Writer.WriteString(s)
+		if err != nil {
+			return err
+		}
 	}
 	return writer.AppendTerminator()
 }
