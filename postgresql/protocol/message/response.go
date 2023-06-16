@@ -18,13 +18,21 @@ package message
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
-// Response represents a backend response.
+// ResponseMessage represents a backend response message interface.
+type ResponseMessage interface {
+	// Type returns the message type.
+	Type() Type
+	// Bytes returns the message bytes.
+	Bytes() ([]byte, error)
+}
+
+// Response represents a backend response instance.
 type Response struct {
-	Type Type
+	typ Type
 	*Writer
 }
 
-// NewResponse returns a new request message.
+// NewResponse returns a new request message instance.
 func NewResponse() *Response {
 	return NewResponseWith(NoneMessage)
 }
@@ -32,14 +40,19 @@ func NewResponse() *Response {
 // NewResponseWith returns a new request message with the specified message type.
 func NewResponseWith(t Type) *Response {
 	return &Response{
-		Type:   t,
+		typ:    t,
 		Writer: NewWriter(),
 	}
 }
 
 // SetType sets a message type.
 func (msg *Response) SetType(t Type) {
-	msg.Type = t
+	msg.typ = t
+}
+
+// Type returns the message type.
+func (msg *Response) Type() Type {
+	return msg.typ
 }
 
 // Bytes returns the message bytes.
@@ -50,8 +63,8 @@ func (msg *Response) Bytes() ([]byte, error) {
 	}
 	l := len(msgBytes)
 	b := make([]byte, 0, l+1+4)
-	if msg.Type != NoneMessage {
-		b = append(b, byte(msg.Type))
+	if msg.typ != NoneMessage {
+		b = append(b, byte(msg.typ))
 	}
 	b = append(b, Int32ToBytes(int32(l))...)
 	return append(b, msgBytes...), nil

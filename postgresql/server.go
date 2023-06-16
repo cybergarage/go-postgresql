@@ -146,7 +146,7 @@ func (server *Server) receive(conn net.Conn) error {
 		exConn := NewConnWith(conn, loopSpan)
 		loopSpan.StartSpan("parse")
 
-		responseMessage := func(resMsg *message.Response) error {
+		responseMessage := func(resMsg message.ResponseMessage) error {
 			resBytes, err := resMsg.Bytes()
 			if err != nil {
 				return err
@@ -173,16 +173,28 @@ func (server *Server) receive(conn net.Conn) error {
 			}
 		}
 
-		// var resMsg *message.Response
 		reqMsg := message.NewRequestWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			msg, err := reqMsg.ParseStartupMessage()
-			if err != nil {
-				responseError(lastErr)
+			if err == nil {
+				ok := server.Executor.Authenticate(exConn, msg)
+				if ok {
+					msg, err := message.NewAuthenticationOk()
+					if err == nil {
+						lastErr = responseMessage(msg)
+					} else {
+						responseError(err)
+						lastErr = err
+					}
+				} else {
+					msg := message.NewErrorResponse()
+					lastErr = responseMessage(msg)
+				}
+			} else {
+				responseError(err)
 				lastErr = err
 			}
-			_ = server.Executor.Authenticate(exConn, msg)
 		} else {
 			reqType, err := reqMsg.ReadType()
 			if err != nil {
