@@ -23,7 +23,13 @@ type Authenticator interface {
 	Authenticate(*Conn, *message.Startup) bool
 }
 
+// StatusExecutor represents a backend status message executor.
+type StatusExecutor interface {
+	ParameterStatus(*Conn) map[string]string
+}
+
 // Executor represents a frontend message executor.
 type Executor interface {
 	Authenticator
+	StatusExecutor
 }

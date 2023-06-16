@@ -173,23 +173,43 @@ func (server *Server) receive(conn net.Conn) error {
 			}
 		}
 
+		handleStartupMessage := func(startupMsg *message.Startup) error {
+			// Handle the startup message.
+			ok := server.Executor.Authenticate(exConn, startupMsg)
+			if !ok {
+				msg := message.NewErrorResponse()
+				return responseMessage(msg)
+			}
+			authMsg, err := message.NewAuthenticationOk()
+			if err != nil {
+				return err
+			}
+			err = responseMessage(authMsg)
+			if err != nil {
+				return err
+			}
+			// Return parameter statuses.
+			ps := server.Executor.ParameterStatus(exConn)
+			psMsg, err := message.NewParameterStatusWith(ps)
+			if err != nil {
+				return err
+			}
+			err = responseMessage(psMsg)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}
+
 		reqMsg := message.NewRequestWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			msg, err := reqMsg.ParseStartupMessage()
 			if err == nil {
-				ok := server.Executor.Authenticate(exConn, msg)
-				if ok {
-					msg, err := message.NewAuthenticationOk()
-					if err == nil {
-						lastErr = responseMessage(msg)
-					} else {
-						responseError(err)
-						lastErr = err
-					}
-				} else {
-					msg := message.NewErrorResponse()
-					lastErr = responseMessage(msg)
+				err := handleStartupMessage(msg)
+				if err != nil {
+					lastErr = err
 				}
 			} else {
 				responseError(err)
