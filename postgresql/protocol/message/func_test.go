@@ -38,3 +38,23 @@ func TestInt32Convert(t *testing.T) {
 		}
 	}
 }
+
+func TestInt16Convert(t *testing.T) {
+	ts := []int16{
+		math.MinInt16,
+		math.MinInt16 / 2,
+		-1,
+		0,
+		1,
+		math.MaxInt16 / 2,
+		math.MaxInt16,
+	}
+
+	for _, tv := range ts {
+		b := Int16ToBytes(tv)
+		v := Int16BytesToInt(b)
+		if tv != v {
+			t.Errorf("Failed to convert (%d != %d)", tv, v)
+		}
+	}
+}
