@@ -45,9 +45,14 @@ func (writer *Writer) AppendBytes(p []byte) error {
 	return err
 }
 
-// AppendInt32 appends the specified int32 bytes.
+// AppendInt32 appends the specified int32 value.
 func (writer *Writer) AppendInt32(v int32) error {
 	return writer.AppendBytes(Int32ToBytes(v))
+}
+
+// AppendInt16 appends the specified int16 value.
+func (writer *Writer) AppendInt16(v int16) error {
+	return writer.AppendBytes(Int16ToBytes(v))
 }
 
 // AppendString appends the specified string.
