@@ -32,8 +32,16 @@ type StatusExecutor interface {
 	BackendKeyData(*Conn) (message.Response, error)
 }
 
+type QueryExecutor interface {
+	// Parse returns the parse response.
+	Parse(*Conn, *message.Parse) (message.Response, error)
+	// Bind returns the bind response.
+	Bind(*Conn, *message.Bind) (message.Response, error)
+}
+
 // Executor represents a frontend message executor.
 type Executor interface {
 	Authenticator
 	StatusExecutor
+	QueryExecutor
 }
