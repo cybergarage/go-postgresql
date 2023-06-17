@@ -17,7 +17,7 @@ func NewBackendKeyData() *BackendKeyData {
 	}
 }
 
-// NewBackendKeyDataWith returns a parameter status response instance with the specified paramters.
+// NewBackendKeyDataWith returns a parameter status response instance with the specified parameters.
 func NewBackendKeyDataWith(processID int32, secretKey int32) (*BackendKeyData, error) {
 	msg := &BackendKeyData{
 		ResponseMessage: NewResponseMessageWith(BackendKeyDataMessage),
