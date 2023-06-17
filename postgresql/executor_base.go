@@ -20,11 +20,16 @@ import (
 
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
+	processID int32
+	secretKey int32
 }
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
-	return &BaseExecutor{}
+	return &BaseExecutor{
+		processID: 0,
+		secretKey: 0,
+	}
 }
 
 // Authenticate authenticates the connection with the startup message.
@@ -39,4 +44,9 @@ func (executor *BaseExecutor) ParameterStatus(*Conn) (message.Response, error) {
 	m[message.ServerEncoding] = message.EncodingUTF8
 	// m[message.TimeZone] = time.Now().Location().String()
 	return message.NewParameterStatusWith(m)
+}
+
+// BackendKeyData returns the backend key data.
+func (executor *BaseExecutor) BackendKeyData(*Conn) (message.Response, error) {
+	return message.NewBackendKeyDataWith(executor.processID, executor.secretKey)
 }

@@ -192,8 +192,15 @@ func (server *Server) receive(conn net.Conn) error {
 			if err != nil {
 				return err
 			}
-			// Return parameter statuses.
-
+			// Return backend key data.
+			res, err = server.Executor.BackendKeyData(exConn)
+			if err != nil {
+				return err
+			}
+			err = responseMessage(res)
+			if err != nil {
+				return err
+			}
 			return nil
 		}
 
