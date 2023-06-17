@@ -184,15 +184,15 @@ func (server *Server) receive(conn net.Conn) error {
 				return err
 			}
 			// Return parameter statuses.
-			ps := server.Executor.ParameterStatus(exConn)
-			psMsg, err := message.NewParameterStatusWith(ps)
+			res, err = server.Executor.ParameterStatus(exConn)
 			if err != nil {
 				return err
 			}
-			err = responseMessage(psMsg)
+			err = responseMessage(res)
 			if err != nil {
 				return err
 			}
+			// Return parameter statuses.
 
 			return nil
 		}
