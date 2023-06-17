@@ -52,12 +52,17 @@ func (msg *RequestMessage) ReadLength() (int32, error) {
 	return msg.Length, err
 }
 
-// ParseStartupMessage parses a startup.
+// ParseStartupMessage parses a startup message.
 func (msg *RequestMessage) ParseStartupMessage() (*Startup, error) {
 	return NewStartupWith(msg.Reader)
 }
 
-// ParseStartupMessage parses a startup.
+// ParseParseMessage parses a parse message.
 func (msg *RequestMessage) ParseParseMessage() (*Parse, error) {
 	return NewParseWith(msg.Reader)
+}
+
+// ParseBindMessage parses a bind message.
+func (msg *RequestMessage) ParseBindMessage() (*Bind, error) {
+	return NewBindWith(msg.Reader)
 }

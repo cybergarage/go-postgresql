@@ -232,6 +232,12 @@ func (server *Server) receive(conn net.Conn) error {
 				if lastErr == nil {
 					resMsg, lastErr = server.Executor.Parse(exConn, parseMsg)
 				}
+			case message.BindMessage:
+				var bindMsg *message.Bind
+				bindMsg, lastErr = reqMsg.ParseBindMessage()
+				if lastErr == nil {
+					resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
+				}
 			default:
 				responseError(message.NewMessageNotSuppoted(reqType))
 			}
