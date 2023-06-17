@@ -175,16 +175,11 @@ func (server *Server) receive(conn net.Conn) error {
 
 		handleStartupMessage := func(startupMsg *message.Startup) error {
 			// Handle the startup message.
-			ok := server.Executor.Authenticate(exConn, startupMsg)
-			if !ok {
-				msg := message.NewErrorResponse()
-				return responseMessage(msg)
-			}
-			authMsg, err := message.NewAuthenticationOk()
+			res, err := server.Executor.Authenticate(exConn, startupMsg)
 			if err != nil {
 				return err
 			}
-			err = responseMessage(authMsg)
+			err = responseMessage(res)
 			if err != nil {
 				return err
 			}

@@ -28,8 +28,8 @@ func NewBaseExecutor() *BaseExecutor {
 }
 
 // Authenticate authenticates the connection with the startup message.
-func (executor *BaseExecutor) Authenticate(*Conn, *message.Startup) bool {
-	return true
+func (executor *BaseExecutor) Authenticate(*Conn, *message.Startup) (message.ResponseMessage, error) {
+	return message.NewAuthenticationOk()
 }
 
 // ParameterStatus returns the parameter status.
