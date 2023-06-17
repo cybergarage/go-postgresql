@@ -29,3 +29,17 @@ func Int32ToBytes(v int32) []byte {
 	b[3] = byte(v)
 	return b
 }
+
+// Int16BytesToInt converts the specified byte array to an integer.
+func Int16BytesToInt(b []byte) int16 {
+	v := int16(b[0])<<8 | int16(b[1])
+	return v
+}
+
+// Int32ToBytes converts the specified integer to a byte array.
+func Int16ToBytes(v int16) []byte {
+	b := make([]byte, 4)
+	b[0] = byte(v >> 8)
+	b[1] = byte(v)
+	return b
+}
