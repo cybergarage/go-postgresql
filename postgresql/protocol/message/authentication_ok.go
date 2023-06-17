@@ -17,9 +17,5 @@ package message
 // NewAuthenticationOk returns a new AuthenticationOk message.
 func NewAuthenticationOk() (*ResponseMessage, error) {
 	msg := NewResponseMessageWith(AuthenticationOkMessage)
-	err := msg.AppendInt32(8)
-	if err != nil {
-		return nil, err
-	}
 	return msg, msg.AppendInt32(0)
 }
