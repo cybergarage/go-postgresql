@@ -61,3 +61,13 @@ func (executor *BaseExecutor) ParameterStatus(*Conn) (message.Response, error) {
 func (executor *BaseExecutor) BackendKeyData(*Conn) (message.Response, error) {
 	return message.NewBackendKeyDataWith(executor.processID, executor.secretKey)
 }
+
+// Parse returns the parse response.
+func (executor *BaseExecutor) Parse(*Conn, *message.Parse) (message.Response, error) {
+	return message.NewParseComplete(), nil
+}
+
+// Bind returns the bind response.
+func (executor *BaseExecutor) Bind(*Conn, *message.Bind) (message.Response, error) {
+	return message.NewBindComplete(), nil
+}
