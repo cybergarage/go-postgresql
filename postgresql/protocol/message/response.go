@@ -55,7 +55,7 @@ func (msg *ResponseMessage) Type() Type {
 	return msg.typ
 }
 
-// Bytes returns the message bytes.
+// Bytes appends a length of the message content bytes, and returns the message bytes.
 func (msg *ResponseMessage) Bytes() ([]byte, error) {
 	msgBytes, err := msg.Writer.Bytes()
 	if err != nil {
