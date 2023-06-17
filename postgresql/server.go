@@ -204,7 +204,7 @@ func (server *Server) receive(conn net.Conn) error {
 			return nil
 		}
 
-		reqMsg := message.NewRequestWith(bufio.NewReader(conn))
+		reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
 			msg, err := reqMsg.ParseStartupMessage()
