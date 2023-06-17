@@ -37,13 +37,13 @@ const (
 
 // ParameterStatus represents a parameter status response message.
 type ParameterStatus struct {
-	*Response
+	*ResponseMessage
 }
 
 // NewParameterStatus returns a parameter status response instance.
 func NewParameterStatus() *ParameterStatus {
 	return &ParameterStatus{
-		Response: NewResponseWith(ParameterStatusMessage),
+		ResponseMessage: NewResponseMessageWith(ParameterStatusMessage),
 	}
 }
 
