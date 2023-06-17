@@ -75,7 +75,7 @@ const (
 	NotificationResponseMessage            Type = 'A'
 	ParameterDescriptionMessage            Type = 't'
 	ParameterStatusMessage                 Type = 'S'
-	ParseCompleteMessage                   Type = 'B'
+	ParseCompleteMessage                   Type = '1'
 	PortalSuspendedMessage                 Type = 's'
 	ReadyForQueryMessage                   Type = 'Z'
 	RowDescriptionMessage                  Type = 'T'
