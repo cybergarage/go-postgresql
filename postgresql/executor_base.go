@@ -37,5 +37,6 @@ func (executor *BaseExecutor) ParameterStatus(*Conn) map[string]string {
 	m := map[string]string{}
 	m[message.ClientEncoding] = message.EncodingUTF8
 	m[message.ServerEncoding] = message.EncodingUTF8
+	// m[message.TimeZone] = time.Now().Location().String()
 	return m
 }
