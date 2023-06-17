@@ -204,6 +204,8 @@ func (server *Server) receive(conn net.Conn) error {
 			return nil
 		}
 
+		var resMsg message.Response
+
 		reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
 		if isStartupMessage {
 			isStartupMessage = false
@@ -223,16 +225,28 @@ func (server *Server) receive(conn net.Conn) error {
 				responseError(err)
 				lastErr = err
 			}
-			switch reqType {
+			switch reqType { // nolint:exhaustive
+			case message.ParseMessage:
+				var parseMsg *message.Parse
+				parseMsg, lastErr = reqMsg.ParseParseMessage()
+				if lastErr == nil {
+					resMsg, lastErr = server.Executor.Parse(exConn, parseMsg)
+				}
 			default:
 				responseError(message.NewMessageNotSuppoted(reqType))
 			}
 		}
 
-		// loopSpan.StartSpan("response")
-		// var respMsg *protocol.Message
-
-		// loopSpan.FinishSpan()
+		loopSpan.StartSpan("response")
+		if lastErr == nil {
+			err := responseMessage(resMsg)
+			if err != nil {
+				lastErr = err
+			}
+		} else {
+			responseError(lastErr)
+		}
+		loopSpan.FinishSpan()
 
 		loopSpan.FinishSpan()
 	}
