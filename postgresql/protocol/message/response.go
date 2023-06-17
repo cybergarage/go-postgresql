@@ -18,45 +18,45 @@ package message
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
-// ResponseMessage represents a backend response message interface.
-type ResponseMessage interface {
+// Response represents a backend response message interface.
+type Response interface {
 	// Type returns the message type.
 	Type() Type
 	// Bytes returns the message bytes.
 	Bytes() ([]byte, error)
 }
 
-// Response represents a backend response instance.
-type Response struct {
+// ResponseMessage represents a backend response instance.
+type ResponseMessage struct {
 	typ Type
 	*Writer
 }
 
-// NewResponse returns a new request message instance.
-func NewResponse() *Response {
-	return NewResponseWith(NoneMessage)
+// NewResponseMessage returns a new request message instance.
+func NewResponseMessage() *ResponseMessage {
+	return NewResponseMessageWith(NoneMessage)
 }
 
-// NewResponseWith returns a new response message with the specified message type.
-func NewResponseWith(t Type) *Response {
-	return &Response{
+// NewResponseMessageWith returns a new response message with the specified message type.
+func NewResponseMessageWith(t Type) *ResponseMessage {
+	return &ResponseMessage{
 		typ:    t,
 		Writer: NewWriter(),
 	}
 }
 
 // SetType sets a message type.
-func (msg *Response) SetType(t Type) {
+func (msg *ResponseMessage) SetType(t Type) {
 	msg.typ = t
 }
 
 // Type returns the message type.
-func (msg *Response) Type() Type {
+func (msg *ResponseMessage) Type() Type {
 	return msg.typ
 }
 
 // Bytes returns the message bytes.
-func (msg *Response) Bytes() ([]byte, error) {
+func (msg *ResponseMessage) Bytes() ([]byte, error) {
 	msgBytes, err := msg.Writer.Bytes()
 	if err != nil {
 		return nil, err

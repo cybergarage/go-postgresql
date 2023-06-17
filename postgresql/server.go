@@ -146,7 +146,7 @@ func (server *Server) receive(conn net.Conn) error {
 		exConn := NewConnWith(conn, loopSpan)
 		loopSpan.StartSpan("parse")
 
-		responseMessage := func(resMsg message.ResponseMessage) error {
+		responseMessage := func(resMsg message.Response) error {
 			resBytes, err := resMsg.Bytes()
 			if err != nil {
 				return err

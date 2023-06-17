@@ -7,20 +7,20 @@ package message
 
 // BackendKeyData represents a parameter status response message.
 type BackendKeyData struct {
-	*Response
+	*ResponseMessage
 }
 
 // NewBackendKeyData returns a parameter status response instance.
 func NewBackendKeyData() *BackendKeyData {
 	return &BackendKeyData{
-		Response: NewResponseWith(BackendKeyDataMessage),
+		ResponseMessage: NewResponseMessageWith(BackendKeyDataMessage),
 	}
 }
 
 // NewBackendKeyDataWith returns a parameter status response instance with the specified paramters.
 func NewBackendKeyDataWith(processID int32, secretKey int32) (*BackendKeyData, error) {
 	msg := &BackendKeyData{
-		Response: NewResponseWith(BackendKeyDataMessage),
+		ResponseMessage: NewResponseMessageWith(BackendKeyDataMessage),
 	}
 	err := msg.AppendInt32(12)
 	if err != nil {

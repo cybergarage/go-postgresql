@@ -20,12 +20,12 @@ import (
 
 // Authenticator represents a frontend message authenticator.
 type Authenticator interface {
-	Authenticate(*Conn, *message.Startup) (message.ResponseMessage, error)
+	Authenticate(*Conn, *message.Startup) (message.Response, error)
 }
 
 // StatusExecutor represents a backend status message executor.
 type StatusExecutor interface {
-	ParameterStatus(*Conn) (message.ResponseMessage, error)
+	ParameterStatus(*Conn) (message.Response, error)
 }
 
 // Executor represents a frontend message executor.
