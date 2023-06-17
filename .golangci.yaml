@@ -40,3 +40,4 @@ linters:
     - nosnakecase
     - dupword
     - interfacer
+    - maligned
