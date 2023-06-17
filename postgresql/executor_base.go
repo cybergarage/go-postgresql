@@ -15,6 +15,12 @@
 package postgresql
 
 import (
+	"crypto/rand"
+	"math"
+	"math/big"
+	"os"
+
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
@@ -26,9 +32,13 @@ type BaseExecutor struct {
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
+	r, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
+	if err != nil {
+		log.Error(err)
+	}
 	return &BaseExecutor{
-		processID: 0,
-		secretKey: 0,
+		processID: int32(os.Getpid()),
+		secretKey: int32(r.Int64()),
 	}
 }
 
@@ -42,6 +52,7 @@ func (executor *BaseExecutor) ParameterStatus(*Conn) (message.Response, error) {
 	m := map[string]string{}
 	m[message.ClientEncoding] = message.EncodingUTF8
 	m[message.ServerEncoding] = message.EncodingUTF8
+	// FIXME : Get the time zone name from the system
 	// m[message.TimeZone] = time.Now().Location().String()
 	return message.NewParameterStatusWith(m)
 }
