@@ -22,16 +22,16 @@ import (
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
-// Request represents a frontend request.
-type Request struct {
+// RequestMessage represents a frontend request.
+type RequestMessage struct {
 	*Reader
 	Type   Type
 	Length int32
 }
 
-// NewRequestWith returns a new request message with the specified reader.
-func NewRequestWith(reader *bufio.Reader) *Request {
-	return &Request{
+// NewRequestMessageWith returns a new request message with the specified reader.
+func NewRequestMessageWith(reader *bufio.Reader) *RequestMessage {
+	return &RequestMessage{
 		Reader: NewReaderWith(reader),
 		Type:   0,
 		Length: 0,
@@ -39,20 +39,20 @@ func NewRequestWith(reader *bufio.Reader) *Request {
 }
 
 // ReadType reads a message type.
-func (msg *Request) ReadType() (Type, error) {
+func (msg *RequestMessage) ReadType() (Type, error) {
 	var err error
 	msg.Type, err = msg.Reader.ReadType()
 	return msg.Type, err
 }
 
 // ReadLength reads a message length.
-func (msg *Request) ReadLength() (int32, error) {
+func (msg *RequestMessage) ReadLength() (int32, error) {
 	var err error
 	msg.Length, err = msg.Reader.ReadLength()
 	return msg.Length, err
 }
 
 // ParseStartupMessage parses a startup.
-func (msg *Request) ParseStartupMessage() (*Startup, error) {
+func (msg *RequestMessage) ParseStartupMessage() (*Startup, error) {
 	return NewStartupWith(msg.Reader)
 }
