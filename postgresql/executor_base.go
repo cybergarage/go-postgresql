@@ -33,10 +33,10 @@ func (executor *BaseExecutor) Authenticate(*Conn, *message.Startup) (message.Res
 }
 
 // ParameterStatus returns the parameter status.
-func (executor *BaseExecutor) ParameterStatus(*Conn) map[string]string {
+func (executor *BaseExecutor) ParameterStatus(*Conn) (message.ResponseMessage, error) {
 	m := map[string]string{}
 	m[message.ClientEncoding] = message.EncodingUTF8
 	m[message.ServerEncoding] = message.EncodingUTF8
 	// m[message.TimeZone] = time.Now().Location().String()
-	return m
+	return message.NewParameterStatusWith(m)
 }
