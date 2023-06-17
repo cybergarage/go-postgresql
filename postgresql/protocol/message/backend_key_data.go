@@ -22,11 +22,7 @@ func NewBackendKeyDataWith(processID int32, secretKey int32) (*BackendKeyData, e
 	msg := &BackendKeyData{
 		ResponseMessage: NewResponseMessageWith(BackendKeyDataMessage),
 	}
-	err := msg.AppendInt32(12)
-	if err != nil {
-		return nil, err
-	}
-	err = msg.AppendInt32(processID)
+	err := msg.AppendInt32(processID)
 	if err != nil {
 		return nil, err
 	}
