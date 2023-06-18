@@ -7,7 +7,7 @@
 
 package message
 
-// BindComplete represents an bind complete message.
+// BindComplete represents a bind complete message.
 type BindComplete struct {
 	*ResponseMessage
 }
