@@ -38,7 +38,7 @@ const (
 	GSSResponseMessage         Type = 'p'
 	ParseMessage               Type = 'P'
 	PasswordMessage            Type = 'p'
-	QueryMessage               Type = 'F'
+	QueryMessage               Type = 'Q'
 	SASLInitialResponseMessage Type = 'p'
 	SASLResponseMessage        Type = 'p'
 	SSLRequestMessage          Type = ' ' // Int32(8)
