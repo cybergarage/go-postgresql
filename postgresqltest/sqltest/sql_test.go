@@ -29,6 +29,7 @@ func TestSQLTest(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer server.Stop()
 
 	client := sqltest.NewPostgresClient()
 
@@ -39,6 +40,4 @@ func TestSQLTest(t *testing.T) {
 	if err := sqltest.RunEmbedSuites(t, client, testNames...); err != nil {
 		t.Error(err)
 	}
-
-	defer server.Stop()
 }
