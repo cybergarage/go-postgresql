@@ -17,10 +17,13 @@ package client
 import (
 	"testing"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresqltest/server"
 )
 
 func TestConnection(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+
 	server := server.NewServer()
 	err := server.Start()
 	if err != nil {
