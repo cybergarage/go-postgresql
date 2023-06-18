@@ -239,10 +239,11 @@ func (server *Server) receive(conn net.Conn) error {
 
 		// Handle the request messages after the Start-up message.
 
-		reqType, err := reqMsg.ReadType()
-		if err != nil {
-			responseError(err)
-			lastErr = err
+		var reqType message.Type
+		reqType, lastErr = reqMsg.ReadType()
+		if lastErr != nil {
+			responseError(lastErr)
+			break
 		}
 
 		var resMsg message.Response
@@ -260,7 +261,8 @@ func (server *Server) receive(conn net.Conn) error {
 				resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
 			}
 		default:
-			responseError(message.NewMessageNotSuppoted(reqType))
+			lastErr = message.NewMessageNotSuppoted(reqType)
+			log.Warnf(lastErr.Error())
 		}
 
 		if lastErr == nil {
