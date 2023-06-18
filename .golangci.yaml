@@ -41,3 +41,4 @@ linters:
     - dupword
     - interfacer
     - maligned
+    - nosprintfhostport
