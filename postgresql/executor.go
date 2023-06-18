@@ -20,7 +20,7 @@ import (
 
 // Authenticator represents a frontend message authenticator.
 type Authenticator interface {
-	// Authenticate authenticates the connection.
+	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse message.
 	Authenticate(*Conn, *message.Startup) (message.Response, error)
 }
 
