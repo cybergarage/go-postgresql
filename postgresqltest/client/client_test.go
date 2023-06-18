@@ -16,7 +16,29 @@ package client
 
 import (
 	"testing"
+
+	"github.com/cybergarage/go-postgresql/postgresqltest/server"
 )
 
-func TestDefaultClient(t *testing.T) {
+func TestConnection(t *testing.T) {
+	server := server.NewServer()
+	err := server.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer server.Stop()
+
+	client := NewPgxClient()
+	err = client.Open()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = client.Close()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }
