@@ -15,54 +15,8 @@
 package client
 
 import (
-	"fmt"
-
-	"github.com/cybergarage/go-postgresql/postgresql"
+	"github.com/cybergarage/go-sqltest/sqltest"
 )
 
 // Client represents a client for PostgreSQL server.
-type Client struct {
-	*postgresql.Client
-}
-
-// NewDefaultClient returns a default client instance with the specified host and port.
-func NewDefaultClient() *Client {
-	client := &Client{
-		Client: postgresql.NewClient(),
-	}
-	return client
-}
-
-// CreateDatabase creates a specified database.
-func (client *Client) CreateDatabase(name string) error {
-	query := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", name)
-	rows, err := client.Query(query)
-	if err != nil {
-		return err
-	}
-	if rows.Err() != nil {
-		return rows.Err()
-	}
-	defer rows.Close()
-	return nil
-}
-
-// DropDatabase dtops a specified database.
-func (client *Client) DropDatabase(name string) error {
-	query := fmt.Sprintf("DROP DATABASE IF EXISTS %s", name)
-	rows, err := client.Query(query)
-	if err != nil {
-		return err
-	}
-	if rows.Err() != nil {
-		return rows.Err()
-	}
-	defer rows.Close()
-	return nil
-}
-
-// Use sets a target database.
-func (client *Client) Use(name string) error {
-	client.SetDatabase(name)
-	return nil
-}
+type Client = sqltest.Client
