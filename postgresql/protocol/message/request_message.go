@@ -66,3 +66,8 @@ func (msg *RequestMessage) ParseParseMessage() (*Parse, error) {
 func (msg *RequestMessage) ParseBindMessage() (*Bind, error) {
 	return NewBindWith(msg.Reader)
 }
+
+// ParseQueryMessage parses a bind message.
+func (msg *RequestMessage) ParseQueryMessage() (*Query, error) {
+	return NewQueryWith(msg.Reader)
+}
