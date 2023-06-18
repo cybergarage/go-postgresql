@@ -260,6 +260,8 @@ func (server *Server) receive(conn net.Conn) error {
 			if lastErr == nil {
 				resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
 			}
+		case message.TerminateMessage:
+			break
 		default:
 			lastErr = message.NewMessageNotSuppoted(reqType)
 			log.Warnf(lastErr.Error())

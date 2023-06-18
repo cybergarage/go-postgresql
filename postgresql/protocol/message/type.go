@@ -44,7 +44,7 @@ const (
 	SSLRequestMessage          Type = ' ' // Int32(8)
 	StartupMessage             Type = ' ' // Int32
 	SyncMessage                Type = 'S'
-	TerminateMessage           Type = 'F'
+	TerminateMessage           Type = 'X'
 )
 
 // Backend (B).
