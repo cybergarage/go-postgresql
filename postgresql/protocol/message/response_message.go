@@ -14,9 +14,8 @@
 
 package message
 
-// Message represents a message of PostgreSQL packet.
-// See : PostgreSQL Packets
-// https://www.postgresql.org/docs/16/protocol-overview.html
+// PostgreSQL: Documentation: 16: 55.7. Message Formats
+// https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 // ResponseMessage represents a backend response instance.
 type ResponseMessage struct {
