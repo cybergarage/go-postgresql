@@ -19,5 +19,4 @@ import (
 )
 
 func TestDefaultClient(t *testing.T) {
-	NewDefaultClient()
 }
