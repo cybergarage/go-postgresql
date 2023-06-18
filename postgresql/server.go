@@ -261,16 +261,15 @@ func (server *Server) receive(conn net.Conn) error {
 				resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
 			}
 		case message.TerminateMessage:
-			break
+			return nil
 		default:
 			lastErr = message.NewMessageNotSuppoted(reqType)
 			log.Warnf(lastErr.Error())
 		}
 
 		if lastErr == nil {
-			err := responseMessage(resMsg)
-			if err != nil {
-				lastErr = err
+			if resMsg != nil {
+				lastErr = responseMessage(resMsg)
 			}
 		} else {
 			// Return ErrorResponse (B)
