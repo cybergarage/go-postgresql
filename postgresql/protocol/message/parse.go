@@ -28,7 +28,7 @@ type Parse struct {
 	DataTypes     []int32
 }
 
-// NewParse returns a new startup message.
+// NewParse returns a new parse message.
 func NewParseWith(reader *Reader) (*Parse, error) {
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
