@@ -23,7 +23,6 @@ const (
 type Config struct {
 	host string
 	port int
-	db   string
 }
 
 // NewDefaultConfig returns a default configuration instance.
@@ -45,11 +44,6 @@ func (config *Config) SetPort(port int) {
 	config.port = port
 }
 
-// SetDatabase sets a database to the configuration.
-func (config *Config) SetDatabase(db string) {
-	config.db = db
-}
-
 // Host returns a host address from the configuration.
 func (config *Config) Host() string {
 	return config.host
@@ -58,9 +52,4 @@ func (config *Config) Host() string {
 // Port returns a port from the configuration.
 func (config *Config) Port() int {
 	return config.port
-}
-
-// Database returns a database from the configuration.
-func (config *Config) Database() string {
-	return config.db
 }
