@@ -222,19 +222,19 @@ func (server *Server) receive(conn net.Conn) error {
 		if isStartupMessage {
 			isStartupMessage = false
 			msg, err := reqMsg.ParseStartupMessage()
-			if err == nil {
-				err := handleStartupMessage(msg)
-				if err != nil {
-					// Return ErrorResponse (B) and close the error connection.
-					responseError(err)
-					return err
-				}
-				continue
-			} else {
+			if err != nil {
 				// Return ErrorResponse (B) and close the error connection.
 				responseError(err)
 				return err
 			}
+
+			err = handleStartupMessage(msg)
+			if err != nil {
+				// Return ErrorResponse (B) and close the error connection.
+				responseError(err)
+				return err
+			}
+			continue
 		}
 
 		// Handle the request messages after the Start-up message.
