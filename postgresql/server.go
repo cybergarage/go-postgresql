@@ -174,7 +174,9 @@ func (server *Server) receive(conn net.Conn) error {
 		}
 
 		handleStartupMessage := func(startupMsg *message.Startup) error {
-			// Handle the startup message.
+			// PostgreSQL: Documentation: 16: 55.2. Message Flow
+			// https://www.postgresql.org/docs/16/protocol-flow.html
+			// Handle the Start-up message and return an Authentication message or error message.
 			res, err := server.Executor.Authenticate(exConn, startupMsg)
 			if err != nil {
 				return err
@@ -183,7 +185,7 @@ func (server *Server) receive(conn net.Conn) error {
 			if err != nil {
 				return err
 			}
-			// Return parameter statuses.
+			// Return ParameterStatus (S) message.
 			res, err = server.Executor.ParameterStatus(exConn)
 			if err != nil {
 				return err
@@ -192,7 +194,7 @@ func (server *Server) receive(conn net.Conn) error {
 			if err != nil {
 				return err
 			}
-			// Return backend key data.
+			// Return BackendKeyData (K) message.
 			res, err = server.Executor.BackendKeyData(exConn)
 			if err != nil {
 				return err
@@ -201,58 +203,75 @@ func (server *Server) receive(conn net.Conn) error {
 			if err != nil {
 				return err
 			}
+			// Return ReadyForQuery (B) message.
+			readyMsg, err := message.NewReadyForQueryWith(message.TransactionIdle)
+			if err != nil {
+				return err
+			}
+			err = responseMessage(readyMsg)
+			if err != nil {
+				return err
+			}
 			return nil
 		}
 
-		var resMsg message.Response
-
 		reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
+
+		// Handle a Start-up message.
+
 		if isStartupMessage {
 			isStartupMessage = false
 			msg, err := reqMsg.ParseStartupMessage()
 			if err == nil {
 				err := handleStartupMessage(msg)
 				if err != nil {
-					lastErr = err
+					// Return ErrorResponse (B) and close the error connection.
+					responseError(err)
+					return err
 				}
+				continue
 			} else {
+				// Return ErrorResponse (B) and close the error connection.
 				responseError(err)
-				lastErr = err
-			}
-		} else {
-			reqType, err := reqMsg.ReadType()
-			if err != nil {
-				responseError(err)
-				lastErr = err
-			}
-			switch reqType { // nolint:exhaustive
-			case message.ParseMessage:
-				var parseMsg *message.Parse
-				parseMsg, lastErr = reqMsg.ParseParseMessage()
-				if lastErr == nil {
-					resMsg, lastErr = server.Executor.Parse(exConn, parseMsg)
-				}
-			case message.BindMessage:
-				var bindMsg *message.Bind
-				bindMsg, lastErr = reqMsg.ParseBindMessage()
-				if lastErr == nil {
-					resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
-				}
-			default:
-				responseError(message.NewMessageNotSuppoted(reqType))
+				return err
 			}
 		}
 
-		loopSpan.StartSpan("response")
+		// Handle the request messages after the Start-up message.
+
+		reqType, err := reqMsg.ReadType()
+		if err != nil {
+			responseError(err)
+			lastErr = err
+		}
+
+		var resMsg message.Response
+		switch reqType { // nolint:exhaustive
+		case message.ParseMessage:
+			var parseMsg *message.Parse
+			parseMsg, lastErr = reqMsg.ParseParseMessage()
+			if lastErr == nil {
+				resMsg, lastErr = server.Executor.Parse(exConn, parseMsg)
+			}
+		case message.BindMessage:
+			var bindMsg *message.Bind
+			bindMsg, lastErr = reqMsg.ParseBindMessage()
+			if lastErr == nil {
+				resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
+			}
+		default:
+			responseError(message.NewMessageNotSuppoted(reqType))
+		}
+
 		if lastErr == nil {
 			err := responseMessage(resMsg)
 			if err != nil {
 				lastErr = err
 			}
 		} else {
+			// Return ErrorResponse (B)
 			responseError(lastErr)
 		}
-		loopSpan.FinishSpan()
 
 		loopSpan.FinishSpan()
 	}
