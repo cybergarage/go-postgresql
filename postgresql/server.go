@@ -260,6 +260,13 @@ func (server *Server) receive(conn net.Conn) error {
 			if lastErr == nil {
 				resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
 			}
+		case message.QueryMessage:
+			var queryMsg *message.Query
+			queryMsg, lastErr = reqMsg.ParseQueryMessage()
+			if lastErr == nil {
+				log.Infof("Query: %s", queryMsg.Query)
+				lastErr = message.NewMessageNotSuppoted(reqType)
+			}
 		case message.TerminateMessage:
 			return nil
 		default:
