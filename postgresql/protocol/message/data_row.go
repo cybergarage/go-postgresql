@@ -10,6 +10,7 @@ package message
 // DataRow represents a data row message.
 type DataRow struct {
 	*ResponseMessage
+	ColumnValues []any
 }
 
 // NewDataRow returns a new data row message instance.
@@ -17,4 +18,10 @@ func NewDataRow() *DataRow {
 	return &DataRow{
 		ResponseMessage: NewResponseMessageWith(DataRowMessage),
 	}
+}
+
+// AppendColumnValue appends a column value to the data row message.
+func (msg *DataRow) AppendColumnValue(v any) error {
+	msg.ColumnValues = append(msg.ColumnValues, v)
+	return nil
 }
