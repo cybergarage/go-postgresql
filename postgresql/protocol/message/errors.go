@@ -29,6 +29,10 @@ func newShortMessageErrorWith(expected int, actual int) error {
 	return fmt.Errorf("%w: %d < %d", ErrShortMessage, actual, expected)
 }
 
+func newColumnTypeNotSuppoted(v any) error {
+	return fmt.Errorf("column value type: %T is %w", v, ErrNotSupported)
+}
+
 // NewMessageNotSuppoted returns a new message not supported error.
 func NewMessageNotSuppoted(t Type) error {
 	return fmt.Errorf("message type (%c) is %w", t, ErrNotSupported)
