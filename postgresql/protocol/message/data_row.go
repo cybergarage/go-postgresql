@@ -25,3 +25,39 @@ func (msg *DataRow) AppendColumnValue(v any) error {
 	msg.ColumnValues = append(msg.ColumnValues, v)
 	return nil
 }
+
+// Bytes appends a length of the message content bytes, and returns the message bytes.
+func (msg *DataRow) Bytes() ([]byte, error) {
+	err := msg.AppendInt16(int16(len(msg.ColumnValues)))
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range msg.ColumnValues {
+		switch v := v.(type) {
+		case []byte:
+			if err := msg.AppendInt32(int32(len(v))); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendBytes(v); err != nil {
+				return nil, err
+			}
+		case string:
+			if err := msg.AppendInt32(int32(len(v))); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendString(v); err != nil {
+				return nil, err
+			}
+		case int32:
+			if err := msg.AppendInt32(4); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendInt32(v); err != nil {
+				return nil, err
+			}
+		default:
+			return nil, newColumnTypeNotSuppoted(v)
+		}
+	}
+	return msg.ResponseMessage.Bytes()
+}
