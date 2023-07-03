@@ -16,6 +16,7 @@ package postgresql
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Authenticator represents a frontend message authenticator.
@@ -32,16 +33,35 @@ type StatusExecutor interface {
 	BackendKeyData(*Conn) (message.Response, error)
 }
 
-type QueryExecutor interface {
+// ParseExecutor represents a backend parse message executor.
+type ParseExecutor interface {
 	// Parse returns the parse response.
 	Parse(*Conn, *message.Parse) (message.Response, error)
 	// Bind returns the bind response.
 	Bind(*Conn, *message.Bind) (message.Response, error)
 }
 
-// Executor represents a frontend message executor.
-type Executor interface {
+// ProtocolExecutor represents a backend protocol message executor.
+type ProtocolExecutor interface {
 	Authenticator
 	StatusExecutor
-	QueryExecutor
+	ParseExecutor
+}
+
+// QueryExecutor represents a user query message executor.
+type QueryExecutor interface {
+	CreateDatabase(*Conn, *query.CreateDatabase) (message.Response, error)
+	CreateTable(*Conn, *query.CreateTable) (message.Response, error)
+	CreateIndex(*Conn, *query.CreateIndex) (message.Response, error)
+	DropDatabase(*Conn, *query.DropDatabase) (message.Response, error)
+	DropTable(*Conn, *query.DropTable) (message.Response, error)
+	Insert(*Conn, *query.Insert) (message.Response, error)
+	Select(*Conn, *query.Select) (message.Response, error)
+	Update(*Conn, *query.Update) (message.Response, error)
+	Delete(*Conn, *query.Delete) (message.Response, error)
+}
+
+// Executor represents a frontend message executor.
+type Executor interface {
+	ProtocolExecutor
 }
