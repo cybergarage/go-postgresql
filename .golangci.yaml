@@ -42,3 +42,4 @@ linters:
     - interfacer
     - maligned
     - nosprintfhostport
+    - depguard
