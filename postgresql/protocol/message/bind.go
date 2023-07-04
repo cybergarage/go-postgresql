@@ -42,6 +42,7 @@ const (
 type BindParam struct {
 	Type      BindParamType
 	numValues int16
+	Value     any
 }
 
 // NewBind returns a new bind message.
@@ -75,13 +76,28 @@ func NewBindWith(reader *Reader) (*Bind, error) {
 		if err != nil {
 			return nil, err
 		}
-		_, err = reader.ReadInt32()
+		nBytes, err := reader.ReadInt32()
 		if err != nil {
 			return nil, err
+		}
+		bytes := make([]byte, nBytes)
+		nRead, err := reader.Read(bytes)
+		if err != nil {
+			return nil, err
+		}
+		if nRead != int(nBytes) {
+			return nil, newShortMessageErrorWith(int(nBytes), nRead)
+		}
+		var v any
+		if BindParamType(t) == BindParamTypeString {
+			v = string(bytes)
+		} else {
+			v = bytes
 		}
 		params[n] = &BindParam{
 			Type:      BindParamType(t),
 			numValues: num,
+			Value:     v,
 		}
 	}
 
