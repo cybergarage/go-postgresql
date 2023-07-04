@@ -14,14 +14,20 @@
 
 package storage
 
+import (
+	"github.com/cybergarage/go-postgresql/postgresql"
+)
+
 type MemStore struct {
 	Databases
+	*postgresql.BaseExecutor
 }
 
 // NewMemStore returns an in-memory storeinstance.
 func NewMemStore() *MemStore {
 	store := &MemStore{
-		Databases: NewDatabases(),
+		Databases:    NewDatabases(),
+		BaseExecutor: postgresql.NewBaseExecutor(),
 	}
 	return store
 }
