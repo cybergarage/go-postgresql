@@ -166,7 +166,7 @@ func (server *Server) receive(conn net.Conn) error {
 		}
 	}
 
-	handleStartupMessage := func(startupMsg *message.Startup) error {
+	handleStartupMessage := func(exConn *Conn, startupMsg *message.Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error message.
@@ -208,7 +208,7 @@ func (server *Server) receive(conn net.Conn) error {
 		return nil
 	}
 
-	handleParseBindMessage := func(reqMsg *message.Request) error {
+	handleParseBindMessage := func(exConn *Conn, reqMsg *message.RequestMessage) error {
 		parseMsg, err := reqMsg.ParseParseMessage()
 		if err != nil {
 			return err
@@ -233,10 +233,22 @@ func (server *Server) receive(conn net.Conn) error {
 			return message.NewMessageNotSuppoted(reqType)
 		}
 
-		bindMsg, err := reqMsg.ParseBindMessage()
+		bindMsg, err := reqMsg.ParseBindMessageWith(parseMsg)
 		if err != nil {
 			return err
 		}
+
+		resMsg, err = server.Executor.Bind(exConn, parseMsg, bindMsg)
+		if err != nil {
+			return err
+		}
+
+		err = responseMessage(resMsg)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	}
 
 	isStartupMessage := true
@@ -259,7 +271,7 @@ func (server *Server) receive(conn net.Conn) error {
 				return err
 			}
 
-			err = handleStartupMessage(msg)
+			err = handleStartupMessage(exConn, msg)
 			if err != nil {
 				// Return ErrorResponse (B) and close the error connection.
 				responseError(err)
