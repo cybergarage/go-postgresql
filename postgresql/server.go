@@ -139,81 +139,112 @@ func (server *Server) serve() error {
 func (server *Server) receive(conn net.Conn) error {
 	defer conn.Close()
 
+	responseMessage := func(resMsg message.Response) error {
+		resBytes, err := resMsg.Bytes()
+		if err != nil {
+			return err
+		}
+		if _, err := conn.Write(resBytes); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	responseError := func(err error) {
+		errMsg, err := message.NewErrorResponseWith(err)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		errBytes, err := errMsg.Bytes()
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		if _, err := conn.Write(errBytes); err != nil {
+			log.Error(err)
+		}
+	}
+
+	handleStartupMessage := func(startupMsg *message.Startup) error {
+		// PostgreSQL: Documentation: 16: 55.2. Message Flow
+		// https://www.postgresql.org/docs/16/protocol-flow.html
+		// Handle the Start-up message and return an Authentication message or error message.
+		res, err := server.Executor.Authenticate(exConn, startupMsg)
+		if err != nil {
+			return err
+		}
+		err = responseMessage(res)
+		if err != nil {
+			return err
+		}
+		// Return ParameterStatus (S) message.
+		res, err = server.Executor.ParameterStatus(exConn)
+		if err != nil {
+			return err
+		}
+		err = responseMessage(res)
+		if err != nil {
+			return err
+		}
+		// Return BackendKeyData (K) message.
+		res, err = server.Executor.BackendKeyData(exConn)
+		if err != nil {
+			return err
+		}
+		err = responseMessage(res)
+		if err != nil {
+			return err
+		}
+		// Return ReadyForQuery (B) message.
+		readyMsg, err := message.NewReadyForQueryWith(message.TransactionIdle)
+		if err != nil {
+			return err
+		}
+		err = responseMessage(readyMsg)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	handleParseBindMessage := func(reqMsg *message.Request) error {
+		parseMsg, err := reqMsg.ParseParseMessage()
+		if err != nil {
+			return err
+		}
+
+		resMsg, err := server.Executor.Parse(exConn, parseMsg)
+		if err != nil {
+			return err
+		}
+
+		err = responseMessage(resMsg)
+		if err != nil {
+			return err
+		}
+
+		reqType, err := reqMsg.ReadType()
+		if err != nil {
+			return err
+		}
+
+		if reqType != message.BindMessage {
+			return message.NewMessageNotSuppoted(reqType)
+		}
+
+		bindMsg, err := reqMsg.ParseBindMessage()
+		if err != nil {
+			return err
+		}
+	}
+
 	isStartupMessage := true
 	var lastErr error
 	for lastErr == nil {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		exConn := NewConnWith(conn, loopSpan)
 		loopSpan.StartSpan("parse")
-
-		responseMessage := func(resMsg message.Response) error {
-			resBytes, err := resMsg.Bytes()
-			if err != nil {
-				return err
-			}
-			if _, err := conn.Write(resBytes); err != nil {
-				return err
-			}
-			return nil
-		}
-
-		responseError := func(err error) {
-			errMsg, err := message.NewErrorResponseWith(err)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-			errBytes, err := errMsg.Bytes()
-			if err != nil {
-				log.Error(err)
-				return
-			}
-			if _, err := conn.Write(errBytes); err != nil {
-				log.Error(err)
-			}
-		}
-
-		handleStartupMessage := func(startupMsg *message.Startup) error {
-			// PostgreSQL: Documentation: 16: 55.2. Message Flow
-			// https://www.postgresql.org/docs/16/protocol-flow.html
-			// Handle the Start-up message and return an Authentication message or error message.
-			res, err := server.Executor.Authenticate(exConn, startupMsg)
-			if err != nil {
-				return err
-			}
-			err = responseMessage(res)
-			if err != nil {
-				return err
-			}
-			// Return ParameterStatus (S) message.
-			res, err = server.Executor.ParameterStatus(exConn)
-			if err != nil {
-				return err
-			}
-			err = responseMessage(res)
-			if err != nil {
-				return err
-			}
-			// Return BackendKeyData (K) message.
-			res, err = server.Executor.BackendKeyData(exConn)
-			if err != nil {
-				return err
-			}
-			err = responseMessage(res)
-			if err != nil {
-				return err
-			}
-			// Return ReadyForQuery (B) message.
-			readyMsg, err := message.NewReadyForQueryWith(message.TransactionIdle)
-			if err != nil {
-				return err
-			}
-			err = responseMessage(readyMsg)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
 
 		reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
 
@@ -249,17 +280,6 @@ func (server *Server) receive(conn net.Conn) error {
 		var resMsg message.Response
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
-			var parseMsg *message.Parse
-			parseMsg, lastErr = reqMsg.ParseParseMessage()
-			if lastErr == nil {
-				resMsg, lastErr = server.Executor.Parse(exConn, parseMsg)
-			}
-		case message.BindMessage:
-			var bindMsg *message.Bind
-			bindMsg, lastErr = reqMsg.ParseBindMessage()
-			if lastErr == nil {
-				resMsg, lastErr = server.Executor.Bind(exConn, bindMsg)
-			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
 			queryMsg, lastErr = reqMsg.ParseQueryMessage()
