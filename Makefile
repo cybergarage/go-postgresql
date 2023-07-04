@@ -30,7 +30,7 @@ TEST_PKG=${MODULE_ROOT}/${TEST_SRC_ROOT}
 
 EXAMPLES_ROOT=examples
 EXAMPLES_DEAMON_BIN=go-postgresqld
-EXAMPLES_PKG_ROOT=${GIT_ROOT}${PRODUCT_NAME}/${EXAMPLES_ROOT}
+EXAMPLES_PKG_ROOT=${GIT_ROOT}/${PRODUCT_NAME}/${EXAMPLES_ROOT}
 EXAMPLES_SRC_DIR=${EXAMPLES_ROOT}
 EXAMPLES_DEAMON_ROOT=${EXAMPLES_PKG_ROOT}
 EXAMPLE_BINARIES=\
@@ -52,7 +52,7 @@ lint: vet
 	golangci-lint run ${PKG_SRC_ROOT}/... ${TEST_SRC_ROOT}/... ${EXAMPLES_SRC_DIR}/...
 
 build: vet
-	go build -v ${MODULE_PKGS}
+	go build -v ${BINARIES}
 
 test: lint
 	go test -v -p 1 -timeout 60s -cover -coverpkg=${PKG} -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
@@ -62,7 +62,7 @@ test_only:
 	go test -v -p 1 -timeout 60s -cover -coverpkg=${PKG} -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
-install: build
+install:
 	go install -v -gcflags=${GCFLAGS} ${BINARIES}
 
 clean:
