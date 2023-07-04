@@ -68,6 +68,6 @@ func (executor *BaseExecutor) Parse(*Conn, *message.Parse) (message.Response, er
 }
 
 // Bind returns the bind response.
-func (executor *BaseExecutor) Bind(*Conn, *message.Bind) (message.Response, error) {
+func (executor *BaseExecutor) Bind(*Conn, *message.Parse, *message.Bind) (message.Response, error) {
 	return message.NewBindComplete(), nil
 }

@@ -38,7 +38,7 @@ type ParseExecutor interface {
 	// Parse returns the parse response.
 	Parse(*Conn, *message.Parse) (message.Response, error)
 	// Bind returns the bind response.
-	Bind(*Conn, *message.Bind) (message.Response, error)
+	Bind(*Conn, *message.Parse, *message.Bind) (message.Response, error)
 }
 
 // ProtocolExecutor represents a backend protocol message executor.
