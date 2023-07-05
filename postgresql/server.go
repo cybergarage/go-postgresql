@@ -208,47 +208,49 @@ func (server *Server) receive(conn net.Conn) error {
 		return nil
 	}
 
-	handleParseBindMessage := func(exConn *Conn, reqMsg *message.RequestMessage) error {
+	handleParseBindMessage := func(exConn *Conn, reqMsg *message.RequestMessage) (*message.Query, error) {
 		parseMsg, err := reqMsg.ParseParseMessage()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		resMsg, err := server.Executor.Parse(exConn, parseMsg)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		err = responseMessage(resMsg)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		reqType, err := reqMsg.ReadType()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if reqType != message.BindMessage {
-			return message.NewMessageNotSuppoted(reqType)
+			return nil, message.NewMessageNotSuppoted(reqType)
 		}
 
 		bindMsg, err := reqMsg.ParseBindMessageWith(parseMsg)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		resMsg, err = server.Executor.Bind(exConn, parseMsg, bindMsg)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		err = responseMessage(resMsg)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		return nil
+		q := &message.Query{}
+
+		return q, nil
 	}
 
 	isStartupMessage := true
@@ -292,6 +294,12 @@ func (server *Server) receive(conn net.Conn) error {
 		var resMsg message.Response
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
+			var queryMsg *message.Query
+			queryMsg, err := handleParseBindMessage(exConn, reqMsg)
+			if err == nil {
+				log.Infof("Query: %s", queryMsg.Query)
+				lastErr = err
+			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
 			queryMsg, lastErr = reqMsg.ParseQueryMessage()
