@@ -19,8 +19,9 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/cybergarage/go-logger/log"
+	"	github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -136,7 +137,7 @@ func (server *Server) serve() error {
 }
 
 // receive handles client messages.
-func (server *Server) receive(conn net.Conn) error {
+func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 	defer conn.Close()
 
 	responseMessage := func(resMsg message.Response) error {
@@ -291,21 +292,18 @@ func (server *Server) receive(conn net.Conn) error {
 			break
 		}
 
-		var resMsg message.Response
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
 			var queryMsg *message.Query
-			queryMsg, err := handleParseBindMessage(exConn, reqMsg)
-			if err == nil {
-				log.Infof("Query: %s", queryMsg.Query)
-				lastErr = err
+			queryMsg, lastErr := handleParseBindMessage(exConn, reqMsg)
+			if lastErr == nil {
+				lastErr = server.executeQuery(exConn, queryMsg)
 			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
 			queryMsg, lastErr = reqMsg.ParseQueryMessage()
 			if lastErr == nil {
-				log.Infof("Query: %s", queryMsg.Query)
-				lastErr = message.NewMessageNotSuppoted(reqType)
+				lastErr = server.executeQuery(exConn, queryMsg)
 			}
 		case message.TerminateMessage:
 			return nil
@@ -314,11 +312,7 @@ func (server *Server) receive(conn net.Conn) error {
 			log.Warnf(lastErr.Error())
 		}
 
-		if lastErr == nil {
-			if resMsg != nil {
-				lastErr = responseMessage(resMsg)
-			}
-		} else {
+		if lastErr != nil {
 			// Return ErrorResponse (B)
 			responseError(lastErr)
 		}
@@ -327,4 +321,53 @@ func (server *Server) receive(conn net.Conn) error {
 	}
 
 	return lastErr
+}
+
+// executeQuery executes a query and returns the result.
+func (server *Server) executeQuery(conn *Conn, queryMsg *message.Query) error {
+	query := queryMsg.String()
+
+	parser := sql.NewParser()
+	stmts, err := parser.Parse(query)
+	if err != nil {
+		return err
+	}
+
+	for _, stmt := range stmts {
+		var res []message.Respons
+		var err error
+		switch stmt := stmt.(type) {
+		case *sql.CreateDatabase:
+			res, err := server.Executor.CreateDatabase(conn, stmt)
+		case *sql.CreateTable:
+			res, err := server.Executor.CreateTable(conn, stmt)
+		case *sql.CreateIndex:
+			res, err := server.Executor.CreateIndex(conn, stmt)
+		case *sql.DropDatabase:
+			res, err := server.Executor.DropDatabase(conn, stmt)
+		case *sql.DropTable:
+			res, err := server.Executor.DropTable(conn, stmt)
+		case *sql.Insert:
+			res, err := server.Executor.Insert(conn, stmt)
+		case *sql.Select:
+			res, err := server.Executor.Select(conn, stmt)
+		case *sql.Update:
+			res, err := server.Executor.Update(conn, stmt)
+		case *sql.Delete:
+			res, err := server.Executor.Delete(conn, stmt)
+		}
+
+		if err != nil {
+			return err
+		}
+
+		// for _, r := range res {
+		// 	err = responseMessage(r)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// }
+
+	}
+	return nil
 }

@@ -50,19 +50,19 @@ type ProtocolExecutor interface {
 
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
 type DDOExecutor interface {
-	CreateDatabase(*Conn, *query.CreateDatabase) (message.Response, error)
-	CreateTable(*Conn, *query.CreateTable) (message.Response, error)
-	CreateIndex(*Conn, *query.CreateIndex) (message.Response, error)
-	DropDatabase(*Conn, *query.DropDatabase) (message.Response, error)
-	DropTable(*Conn, *query.DropTable) (message.Response, error)
+	CreateDatabase(*Conn, *query.CreateDatabase) ([]message.Response, error)
+	CreateTable(*Conn, *query.CreateTable) ([]message.Response, error)
+	CreateIndex(*Conn, *query.CreateIndex) ([]message.Response, error)
+	DropDatabase(*Conn, *query.DropDatabase) ([]message.Response, error)
+	DropTable(*Conn, *query.DropTable) ([]message.Response, error)
 }
 
 // DMOExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExecutor interface {
-	Insert(*Conn, *query.Insert) (message.Response, error)
-	Select(*Conn, *query.Select) (message.Response, error)
-	Update(*Conn, *query.Update) (message.Response, error)
-	Delete(*Conn, *query.Delete) (message.Response, error)
+	Insert(*Conn, *query.Insert) ([]message.Response, error)
+	Select(*Conn, *query.Select) ([]message.Response, error)
+	Update(*Conn, *query.Update) ([]message.Response, error)
+	Delete(*Conn, *query.Delete) ([]message.Response, error)
 }
 
 // QueryExecutor represents a user query message executor.
