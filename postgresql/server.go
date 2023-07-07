@@ -209,13 +209,13 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 		return nil
 	}
 
-	handleParseBindMessage := func(exConn *Conn, reqMsg *message.RequestMessage) (*message.Query, error) {
+	handleParseBindMessage := func(conn *Conn, reqMsg *message.RequestMessage) (*message.Query, error) {
 		parseMsg, err := reqMsg.ParseParseMessage()
 		if err != nil {
 			return nil, err
 		}
 
-		resMsg, err := server.Executor.Parse(exConn, parseMsg)
+		resMsg, err := server.Executor.Parse(conn, parseMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -239,7 +239,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 			return nil, err
 		}
 
-		resMsg, err = server.Executor.Bind(exConn, parseMsg, bindMsg)
+		resMsg, err = server.Executor.Bind(conn, parseMsg, bindMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -252,6 +252,55 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 		q := &message.Query{}
 
 		return q, nil
+	}
+
+	// executeQuery executes a query and returns the result.
+	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
+		query := queryMsg.String()
+
+		parser := sql.NewParser()
+		stmts, err := parser.Parse(query)
+		if err != nil {
+			return err
+		}
+
+		for _, stmt := range stmts {
+			var res []message.Respons
+			var err error
+			switch stmt := stmt.(type) {
+			case *sql.CreateDatabase:
+				res, err := server.Executor.CreateDatabase(conn, stmt)
+			case *sql.CreateTable:
+				res, err := server.Executor.CreateTable(conn, stmt)
+			case *sql.CreateIndex:
+				res, err := server.Executor.CreateIndex(conn, stmt)
+			case *sql.DropDatabase:
+				res, err := server.Executor.DropDatabase(conn, stmt)
+			case *sql.DropTable:
+				res, err := server.Executor.DropTable(conn, stmt)
+			case *sql.Insert:
+				res, err := server.Executor.Insert(conn, stmt)
+			case *sql.Select:
+				res, err := server.Executor.Select(conn, stmt)
+			case *sql.Update:
+				res, err := server.Executor.Update(conn, stmt)
+			case *sql.Delete:
+				res, err := server.Executor.Delete(conn, stmt)
+			}
+
+			if err != nil {
+				return err
+			}
+
+			for _, r := range res {
+				err := responseMessage(r)
+				if err != nil {
+					return err
+				}
+			}
+
+		}
+		return nil
 	}
 
 	isStartupMessage := true
@@ -297,13 +346,13 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 			var queryMsg *message.Query
 			queryMsg, lastErr := handleParseBindMessage(exConn, reqMsg)
 			if lastErr == nil {
-				lastErr = server.executeQuery(exConn, queryMsg)
+				lastErr = executeQuery(exConn, queryMsg)
 			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
 			queryMsg, lastErr = reqMsg.ParseQueryMessage()
 			if lastErr == nil {
-				lastErr = server.executeQuery(exConn, queryMsg)
+				lastErr = executeQuery(exConn, queryMsg)
 			}
 		case message.TerminateMessage:
 			return nil
@@ -321,53 +370,4 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 	}
 
 	return lastErr
-}
-
-// executeQuery executes a query and returns the result.
-func (server *Server) executeQuery(conn *Conn, queryMsg *message.Query) error {
-	query := queryMsg.String()
-
-	parser := sql.NewParser()
-	stmts, err := parser.Parse(query)
-	if err != nil {
-		return err
-	}
-
-	for _, stmt := range stmts {
-		var res []message.Respons
-		var err error
-		switch stmt := stmt.(type) {
-		case *sql.CreateDatabase:
-			res, err := server.Executor.CreateDatabase(conn, stmt)
-		case *sql.CreateTable:
-			res, err := server.Executor.CreateTable(conn, stmt)
-		case *sql.CreateIndex:
-			res, err := server.Executor.CreateIndex(conn, stmt)
-		case *sql.DropDatabase:
-			res, err := server.Executor.DropDatabase(conn, stmt)
-		case *sql.DropTable:
-			res, err := server.Executor.DropTable(conn, stmt)
-		case *sql.Insert:
-			res, err := server.Executor.Insert(conn, stmt)
-		case *sql.Select:
-			res, err := server.Executor.Select(conn, stmt)
-		case *sql.Update:
-			res, err := server.Executor.Update(conn, stmt)
-		case *sql.Delete:
-			res, err := server.Executor.Delete(conn, stmt)
-		}
-
-		if err != nil {
-			return err
-		}
-
-		// for _, r := range res {
-		// 	err = responseMessage(r)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// }
-
-	}
-	return nil
 }
