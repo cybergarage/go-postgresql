@@ -32,7 +32,7 @@ func TestConnection(t *testing.T) {
 	}
 	defer server.Stop()
 
-	client := NewPgxClient()
+	client := NewDefaultClient()
 	err = client.Open()
 	if err != nil {
 		t.Error(err)
