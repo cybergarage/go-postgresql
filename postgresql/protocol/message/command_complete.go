@@ -30,3 +30,19 @@ func NewInsertCompleteWith(n int) (*CommandComplete, error) {
 	}
 	return msg, msg.AppendString(fmt.Sprintf("INSERT 0 %d", n))
 }
+
+// NewUpdateCompleteWith returns a new command complete message for update query.
+func NewUpdateCompleteWith(n int) (*CommandComplete, error) {
+	msg := &CommandComplete{
+		ResponseMessage: NewResponseMessageWith(CommandCompleteMessage),
+	}
+	return msg, msg.AppendString(fmt.Sprintf("UPDATE %d", n))
+}
+
+// NewDeleteCompleteWith returns a new command complete message for delete query.
+func NewDeleteCompleteWith(n int) (*CommandComplete, error) {
+	msg := &CommandComplete{
+		ResponseMessage: NewResponseMessageWith(CommandCompleteMessage),
+	}
+	return msg, msg.AppendString(fmt.Sprintf("DELETE %d", n))
+}
