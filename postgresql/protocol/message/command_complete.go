@@ -7,6 +7,10 @@
 
 package message
 
+import (
+	"fmt"
+)
+
 // CommandComplete represents a command complete message.
 type CommandComplete struct {
 	*ResponseMessage
@@ -17,4 +21,12 @@ func NewCommandComplete() *CommandComplete {
 	return &CommandComplete{
 		ResponseMessage: NewResponseMessageWith(CommandCompleteMessage),
 	}
+}
+
+// NewInsertCompleteWith returns a new command complete message for insert query.
+func NewInsertCompleteWith(n int) (*CommandComplete, error) {
+	msg := &CommandComplete{
+		ResponseMessage: NewResponseMessageWith(CommandCompleteMessage),
+	}
+	return msg, msg.AppendString(fmt.Sprintf("INSERT 0 %d", n))
 }
