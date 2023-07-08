@@ -26,48 +26,12 @@ import (
 
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
-	processID int32
-	secretKey int32
+	*BaseProtocolExecutor
 }
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
-	r, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
-	if err != nil {
-		log.Error(err)
-	}
 	return &BaseExecutor{
-		processID: int32(os.Getpid()),
-		secretKey: int32(r.Int64()),
+		BaseProtocolExecutor: NewBaseProtocolExecutor(),
 	}
-}
-
-// Authenticate authenticates the connection with the startup message.
-func (executor *BaseExecutor) Authenticate(*Conn, *message.Startup) (message.Response, error) {
-	return message.NewAuthenticationOk()
-}
-
-// ParameterStatus returns the parameter status.
-func (executor *BaseExecutor) ParameterStatus(*Conn) (message.Response, error) {
-	m := map[string]string{}
-	m[message.ClientEncoding] = message.EncodingUTF8
-	m[message.ServerEncoding] = message.EncodingUTF8
-	// FIXME : Get the time zone name from the system
-	// m[message.TimeZone] = time.Now().Location().String()
-	return message.NewParameterStatusWith(m)
-}
-
-// BackendKeyData returns the backend key data.
-func (executor *BaseExecutor) BackendKeyData(*Conn) (message.Response, error) {
-	return message.NewBackendKeyDataWith(executor.processID, executor.secretKey)
-}
-
-// Parse returns the parse response.
-func (executor *BaseExecutor) Parse(*Conn, *message.Parse) (message.Response, error) {
-	return message.NewParseComplete(), nil
-}
-
-// Bind returns the bind response.
-func (executor *BaseExecutor) Bind(*Conn, *message.Parse, *message.Bind) (message.Response, error) {
-	return message.NewBindComplete(), nil
 }
