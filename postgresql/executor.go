@@ -74,4 +74,5 @@ type QueryExecutor interface {
 // Executor represents a frontend message executor.
 type Executor interface {
 	ProtocolExecutor
+	QueryExecutor
 }
