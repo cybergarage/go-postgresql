@@ -22,7 +22,6 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-sqlparser/sql"
-	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -268,26 +267,26 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 		for _, stmt := range stmts {
 			var res []message.Response
 			var err error
-			// switch stmt := q.(type) {
-			// case *query.CreateDatabase:
-			// 	res, err := server.Executor.CreateDatabase(conn, stmt)
-			// case *query.CreateTable:
-			// 	res, err := server.Executor.CreateTable(conn, stmt)
-			// case *query.CreateIndex:
-			// 	res, err := server.Executor.CreateIndex(conn, stmt)
-			// case *query.DropDatabase:
-			// 	res, err := server.Executor.DropDatabase(conn, stmt)
-			// case *query.DropTable:
-			// 	res, err := server.Executor.DropTable(conn, stmt)
-			// case *query.Insert:
-			// 	res, err := server.Executor.Insert(conn, stmt)
-			// case *query.Select:
-			// 	res, err := server.Executor.Select(conn, stmt)
-			// case *query.Update:
-			// 	res, err := server.Executor.Update(conn, stmt)
-			// case *query.Delete:
-			// 	res, err := server.Executor.Delete(conn, stmt)
-			//			}
+			switch stmt.StatementType() {
+			case query.CreateDatabaseStatement:
+				res, err := server.Executor.CreateDatabase(conn, stmt)
+				// case *query.CreateTable:
+				// 	res, err := server.Executor.CreateTable(conn, stmt)
+				// case *query.CreateIndex:
+				// 	res, err := server.Executor.CreateIndex(conn, stmt)
+				// case *query.DropDatabase:
+				// 	res, err := server.Executor.DropDatabase(conn, stmt)
+				// case *query.DropTable:
+				// 	res, err := server.Executor.DropTable(conn, stmt)
+				// case *query.Insert:
+				// 	res, err := server.Executor.Insert(conn, stmt)
+				// case *query.Select:
+				// 	res, err := server.Executor.Select(conn, stmt)
+				// case *query.Update:
+				// 	res, err := server.Executor.Update(conn, stmt)
+				// case *query.Delete:
+				// 	res, err := server.Executor.Delete(conn, stmt)
+			}
 
 			if err != nil {
 				return err
