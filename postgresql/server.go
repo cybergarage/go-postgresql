@@ -19,9 +19,10 @@ import (
 	"net"
 	"strconv"
 
-	"	github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-sqlparser/sql"
+	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -256,37 +257,37 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 
 	// executeQuery executes a query and returns the result.
 	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
-		query := queryMsg.String()
+		query := queryMsg.Query
 
 		parser := sql.NewParser()
-		stmts, err := parser.Parse(query)
+		stmts, err := parser.ParseString(query)
 		if err != nil {
 			return err
 		}
 
 		for _, stmt := range stmts {
-			var res []message.Respons
+			var res []message.Response
 			var err error
-			switch stmt := stmt.(type) {
-			case *sql.CreateDatabase:
-				res, err := server.Executor.CreateDatabase(conn, stmt)
-			case *sql.CreateTable:
-				res, err := server.Executor.CreateTable(conn, stmt)
-			case *sql.CreateIndex:
-				res, err := server.Executor.CreateIndex(conn, stmt)
-			case *sql.DropDatabase:
-				res, err := server.Executor.DropDatabase(conn, stmt)
-			case *sql.DropTable:
-				res, err := server.Executor.DropTable(conn, stmt)
-			case *sql.Insert:
-				res, err := server.Executor.Insert(conn, stmt)
-			case *sql.Select:
-				res, err := server.Executor.Select(conn, stmt)
-			case *sql.Update:
-				res, err := server.Executor.Update(conn, stmt)
-			case *sql.Delete:
-				res, err := server.Executor.Delete(conn, stmt)
-			}
+			// switch stmt := q.(type) {
+			// case *query.CreateDatabase:
+			// 	res, err := server.Executor.CreateDatabase(conn, stmt)
+			// case *query.CreateTable:
+			// 	res, err := server.Executor.CreateTable(conn, stmt)
+			// case *query.CreateIndex:
+			// 	res, err := server.Executor.CreateIndex(conn, stmt)
+			// case *query.DropDatabase:
+			// 	res, err := server.Executor.DropDatabase(conn, stmt)
+			// case *query.DropTable:
+			// 	res, err := server.Executor.DropTable(conn, stmt)
+			// case *query.Insert:
+			// 	res, err := server.Executor.Insert(conn, stmt)
+			// case *query.Select:
+			// 	res, err := server.Executor.Select(conn, stmt)
+			// case *query.Update:
+			// 	res, err := server.Executor.Update(conn, stmt)
+			// case *query.Delete:
+			// 	res, err := server.Executor.Delete(conn, stmt)
+			//			}
 
 			if err != nil {
 				return err
