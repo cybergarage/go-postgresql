@@ -269,7 +269,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 			var err error
 			switch stmt.StatementType() {
 			case query.CreateDatabaseStatement:
-				res, err = server.Executor.CreateDatabase(conn, stmt)
+				// stmt := stmt.(*query.CreateDatabase)
+				// res, err = server.Executor.CreateDatabase(conn, stmt)
 				// case *query.CreateTable:
 				// 	res, err := server.Executor.CreateTable(conn, stmt)
 				// case *query.CreateIndex:
