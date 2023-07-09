@@ -14,24 +14,16 @@
 
 package postgresql
 
-import (
-	"crypto/rand"
-	"math"
-	"math/big"
-	"os"
-
-	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-)
-
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
 	*BaseProtocolExecutor
+	*BaseQueryExecutor
 }
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	return &BaseExecutor{
 		BaseProtocolExecutor: NewBaseProtocolExecutor(),
+		BaseQueryExecutor:    NewBaseQueryExecutor(),
 	}
 }
