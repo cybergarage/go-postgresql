@@ -168,6 +168,18 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		}
 	}
 
+	readyForMessage := func(exConn *Conn, status message.TransactionStatus) error {
+		readyMsg, err := message.NewReadyForQueryWith(status)
+		if err != nil {
+			return err
+		}
+		err = responseMessage(readyMsg)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	handleStartupMessage := func(exConn *Conn, startupMsg *message.Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
@@ -199,11 +211,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return err
 		}
 		// Return ReadyForQuery (B) message.
-		readyMsg, err := message.NewReadyForQueryWith(message.TransactionIdle)
-		if err != nil {
-			return err
-		}
-		err = responseMessage(readyMsg)
+		err = readyForMessage(exConn, message.TransactionIdle)
 		if err != nil {
 			return err
 		}
@@ -317,6 +325,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			if err != nil {
 				// Return ErrorResponse (B) and close the error connection.
 				responseError(err)
+				loopSpan.FinishSpan()
 				return err
 			}
 
@@ -324,6 +333,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			if err != nil {
 				// Return ErrorResponse (B) and close the error connection.
 				responseError(err)
+				loopSpan.FinishSpan()
 				return err
 			}
 			continue
@@ -362,6 +372,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		if reqErr != nil {
 			// Return ErrorResponse (B)
 			responseError(reqErr)
+		}
+
+		// Return ReadyForQuery (B) message.
+		err := readyForMessage(exConn, message.TransactionIdle)
+		if err != nil {
+			return err
 		}
 
 		loopSpan.FinishSpan()
