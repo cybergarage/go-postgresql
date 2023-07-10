@@ -180,7 +180,9 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleStartupMessage := func(exConn *Conn, startupMsg *message.Startup) error {
+	handleStartupMessage := func(conn net.Conn, startupMsg *message.Startup) error {
+		exConn := NewConnWith(conn, nil)
+
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error message.
@@ -309,7 +311,24 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	isStartupMessage := true
+	// Handle a Start-up message.
+
+	reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
+
+	msg, err := reqMsg.ParseStartupMessage()
+	if err != nil {
+		responseError(err)
+		return err
+	}
+
+	err = handleStartupMessage(conn, msg)
+	if err != nil {
+		responseError(err)
+		return err
+	}
+
+	// Handle the request messages after the Start-up message.
+
 	for {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		exConn := NewConnWith(conn, loopSpan)
@@ -317,35 +336,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 		reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
 
-		// Handle a Start-up message.
-
-		if isStartupMessage {
-			isStartupMessage = false
-			msg, err := reqMsg.ParseStartupMessage()
-			if err != nil {
-				// Return ErrorResponse (B) and close the error connection.
-				responseError(err)
-				loopSpan.FinishSpan()
-				return err
-			}
-
-			err = handleStartupMessage(exConn, msg)
-			if err != nil {
-				// Return ErrorResponse (B) and close the error connection.
-				responseError(err)
-				loopSpan.FinishSpan()
-				return err
-			}
-			continue
-		}
-
-		// Handle the request messages after the Start-up message.
-
 		var reqErr error
 		var reqType message.Type
 		reqType, reqErr = reqMsg.ReadType()
 		if reqErr != nil {
 			responseError(reqErr)
+			loopSpan.FinishSpan()
 			break
 		}
 
@@ -376,11 +372,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 		// Return ReadyForQuery (B) message.
 		err := readyForMessage(exConn, message.TransactionIdle)
+
+		loopSpan.FinishSpan()
+
 		if err != nil {
 			return err
 		}
-
-		loopSpan.FinishSpan()
 	}
 
 	return nil
