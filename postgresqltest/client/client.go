@@ -20,8 +20,3 @@ import (
 
 // Client represents a client for PostgreSQL server.
 type Client = sqltest.Client
-
-// NewDefaultClient returns a new default client.
-func NewDefaultClient() Client {
-	return sqltest.NewPostgresClient()
-}
