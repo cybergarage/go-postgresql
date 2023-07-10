@@ -22,6 +22,7 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-sqlparser/sql"
+	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -137,7 +138,7 @@ func (server *Server) serve() error {
 }
 
 // receive handles client messages.
-func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
+func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 	defer conn.Close()
 
 	responseMessage := func(resMsg message.Response) error {
@@ -256,10 +257,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 
 	// executeQuery executes a query and returns the result.
 	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
-		query := queryMsg.Query
-
 		parser := sql.NewParser()
-		stmts, err := parser.ParseString(query)
+		stmts, err := parser.ParseString(queryMsg.Query)
 		if err != nil {
 			return err
 		}
@@ -267,30 +266,25 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 		for _, stmt := range stmts {
 			var res []message.Response
 			var err error
-			switch stmt.StatementType() {
-			case query.CreateDatabaseStatement:
-				// stmt := stmt.(*query.CreateDatabase)
-				// res, err = server.Executor.CreateDatabase(conn, stmt)
-				// case *query.CreateTable:
-				// 	res, err := server.Executor.CreateTable(conn, stmt)
-				// case *query.CreateIndex:
-				// 	res, err := server.Executor.CreateIndex(conn, stmt)
-				// case *query.DropDatabase:
-				// 	res, err := server.Executor.DropDatabase(conn, stmt)
-				// case *query.DropTable:
-				// 	res, err := server.Executor.DropTable(conn, stmt)
-				// case *query.Insert:
-				// 	res, err := server.Executor.Insert(conn, stmt)
-				// case *query.Select:
-				// 	res, err := server.Executor.Select(conn, stmt)
-				// case *query.Update:
-				// 	res, err := server.Executor.Update(conn, stmt)
-				// case *query.Delete:
-				// 	res, err := server.Executor.Delete(conn, stmt)
-			}
-
-			if err != nil {
-				return err
+			switch stmt := stmt.(type) {
+			case *query.CreateDatabase:
+				res, err = server.Executor.CreateDatabase(conn, stmt)
+			case *query.CreateTable:
+				res, err = server.Executor.CreateTable(conn, stmt)
+			case *query.CreateIndex:
+				res, err = server.Executor.CreateIndex(conn, stmt)
+			case *query.DropDatabase:
+				res, err = server.Executor.DropDatabase(conn, stmt)
+			case *query.DropTable:
+				res, err = server.Executor.DropTable(conn, stmt)
+			case *query.Insert:
+				res, err = server.Executor.Insert(conn, stmt)
+			case *query.Select:
+				res, err = server.Executor.Select(conn, stmt)
+			case *query.Update:
+				res, err = server.Executor.Update(conn, stmt)
+			case *query.Delete:
+				res, err = server.Executor.Delete(conn, stmt)
 			}
 
 			for _, r := range res {
@@ -300,13 +294,15 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 				}
 			}
 
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	}
 
 	isStartupMessage := true
-	var lastErr error
-	for lastErr == nil {
+	for {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		exConn := NewConnWith(conn, loopSpan)
 		loopSpan.StartSpan("parse")
@@ -335,40 +331,41 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo
 
 		// Handle the request messages after the Start-up message.
 
+		var reqErr error
 		var reqType message.Type
-		reqType, lastErr = reqMsg.ReadType()
-		if lastErr != nil {
-			responseError(lastErr)
+		reqType, reqErr = reqMsg.ReadType()
+		if reqErr != nil {
+			responseError(reqErr)
 			break
 		}
 
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
 			var queryMsg *message.Query
-			queryMsg, lastErr := handleParseBindMessage(exConn, reqMsg)
-			if lastErr == nil {
-				lastErr = executeQuery(exConn, queryMsg)
+			queryMsg, reqErr = handleParseBindMessage(exConn, reqMsg)
+			if reqErr == nil {
+				reqErr = executeQuery(exConn, queryMsg)
 			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
-			queryMsg, lastErr = reqMsg.ParseQueryMessage()
-			if lastErr == nil {
-				lastErr = executeQuery(exConn, queryMsg)
+			queryMsg, reqErr = reqMsg.ParseQueryMessage()
+			if reqErr == nil {
+				reqErr = executeQuery(exConn, queryMsg)
 			}
 		case message.TerminateMessage:
 			return nil
 		default:
-			lastErr = message.NewMessageNotSuppoted(reqType)
-			log.Warnf(lastErr.Error())
+			reqErr = message.NewMessageNotSuppoted(reqType)
+			log.Warnf(reqErr.Error())
 		}
 
-		if lastErr != nil {
+		if reqErr != nil {
 			// Return ErrorResponse (B)
-			responseError(lastErr)
+			responseError(reqErr)
 		}
 
 		loopSpan.FinishSpan()
 	}
 
-	return lastErr
+	return nil
 }
