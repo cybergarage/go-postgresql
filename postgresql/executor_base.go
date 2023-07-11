@@ -16,14 +16,24 @@ package postgresql
 
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
-	*BaseProtocolExecutor
-	*BaseQueryExecutor
+	ProtocolExecutor
+	QueryExecutor
 }
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	return &BaseExecutor{
-		BaseProtocolExecutor: NewBaseProtocolExecutor(),
-		BaseQueryExecutor:    NewBaseQueryExecutor(),
+		ProtocolExecutor: NewBaseProtocolExecutor(),
+		QueryExecutor:    NewBaseQueryExecutor(),
 	}
+}
+
+// SetProtocolExecutor sets a user protocol executor.
+func (executor *BaseExecutor) SetProtocolExecutor(pe ProtocolExecutor) {
+	executor.ProtocolExecutor = pe
+}
+
+// SetQueryExecutor sets a user query executor.
+func (executor *BaseExecutor) SetQueryExecutor(qe QueryExecutor) {
+	executor.QueryExecutor = qe
 }
