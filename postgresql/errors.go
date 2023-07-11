@@ -19,8 +19,15 @@ import (
 	"fmt"
 )
 
+// ErrNotImplemented is returned when the operation is not implemented.
+var ErrNotImplemented = errors.New("not implemented")
+
 // ErrNotSupported is returned when the operation is not supported.
 var ErrNotSupported = errors.New("not supported")
+
+func newErrNotImplemented(msg string) error {
+	return fmt.Errorf("%s is %w", msg, ErrNotImplemented)
+}
 
 func newErrNotSupported(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotSupported)
