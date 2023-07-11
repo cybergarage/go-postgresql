@@ -1,7 +1,5 @@
 #!/bin/bash
-# Setting for Docker Desktop
-# postgres://postgres:postgrespw@localhost:32768
 set -e
-psql -v ON_ERROR_STOP=1 --host=localhost --port=32768 --username="postgres" <<-EOSQL
+psql -v ON_ERROR_STOP=1  <<-EOSQL
 CREATE DATABASE pgbench;
 EOSQL
