@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pgbench -i pgbench -h localhost -p 32768 -U postgres
+pgbench -c 10 -j 2 -t 10 pgbench -h localhost -p 32768 -U postgres
