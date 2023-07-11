@@ -14,6 +14,11 @@
 
 package server
 
+import (
+	"github.com/cybergarage/go-postgresql/postgresql"
+)
+
 // Store should support only DMOExecutor methods.
 type Store interface {
+	postgresql.QueryExecutor
 }
