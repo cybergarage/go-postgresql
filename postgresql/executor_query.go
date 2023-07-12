@@ -30,45 +30,45 @@ func NewBaseQueryExecutor() *BaseQueryExecutor {
 
 // CreateDatabase handles a CREATE DATABASE query.
 func (executor *BaseQueryExecutor) CreateDatabase(*Conn, *query.CreateDatabase) ([]message.Response, error) {
-	return nil, newErrNotImplemented("CREATE DATABASE")
+	return nil, NewErrNotImplemented("CREATE DATABASE")
 }
 
 // CreateTable handles a CREATE TABLE query.
 func (executor *BaseQueryExecutor) CreateTable(*Conn, *query.CreateTable) ([]message.Response, error) {
-	return nil, newErrNotImplemented("CREATE TABLE")
+	return nil, NewErrNotImplemented("CREATE TABLE")
 }
 
 // CreateIndex handles a CREATE INDEX query.
 func (executor *BaseQueryExecutor) CreateIndex(*Conn, *query.CreateIndex) ([]message.Response, error) {
-	return nil, newErrNotImplemented("CREATE INDEX")
+	return nil, NewErrNotImplemented("CREATE INDEX")
 }
 
 // DropDatabase handles a DROP DATABASE query.
 func (executor *BaseQueryExecutor) DropDatabase(*Conn, *query.DropDatabase) ([]message.Response, error) {
-	return nil, newErrNotImplemented("DROP DATABASE")
+	return nil, NewErrNotImplemented("DROP DATABASE")
 }
 
 // DropIndex handles a DROP INDEX query.
 func (executor *BaseQueryExecutor) DropTable(*Conn, *query.DropTable) ([]message.Response, error) {
-	return nil, newErrNotImplemented("DROP TABLE")
+	return nil, NewErrNotImplemented("DROP TABLE")
 }
 
 // Insert handles a INSERT query.
 func (executor *BaseQueryExecutor) Insert(*Conn, *query.Insert) ([]message.Response, error) {
-	return nil, newErrNotImplemented("INSERT")
+	return nil, NewErrNotImplemented("INSERT")
 }
 
 // Select handles a SELECT query.
 func (executor *BaseQueryExecutor) Select(*Conn, *query.Select) ([]message.Response, error) {
-	return nil, newErrNotImplemented("SELECT")
+	return nil, NewErrNotImplemented("SELECT")
 }
 
 // Update handles a UPDATE query.
 func (executor *BaseQueryExecutor) Update(*Conn, *query.Update) ([]message.Response, error) {
-	return nil, newErrNotImplemented("UPDATE")
+	return nil, NewErrNotImplemented("UPDATE")
 }
 
 // Delete handles a DELETE query.
 func (executor *BaseQueryExecutor) Delete(*Conn, *query.Delete) ([]message.Response, error) {
-	return nil, newErrNotImplemented("DELETE")
+	return nil, NewErrNotImplemented("DELETE")
 }
