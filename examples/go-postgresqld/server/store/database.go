@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
 // Database represents a destination or source database of query.
 type Database struct {

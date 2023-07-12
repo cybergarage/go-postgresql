@@ -12,37 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
-import (
-	"sync"
+const (
+	errorDatabaseFound     = "Database (%s) is already created"
+	errorDatabaseNotFound  = "Database (%s) is not found"
+	errorTableNotFound     = "Table (%s.%s) is not found"
+	errorTableFound        = "Table (%s.%s) is already created"
+	errorUnknownSQLValType = "Unknown SQLVal type : %v"
 )
-
-// Table represents a destination or source database of query.
-type Table struct {
-	sync.Mutex
-	value string
-}
-
-// NewTableWithNameAndSchema returns a new database with the specified string.
-func NewTableWithNameAndSchema(name string) *Table {
-	tbl := &Table{
-		value: name,
-	}
-	return tbl
-}
-
-// NewTable returns a new database.
-func NewTable() *Table {
-	return NewTableWithNameAndSchema("")
-}
-
-// Name returns the table name.
-func (tbl *Table) Name() string {
-	return tbl.value
-}
-
-// String returns the string representation.
-func (tbl *Table) String() string {
-	return tbl.value
-}

@@ -12,12 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
 import (
-	"testing"
+	"github.com/cybergarage/go-postgresql/postgresql"
 )
 
-func TestMemStore(t *testing.T) {
-	NewMemStore()
+type MemStore struct {
+	Databases
+	*postgresql.BaseExecutor
+}
+
+// NewMemStore returns an in-memory storeinstance.
+func NewMemStore() *MemStore {
+	store := &MemStore{
+		Databases:    NewDatabases(),
+		BaseExecutor: postgresql.NewBaseExecutor(),
+	}
+	return store
 }

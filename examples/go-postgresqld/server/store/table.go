@@ -12,12 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
 import (
-	"testing"
+	"sync"
 )
 
-func TestNewDatabases(t *testing.T) {
-	_ = NewDatabases()
+// Table represents a destination or source database of query.
+type Table struct {
+	sync.Mutex
+	value string
+}
+
+// NewTableWithNameAndSchema returns a new database with the specified string.
+func NewTableWithNameAndSchema(name string) *Table {
+	tbl := &Table{
+		value: name,
+	}
+	return tbl
+}
+
+// NewTable returns a new database.
+func NewTable() *Table {
+	return NewTableWithNameAndSchema("")
+}
+
+// Name returns the table name.
+func (tbl *Table) Name() string {
+	return tbl.value
+}
+
+// String returns the string representation.
+func (tbl *Table) String() string {
+	return tbl.value
 }

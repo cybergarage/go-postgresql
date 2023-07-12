@@ -15,19 +15,14 @@
 package store
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql"
+	"testing"
 )
 
-type MemStore struct {
-	Databases
-	*postgresql.BaseExecutor
-}
+func TestNewDatabase(t *testing.T) {
+	ks := NewDatabase()
 
-// NewMemStore returns an in-memory storeinstance.
-func NewMemStore() *MemStore {
-	store := &MemStore{
-		Databases:    NewDatabases(),
-		BaseExecutor: postgresql.NewBaseExecutor(),
+	tables := ks.Tables()
+	if len(tables) != 0 {
+		t.Errorf("%d", len(tables))
 	}
-	return store
 }

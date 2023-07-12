@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
 import (
 	"testing"
 )
 
-func TestNewDatabase(t *testing.T) {
-	ks := NewDatabase()
-
-	tables := ks.Tables()
-	if len(tables) != 0 {
-		t.Errorf("%d", len(tables))
-	}
+func TestMemStore(t *testing.T) {
+	NewMemStore()
 }

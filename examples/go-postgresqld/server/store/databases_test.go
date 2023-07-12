@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
-const (
-	errorDatabaseFound     = "Database (%s) is already created"
-	errorDatabaseNotFound  = "Database (%s) is not found"
-	errorTableNotFound     = "Table (%s.%s) is not found"
-	errorTableFound        = "Table (%s.%s) is already created"
-	errorUnknownSQLValType = "Unknown SQLVal type : %v"
+import (
+	"testing"
 )
+
+func TestNewDatabases(t *testing.T) {
+	_ = NewDatabases()
+}
