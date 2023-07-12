@@ -59,7 +59,7 @@ func (msg *RequestMessage) ParseStartupMessage() (*Startup, error) {
 
 // ParseParseMessage parses a parse message.
 func (msg *RequestMessage) ParseParseMessage() (*Parse, error) {
-	return NewParseWith(msg.Reader)
+	return NewParseWithReader(msg.Reader)
 }
 
 // ParseBindMessage parses a bind message.

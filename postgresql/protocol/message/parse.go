@@ -29,7 +29,7 @@ type Parse struct {
 }
 
 // NewParse returns a new parse message.
-func NewParseWith(reader *Reader) (*Parse, error) {
+func NewParseWithReader(reader *Reader) (*Parse, error) {
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
