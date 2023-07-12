@@ -25,8 +25,8 @@ type Query struct {
 	Query         string
 }
 
-// NewQuery returns a new query message.
-func NewQueryWith(reader *Reader) (*Query, error) {
+// NewQueryWithReader returns a new query message with specified reader.
+func NewQueryWithReader(reader *Reader) (*Query, error) {
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
