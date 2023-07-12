@@ -25,10 +25,12 @@ var ErrNotImplemented = errors.New("not implemented")
 // ErrNotSupported is returned when the operation is not supported.
 var ErrNotSupported = errors.New("not supported")
 
-func newErrNotImplemented(msg string) error {
+// NewErrNotImplemented returns a new ErrNotImplemented error.
+func NewErrNotImplemented(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotImplemented)
 }
 
-func newErrNotSupported(msg string) error {
+// NewErrNotSupported returns a new ErrNotSupported error.
+func NewErrNotSupported(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotSupported)
 }
