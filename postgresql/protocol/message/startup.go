@@ -27,8 +27,8 @@ type Startup struct {
 	Parameters    map[string]string
 }
 
-// NewStartup returns a new startup message.
-func NewStartupWith(reader *Reader) (*Startup, error) {
+// NewStartupWithReader returns a new startup message with the specified reader.
+func NewStartupWithReader(reader *Reader) (*Startup, error) {
 	readLen := 0
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
