@@ -32,16 +32,19 @@ type Server struct {
 	tracer.Tracer
 	tcpListener net.Listener
 	Executor
+	*BaseExecutor
 }
 
 // NewServer returns a new server instance.
 func NewServer() *Server {
 	server := &Server{
-		Config:      NewDefaultConfig(),
-		Tracer:      tracer.NullTracer,
-		tcpListener: nil,
-		Executor:    NewBaseExecutor(),
+		Config:       NewDefaultConfig(),
+		Tracer:       tracer.NullTracer,
+		tcpListener:  nil,
+		BaseExecutor: NewBaseExecutor(),
+		Executor:     nil,
 	}
+	server.SetExecutor(server)
 	return server
 }
 
