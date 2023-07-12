@@ -25,27 +25,26 @@ type Authenticator interface {
 	Authenticate(*Conn, *message.Startup) (message.Response, error)
 }
 
-// StatusExecutor represents a backend status message executor.
-type StatusExecutor interface {
+// StatusHandler represents a backend status message handler.
+type StatusHandler interface {
 	// ParameterStatus returns the parameter status.
 	ParameterStatus(*Conn) (message.Response, error)
 	// BackendKeyData returns the backend key data.
 	BackendKeyData(*Conn) (message.Response, error)
 }
 
-// ParseExecutor represents a backend parse message executor.
-type ParseExecutor interface {
+// BindHandler represents a backend parse message handler.
+type BindHandler interface {
 	// Parse returns the parse response.
 	Parse(*Conn, *message.Parse) (message.Response, error)
 	// Bind returns the bind response.
 	Bind(*Conn, *message.Parse, *message.Bind) (message.Response, error)
 }
 
-// ProtocolExecutor represents a backend protocol message executor.
-type ProtocolExecutor interface {
-	Authenticator
-	StatusExecutor
-	ParseExecutor
+// ProtocolHandler represents a backend protocol message handler.
+type ProtocolHandler interface {
+	StatusHandler
+	BindHandler
 }
 
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
@@ -82,6 +81,7 @@ type QueryExecutor interface {
 
 // Executor represents a frontend message executor.
 type Executor interface {
-	ProtocolExecutor
+	Authenticator
+	ProtocolHandler
 	QueryExecutor
 }
