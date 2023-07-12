@@ -17,7 +17,7 @@ package server
 import (
 	"time"
 
-	"github.com/cybergarage/go-postgresql/examples/go-postgresqld/server/storage"
+	"github.com/cybergarage/go-postgresql/examples/go-postgresqld/server/store"
 	"github.com/cybergarage/go-postgresql/postgresql"
 )
 
@@ -43,7 +43,7 @@ func NewServerWithStore(store Store) *Server {
 // NewServer returns a test server instance.
 func NewServer() *Server {
 	// NOTE: MemStore is a sample implementation. So, change to use your implementation.
-	return NewServerWithStore(storage.NewMemStore())
+	return NewServerWithStore(store.NewMemStore())
 }
 
 // GetStore returns a store in the server.
