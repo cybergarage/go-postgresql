@@ -258,12 +258,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return nil, err
 		}
 
+		q := &message.Query{}
+
 		err = responseMessage(resMsg)
 		if err != nil {
 			return nil, err
 		}
-
-		q := &message.Query{}
 
 		return q, nil
 	}
