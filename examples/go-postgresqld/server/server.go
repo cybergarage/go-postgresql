@@ -15,14 +15,8 @@
 package server
 
 import (
-	"time"
-
 	"github.com/cybergarage/go-postgresql/examples/go-postgresqld/server/store"
 	"github.com/cybergarage/go-postgresql/postgresql"
-)
-
-const (
-	timeout = 3600 * time.Second
 )
 
 // Server represents a test server.
@@ -37,16 +31,12 @@ func NewServerWithStore(store Store) *Server {
 		Server: postgresql.NewServer(),
 		Store:  store,
 	}
+	server.SetAuthenticator(server)
+	server.SetQueryExecutor(server)
 	return server
 }
 
 // NewServer returns a test server instance.
 func NewServer() *Server {
-	// NOTE: MemStore is a sample implementation. So, change to use your implementation.
 	return NewServerWithStore(store.NewMemStore())
-}
-
-// GetStore returns a store in the server.
-func (server *Server) GetStore() Store {
-	return server.Store
 }
