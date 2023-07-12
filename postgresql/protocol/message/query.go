@@ -41,3 +41,11 @@ func NewQueryWithReader(reader *Reader) (*Query, error) {
 		Query:         query,
 	}, nil
 }
+
+// NewQueryWith returns a new query message with specified parameters.
+func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
+	return &Query{
+		MessageLength: 0,
+		Query:         "",
+	}, nil
+}

@@ -258,7 +258,10 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return nil, err
 		}
 
-		q := &message.Query{}
+		q, err := message.NewQueryWith(parseMsg, bindMsg)
+		if err != nil {
+			return nil, err
+		}
 
 		err = responseMessage(resMsg)
 		if err != nil {
