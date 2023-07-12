@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package store
 
 import (
 	"testing"
 )
 
-func TestMemStore(t *testing.T) {
-	NewMemStore()
+func TestNewDatabases(t *testing.T) {
+	_ = NewDatabases()
 }
