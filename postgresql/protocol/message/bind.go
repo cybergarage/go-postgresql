@@ -160,14 +160,14 @@ func NewBindWith(reader *Reader, parse *Parse) (*Bind, error) {
 // FindBindParam returns a bind parameter with specified id.
 func (params BindParams) FindBindParam(id string) (*BindParam, error) {
 	if !strings.HasPrefix(id, bindParamPrefix) {
-		return nil, newNotFoundError(id)
+		return nil, NewErrNotExist(id)
 	}
 	idx, err := strconv.Atoi(id[len(bindParamPrefix):])
 	if err != nil {
-		return nil, newNotFoundError(id)
+		return nil, NewErrNotExist(id)
 	}
 	if len(params) < idx {
-		return nil, newNotFoundError(id)
+		return nil, NewErrNotExist(id)
 	}
 	return params[idx-1], nil
 }
