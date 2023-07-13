@@ -50,27 +50,27 @@ type ProtocolHandler interface {
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
 type DDOExecutor interface {
 	// CreateDatabase handles a CREATE DATABASE query.
-	CreateDatabase(*Conn, *query.CreateDatabase) ([]message.Response, error)
+	CreateDatabase(*Conn, *query.CreateDatabase) (message.Responses, error)
 	// CreateTable handles a CREATE TABLE query.
-	CreateTable(*Conn, *query.CreateTable) ([]message.Response, error)
+	CreateTable(*Conn, *query.CreateTable) (message.Responses, error)
 	// CreateIndex handles a CREATE INDEX query.
-	CreateIndex(*Conn, *query.CreateIndex) ([]message.Response, error)
+	CreateIndex(*Conn, *query.CreateIndex) (message.Responses, error)
 	// DropDatabase handles a DROP DATABASE query.
-	DropDatabase(*Conn, *query.DropDatabase) ([]message.Response, error)
+	DropDatabase(*Conn, *query.DropDatabase) (message.Responses, error)
 	// DropIndex handles a DROP INDEX query.
-	DropTable(*Conn, *query.DropTable) ([]message.Response, error)
+	DropTable(*Conn, *query.DropTable) (message.Responses, error)
 }
 
 // DMOExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExecutor interface {
 	// Insert handles a INSERT query.
-	Insert(*Conn, *query.Insert) ([]message.Response, error)
+	Insert(*Conn, *query.Insert) (message.Responses, error)
 	// Select handles a SELECT query.
-	Select(*Conn, *query.Select) ([]message.Response, error)
+	Select(*Conn, *query.Select) (message.Responses, error)
 	// Update handles a UPDATE query.
-	Update(*Conn, *query.Update) ([]message.Response, error)
+	Update(*Conn, *query.Update) (message.Responses, error)
 	// Delete handles a DELETE query.
-	Delete(*Conn, *query.Delete) ([]message.Response, error)
+	Delete(*Conn, *query.Delete) (message.Responses, error)
 }
 
 // QueryExecutor represents a user query message executor.

@@ -29,46 +29,46 @@ func NewBaseQueryExecutor() *BaseQueryExecutor {
 }
 
 // CreateDatabase handles a CREATE DATABASE query.
-func (executor *BaseQueryExecutor) CreateDatabase(*Conn, *query.CreateDatabase) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) CreateDatabase(*Conn, *query.CreateDatabase) (message.Responses, error) {
 	return nil, NewErrNotImplemented("CREATE DATABASE")
 }
 
 // CreateTable handles a CREATE TABLE query.
-func (executor *BaseQueryExecutor) CreateTable(*Conn, *query.CreateTable) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) CreateTable(*Conn, *query.CreateTable) (message.Responses, error) {
 	return nil, NewErrNotImplemented("CREATE TABLE")
 }
 
 // CreateIndex handles a CREATE INDEX query.
-func (executor *BaseQueryExecutor) CreateIndex(*Conn, *query.CreateIndex) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) CreateIndex(*Conn, *query.CreateIndex) (message.Responses, error) {
 	return nil, NewErrNotImplemented("CREATE INDEX")
 }
 
 // DropDatabase handles a DROP DATABASE query.
-func (executor *BaseQueryExecutor) DropDatabase(*Conn, *query.DropDatabase) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) DropDatabase(*Conn, *query.DropDatabase) (message.Responses, error) {
 	return nil, NewErrNotImplemented("DROP DATABASE")
 }
 
 // DropIndex handles a DROP INDEX query.
-func (executor *BaseQueryExecutor) DropTable(*Conn, *query.DropTable) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) DropTable(*Conn, *query.DropTable) (message.Responses, error) {
 	return nil, NewErrNotImplemented("DROP TABLE")
 }
 
 // Insert handles a INSERT query.
-func (executor *BaseQueryExecutor) Insert(*Conn, *query.Insert) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) Insert(*Conn, *query.Insert) (message.Responses, error) {
 	return nil, NewErrNotImplemented("INSERT")
 }
 
 // Select handles a SELECT query.
-func (executor *BaseQueryExecutor) Select(*Conn, *query.Select) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) Select(*Conn, *query.Select) (message.Responses, error) {
 	return nil, NewErrNotImplemented("SELECT")
 }
 
 // Update handles a UPDATE query.
-func (executor *BaseQueryExecutor) Update(*Conn, *query.Update) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) Update(*Conn, *query.Update) (message.Responses, error) {
 	return nil, NewErrNotImplemented("UPDATE")
 }
 
 // Delete handles a DELETE query.
-func (executor *BaseQueryExecutor) Delete(*Conn, *query.Delete) ([]message.Response, error) {
+func (executor *BaseQueryExecutor) Delete(*Conn, *query.Delete) (message.Responses, error) {
 	return nil, NewErrNotImplemented("DELETE")
 }
