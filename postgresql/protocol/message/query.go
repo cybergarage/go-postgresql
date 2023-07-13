@@ -14,8 +14,6 @@
 
 package message
 
-import "strings"
-
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
@@ -25,6 +23,7 @@ import "strings"
 type Query struct {
 	MessageLength int32
 	Query         string
+	BindParams    []*BindParam
 }
 
 // NewQueryWithReader returns a new query message with specified reader.
@@ -47,21 +46,9 @@ func NewQueryWithReader(reader *Reader) (*Query, error) {
 // NewQueryWith returns a new query message with specified parameters.
 func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
 	query := parseMsg.Query
-	repStrings := []struct {
-		From string
-		To   string
-	}{
-		{"\n", " "},
-		{"\t", " "},
-		{"( ", "("},
-		{" )", ")"},
-	}
-	for _, repString := range repStrings {
-		query = strings.ReplaceAll(query, repString.From, repString.To)
-	}
-
 	return &Query{
 		MessageLength: int32(len(query)),
 		Query:         query,
+		BindParams:    bindMsg.Params,
 	}, nil
 }
