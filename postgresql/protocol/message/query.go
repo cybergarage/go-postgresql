@@ -23,7 +23,7 @@ package message
 type Query struct {
 	MessageLength int32
 	Query         string
-	BindParams    []*BindParam
+	BindParams
 }
 
 // NewQueryWithReader returns a new query message with specified reader.
