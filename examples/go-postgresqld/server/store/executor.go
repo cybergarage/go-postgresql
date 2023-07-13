@@ -22,7 +22,7 @@ import (
 
 // CreateDatabase handles a CREATE DATABASE query.
 func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateDatabase) (message.Responses, error) {
-	dbname := q.Name()
+	dbname := q.DatabaseName()
 
 	_, ok := store.GetDatabase(dbname)
 	if ok && !q.IfNotExists() {
@@ -53,7 +53,23 @@ func (store *MemStore) CreateIndex(conn *postgresql.Conn, q *query.CreateIndex) 
 
 // DropDatabase handles a DROP DATABASE query.
 func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("DROP DATABASE")
+	dbname := q.DatabaseName()
+
+	db, ok := store.GetDatabase(dbname)
+	if !ok && !q.IfExists() {
+		return nil, postgresql.NewErrNotExist(dbname)
+	}
+
+	err := store.Databases.DropDatabase(db)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := message.NewCommandCompleteWith(q.String())
+	if err != nil {
+		return nil, err
+	}
+	return message.Responses{res}, nil
 }
 
 // DropIndex handles a DROP INDEX query.
