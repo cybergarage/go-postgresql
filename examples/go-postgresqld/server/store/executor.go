@@ -23,9 +23,16 @@ import (
 // CreateDatabase handles a CREATE DATABASE query.
 func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateDatabase) (message.Responses, error) {
 	dbname := q.Name()
+
 	_, ok := store.GetDatabase(dbname)
-	if ok {
-		return nil, postgresql.NewErrDatabaseAlreadyExists(dbname)		
+	if ok && !q.IfNotExists() {
+		return nil, postgresql.NewErrExist(dbname)
+	}
+
+	err := store.AddDatabase(NewDatabaseWithName(dbname))
+	if err != nil {
+		return nil, err
+	}
 
 	res, err := message.NewCommandCompleteWith(q.String())
 	if err != nil {
