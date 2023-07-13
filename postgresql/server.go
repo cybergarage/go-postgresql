@@ -279,9 +279,45 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return err
 		}
 
+		bindStmt := func(stmt query.Statement, params message.BindParams) error {
+			updateBindColumns := func(columns query.Columns, params message.BindParams) error {
+				for _, column := range columns {
+					v, ok := column.Value().(*query.BindParam)
+					if !ok {
+						continue
+					}
+					param, err := params.FindBindParam(v.Name())
+					if err != nil {
+						return err
+					}
+					column.SetValue(param.Value)
+				}
+				return nil
+			}
+
+			switch stmt := stmt.(type) {
+			case *query.Insert:
+				err := updateBindColumns(stmt.Columns, params)
+				if err != nil {
+					return err
+				}
+			case *query.Update:
+				err := updateBindColumns(stmt.Columns, params)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+
 		for _, stmt := range stmts {
-			var res []message.Response
 			var err error
+			err = bindStmt(stmt, queryMsg.BindParams)
+			if err != nil {
+				return err
+			}
+
+			var res []message.Response
 			switch stmt := stmt.(type) {
 			case *query.CreateDatabase:
 				res, err = server.Executor.CreateDatabase(conn, stmt)
