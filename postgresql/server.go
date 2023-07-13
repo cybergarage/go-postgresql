@@ -309,7 +309,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				return err
 			}
 
-			var res []message.Response
+			var res message.Responses
 			switch stmt := stmt.(type) {
 			case *query.CreateDatabase:
 				res, err = server.Executor.CreateDatabase(conn, stmt)

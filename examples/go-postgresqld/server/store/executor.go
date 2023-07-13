@@ -21,46 +21,50 @@ import (
 )
 
 // CreateDatabase handles a CREATE DATABASE query.
-func (store *MemStore) CreateDatabase(*postgresql.Conn, *query.CreateDatabase) ([]message.Response, error) {
-	return nil, postgresql.NewErrNotImplemented("CREATE DATABASE")
+func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateDatabase) (message.Responses, error) {
+	res, err := message.NewCommandCompleteWith(q.String())
+	if err != nil {
+		return nil, err
+	}
+	return message.Responses{res}, nil
 }
 
 // CreateTable handles a CREATE TABLE query.
-func (store *MemStore) CreateTable(*postgresql.Conn, *query.CreateTable) ([]message.Response, error) {
+func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("CREATE TABLE")
 }
 
 // CreateIndex handles a CREATE INDEX query.
-func (store *MemStore) CreateIndex(*postgresql.Conn, *query.CreateIndex) ([]message.Response, error) {
+func (store *MemStore) CreateIndex(conn *postgresql.Conn, q *query.CreateIndex) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("CREATE INDEX")
 }
 
 // DropDatabase handles a DROP DATABASE query.
-func (store *MemStore) DropDatabase(*postgresql.Conn, *query.DropDatabase) ([]message.Response, error) {
+func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("DROP DATABASE")
 }
 
 // DropIndex handles a DROP INDEX query.
-func (store *MemStore) DropTable(*postgresql.Conn, *query.DropTable) ([]message.Response, error) {
+func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("DROP TABLE")
 }
 
 // Insert handles a INSERT query.
-func (store *MemStore) Insert(*postgresql.Conn, *query.Insert) ([]message.Response, error) {
+func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("INSERT")
 }
 
 // Select handles a SELECT query.
-func (store *MemStore) Select(*postgresql.Conn, *query.Select) ([]message.Response, error) {
+func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("SELECT")
 }
 
 // Update handles a UPDATE query.
-func (store *MemStore) Update(*postgresql.Conn, *query.Update) ([]message.Response, error) {
+func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("UPDATE")
 }
 
 // Delete handles a DELETE query.
-func (store *MemStore) Delete(*postgresql.Conn, *query.Delete) ([]message.Response, error) {
+func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.Responses, error) {
 	return nil, postgresql.NewErrNotImplemented("DELETE")
 }
