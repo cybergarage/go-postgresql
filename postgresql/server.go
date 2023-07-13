@@ -245,7 +245,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		}
 
 		if reqType != message.BindMessage {
-			return nil, message.NewMessageNotSuppoted(reqType)
+			return nil, message.NewMessageNotSuppotedError(reqType)
 		}
 
 		bindMsg, err := reqMsg.ParseBindMessageWith(parseMsg)
@@ -367,7 +367,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		case message.TerminateMessage:
 			return nil
 		default:
-			reqErr = message.NewMessageNotSuppoted(reqType)
+			reqErr = message.NewMessageNotSuppotedError(reqType)
 			log.Warnf(reqErr.Error())
 		}
 
