@@ -56,7 +56,7 @@ func (msg *DataRow) Bytes() ([]byte, error) {
 				return nil, err
 			}
 		default:
-			return nil, newColumnTypeNotSuppoted(v)
+			return nil, newColumnTypeNotSuppotedError(v)
 		}
 	}
 	return msg.ResponseMessage.Bytes()

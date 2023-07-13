@@ -38,7 +38,7 @@ func (reader *Reader) ReadInt32() (int32, error) {
 		return 0, err
 	}
 	if nRead != 4 {
-		return 0, newShortMessageErrorWith(4, nRead)
+		return 0, newShortMessageError(4, nRead)
 	}
 	return Int32BytesToInt(int32Bytes), nil
 }
@@ -51,7 +51,7 @@ func (reader *Reader) ReadInt16() (int16, error) {
 		return 0, err
 	}
 	if nRead != 2 {
-		return 0, newShortMessageErrorWith(2, nRead)
+		return 0, newShortMessageError(2, nRead)
 	}
 	return Int16BytesToInt(int16Bytes), nil
 }

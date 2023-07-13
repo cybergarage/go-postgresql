@@ -25,15 +25,22 @@ var ErrShortMessage = errors.New("short message")
 // ErrNotSupported is returned when the message is not supported.
 var ErrNotSupported = errors.New("not supported")
 
-func newShortMessageErrorWith(expected int, actual int) error {
+// ErrInvalidLength is returned when the message length is invalid.
+var ErrInvalidLength = errors.New("invalid length")
+
+func newShortMessageError(expected int, actual int) error {
 	return fmt.Errorf("%w: %d < %d", ErrShortMessage, actual, expected)
 }
 
-func newColumnTypeNotSuppoted(v any) error {
+func newColumnTypeNotSuppotedError(v any) error {
 	return fmt.Errorf("column value type: %T is %w", v, ErrNotSupported)
 }
 
-// NewMessageNotSuppoted returns a new message not supported error.
-func NewMessageNotSuppoted(t Type) error {
+func newInvalidLengthError(v int) error {
+	return fmt.Errorf("%d is %w", v, ErrInvalidLength)
+}
+
+// NewMessageNotSuppotedError returns a new message not supported error.
+func NewMessageNotSuppotedError(t Type) error {
 	return fmt.Errorf("message type (%c) is %w", t, ErrNotSupported)
 }
