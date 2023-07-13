@@ -25,6 +25,12 @@ var ErrNotImplemented = errors.New("not implemented")
 // ErrNotSupported is returned when the operation is not supported.
 var ErrNotSupported = errors.New("not supported")
 
+// ErrNotExist is returned when the specified object is not exist.
+var ErrNotExist = errors.New("not exist")
+
+// ErrExist is returned when the specified object is exist.
+var ErrExist = errors.New("exist")
+
 // NewErrNotImplemented returns a new ErrNotImplemented error.
 func NewErrNotImplemented(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotImplemented)
@@ -33,4 +39,14 @@ func NewErrNotImplemented(msg string) error {
 // NewErrNotSupported returns a new ErrNotSupported error.
 func NewErrNotSupported(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotSupported)
+}
+
+// NewErrExist returns a new exist error.
+func NewErrExist(v any) error {
+	return fmt.Errorf("%v is %w", v, ErrExist)
+}
+
+// NewErrNotExist returns a new not exist error.
+func NewErrNotExist(v any) error {
+	return fmt.Errorf("%v is %w", v, ErrNotExist)
 }
