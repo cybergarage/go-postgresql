@@ -28,8 +28,11 @@ var ErrNotSupported = errors.New("not supported")
 // ErrInvalidLength is returned when the message length is invalid.
 var ErrInvalidLength = errors.New("invalid length")
 
-// ErrNotFound is returned when the specified message is not found.
-var ErrNotFound = errors.New("not found")
+// ErrNotExist is returned when the specified object is not exist.
+var ErrNotExist = errors.New("not exist")
+
+// ErrExist is returned when the specified object is exist.
+var ErrExist = errors.New("exist")
 
 func newShortMessageError(expected int, actual int) error {
 	return fmt.Errorf("%w: %d < %d", ErrShortMessage, actual, expected)
@@ -44,10 +47,15 @@ func newInvalidLengthError(v int) error {
 }
 
 func newNotFoundError(v any) error {
-	return fmt.Errorf("%v is %w", v, ErrNotFound)
+	return fmt.Errorf("%v is %w", v, ErrNotExist)
 }
 
 // NewMessageNotSuppotedError returns a new message not supported error.
 func NewMessageNotSuppotedError(t Type) error {
 	return fmt.Errorf("message type (%c) is %w", t, ErrNotSupported)
+}
+
+// NewErrExist returns a new exist error.
+func NewErrExist(v any) error {
+	return fmt.Errorf("%v is %w", v, ErrExist)
 }
