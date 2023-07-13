@@ -14,10 +14,19 @@
 
 package message
 
+import (
+	"strconv"
+	"strings"
+)
+
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
+
+const (
+	bindParamPrefix = "$"
+)
 
 // Bind represents a bind message.
 type Bind struct {
@@ -25,7 +34,7 @@ type Bind struct {
 	Portal        string
 	Name          string
 	NumParams     int16
-	Params        []*BindParam
+	Params        BindParams
 }
 
 // BindParamType represents a bind parameter type.
@@ -44,6 +53,9 @@ type BindParam struct {
 	numValues int16
 	Value     any
 }
+
+// BindParams represents bind parameters.
+type BindParams []*BindParam
 
 // NewBind returns a new bind message.
 func NewBindWith(reader *Reader, parse *Parse) (*Bind, error) {
@@ -143,4 +155,19 @@ func NewBindWith(reader *Reader, parse *Parse) (*Bind, error) {
 		NumParams:     num,
 		Params:        params,
 	}, nil
+}
+
+// FindBindParam returns a bind parameter with specified id.
+func (params BindParams) FindBindParam(id string) (*BindParam, error) {
+	if !strings.HasPrefix(id, bindParamPrefix) {
+		return nil, newNotFoundError(id)
+	}
+	idx, err := strconv.Atoi(id[len(bindParamPrefix):])
+	if err != nil {
+		return nil, newNotFoundError(id)
+	}
+	if len(params) < idx {
+		return nil, newNotFoundError(id)
+	}
+	return params[idx-1], nil
 }
