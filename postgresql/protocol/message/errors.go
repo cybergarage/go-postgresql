@@ -46,10 +46,6 @@ func newInvalidLengthError(v int) error {
 	return fmt.Errorf("%d is %w", v, ErrInvalidLength)
 }
 
-func newNotFoundError(v any) error {
-	return fmt.Errorf("%v is %w", v, ErrNotExist)
-}
-
 // NewErrMessageNotSuppoted returns a new message not supported error.
 func NewErrMessageNotSuppoted(t Type) error {
 	return fmt.Errorf("message type (%c) is %w", t, ErrNotSupported)
@@ -58,4 +54,9 @@ func NewErrMessageNotSuppoted(t Type) error {
 // NewErrExist returns a new exist error.
 func NewErrExist(v any) error {
 	return fmt.Errorf("%v is %w", v, ErrExist)
+}
+
+// NewErrNotExist returns a new not exist error.
+func NewErrNotExist(v any) error {
+	return fmt.Errorf("%v is %w", v, ErrNotExist)
 }
