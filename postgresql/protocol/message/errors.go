@@ -28,6 +28,9 @@ var ErrNotSupported = errors.New("not supported")
 // ErrInvalidLength is returned when the message length is invalid.
 var ErrInvalidLength = errors.New("invalid length")
 
+// ErrNotFound is returned when the specified message is not found.
+var ErrNotFound = errors.New("not found")
+
 func newShortMessageError(expected int, actual int) error {
 	return fmt.Errorf("%w: %d < %d", ErrShortMessage, actual, expected)
 }
@@ -38,6 +41,10 @@ func newColumnTypeNotSuppotedError(v any) error {
 
 func newInvalidLengthError(v int) error {
 	return fmt.Errorf("%d is %w", v, ErrInvalidLength)
+}
+
+func newNotFoundError(v any) error {
+	return fmt.Errorf("%v is %w", v, ErrNotFound)
 }
 
 // NewMessageNotSuppotedError returns a new message not supported error.
