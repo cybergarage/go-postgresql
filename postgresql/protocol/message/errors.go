@@ -50,8 +50,8 @@ func newNotFoundError(v any) error {
 	return fmt.Errorf("%v is %w", v, ErrNotExist)
 }
 
-// NewMessageNotSuppotedError returns a new message not supported error.
-func NewMessageNotSuppotedError(t Type) error {
+// NewErrMessageNotSuppoted returns a new message not supported error.
+func NewErrMessageNotSuppoted(t Type) error {
 	return fmt.Errorf("message type (%c) is %w", t, ErrNotSupported)
 }
 
