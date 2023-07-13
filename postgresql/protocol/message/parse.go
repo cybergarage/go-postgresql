@@ -35,16 +35,20 @@ func NewParseWithReader(reader *Reader) (*Parse, error) {
 		return nil, err
 	}
 
+	// The name of the destination prepared statement (an empty string selects the unnamed prepared statement).
 	name, err := reader.ReadString()
 	if err != nil {
 		return nil, err
 	}
 
+	// The query string to be parsed.
 	query, err := reader.ReadString()
 	if err != nil {
 		return nil, err
 	}
 
+	// The number of parameter data types specified (can be zero).
+	// Note that this is not an indication of the number of parameters that might appear in the query string, only the number that the frontend wants to prespecify types for.
 	num, err := reader.ReadInt16()
 	if err != nil {
 		return nil, err
@@ -52,6 +56,7 @@ func NewParseWithReader(reader *Reader) (*Parse, error) {
 
 	types := make([]int32, num)
 	for n := int16(0); n < num; n++ {
+		// Specifies the object ID of the parameter data type. Placing a zero here is equivalent to leaving the type unspecified.
 		typ, err := reader.ReadInt32()
 		if err != nil {
 			return nil, err
