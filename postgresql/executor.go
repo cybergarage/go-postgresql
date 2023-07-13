@@ -84,4 +84,10 @@ type Executor interface {
 	Authenticator
 	ProtocolHandler
 	QueryExecutor
+	// SetAuthenticator sets a user authenticator.
+	SetAuthenticator(Authenticator)
+	// SetProtocolHandler sets a user protocol executor.
+	SetProtocolHandler(ProtocolHandler)
+	// SetQueryExecutor sets a user query executor.
+	SetQueryExecutor(QueryExecutor)
 }
