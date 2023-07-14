@@ -19,6 +19,13 @@ package message
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
+const (
+	StartUpUser            = "user"
+	StartUpDatabase        = "database"
+	StartUpApplicationName = "application_name"
+	StartUpClientEncoding  = "client_encoding"
+)
+
 // Startup represents a startup message.
 type Startup struct {
 	MajorVersion  int
@@ -71,4 +78,28 @@ func NewStartupWithReader(reader *Reader) (*Startup, error) {
 		MinorVersion:  int(minorVer),
 		Parameters:    params,
 	}, nil
+}
+
+// User returns the user name.
+func (msg *Startup) User() (string, bool) {
+	val, ok := msg.Parameters[StartUpUser]
+	return val, ok
+}
+
+// Database returns the database name.
+func (msg *Startup) Database() (string, bool) {
+	val, ok := msg.Parameters[StartUpDatabase]
+	return val, ok
+}
+
+// ApplicationName returns the application name.
+func (msg *Startup) ApplicationName() (string, bool) {
+	val, ok := msg.Parameters[StartUpApplicationName]
+	return val, ok
+}
+
+// ClientEncoding returns the client encoding.
+func (msg *Startup) ClientEncoding() (string, bool) {
+	val, ok := msg.Parameters[StartUpClientEncoding]
+	return val, ok
 }
