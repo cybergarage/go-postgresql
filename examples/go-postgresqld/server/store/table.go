@@ -16,33 +16,26 @@ package store
 
 import (
 	"sync"
+
+	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Table represents a destination or source database of query.
 type Table struct {
 	sync.Mutex
-	value string
+	Name string
+	*query.Schema
 }
 
-// NewTableWithNameAndSchema returns a new database with the specified string.
-func NewTableWithNameAndSchema(name string) *Table {
+func NewTableWith(name string, schema *query.Schema) *Table {
 	tbl := &Table{
-		value: name,
+		Name:   name,
+		Schema: schema,
 	}
 	return tbl
 }
 
-// NewTable returns a new database.
-func NewTable() *Table {
-	return NewTableWithNameAndSchema("")
-}
-
-// Name returns the table name.
-func (tbl *Table) Name() string {
-	return tbl.value
-}
-
 // String returns the string representation.
 func (tbl *Table) String() string {
-	return tbl.value
+	return tbl.Schema.String()
 }
