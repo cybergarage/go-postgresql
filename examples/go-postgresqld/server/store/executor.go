@@ -22,28 +22,37 @@ import (
 
 // CreateDatabase handles a CREATE DATABASE query.
 func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateDatabase) (message.Responses, error) {
-	dbname := q.DatabaseName()
+	dbName := q.DatabaseName()
 
-	_, ok := store.GetDatabase(dbname)
+	_, ok := store.GetDatabase(dbName)
 	if ok && !q.IfNotExists() {
-		return nil, postgresql.NewErrExist(dbname)
+		return nil, postgresql.NewErrDatabaseExist(dbName)
 	}
 
-	err := store.AddDatabase(NewDatabaseWithName(dbname))
+	err := store.AddDatabase(NewDatabaseWithName(dbName))
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := message.NewCommandCompleteWith(q.String())
-	if err != nil {
-		return nil, err
-	}
-	return message.Responses{res}, nil
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // CreateTable handles a CREATE TABLE query.
 func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("CREATE TABLE")
+	dbName := conn.DatabaseName()
+
+	db, ok := store.GetDatabase(dbName)
+	if !ok {
+		return nil, postgresql.NewErrDatabaseExist(dbName)
+	}
+
+	tblName := q.TableName()
+	_, ok = db.GetTable(tblName)
+	if ok && !q.IfNotExists() {
+		return nil, postgresql.NewErrTableNotExist(tblName)
+	}
+
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // CreateIndex handles a CREATE INDEX query.
@@ -53,11 +62,11 @@ func (store *MemStore) CreateIndex(conn *postgresql.Conn, q *query.CreateIndex) 
 
 // DropDatabase handles a DROP DATABASE query.
 func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase) (message.Responses, error) {
-	dbname := q.DatabaseName()
+	dbName := q.DatabaseName()
 
-	db, ok := store.GetDatabase(dbname)
+	db, ok := store.GetDatabase(dbName)
 	if !ok && !q.IfExists() {
-		return nil, postgresql.NewErrNotExist(dbname)
+		return nil, postgresql.NewErrDatabaseNotExist(dbName)
 	}
 
 	err := store.Databases.DropDatabase(db)
@@ -65,16 +74,30 @@ func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase
 		return nil, err
 	}
 
-	res, err := message.NewCommandCompleteWith(q.String())
-	if err != nil {
-		return nil, err
-	}
-	return message.Responses{res}, nil
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // DropIndex handles a DROP INDEX query.
 func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("DROP TABLE")
+	dbName := conn.DatabaseName()
+
+	db, ok := store.GetDatabase(dbName)
+	if !ok {
+		return nil, postgresql.NewErrDatabaseNotExist(dbName)
+	}
+
+	tblName := q.TableName()
+	tbl, ok := db.GetTable(tblName)
+	if !ok && !q.IfExists() {
+		return nil, postgresql.NewErrTableNotExist(tblName)
+	}
+
+	err := db.DropTable(tbl)
+	if err != nil {
+		return nil, err
+	}
+
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // Insert handles a INSERT query.
