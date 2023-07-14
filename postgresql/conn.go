@@ -21,23 +21,53 @@ import (
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
+// ConnOption represents a connection option.
+type ConnOption = func(*Conn)
+
 // Conn represents a connection of PostgreSQL binary protocol.
 type Conn struct {
-	Database string
-	ts       time.Time
+	db string
+	ts time.Time
 	tracer.Context
 	conn net.Conn
 }
 
 // NewConnWith returns a connection with a raw connection.
-func NewConnWith(c net.Conn, t tracer.Context) *Conn {
+func NewConnWith(c net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
-		Database: "",
-		ts:       time.Now(),
-		Context:  t,
-		conn:     c,
+		db:      "",
+		ts:      time.Now(),
+		Context: nil,
+		conn:    c,
+	}
+	for _, opt := range opts {
+		opt(conn)
 	}
 	return conn
+}
+
+// WithConnDatabase sets the database name.
+func WithConnDatabase(name string) func(*Conn) {
+	return func(conn *Conn) {
+		conn.db = name
+	}
+}
+
+// WithConnDatabase sets the database name.
+func WithConnTracer(t tracer.Context) func(*Conn) {
+	return func(conn *Conn) {
+		conn.Context = t
+	}
+}
+
+// SetDatabaseName sets the database name.
+func (conn *Conn) SetDatabaseName(db string) {
+	conn.db = db
+}
+
+// DatabaseName returns the database name.
+func (conn *Conn) DatabaseName() string {
+	return conn.db
 }
 
 // Conn returns the raw connection.
