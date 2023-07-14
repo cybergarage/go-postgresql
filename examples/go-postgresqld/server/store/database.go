@@ -41,7 +41,7 @@ func (db *Database) Name() string {
 
 // AddTable adds a specified table into the database.
 func (db *Database) AddTable(table *Table) {
-	tableName := table.Name()
+	tableName := table.Name
 	db.tables[tableName] = table
 }
 
@@ -54,7 +54,7 @@ func (db *Database) AddTables(tables []*Table) {
 
 // DropTable remove the specified table.
 func (db *Database) DropTable(table *Table) error {
-	name := table.Name()
+	name := table.Name
 	delete(db.tables, name)
 	return nil
 }
