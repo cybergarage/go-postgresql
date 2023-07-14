@@ -53,11 +53,10 @@ func (db *Database) AddTables(tables []*Table) {
 }
 
 // DropTable remove the specified table.
-func (db *Database) DropTable(table *Table) bool {
+func (db *Database) DropTable(table *Table) error {
 	name := table.Name()
 	delete(db.tables, name)
-	_, ok := db.tables[name]
-	return !ok
+	return nil
 }
 
 // GetTable returns a table with the specified name.
