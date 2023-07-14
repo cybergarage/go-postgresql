@@ -50,3 +50,23 @@ func NewErrExist(v any) error {
 func NewErrNotExist(v any) error {
 	return fmt.Errorf("%v is %w", v, ErrNotExist)
 }
+
+// NewErrDatabaseNotExist returns a new database not exist error.
+func NewErrDatabaseNotExist(v string) error {
+	return fmt.Errorf("database (%v) is %w", v, ErrNotExist)
+}
+
+// NewErrTableNotExist returns a new table not exist error.
+func NewErrTableNotExist(v string) error {
+	return fmt.Errorf("table (%v) is %w", v, ErrNotExist)
+}
+
+// NewErrDatabaseExist returns a new database exist error.
+func NewErrDatabaseExist(v string) error {
+	return fmt.Errorf("database (%v) is %w", v, ErrExist)
+}
+
+// NewErrTableExist returns a new table exist error.
+func NewErrTableExist(v string) error {
+	return fmt.Errorf("table (%v) is %w", v, ErrExist)
+}
