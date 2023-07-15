@@ -15,6 +15,8 @@
 package store
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-sqlparser/sql/query"
@@ -108,10 +110,7 @@ func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (mes
 
 // Insert handles a INSERT query.
 func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.Responses, error) {
-	dbName := conn.DatabaseName()
-	tblName := q.TableName()
-
-	_, tbl, err := store.GetDatabaseTable(conn, dbName, tblName)
+	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -127,6 +126,16 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 
 // Select handles a SELECT query.
 func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
+	tbls := q.Tables()
+	if len(tbls) != 1 {
+		return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", tbls.String()))
+	}
+	tblName := tbls[0].TableName()
+
+	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), tblName)
+	if err != nil {
+		return nil, err
+	}
 	return nil, postgresql.NewErrNotImplemented("SELECT")
 }
 

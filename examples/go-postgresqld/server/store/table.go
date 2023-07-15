@@ -25,14 +25,25 @@ type Table struct {
 	sync.Mutex
 	Name string
 	*query.Schema
+	Rows []Row
 }
 
 func NewTableWith(name string, schema *query.Schema) *Table {
 	tbl := &Table{
 		Name:   name,
 		Schema: schema,
+		Rows:   []Row{},
 	}
 	return tbl
+}
+
+func (tbl *Table) Select(cond *query.Where) ([]Row, error) {
+	rows := []Row{}
+	return rows, nil
+}
+
+func (tbl *Table) Insert(cols []*query.Column) error {
+	return nil
 }
 
 // String returns the string representation.
