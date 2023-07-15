@@ -272,7 +272,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		}
 
 		bindStmt := func(stmt query.Statement, params message.BindParams) error {
-			updateBindColumns := func(columns query.Columns, params message.BindParams) error {
+			updateBindColumns := func(columns []*query.Column, params message.BindParams) error {
 				for _, column := range columns {
 					v, ok := column.Value().(*query.BindParam)
 					if !ok {
@@ -289,12 +289,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 			switch stmt := stmt.(type) {
 			case *query.Insert:
-				err := updateBindColumns(stmt.Columns, params)
+				err := updateBindColumns(stmt.Columns(), params)
 				if err != nil {
 					return err
 				}
 			case *query.Update:
-				err := updateBindColumns(stmt.Columns, params)
+				err := updateBindColumns(stmt.Columns(), params)
 				if err != nil {
 					return err
 				}
