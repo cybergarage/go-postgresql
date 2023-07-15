@@ -52,6 +52,12 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 		return nil, postgresql.NewErrTableNotExist(tblName)
 	}
 
+	tbl := NewTableWith(tblName, q.Schema())
+	err := db.AddTable(tbl)
+	if err != nil {
+		return nil, err
+	}
+
 	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
