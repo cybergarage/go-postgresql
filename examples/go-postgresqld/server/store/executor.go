@@ -108,7 +108,21 @@ func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (mes
 
 // Insert handles a INSERT query.
 func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("INSERT")
+	dbName := conn.DatabaseName()
+	tblName := q.TableName()
+
+	_, tbl, err := store.GetDatabaseTable(conn, dbName, tblName)
+	if err != nil {
+		return nil, err
+	}
+
+	cols := q.Columns()
+	err = tbl.Insert(cols)
+	if err != nil {
+		return nil, err
+	}
+
+	return message.NewInsertCompleteResponsesWith(1)
 }
 
 // Select handles a SELECT query.
