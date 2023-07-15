@@ -25,3 +25,39 @@ func NewCommandCompleteResponsesWith(msg string) (Responses, error) {
 	}
 	return Responses{res}, nil
 }
+
+// NewInsertCompleteResponsesWith returns a new responses with the specified message.
+func NewInsertCompleteResponsesWith(n int) (Responses, error) {
+	res, err := NewInsertCompleteWith(n)
+	if err != nil {
+		return nil, err
+	}
+	return Responses{res}, nil
+}
+
+// NewUpdateCompleteResponsesWith returns a new responses with the specified message.
+func NewUpdateCompleteResponsesWith(n int) (Responses, error) {
+	res, err := NewUpdateCompleteWith(n)
+	if err != nil {
+		return nil, err
+	}
+	return Responses{res}, nil
+}
+
+// NewSelectCompleteResponsesWith returns a new responses with the specified message.
+func NewSelectCompleteResponsesWith(n int) (Responses, error) {
+	res, err := NewSelectCompleteWith(n)
+	if err != nil {
+		return nil, err
+	}
+	return Responses{res}, nil
+}
+
+// NewDeleteCompleteResponsesWith returns a new responses with the specified message.
+func NewDeleteCompleteResponsesWith(n int) (Responses, error) {
+	res, err := NewDeleteCompleteWith(n)
+	if err != nil {
+		return nil, err
+	}
+	return Responses{res}, nil
+}
