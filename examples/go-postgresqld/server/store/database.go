@@ -40,9 +40,10 @@ func (db *Database) Name() string {
 }
 
 // AddTable adds a specified table into the database.
-func (db *Database) AddTable(table *Table) {
+func (db *Database) AddTable(table *Table) error {
 	tableName := table.Name
 	db.tables[tableName] = table
+	return nil
 }
 
 // AddTables adds a specified tables into the database.
