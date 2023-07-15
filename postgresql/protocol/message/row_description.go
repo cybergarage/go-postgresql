@@ -10,11 +10,13 @@ package message
 // RowDescription represents a row description message.
 type RowDescription struct {
 	*ResponseMessage
+	fileds []*RowField
 }
 
 // NewRowDescription returns a new row description message instance.
 func NewRowDescription() *RowDescription {
 	return &RowDescription{
 		ResponseMessage: NewResponseMessageWith(RowDescriptionMessage),
+		fileds:          []*RowField{},
 	}
 }
