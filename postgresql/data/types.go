@@ -35,7 +35,7 @@ const (
 	TidType             DataType = 27
 	XidType             DataType = 28
 	CidType             DataType = 29
-	XmlType             DataType = 142
+	XMLType             DataType = 142
 	PointType           DataType = 600
 	LsegType            DataType = 601
 	PathType            DataType = 602
