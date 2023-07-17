@@ -132,7 +132,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 	}
 	tblName := tbls[0].TableName()
 
-	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), tblName)
+	_, _, err := store.GetDatabaseTable(conn, conn.DatabaseName(), tblName)
 	if err != nil {
 		return nil, err
 	}
