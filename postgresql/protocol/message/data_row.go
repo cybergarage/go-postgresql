@@ -10,7 +10,7 @@ package message
 // DataRow represents a data row message.
 type DataRow struct {
 	*ResponseMessage
-	ColumnValues []any
+	Data []any
 }
 
 // NewDataRow returns a new data row message instance.
@@ -20,19 +20,19 @@ func NewDataRow() *DataRow {
 	}
 }
 
-// AppendColumnValue appends a column value to the data row message.
-func (msg *DataRow) AppendColumnValue(v any) error {
-	msg.ColumnValues = append(msg.ColumnValues, v)
+// AppendData appends a column value to the data row message.
+func (msg *DataRow) AppendData(v any) error {
+	msg.Data = append(msg.Data, v)
 	return nil
 }
 
 // Bytes appends a length of the message content bytes, and returns the message bytes.
 func (msg *DataRow) Bytes() ([]byte, error) {
-	err := msg.AppendInt16(int16(len(msg.ColumnValues)))
+	err := msg.AppendInt16(int16(len(msg.Data)))
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range msg.ColumnValues {
+	for _, v := range msg.Data {
 		switch v := v.(type) {
 		case []byte:
 			if err := msg.AppendInt32(int32(len(v))); err != nil {
