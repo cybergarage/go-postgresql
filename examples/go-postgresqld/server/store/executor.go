@@ -126,16 +126,32 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 
 // Select handles a SELECT query.
 func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
+	// PostgreSQL: Documentation: 16: 55.2. Message Flow
+	// 55.2.2. Simple Query
+	// https://www.postgresql.org/docs/16/protocol-flow.html#PROTOCOL-FLOW-SIMPLE-QUERY
 	tbls := q.Tables()
 	if len(tbls) != 1 {
 		return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", tbls.String()))
 	}
 	tblName := tbls[0].TableName()
 
-	_, _, err := store.GetDatabaseTable(conn, conn.DatabaseName(), tblName)
+	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), tblName)
 	if err != nil {
 		return nil, err
 	}
+
+	rows, err := tbl.Select(q.Where())
+	if err != nil {
+		return nil, err
+	}
+
+	colums := q.Columns()
+	if q.Columns().IsSelectAll() {
+		colums = tbl.Columns()
+	}
+
+	names := colums.Names()
+
 	return nil, postgresql.NewErrNotImplemented("SELECT")
 }
 
