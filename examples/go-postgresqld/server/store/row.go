@@ -14,5 +14,32 @@
 
 package store
 
+import (
+	"github.com/cybergarage/go-postgresql/postgresql"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
+)
+
 // Row represents a row of a table.
 type Row map[string]any
+
+// NewRow returns a new row.
+func NewRow() Row {
+	return make(Row)
+}
+
+func NewRowWith(cols []*query.Column) Row {
+	row := NewRow()
+	for _, col := range cols {
+		row[col.Name()] = col.Value()
+	}
+	return row
+}
+
+// ValueByColumnName returns a value of the specified column name.
+func (row Row) ValueByColumnName(name string) (any, error) {
+	v, ok := row[name]
+	if !ok {
+		return nil, postgresql.NewErrNotExist(name)
+	}
+	return v, nil
+}
