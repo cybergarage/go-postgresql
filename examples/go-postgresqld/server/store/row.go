@@ -70,6 +70,13 @@ func (row Row) IsMatched(cond *query.Condition) bool {
 	return true
 }
 
+// Update updates the row with the specified columns.
+func (row Row) Update(colums []*query.Column) {
+	for _, col := range colums {
+		row[col.Name()] = col.Value()
+	}
+}
+
 // IsEqual returns true if the row is equal to the specified row.
 func (row Row) IsEqual(other Row) bool {
 	if len(row) != len(other) {
