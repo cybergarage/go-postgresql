@@ -15,6 +15,8 @@
 package store
 
 import (
+	"reflect"
+
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
@@ -36,13 +38,18 @@ func NewRowWith(cols []*query.Column) Row {
 	return row
 }
 
+// IsMatched returns true if the row is matched with the specified condition.
 func (row Row) IsMatched(cond *query.Condition) bool {
 	if cond.IsEmpty() {
 		return true
 	}
 
 	eq := func(name string, v any) bool {
-		return false
+		rv, ok := row[name]
+		if !ok {
+			return false
+		}
+		return reflect.DeepEqual(rv, v)
 	}
 
 	expr := cond.Expr()
@@ -53,6 +60,8 @@ func (row Row) IsMatched(cond *query.Condition) bool {
 		switch expr.Operator() {
 		case query.EQ:
 			return eq(name, value)
+		case query.NEQ:
+			return !eq(name, value)
 		default:
 			return false
 		}
