@@ -7,7 +7,7 @@
 
 package message
 
-// RowDescription represents a row description field.
+// RowField represents a row description field.
 type RowField struct {
 	Name         string
 	TableID      int32
@@ -18,15 +18,57 @@ type RowField struct {
 	FormatCode   int16
 }
 
+// RowFieldOption represents a row description field option.
+type RowFieldOption = func(*RowField)
+
 // NewRowField returns a new row description field.
-func NewRowFieldWith(name string, n int) *RowField {
-	return &RowField{
+func NewRowFieldWith(name string, n int, opts ...RowFieldOption) *RowField {
+	field := &RowField{
 		Name:         name,
 		TableID:      0,
 		Number:       int16(n),
 		DataTypeID:   0,
 		TypeModifier: 0,
 		FormatCode:   0,
+	}
+	for _, opt := range opts {
+		opt(field)
+	}
+	return field
+}
+
+// WithTableID sets a table ID.
+func WithTableID(tableID int32) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.TableID = tableID
+	}
+}
+
+// WithDataTypeID sets a data type ID.
+func WithDataTypeID(dataTypeID int32) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.DataTypeID = dataTypeID
+	}
+}
+
+// WithDataTypeSize sets a data type size.
+func WithDataTypeSize(dataTypeSize int16) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.DataTypeSize = dataTypeSize
+	}
+}
+
+// WithTypeModifier sets a type modifier.
+func WithTypeModifier(typeModifier int32) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.TypeModifier = typeModifier
+	}
+}
+
+// WithFormatCode sets a format code.
+func WithFormatCode(formatCode int16) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.FormatCode = formatCode
 	}
 }
 
