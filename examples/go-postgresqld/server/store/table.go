@@ -66,6 +66,23 @@ func (tbl *Table) Insert(cols []*query.Column) error {
 	return nil
 }
 
+// Update updates rows matched to the specified condition.
+func (tbl *Table) Update(cols []*query.Column, cond *query.Condition) (int, error) {
+	rows, err := tbl.Select(cond)
+	if err != nil {
+		return 0, err
+	}
+
+	tbl.Lock()
+	defer tbl.Unlock()
+
+	for _, row := range rows {
+		row.Update(cols)
+	}
+
+	return len(rows), nil
+}
+
 // Delete deletes rows matched to the specified condition.
 func (tbl *Table) Delete(cond *query.Condition) (int, error) {
 	rows, err := tbl.Select(cond)
