@@ -172,7 +172,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 	dataRow := message.NewDataRow()
 	for _, row := range rows {
 		for _, name := range names {
-			v, err := row.ValueByColumnName(name)
+			v, err := row.ValueByName(name)
 			if err != nil {
 				return nil, err
 			}

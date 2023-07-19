@@ -70,8 +70,8 @@ func (row Row) IsMatched(cond *query.Condition) bool {
 	return true
 }
 
-// ValueByColumnName returns a value of the specified column name.
-func (row Row) ValueByColumnName(name string) (any, error) {
+// ValueByName returns a value of the specified column name.
+func (row Row) ValueByName(name string) (any, error) {
 	v, ok := row[name]
 	if !ok {
 		return nil, postgresql.NewErrNotExist(name)
