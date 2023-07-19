@@ -14,11 +14,15 @@
 
 package query
 
+import (
+	"github.com/cybergarage/go-sqlparser/sql/query"
+)
+
 // PostgreSQL: Documentation: 16: Chapter 8. Data Types
 // https://www.postgresql.org/docs/16/datatype.html
 
 // DataType represents a PostgreSQL data type using the object ID.
-type DataType int16
+type DataType int32
 
 const (
 	BoolType            DataType = 16
@@ -90,3 +94,76 @@ const (
 	GeometryType        DataType = 3614
 	GeograpyType        DataType = 4326
 )
+
+// DataTypeFrom returns a data type from the specified query data type.
+func DataTypeFrom(t query.DataType) DataType {
+	switch t {
+	// case query.BigIntData:
+	// 	return
+	// case query.BinaryData:
+	// 	return
+	// case query.BitData:
+	// 	return
+	// case query.BlobData:
+	// 	return
+	// case query.BooleanData:
+	// 	return
+	// case query.CharData:
+	// 	return
+	// case query.CharacterData:
+	// 	return
+	// case query.ClobData:
+	// 	return
+	// case query.DateData:
+	// 	return DateType
+	// case query.DecimalData:
+	// 	return
+	// case query.DoubleData:
+	// 	return
+	// case query.FloatData:
+	// 	return
+	// case query.IntData:
+	// 	return
+	// case query.IntegerData:
+	// 	return
+	// case query.LongBlobData:
+	// 	return
+	// case query.LongTextData:
+	// 	return
+	// case query.MediumBlobData:
+	// 	return
+	// case query.MediumIntData:
+	// 	return
+	// case query.MediumTextData:
+	// 	return
+	// case query.NumericData:
+	// 	return
+	// case query.RealData:
+	// 	return
+	// case query.SetData:
+	// 	return
+	// case query.SmallIntData:
+	// 	return
+	case query.TextData:
+		return TextType
+	// case query.TimeData:
+	// 	return
+	// case query.TimeStampData:
+	// 	return
+	// case query.TinyBlobData:
+	// 	return
+	// case query.TinyIntData:
+	// 	return
+	// case query.TinyTextData:
+	// 	return
+	// case query.VarBinaryData:
+	// 	return
+	case query.VarCharData:
+		return TextType
+		// case query.VarCharacterData:
+		// 	return
+		// case query.YearData:
+		// 	return
+	}
+	return 0
+}
