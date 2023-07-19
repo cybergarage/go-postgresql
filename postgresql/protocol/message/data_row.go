@@ -55,6 +55,10 @@ func (msg *DataRow) Bytes() ([]byte, error) {
 			if err := msg.AppendInt32(v); err != nil {
 				return nil, err
 			}
+		case nil:
+			if err := msg.AppendInt32(-1); err != nil {
+				return nil, err
+			}
 		default:
 			return nil, newColumnTypeNotSuppotedError(v)
 		}
