@@ -37,7 +37,7 @@ func NewTableWith(name string, schema *query.Schema) *Table {
 	return tbl
 }
 
-func (tbl *Table) Select(cond *query.Where) ([]Row, error) {
+func (tbl *Table) Select(cond *query.Condition) ([]Row, error) {
 	rows := []Row{}
 	return rows, nil
 }
