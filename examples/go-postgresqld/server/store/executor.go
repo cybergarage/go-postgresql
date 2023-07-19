@@ -189,5 +189,15 @@ func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (message.R
 
 // Delete handles a DELETE query.
 func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("DELETE")
+	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	if err != nil {
+		return nil, err
+	}
+
+	n, err := tbl.Delete(q.Where())
+	if err != nil {
+		return nil, err
+	}
+
+	return message.NewDeleteCompleteResponsesWith(n)
 }
