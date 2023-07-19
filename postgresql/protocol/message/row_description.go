@@ -21,6 +21,11 @@ func NewRowDescription() *RowDescription {
 	}
 }
 
+// AppendField appends a field to the message.
+func (msg *RowDescription) AppendField(field *RowField) {
+	msg.fileds = append(msg.fileds, field)
+}
+
 // Bytes appends a length of the message content bytes, and returns the message bytes.
 func (msg *RowDescription) Bytes() ([]byte, error) {
 	msg.AppendInt16(int16(len(msg.fileds)))
