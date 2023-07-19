@@ -22,11 +22,11 @@ type RowField struct {
 type RowFieldOption = func(*RowField)
 
 // NewRowField returns a new row description field.
-func NewRowFieldWith(name string, n int, opts ...RowFieldOption) *RowField {
+func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 	field := &RowField{
 		Name:         name,
 		TableID:      0,
-		Number:       int16(n),
+		Number:       0,
 		DataTypeID:   0,
 		TypeModifier: 0,
 		FormatCode:   0,
@@ -35,6 +35,13 @@ func NewRowFieldWith(name string, n int, opts ...RowFieldOption) *RowField {
 		opt(field)
 	}
 	return field
+}
+
+// WithNumber sets a number.
+func WithNumber(number int16) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.Number = number
+	}
 }
 
 // WithTableID sets a table ID.
