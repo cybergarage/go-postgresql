@@ -70,6 +70,21 @@ func (row Row) IsMatched(cond *query.Condition) bool {
 	return true
 }
 
+// IsEqual returns true if the row is equal to the specified row.
+func (row Row) IsEqual(other Row) bool {
+	if len(row) != len(other) {
+		return false
+	}
+
+	for k, v := range row {
+		if ov, ok := other[k]; !ok || !reflect.DeepEqual(v, ov) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // ValueByName returns a value of the specified column name.
 func (row Row) ValueByName(name string) (any, error) {
 	v, ok := row[name]
