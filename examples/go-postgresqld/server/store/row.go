@@ -27,12 +27,38 @@ func NewRow() Row {
 	return make(Row)
 }
 
+// NewRowWith returns a new row with the specified columns.
 func NewRowWith(cols []*query.Column) Row {
 	row := NewRow()
 	for _, col := range cols {
 		row[col.Name()] = col.Value()
 	}
 	return row
+}
+
+func (row Row) IsMatched(cond *query.Condition) bool {
+	if cond.IsEmpty() {
+		return true
+	}
+
+	eq := func(name string, v any) bool {
+		return false
+	}
+
+	expr := cond.Expr()
+	switch expr := expr.(type) {
+	case *query.CmpExpr:
+		name := expr.Left().Name()
+		value := expr.Right().Value()
+		switch expr.Operator() {
+		case query.EQ:
+			return eq(name, value)
+		default:
+			return false
+		}
+	}
+
+	return true
 }
 
 // ValueByColumnName returns a value of the specified column name.
