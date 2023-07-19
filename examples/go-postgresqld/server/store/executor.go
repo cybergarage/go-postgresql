@@ -19,7 +19,7 @@ import (
 
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-	"github.com/cybergarage/go-sqlparser/sql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // CreateDatabase handles a CREATE DATABASE query.
@@ -146,13 +146,41 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 	}
 
 	colums := q.Columns()
-	if q.Columns().IsSelectAll() {
+	if colums.IsSelectAll() {
 		colums = tbl.Columns()
 	}
 
+	// Row description response
+
+	schema := tbl.Schema
 	names := colums.Names()
 
-	return nil, postgresql.NewErrNotImplemented("SELECT")
+	rowDesc := message.NewRowDescription()
+	for n, name := range names {
+		_, err := schema.ColumnByName(name)
+		if err != nil {
+			return nil, err
+		}
+		field := message.NewRowFieldWith(name,
+			message.WithNumber(int16(n+1)),
+		)
+		rowDesc.AppendField(field)
+	}
+
+	// Data row response
+
+	dataRow := message.NewDataRow()
+	for _, row := range rows {
+		for _, name := range names {
+			v, err := row.ValueByColumnName(name)
+			if err != nil {
+				return nil, err
+			}
+			dataRow.AppendData(v)
+		}
+	}
+
+	return message.NewResponsesWith(rowDesc, dataRow), postgresql.NewErrNotImplemented("SELECT")
 }
 
 // Update handles a UPDATE query.
