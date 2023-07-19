@@ -40,7 +40,20 @@ func NewTableWith(name string, schema *query.Schema) *Table {
 
 // Select returns rows matched to the specified condition.
 func (tbl *Table) Select(cond *query.Condition) ([]Row, error) {
+	tbl.Lock()
+	defer tbl.Unlock()
+
+	if cond.IsEmpty() {
+		return tbl.Rows, nil
+	}
+
 	rows := []Row{}
+	for _, row := range tbl.Rows {
+		if !row.IsMatched(cond) {
+			continue
+		}
+		rows = append(rows, row)
+	}
 	return rows, nil
 }
 
@@ -49,7 +62,7 @@ func (tbl *Table) Insert(cols []*query.Column) error {
 	row := NewRowWith(cols)
 	tbl.Lock()
 	tbl.Rows = append(tbl.Rows, row)
-	tbl.Unlock()
+	defer tbl.Unlock()
 	return nil
 }
 
