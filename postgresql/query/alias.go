@@ -18,6 +18,18 @@ import (
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
+const (
+	// Aliases for types defined in github.com/cybergarage/go-postgresql/postgresql/query.
+	EQ  = query.EQ
+	NEQ = query.NEQ
+	LT  = query.LT
+	LE  = query.LE
+	GT  = query.GT
+	GE  = query.GE
+	IN  = query.IN
+	NIN = query.NIN
+)
+
 type (
 	// Aliases for types defined in github.com/cybergarage/go-postgresql/postgresql/query.
 	BindParam      = query.BindParam
@@ -34,4 +46,8 @@ type (
 	Table          = query.Table
 	Condition      = query.Condition
 	Schema         = query.Schema
+	Expr           = query.Expr
+	CmpExpr        = query.CmpExpr
+	AndExpr        = query.AndExpr
+	OrExpr         = query.OrExpr
 )
