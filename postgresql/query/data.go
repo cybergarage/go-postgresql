@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package data
+package query
 
 // PostgreSQL: Documentation: 16: Chapter 8. Data Types
 // https://www.postgresql.org/docs/16/datatype.html
