@@ -17,6 +17,11 @@ package message
 // Responses represents a list of response.
 type Responses []Response
 
+// NewResponses returns a new responses.
+func NewResponsesWith(responses ...Response) Responses {
+	return Responses(responses)
+}
+
 // NewCommandCompleteResponsesWith returns a new responses with the specified message.
 func NewCommandCompleteResponsesWith(msg string) (Responses, error) {
 	res, err := NewCommandCompleteWith(msg)
