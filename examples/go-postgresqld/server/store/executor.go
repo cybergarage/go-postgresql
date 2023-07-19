@@ -146,12 +146,14 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	rowDesc := message.NewRowDescription()
 	for n, name := range names {
-		_, err := schema.ColumnByName(name)
+		schemaColumn, err := schema.ColumnByName(name)
 		if err != nil {
 			return nil, err
 		}
+		dt := int32(query.DataTypeFrom(schemaColumn.DataType()))
 		field := message.NewRowFieldWith(name,
 			message.WithNumber(int16(n+1)),
+			message.WithDataTypeID(dt),
 		)
 		rowDesc.AppendField(field)
 	}
