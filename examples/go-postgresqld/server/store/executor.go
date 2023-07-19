@@ -87,20 +87,12 @@ func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase
 
 // DropIndex handles a DROP INDEX query.
 func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (message.Responses, error) {
-	dbName := conn.DatabaseName()
-
-	db, ok := store.GetDatabase(dbName)
-	if !ok {
-		return nil, postgresql.NewErrDatabaseNotExist(dbName)
+	db, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	if err != nil {
+		return nil, err
 	}
 
-	tblName := q.TableName()
-	tbl, ok := db.GetTable(tblName)
-	if !ok && !q.IfExists() {
-		return nil, postgresql.NewErrTableNotExist(tblName)
-	}
-
-	err := db.DropTable(tbl)
+	err = db.DropTable(tbl)
 	if err != nil {
 		return nil, err
 	}
@@ -126,9 +118,6 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 
 // Select handles a SELECT query.
 func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
-	// PostgreSQL: Documentation: 16: 55.2. Message Flow
-	// 55.2.2. Simple Query
-	// https://www.postgresql.org/docs/16/protocol-flow.html#PROTOCOL-FLOW-SIMPLE-QUERY
 	tbls := q.Tables()
 	if len(tbls) != 1 {
 		return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", tbls.String()))
@@ -185,7 +174,17 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 // Update handles a UPDATE query.
 func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("UPDATE")
+	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	if err != nil {
+		return nil, err
+	}
+
+	n, err := tbl.Update(q.Columns(), q.Where())
+	if err != nil {
+		return nil, err
+	}
+
+	return message.NewUpdateCompleteResponsesWith(n)
 }
 
 // Delete handles a DELETE query.
