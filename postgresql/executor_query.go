@@ -16,7 +16,7 @@ package postgresql
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-	"github.com/cybergarage/go-sqlparser/sql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // BaseQueryExecutor represents a base query message executor.

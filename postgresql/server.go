@@ -21,8 +21,7 @@ import (
 
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-	"github.com/cybergarage/go-sqlparser/sql"
-	"github.com/cybergarage/go-sqlparser/sql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -265,52 +264,21 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 	// executeQuery executes a query and returns the result.
 	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
-		parser := sql.NewParser()
+		parser := query.NewParser()
 		stmts, err := parser.ParseString(queryMsg.Query)
 		if err != nil {
 			return err
 		}
 
-		bindStmt := func(stmt query.Statement, params message.BindParams) error {
-			updateBindColumns := func(columns []*query.Column, params message.BindParams) error {
-				for _, column := range columns {
-					v, ok := column.Value().(*query.BindParam)
-					if !ok {
-						continue
-					}
-					param, err := params.FindBindParam(v.Name())
-					if err != nil {
-						return err
-					}
-					column.SetValue(param.Value)
-				}
-				return nil
-			}
-
-			switch stmt := stmt.(type) {
-			case *query.Insert:
-				err := updateBindColumns(stmt.Columns(), params)
-				if err != nil {
-					return err
-				}
-			case *query.Update:
-				err := updateBindColumns(stmt.Columns(), params)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-
 		for _, stmt := range stmts {
 			var err error
-			err = bindStmt(stmt, queryMsg.BindParams)
+			err = stmt.Bind(queryMsg.BindParams)
 			if err != nil {
 				return err
 			}
 
 			var res message.Responses
-			switch stmt := stmt.(type) {
+			switch stmt := stmt.Statement.(type) {
 			case *query.CreateDatabase:
 				res, err = server.Executor.CreateDatabase(conn, stmt)
 			case *query.CreateTable:
