@@ -17,7 +17,7 @@ package store
 import (
 	"sync"
 
-	"github.com/cybergarage/go-sqlparser/sql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // Table represents a destination or source database of query.
@@ -28,6 +28,7 @@ type Table struct {
 	Rows []Row
 }
 
+// NewTable returns a new table.
 func NewTableWith(name string, schema *query.Schema) *Table {
 	tbl := &Table{
 		Name:   name,
@@ -37,12 +38,18 @@ func NewTableWith(name string, schema *query.Schema) *Table {
 	return tbl
 }
 
+// Select returns rows matched to the specified condition.
 func (tbl *Table) Select(cond *query.Condition) ([]Row, error) {
 	rows := []Row{}
 	return rows, nil
 }
 
+// Insert inserts a new row.
 func (tbl *Table) Insert(cols []*query.Column) error {
+	row := NewRowWith(cols)
+	tbl.Lock()
+	tbl.Rows = append(tbl.Rows, row)
+	tbl.Unlock()
 	return nil
 }
 
