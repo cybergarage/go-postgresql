@@ -98,70 +98,70 @@ const (
 // DataTypeFrom returns a data type from the specified query data type.
 func DataTypeFrom(t query.DataType) DataType {
 	switch t {
-	// case query.BigIntData:
-	// 	return
-	// case query.BinaryData:
-	// 	return
-	// case query.BitData:
-	// 	return
-	// case query.BlobData:
-	// 	return
-	// case query.BooleanData:
-	// 	return
-	// case query.CharData:
-	// 	return
-	// case query.CharacterData:
-	// 	return
+	case query.BigIntData:
+		return Int8Type
+	case query.BinaryData:
+		return ByteaType
+	case query.BitData:
+		return BitType
+	case query.BlobData:
+		return ByteaType
+	case query.BooleanData:
+		return BoolType
+	case query.CharData:
+		return CharType
+	case query.CharacterData:
+		return VarcharType
 	// case query.ClobData:
 	// 	return
-	// case query.DateData:
-	// 	return DateType
+	case query.DateData:
+		return DateType
 	// case query.DecimalData:
 	// 	return
-	// case query.DoubleData:
-	// 	return
-	// case query.FloatData:
-	// 	return
-	// case query.IntData:
-	// 	return
-	// case query.IntegerData:
-	// 	return
-	// case query.LongBlobData:
-	// 	return
-	// case query.LongTextData:
-	// 	return
-	// case query.MediumBlobData:
-	// 	return
+	case query.DoubleData:
+		return Float8Type
+	case query.FloatData:
+		return Float4Type
+	case query.IntData:
+		return Int4Type
+	case query.IntegerData:
+		return Int4Type
+	case query.LongBlobData:
+		return ByteaType
+	case query.LongTextData:
+		return TextType
+	case query.MediumBlobData:
+		return ByteaType
 	// case query.MediumIntData:
 	// 	return
-	// case query.MediumTextData:
-	// 	return
+	case query.MediumTextData:
+		return TextType
 	// case query.NumericData:
 	// 	return
 	// case query.RealData:
 	// 	return
 	// case query.SetData:
 	// 	return
-	// case query.SmallIntData:
-	// 	return
+	case query.SmallIntData:
+		return Int2Type
 	case query.TextData:
 		return TextType
-	// case query.TimeData:
-	// 	return
-	// case query.TimeStampData:
-	// 	return
-	// case query.TinyBlobData:
-	// 	return
+	case query.TimeData:
+		return TimeType
+	case query.TimeStampData:
+		return TimestampType
+	case query.TinyBlobData:
+		return ByteaType
 	// case query.TinyIntData:
 	// 	return
-	// case query.TinyTextData:
-	// 	return
-	// case query.VarBinaryData:
-	// 	return
-	case query.VarCharData:
+	case query.TinyTextData:
 		return TextType
-		// case query.VarCharacterData:
-		// 	return
+	case query.VarBinaryData:
+		return ByteaType
+	case query.VarCharData:
+		return VarcharType
+	case query.VarCharacterData:
+		return VarcharType
 		// case query.YearData:
 		// 	return
 	}
