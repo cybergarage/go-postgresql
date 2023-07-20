@@ -171,7 +171,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		}
 	}
 
-	return message.NewResponsesWith(rowDesc, dataRow), postgresql.NewErrNotImplemented("SELECT")
+	return message.NewResponsesWith(rowDesc, dataRow), nil
 }
 
 // Update handles a UPDATE query.
