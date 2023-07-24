@@ -56,7 +56,7 @@ func (msg *DataRow) Bytes() ([]byte, error) {
 				return nil, err
 			}
 		case string:
-			if err := msg.AppendInt32(int32(len(v))); err != nil {
+			if err := msg.AppendInt32(int32(len(v) + 1)); err != nil {
 				return nil, err
 			}
 			if err := msg.AppendString(v); err != nil {
