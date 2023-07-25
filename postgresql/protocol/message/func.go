@@ -41,8 +41,8 @@ func Int64ToBytes(v int64) []byte {
 	return b
 }
 
-// Int32BytesToInt converts the specified byte array to an integer.
-func Int32BytesToInt(b []byte) int32 {
+// BytesToInt32 converts the specified byte array to an integer.
+func BytesToInt32(b []byte) int32 {
 	v := int32(b[0])<<24 |
 		int32(b[1])<<16 |
 		int32(b[2])<<8 |

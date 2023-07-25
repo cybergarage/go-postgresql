@@ -40,7 +40,7 @@ func (reader *Reader) ReadInt32() (int32, error) {
 	if nRead != 4 {
 		return 0, newShortMessageError(4, nRead)
 	}
-	return Int32BytesToInt(int32Bytes), nil
+	return BytesToInt32(int32Bytes), nil
 }
 
 // ReadInt16 reads a 16-bit integer.
