@@ -52,7 +52,7 @@ func TestInt32Convert(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int32ToBytes(tv)
-		v := Int32BytesToInt(b)
+		v := BytesToInt32(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
 		}
