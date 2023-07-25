@@ -62,11 +62,39 @@ func (msg *DataRow) Bytes() ([]byte, error) {
 			if err := msg.AppendBytes([]byte(v)); err != nil {
 				return nil, err
 			}
+		case int8:
+			if err := msg.AppendInt32(1); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendInt8(v); err != nil {
+				return nil, err
+			}
+		case int16:
+			if err := msg.AppendInt32(2); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendInt16(v); err != nil {
+				return nil, err
+			}
 		case int32:
 			if err := msg.AppendInt32(4); err != nil {
 				return nil, err
 			}
 			if err := msg.AppendInt32(v); err != nil {
+				return nil, err
+			}
+		case int64:
+			if err := msg.AppendInt32(8); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendInt64(v); err != nil {
+				return nil, err
+			}
+		case int:
+			if err := msg.AppendInt32(8); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendInt64(int64(v)); err != nil {
 				return nil, err
 			}
 		case nil:
