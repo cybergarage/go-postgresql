@@ -53,7 +53,7 @@ func (reader *Reader) ReadInt16() (int16, error) {
 	if nRead != 2 {
 		return 0, newShortMessageError(2, nRead)
 	}
-	return Int16BytesToInt(int16Bytes), nil
+	return BytesToInt16(int16Bytes), nil
 }
 
 // ReadString reads a string.
