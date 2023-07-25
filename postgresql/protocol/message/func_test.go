@@ -19,6 +19,26 @@ import (
 	"testing"
 )
 
+func TestInt64Convert(t *testing.T) {
+	ts := []int64{
+		math.MinInt64,
+		math.MinInt64 / 2,
+		-1,
+		0,
+		1,
+		math.MaxInt64 / 2,
+		math.MaxInt64,
+	}
+
+	for _, tv := range ts {
+		b := Int64ToBytes(tv)
+		v := Int64BytesToInt(b)
+		if tv != v {
+			t.Errorf("Failed to convert (%d != %d)", tv, v)
+		}
+	}
+}
+
 func TestInt32Convert(t *testing.T) {
 	ts := []int32{
 		math.MinInt32,
