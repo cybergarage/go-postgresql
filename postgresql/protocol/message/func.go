@@ -73,3 +73,15 @@ func Int16ToBytes(v int16) []byte {
 	b[1] = byte(v)
 	return b
 }
+
+// BytesToInt8 converts the specified byte array to an integer.
+func BytesToInt8(b []byte) int8 {
+	return int8(b[0])
+}
+
+// Int8ToBytes converts the specified integer to a byte array.
+func Int8ToBytes(v int8) []byte {
+	b := make([]byte, 1)
+	b[0] = byte(v)
+	return b
+}
