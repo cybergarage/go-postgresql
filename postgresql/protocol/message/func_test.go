@@ -72,7 +72,7 @@ func TestInt16Convert(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int16ToBytes(tv)
-		v := Int16BytesToInt(b)
+		v := BytesToInt16(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
 		}

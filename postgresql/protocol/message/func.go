@@ -60,8 +60,8 @@ func Int32ToBytes(v int32) []byte {
 	return b
 }
 
-// Int16BytesToInt converts the specified byte array to an integer.
-func Int16BytesToInt(b []byte) int16 {
+// BytesToInt16 converts the specified byte array to an integer.
+func BytesToInt16(b []byte) int16 {
 	v := int16(b[0])<<8 | int16(b[1])
 	return v
 }
