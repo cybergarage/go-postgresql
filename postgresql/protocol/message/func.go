@@ -14,9 +14,39 @@
 
 package message
 
+// Int64BytesToInt converts the specified byte array to an integer.
+func Int64BytesToInt(b []byte) int64 {
+	v := int64(b[0])<<56 |
+		int64(b[1])<<48 |
+		int64(b[2])<<40 |
+		int64(b[3])<<32 |
+		int64(b[4])<<24 |
+		int64(b[5])<<16 |
+		int64(b[6])<<8 |
+		int64(b[7])
+	return v
+}
+
+// Int64ToBytes converts the specified integer to a byte array.
+func Int64ToBytes(v int64) []byte {
+	b := make([]byte, 8)
+	b[0] = byte(v >> 56)
+	b[1] = byte(v >> 48)
+	b[2] = byte(v >> 40)
+	b[3] = byte(v >> 32)
+	b[4] = byte(v >> 24)
+	b[5] = byte(v >> 16)
+	b[6] = byte(v >> 8)
+	b[7] = byte(v)
+	return b
+}
+
 // Int32BytesToInt converts the specified byte array to an integer.
 func Int32BytesToInt(b []byte) int32 {
-	v := int32(b[0])<<24 | int32(b[1])<<16 | int32(b[2])<<8 | int32(b[3])
+	v := int32(b[0])<<24 |
+		int32(b[1])<<16 |
+		int32(b[2])<<8 |
+		int32(b[3])
 	return v
 }
 
