@@ -16,6 +16,8 @@ package message
 
 import (
 	"bufio"
+
+	util "github.com/cybergarage/go-postgresql/postgresql/util/bytes"
 )
 
 // Reader represents a message reader.
@@ -40,7 +42,7 @@ func (reader *Reader) ReadInt32() (int32, error) {
 	if nRead != 4 {
 		return 0, newShortMessageError(4, nRead)
 	}
-	return BytesToInt32(int32Bytes), nil
+	return util.BytesToInt32(int32Bytes), nil
 }
 
 // ReadInt16 reads a 16-bit integer.
@@ -53,7 +55,7 @@ func (reader *Reader) ReadInt16() (int16, error) {
 	if nRead != 2 {
 		return 0, newShortMessageError(2, nRead)
 	}
-	return BytesToInt16(int16Bytes), nil
+	return util.BytesToInt16(int16Bytes), nil
 }
 
 // ReadString reads a string.
