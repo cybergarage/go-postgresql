@@ -32,7 +32,7 @@ func TestInt64Convert(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int64ToBytes(tv)
-		v := Int64BytesToInt(b)
+		v := BytesToInt64(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
 		}
@@ -73,6 +73,26 @@ func TestInt16Convert(t *testing.T) {
 	for _, tv := range ts {
 		b := Int16ToBytes(tv)
 		v := Int16BytesToInt(b)
+		if tv != v {
+			t.Errorf("Failed to convert (%d != %d)", tv, v)
+		}
+	}
+}
+
+func TestInt8Convert(t *testing.T) {
+	ts := []int8{
+		math.MinInt8,
+		math.MinInt8 / 2,
+		-1,
+		0,
+		1,
+		math.MaxInt8 / 2,
+		math.MaxInt8,
+	}
+
+	for _, tv := range ts {
+		b := Int8ToBytes(tv)
+		v := BytesToInt8(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
 		}

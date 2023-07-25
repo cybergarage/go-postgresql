@@ -14,8 +14,8 @@
 
 package message
 
-// Int64BytesToInt converts the specified byte array to an integer.
-func Int64BytesToInt(b []byte) int64 {
+// BytesToInt64 converts the specified byte array to an integer.
+func BytesToInt64(b []byte) int64 {
 	v := int64(b[0])<<56 |
 		int64(b[1])<<48 |
 		int64(b[2])<<40 |
