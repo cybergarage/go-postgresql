@@ -18,7 +18,7 @@ import (
 	"bufio"
 	"bytes"
 
-	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
+	encording "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
 )
 
 // Writer represents a message writer.
@@ -49,22 +49,22 @@ func (writer *Writer) AppendBytes(p []byte) error {
 
 // AppendInt8 appends the specified int8 value.
 func (writer *Writer) AppendInt8(v int8) error {
-	return writer.AppendBytes(util.Int8ToBytes(v))
+	return writer.AppendBytes(encording.Int8ToBytes(v))
 }
 
 // AppendInt16 appends the specified int16 value.
 func (writer *Writer) AppendInt16(v int16) error {
-	return writer.AppendBytes(util.Int16ToBytes(v))
+	return writer.AppendBytes(encording.Int16ToBytes(v))
 }
 
 // AppendInt32 appends the specified int32 value.
 func (writer *Writer) AppendInt32(v int32) error {
-	return writer.AppendBytes(util.Int32ToBytes(v))
+	return writer.AppendBytes(encording.Int32ToBytes(v))
 }
 
 // AppendInt64 appends the specified int64 value.
 func (writer *Writer) AppendInt64(v int64) error {
-	return writer.AppendBytes(util.Int64ToBytes(v))
+	return writer.AppendBytes(encording.Int64ToBytes(v))
 }
 
 // AppendString appends the specified string.
@@ -76,6 +76,16 @@ func (writer *Writer) AppendString(s string) error {
 		}
 	}
 	return writer.AppendTerminator()
+}
+
+// AppendFloat32 appends the specified float32 value.
+func (writer *Writer) AppendFloat32(v float32) error {
+	return writer.AppendBytes(encording.Float32ToBytes(v))
+}
+
+// AppendFloat64 appends the specified float64 value.
+func (writer *Writer) AppendFloat64(v float64) error {
+	return writer.AppendBytes(encording.Float64ToBytes(v))
 }
 
 // AppendTerminator appends a null terminator.
