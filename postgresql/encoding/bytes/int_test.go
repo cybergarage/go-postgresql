@@ -19,7 +19,7 @@ import (
 	"testing"
 )
 
-func TestInt64Convert(t *testing.T) {
+func TestInt64Endode(t *testing.T) {
 	ts := []int64{
 		math.MinInt64,
 		math.MinInt64 / 2,
@@ -39,7 +39,7 @@ func TestInt64Convert(t *testing.T) {
 	}
 }
 
-func TestInt32Convert(t *testing.T) {
+func TestInt32Endode(t *testing.T) {
 	ts := []int32{
 		math.MinInt32,
 		math.MinInt32 / 2,
@@ -59,7 +59,7 @@ func TestInt32Convert(t *testing.T) {
 	}
 }
 
-func TestInt16Convert(t *testing.T) {
+func TestInt16Endode(t *testing.T) {
 	ts := []int16{
 		math.MinInt16,
 		math.MinInt16 / 2,
@@ -79,7 +79,7 @@ func TestInt16Convert(t *testing.T) {
 	}
 }
 
-func TestInt8Convert(t *testing.T) {
+func TestInt8Endode(t *testing.T) {
 	ts := []int8{
 		math.MinInt8,
 		math.MinInt8 / 2,
