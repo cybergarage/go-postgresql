@@ -18,7 +18,7 @@ import (
 	"bufio"
 	"bytes"
 
-	util "github.com/cybergarage/go-postgresql/postgresql/util/bytes"
+	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
 )
 
 // Writer represents a message writer.
