@@ -97,6 +97,20 @@ func (msg *DataRow) Bytes() ([]byte, error) {
 			if err := msg.AppendInt64(int64(v)); err != nil {
 				return nil, err
 			}
+		case float32:
+			if err := msg.AppendInt32(4); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendFloat32(v); err != nil {
+				return nil, err
+			}
+		case float64:
+			if err := msg.AppendInt32(8); err != nil {
+				return nil, err
+			}
+			if err := msg.AppendFloat64(v); err != nil {
+				return nil, err
+			}
 		case nil:
 			if err := msg.AppendInt32(-1); err != nil {
 				return nil, err
