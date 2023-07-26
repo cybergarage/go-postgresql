@@ -17,7 +17,7 @@ package message
 import (
 	"bufio"
 
-	util "github.com/cybergarage/go-postgresql/postgresql/util/bytes"
+	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
 )
 
 // Reader represents a message reader.

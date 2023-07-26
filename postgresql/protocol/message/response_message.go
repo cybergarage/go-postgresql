@@ -18,7 +18,7 @@ package message
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 import (
-	util "github.com/cybergarage/go-postgresql/postgresql/util/bytes"
+	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
 )
 
 // ResponseMessage represents a backend response instance.
