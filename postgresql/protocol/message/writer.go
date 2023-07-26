@@ -17,6 +17,8 @@ package message
 import (
 	"bufio"
 	"bytes"
+
+	util "github.com/cybergarage/go-postgresql/postgresql/util/bytes"
 )
 
 // Writer represents a message writer.
@@ -47,22 +49,22 @@ func (writer *Writer) AppendBytes(p []byte) error {
 
 // AppendInt8 appends the specified int8 value.
 func (writer *Writer) AppendInt8(v int8) error {
-	return writer.AppendBytes(Int8ToBytes(v))
+	return writer.AppendBytes(util.Int8ToBytes(v))
 }
 
 // AppendInt16 appends the specified int16 value.
 func (writer *Writer) AppendInt16(v int16) error {
-	return writer.AppendBytes(Int16ToBytes(v))
+	return writer.AppendBytes(util.Int16ToBytes(v))
 }
 
 // AppendInt32 appends the specified int32 value.
 func (writer *Writer) AppendInt32(v int32) error {
-	return writer.AppendBytes(Int32ToBytes(v))
+	return writer.AppendBytes(util.Int32ToBytes(v))
 }
 
 // AppendInt64 appends the specified int64 value.
 func (writer *Writer) AppendInt64(v int64) error {
-	return writer.AppendBytes(Int64ToBytes(v))
+	return writer.AppendBytes(util.Int64ToBytes(v))
 }
 
 // AppendString appends the specified string.
