@@ -112,6 +112,11 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 		return nil, err
 	}
 
+	err = q.SetSchema(tbl.Schema)
+	if err != nil {
+		return nil, err
+	}
+
 	cols := q.Columns()
 	err = tbl.Insert(cols)
 	if err != nil {
