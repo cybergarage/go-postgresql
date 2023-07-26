@@ -17,6 +17,10 @@ package message
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
+import (
+	util "github.com/cybergarage/go-postgresql/postgresql/util/bytes"
+)
+
 // ResponseMessage represents a backend response instance.
 type ResponseMessage struct {
 	typ Type
@@ -57,6 +61,6 @@ func (msg *ResponseMessage) Bytes() ([]byte, error) {
 	if msg.typ != NoneMessage {
 		b = append(b, byte(msg.typ))
 	}
-	b = append(b, Int32ToBytes(int32(l+4))...)
+	b = append(b, util.Int32ToBytes(int32(l+4))...)
 	return append(b, msgBytes...), nil
 }
