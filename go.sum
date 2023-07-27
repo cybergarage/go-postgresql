@@ -2,6 +2,8 @@ github.com/cybergarage/go-logger v1.3.4 h1:UTgYZr/LwQtYVOncS3NJ64We5kCe7ce6L85y/
 github.com/cybergarage/go-logger v1.3.4/go.mod h1:2iMjinHam5oqyKEGsKIzeQQmmOPxpCgro95LOlEC2ks=
 github.com/cybergarage/go-sqlparser v0.9.0 h1:p/mqUih4Z0F5Bn79U/2fxkNx41tCR4VIph5ycrcOU7s=
 github.com/cybergarage/go-sqlparser v0.9.0/go.mod h1:ulAOjx+ieAGsNZivwDEMnu45f/LVMoReytKycXIcDDs=
+github.com/cybergarage/go-sqlparser v0.9.1 h1:R9FdUNbF8N3FwjboKWjyksXjiOqaAANk1s5Arcva79w=
+github.com/cybergarage/go-sqlparser v0.9.1/go.mod h1:pEy4IK9FrTDEh9tv3gFb724TWDfF7qqWexGpXnCvq9A=
 github.com/cybergarage/go-sqltest v0.9.5 h1:RAHvKvlOwI1mDvQkLVfJiijPPWIsgJ4SnrdBYKHkNuE=
 github.com/cybergarage/go-sqltest v0.9.5/go.mod h1:CQkUZIyjHsxe0YqRRSvxiWanbDgLcFYAhz/6FQP7vqs=
 github.com/cybergarage/go-tracing v1.1.2 h1:ISn5eeJF6myu9u8b0rpIvECujAZOBqvyKzexc0rcPmE=
