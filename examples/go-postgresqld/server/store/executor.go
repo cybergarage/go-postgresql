@@ -144,12 +144,16 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		return nil, err
 	}
 
+	if len(rows) <= 0 {
+		return message.NewResponsesWith(message.NewEmptyQueryResponse()), nil
+	}
+
+	// Row description response
+
 	colums := q.Columns()
 	if colums.IsSelectAll() {
 		colums = tbl.Columns()
 	}
-
-	// Row description response
 
 	schema := tbl.Schema
 	names := colums.Names()
