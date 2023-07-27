@@ -58,7 +58,7 @@ func NewUpdateCompleteWith(n int) (*CommandComplete, error) {
 // NewSelectCompleteWith returns a new command complete message for select query.
 func NewSelectCompleteWith(n int) (*CommandComplete, error) {
 	msg := NewCommandComplete()
-	return msg, msg.AppendString(fmt.Sprintf("SELECT 0 %d", n))
+	return msg, msg.AppendString(fmt.Sprintf("SELECT %d", n))
 }
 
 // NewDeleteCompleteWith returns a new command complete message for delete query.
