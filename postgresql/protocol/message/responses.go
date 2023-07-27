@@ -17,7 +17,12 @@ package message
 // Responses represents a list of response.
 type Responses []Response
 
-// NewResponses returns a new responses.
+// NewResponses returns a new empty responses.
+func NewResponses() Responses {
+	return []Response{}
+}
+
+// NewResponsesWith returns a new responses with the specified responses.
 func NewResponsesWith(responses ...Response) Responses {
 	return Responses(responses)
 }
