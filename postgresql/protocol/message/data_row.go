@@ -41,7 +41,7 @@ func (msg *DataRow) AppendData(v any) error {
 }
 
 // Bytes appends a length of the message content bytes, and returns the message bytes.
-func (msg *DataRow) Bytes() ([]byte, error) {
+func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 	err := msg.AppendInt16(int16(len(msg.Data)))
 	if err != nil {
 		return nil, err
