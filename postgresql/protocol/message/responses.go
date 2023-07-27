@@ -71,3 +71,8 @@ func NewDeleteCompleteResponsesWith(n int) (Responses, error) {
 	}
 	return Responses{res}, nil
 }
+
+// Append appends the specified response to this responses.
+func (responses Responses) Append(res Response) Responses {
+	return append(responses, res)
+}
