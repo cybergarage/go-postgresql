@@ -144,10 +144,6 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		return nil, err
 	}
 
-	if len(rows) <= 0 {
-		return message.NewResponsesWith(message.NewEmptyQueryResponse()), nil
-	}
-
 	// Row description response
 
 	colums := q.Columns()
@@ -192,12 +188,23 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		res = res.Append(dataRow)
 	}
 
+	cmpRes, err := message.NewSelectCompleteWith(len(rows))
+	if err != nil {
+		return nil, err
+	}
+	res = res.Append(cmpRes)
+
 	return res, nil
 }
 
 // Update handles a UPDATE query.
 func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (message.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	if err != nil {
+		return nil, err
+	}
+
+	err = q.SetSchema(tbl.Schema)
 	if err != nil {
 		return nil, err
 	}
