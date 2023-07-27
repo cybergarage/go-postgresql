@@ -158,6 +158,8 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 	schema := tbl.Schema
 	names := colums.Names()
 
+	res := message.NewResponses()
+
 	rowDesc := message.NewRowDescription()
 	for n, name := range names {
 		schemaColumn, err := schema.ColumnByName(name)
@@ -173,21 +175,24 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		)
 		rowDesc.AppendField(field)
 	}
+	res = res.Append(rowDesc)
 
 	// Data row response
 
-	dataRow := message.NewDataRow()
 	for _, row := range rows {
+		dataRow := message.NewDataRow()
 		for _, name := range names {
 			v, err := row.ValueByName(name)
 			if err != nil {
 				dataRow.AppendData(nil)
+				continue
 			}
 			dataRow.AppendData(v)
 		}
+		res = res.Append(dataRow)
 	}
 
-	return message.NewResponsesWith(rowDesc, dataRow), nil
+	return res, nil
 }
 
 // Update handles a UPDATE query.
