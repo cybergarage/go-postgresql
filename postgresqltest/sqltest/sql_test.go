@@ -37,7 +37,7 @@ func TestSQLTest(t *testing.T) {
 	client := sqltest.NewPostgresClient()
 
 	testNames := []string{
-		// "YcsbWorkload",
+		"YcsbWorkload",
 		"SimpInsertSelect",
 	}
 
