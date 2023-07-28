@@ -66,3 +66,9 @@ func NewDeleteCompleteWith(n int) (*CommandComplete, error) {
 	msg := NewCommandComplete()
 	return msg, msg.AppendString(fmt.Sprintf("DELETE %d", n))
 }
+
+// NewCopyCompleteWith returns a new command complete message for copy query.
+func NewCopyCompleteWith(n int) (*CommandComplete, error) {
+	msg := NewCommandComplete()
+	return msg, msg.AppendString(fmt.Sprintf("COPY %d", n))
+}
