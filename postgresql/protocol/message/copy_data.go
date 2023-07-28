@@ -22,6 +22,7 @@ package message
 // CopyData represents a copy data message.
 type CopyData struct {
 	MessageLength int32
+	Data          []byte
 }
 
 // NewCopyDataWithReader returns a new copy data message with the specified reader.
@@ -31,7 +32,19 @@ func NewCopyDataWithReader(reader *Reader) (*CopyData, error) {
 		return nil, err
 	}
 
+	dataLen := msgLen - 4
+	if dataLen < 0 {
+		return nil, newInvalidLengthError(int(dataLen))
+	}
+
+	data := make([]byte, dataLen)
+	_, err = reader.ReadBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
 	return &CopyData{
 		MessageLength: msgLen,
+		Data:          data,
 	}, nil
 }
