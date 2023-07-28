@@ -21,14 +21,45 @@ package message
 // PostgreSQL: Documentation: 16: 55.8. Error and Notice Message Fields
 // https://www.postgresql.org/docs/16/protocol-error-fields.html
 
+// CopyFormat represents a copy format.
+type CopyFormat = int8
+
+const (
+	// TextCopy represents a textual copy format.
+	TextCopy = CopyFormat(0)
+	// BinaryCopy represents a binary copy format.
+	BinaryCopy = CopyFormat(1)
+)
+
 // CopyInResponse represents a command complete message.
 type CopyInResponse struct {
 	*ResponseMessage
+	formatCodes []int16
 }
 
 // NewCopyInResponse returns a new command complete message instance.
-func NewCopyInResponse() *CopyInResponse {
-	return &CopyInResponse{
+func NewCopyInResponseWith(fmt CopyFormat) *CopyInResponse {
+	msg := &CopyInResponse{
 		ResponseMessage: NewResponseMessageWith(CopyInResponseMessage),
+		formatCodes:     []int16{},
 	}
+	msg.AppendInt8(fmt)
+	return msg
+}
+
+// AppendFormatCode appends a format code.
+func (msg *CopyInResponse) AppendFormatCode(formatCode int16) {
+	msg.formatCodes = append(msg.formatCodes, formatCode)
+}
+
+// Bytes appends a length of the message content bytes, and returns the message bytes.
+func (msg *CopyInResponse) Bytes() ([]byte, error) {
+	msg.AppendInt16(int16(len(msg.formatCodes)))
+	for _, field := range msg.formatCodes {
+		err := msg.AppendInt16(field)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return msg.ResponseMessage.Bytes()
 }
