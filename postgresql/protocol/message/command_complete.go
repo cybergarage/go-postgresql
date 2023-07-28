@@ -72,3 +72,9 @@ func NewCopyCompleteWith(n int) (*CommandComplete, error) {
 	msg := NewCommandComplete()
 	return msg, msg.AppendString(fmt.Sprintf("COPY %d", n))
 }
+
+// NewCommitComplete returns a new command complete message for commit query.
+func NewCommitComplete() (*CommandComplete, error) {
+	msg := NewCommandComplete()
+	return msg, msg.AppendString("COMMIT")
+}
