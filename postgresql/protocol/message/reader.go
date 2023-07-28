@@ -58,6 +58,11 @@ func (reader *Reader) ReadInt16() (int16, error) {
 	return util.BytesToInt16(int16Bytes), nil
 }
 
+// ReadByte reads a byte array data into the specified buffer.
+func (reader *Reader) ReadBytes(buf []byte) (int, error) {
+	return reader.Read(buf)
+}
+
 // ReadString reads a string.
 func (reader *Reader) ReadString() (string, error) {
 	b, err := reader.Reader.ReadBytes(0x00)
