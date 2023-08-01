@@ -19,14 +19,11 @@ import (
 	"fmt"
 )
 
-// ErrShortMessage is returned when the message is too short.
-var ErrShortMessage = errors.New("short message")
+// ErrInvalid is returned when the message is invalid.
+var ErrInvalid = errors.New("invalid")
 
 // ErrNotSupported is returned when the message is not supported.
 var ErrNotSupported = errors.New("not supported")
-
-// ErrInvalidLength is returned when the message length is invalid.
-var ErrInvalidLength = errors.New("invalid length")
 
 // ErrNotExist is returned when the specified object is not exist.
 var ErrNotExist = errors.New("not exist")
@@ -35,7 +32,7 @@ var ErrNotExist = errors.New("not exist")
 var ErrExist = errors.New("exist")
 
 func newShortMessageError(expected int, actual int) error {
-	return fmt.Errorf("%w: %d < %d", ErrShortMessage, actual, expected)
+	return fmt.Errorf("%w short message : %d < %d", ErrInvalid, actual, expected)
 }
 
 func newColumnTypeNotSuppotedError(v any) error {
@@ -43,7 +40,7 @@ func newColumnTypeNotSuppotedError(v any) error {
 }
 
 func newInvalidLengthError(v int) error {
-	return fmt.Errorf("%d is %w", v, ErrInvalidLength)
+	return fmt.Errorf("%d is %w length", v, ErrInvalid)
 }
 
 // NewErrMessageNotSuppoted returns a new message not supported error.
@@ -59,4 +56,9 @@ func NewErrExist(v any) error {
 // NewErrNotExist returns a new not exist error.
 func NewErrNotExist(v any) error {
 	return fmt.Errorf("%v is %w", v, ErrNotExist)
+}
+
+// NewErrInvalidMessage eturns a new message not supported error.
+func NewErrInvalidMessage(t Type) error {
+	return fmt.Errorf("message type (%c) is %w", t, ErrInvalid)
 }
