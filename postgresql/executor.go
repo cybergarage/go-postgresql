@@ -33,18 +33,9 @@ type StatusHandler interface {
 	BackendKeyData(*Conn) (message.Response, error)
 }
 
-// BindHandler represents a backend parse message handler.
-type BindHandler interface {
-	// Parse returns the parse response.
-	Parse(*Conn, *message.Parse) (message.Response, error)
-	// Bind returns the bind response.
-	Bind(*Conn, *message.Parse, *message.Bind) (message.Response, error)
-}
-
 // ProtocolHandler represents a backend protocol message handler.
 type ProtocolHandler interface {
 	StatusHandler
-	BindHandler
 }
 
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
