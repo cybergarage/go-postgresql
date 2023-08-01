@@ -58,7 +58,7 @@ type BindParam struct {
 type BindParams []*BindParam
 
 // NewBind returns a new bind message.
-func NewBindWith(reader *Reader, parse *Parse) (*Bind, error) {
+func NewBindWithReader(reader *Reader) (*Bind, error) {
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
