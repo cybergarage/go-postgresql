@@ -70,3 +70,8 @@ func NewErrDatabaseExist(v string) error {
 func NewErrTableExist(v string) error {
 	return fmt.Errorf("table (%v) is %w", v, ErrExist)
 }
+
+// NewErrPreparedQueryNotExist returns a new prepared query not exist error.
+func NewErrPreparedQueryNotExist(name string) error {
+	return fmt.Errorf("prepared query (%v) is %w", name, ErrNotExist)
+}
