@@ -214,47 +214,46 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleParseBindMessage := func(conn *Conn, reqMsg *message.RequestMessage) (*message.Query, error) {
+	handleParseMessage := func(conn *Conn, reqMsg *message.RequestMessage) error {
 		parseMsg, err := reqMsg.ParseParseMessage()
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		resMsg, err := server.Executor.Parse(conn, parseMsg)
+		if err != nil {
+			return err
+		}
+
+		err = conn.SetPreparedQuery(parseMsg)
+		if err != nil {
+			return err
+		}
+
+		err = responseMessage(message.NewParseComplete())
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	handleBindMessage := func(conn *Conn, reqMsg *message.RequestMessage) (*message.Query, error) {
+		bindMsg, err := reqMsg.ParseBindMessage()
 		if err != nil {
 			return nil, err
 		}
 
-		err = responseMessage(resMsg)
+		preparedQuery, err := conn.PreparedQuery(bindMsg.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		reqType, err := reqMsg.ReadType()
+		q, err := message.NewQueryWith(preparedQuery, bindMsg)
 		if err != nil {
 			return nil, err
 		}
 
-		if reqType != message.BindMessage {
-			return nil, message.NewErrMessageNotSuppoted(reqType)
-		}
-
-		bindMsg, err := reqMsg.ParseBindMessageWith(parseMsg)
-		if err != nil {
-			return nil, err
-		}
-
-		resMsg, err = server.Executor.Bind(conn, parseMsg, bindMsg)
-		if err != nil {
-			return nil, err
-		}
-
-		q, err := message.NewQueryWith(parseMsg, bindMsg)
-		if err != nil {
-			return nil, err
-		}
-
-		err = responseMessage(resMsg)
+		err = responseMessage(message.NewBindComplete())
 		if err != nil {
 			return nil, err
 		}
@@ -354,8 +353,10 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
+			reqErr = handleParseMessage(exConn, reqMsg)
+		case message.BindMessage:
 			var queryMsg *message.Query
-			queryMsg, reqErr = handleParseBindMessage(exConn, reqMsg)
+			queryMsg, reqErr = handleBindMessage(exConn, reqMsg)
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, queryMsg)
 			}
