@@ -71,21 +71,3 @@ func (reader *Reader) ReadString() (string, error) {
 	}
 	return string(b[:len(b)-1]), nil
 }
-
-// ReadType reads a message type.
-func (reader *Reader) ReadType() (Type, error) {
-	t, err := reader.ReadByte()
-	if err != nil {
-		return 0, err
-	}
-	return Type(t), nil
-}
-
-// ReadLength reads a message length.
-func (reader *Reader) ReadLength() (int32, error) {
-	l, err := reader.ReadInt32()
-	if err != nil {
-		return 0, err
-	}
-	return l, nil
-}
