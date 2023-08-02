@@ -18,6 +18,8 @@ package message
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
+// PostgreSQL: Documentation: 16: COPY
+// https://www.postgresql.org/docs/16/sql-copy.html
 
 // CopyData represents a copy data message.
 type CopyData struct {
@@ -32,7 +34,7 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 		return nil, err
 	}
 
-	dataLen := msg.MessageLength() - 4
+	dataLen := msg.MessageDataLength()
 	if dataLen < 0 {
 		return nil, newInvalidLengthError(int(dataLen))
 	}
