@@ -231,3 +231,27 @@ func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.R
 
 	return message.NewDeleteCompleteResponsesWith(n)
 }
+
+// Copy handles a COPY query.
+func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
+	_, _, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	if err != nil {
+		return nil, err
+	}
+
+	ok, err := stream.Next()
+	for {
+		if err != nil {
+			return nil, err
+		}
+		if !ok {
+			break
+		}
+		if data, err := stream.CopyData(); err != nil {
+			return nil, err
+		}
+		ok, err = stream.Next()
+	}
+
+	return message.NewResponsesWith(message.NewCopyDone()), nil
+}
