@@ -30,11 +30,11 @@ const (
 
 // Bind represents a bind message.
 type Bind struct {
-	MessageLength int32
-	Portal        string
-	Name          string
-	NumParams     int16
-	Params        BindParams
+	*RequestMessage
+	Portal    string
+	Name      string
+	NumParams int16
+	Params    BindParams
 }
 
 // BindParamType represents a bind parameter type.
@@ -58,8 +58,8 @@ type BindParam struct {
 type BindParams []*BindParam
 
 // NewBind returns a new bind message.
-func NewBindWithReader(reader *Reader) (*Bind, error) {
-	msgLen, err := reader.ReadInt32()
+func NewBindWithReader(reader *MessageReader) (*Bind, error) {
+	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {
 		return nil, err
 	}
@@ -149,11 +149,11 @@ func NewBindWithReader(reader *Reader) (*Bind, error) {
 	}
 
 	return &Bind{
-		MessageLength: msgLen,
-		Portal:        portal,
-		Name:          name,
-		NumParams:     num,
-		Params:        params,
+		RequestMessage: msg,
+		Portal:         portal,
+		Name:           name,
+		NumParams:      num,
+		Params:         params,
 	}, nil
 }
 
