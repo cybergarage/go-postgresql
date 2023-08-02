@@ -72,6 +72,15 @@ func NewDeleteCompleteResponsesWith(n int) (Responses, error) {
 	return Responses{res}, nil
 }
 
+// NewCopyCompleteResponsesWith returns a new responses with the specified message.
+func NewCopyCompleteResponsesWith(n int) (Responses, error) {
+	res, err := NewCopyCompleteWith(n)
+	if err != nil {
+		return nil, err
+	}
+	return Responses{res}, nil
+}
+
 // Append appends the specified response to this responses.
 func (responses Responses) Append(res Response) Responses {
 	return append(responses, res)
