@@ -21,17 +21,12 @@ package message
 
 // CopyDone represents a copy done message.
 type CopyDone struct {
-	MessageLength int32
+	*ResponseMessage
 }
 
-// NewCopyDoneWithReader returns a new copy done message with the specified reader.
-func NewCopyDoneWithReader(reader *Reader) (*CopyDone, error) {
-	msgLen, err := reader.ReadInt32()
-	if err != nil {
-		return nil, err
-	}
-
+// NewCopyDone returns a new copy done message instance.
+func NewCopyDone() *CopyDone {
 	return &CopyDone{
-		MessageLength: msgLen,
-	}, nil
+		ResponseMessage: NewResponseMessageWith(CopyDoneMessage),
+	}
 }
