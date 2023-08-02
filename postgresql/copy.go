@@ -18,28 +18,40 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
+// CopyStream represents a copy stream.
 type CopyStream struct {
-	*message.RequestMessage
+	*message.MessageReader
 }
 
-func NewCopyStreamWith(reqMsg *message.RequestMessage) *CopyStream {
+// NewCopyStreamWithReader returns a new copy stream with the specified reader.
+func NewCopyStreamWithReader(reader *message.MessageReader) *CopyStream {
 	return &CopyStream{
-		RequestMessage: reqMsg,
+		MessageReader: reader,
 	}
 }
 
-func (stream *CopyStream) Next() (*message.DataRow, error) {
-	reqType, err := stream.ReadType()
+// Next returns true if the next message is available.
+func (stream *CopyStream) Next() (bool, error) {
+	reqType, err := stream.PeekType()
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	switch reqType { // nolint:exhaustive
 	case message.CopyDataMessage:
 	case message.CopyDoneMessage:
+		_, err := message.NewCopyDoneWithReader(stream.MessageReader)
+		if err != nil {
+			return false, err
+		}
 	default:
-		return nil, message.NewErrInvalidMessage(reqType)
+		return false, message.NewErrInvalidMessage(reqType)
 	}
 
-	return nil, nil
+	return true, nil
+}
+
+// CopyData returns a copy data message.
+func (stream *CopyStream) DataRow() (*message.CopyData, error) {
+	return message.NewCopyDataWithReader(stream.MessageReader)
 }
