@@ -14,60 +14,22 @@
 
 package message
 
-import (
-	"bufio"
-)
-
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
 // RequestMessage represents a frontend request.
 type RequestMessage struct {
-	*Reader
-	Type   Type
-	Length int32
+	*Message
 }
 
-// NewRequestMessageWith returns a new request message with the specified reader.
-func NewRequestMessageWith(reader *bufio.Reader) *RequestMessage {
-	return &RequestMessage{
-		Reader: NewReaderWith(reader),
-		Type:   0,
-		Length: 0,
+// NewRequestMessageWithReader returns a new request message with the specified reader.
+func NewRequestMessageWithReader(reader *MessageReader) (*RequestMessage, error) {
+	msg, err := NewMessageWithReader(reader)
+	if err != nil {
+		return nil, err
 	}
-}
-
-// ReadType reads a message type.
-func (msg *RequestMessage) ReadType() (Type, error) {
-	var err error
-	msg.Type, err = msg.Reader.ReadType()
-	return msg.Type, err
-}
-
-// ReadLength reads a message length.
-func (msg *RequestMessage) ReadLength() (int32, error) {
-	var err error
-	msg.Length, err = msg.Reader.ReadLength()
-	return msg.Length, err
-}
-
-// ParseStartupMessage parses a startup message.
-func (msg *RequestMessage) ParseStartupMessage() (*Startup, error) {
-	return NewStartupWithReader(msg.Reader)
-}
-
-// ParseParseMessage parses a parse message.
-func (msg *RequestMessage) ParseParseMessage() (*Parse, error) {
-	return NewParseWithReader(msg.Reader)
-}
-
-// ParseBindMessage parses a bind message.
-func (msg *RequestMessage) ParseBindMessage() (*Bind, error) {
-	return NewBindWithReader(msg.Reader)
-}
-
-// ParseQueryMessage parses a bind message.
-func (msg *RequestMessage) ParseQueryMessage() (*Query, error) {
-	return NewQueryWithReader(msg.Reader)
+	return &RequestMessage{
+		Message: msg,
+	}, nil
 }
