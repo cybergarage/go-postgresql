@@ -21,18 +21,18 @@ package message
 
 // CopyData represents a copy data message.
 type CopyData struct {
-	MessageLength int32
-	Data          []byte
+	*RequestMessage
+	Data []byte
 }
 
 // NewCopyDataWithReader returns a new copy data message with the specified reader.
-func NewCopyDataWithReader(reader *Reader) (*CopyData, error) {
-	msgLen, err := reader.ReadInt32()
+func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
+	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {
 		return nil, err
 	}
 
-	dataLen := msgLen - 4
+	dataLen := msg.MessageLength() - 4
 	if dataLen < 0 {
 		return nil, newInvalidLengthError(int(dataLen))
 	}
@@ -44,7 +44,7 @@ func NewCopyDataWithReader(reader *Reader) (*CopyData, error) {
 	}
 
 	return &CopyData{
-		MessageLength: msgLen,
-		Data:          data,
+		RequestMessage: msg,
+		Data:           data,
 	}, nil
 }
