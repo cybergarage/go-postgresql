@@ -21,12 +21,16 @@ package message
 
 // CopyDone represents a copy done message.
 type CopyDone struct {
-	*ResponseMessage
+	*RequestMessage
 }
 
-// NewCopyDone returns a new copy done message instance.
-func NewCopyDone() *CopyDone {
-	return &CopyDone{
-		ResponseMessage: NewResponseMessageWith(CopyDoneMessage),
+// NewCopyDataWithReader returns a new copy data message with the specified reader.
+func NewCopyDoneWithReader(reader *MessageReader) (*CopyDone, error) {
+	msg, err := NewRequestMessageWithReader(reader)
+	if err != nil {
+		return nil, err
 	}
+	return &CopyDone{
+		RequestMessage: msg,
+	}, nil
 }
