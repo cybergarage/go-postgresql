@@ -176,7 +176,6 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 	handleStartupMessage := func(conn net.Conn, startupMsg *message.Startup) error {
 		exConn := NewConnWith(conn)
-
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error message.
@@ -214,8 +213,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleParseMessage := func(conn *Conn, reqMsg *message.RequestMessage) error {
-		parseMsg, err := reqMsg.ParseParseMessage()
+	handleParseMessage := func(conn *Conn, reader *message.MessageReader) error {
+		parseMsg, err := message.NewParseWithReader(reader)
 		if err != nil {
 			return err
 		}
@@ -237,8 +236,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleBindMessage := func(conn *Conn, reqMsg *message.RequestMessage) (*message.Query, error) {
-		bindMsg, err := reqMsg.ParseBindMessage()
+	handleBindMessage := func(conn *Conn, reader *message.MessageReader) (*message.Query, error) {
+		bindMsg, err := message.NewBindWithReader(reader)
 		if err != nil {
 			return nil, err
 		}
@@ -312,11 +311,11 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
+	msgReader := message.NewMessageReaderWith(bufio.NewReader(conn))
+
 	// Handle a Start-up message.
 
-	reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
-
-	startupMsg, err := reqMsg.ParseStartupMessage()
+	startupMsg, err := message.NewStartupWithReader(msgReader)
 	if err != nil {
 		responseError(err)
 		return err
@@ -340,11 +339,9 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		exConn := NewConnWith(conn, WithConnTracer(loopSpan), WithConnDatabase(dbname))
 		loopSpan.StartSpan("parse")
 
-		reqMsg := message.NewRequestMessageWith(bufio.NewReader(conn))
-
 		var reqErr error
 		var reqType message.Type
-		reqType, reqErr = reqMsg.ReadType()
+		reqType, reqErr = msgReader.PeekType()
 		if reqErr != nil {
 			responseError(reqErr)
 			loopSpan.FinishSpan()
@@ -353,21 +350,24 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
-			reqErr = handleParseMessage(exConn, reqMsg)
+			reqErr = handleParseMessage(exConn, msgReader)
 		case message.BindMessage:
 			var queryMsg *message.Query
-			queryMsg, reqErr = handleBindMessage(exConn, reqMsg)
+			queryMsg, reqErr = handleBindMessage(exConn, msgReader)
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, queryMsg)
 			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
-			queryMsg, reqErr = reqMsg.ParseQueryMessage()
+			queryMsg, reqErr = message.NewQueryWithReader(msgReader)
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, queryMsg)
 			}
 		case message.TerminateMessage:
-			return nil
+			_, reqErr := message.NewTerminateWithReader(msgReader)
+			if reqErr == nil {
+				return nil
+			}
 		default:
 			reqErr = message.NewErrMessageNotSuppoted(reqType)
 			log.Warnf(reqErr.Error())
