@@ -64,10 +64,17 @@ type DMOExecutor interface {
 	Delete(*Conn, *query.Delete) (message.Responses, error)
 }
 
+// BulkExecutor defines a executor interface for bulk operations.
+type BulkExecutor interface {
+	// Copy handles a COPY query.
+	Copy(*Conn, *query.Copy, *CopyStream) (message.Responses, error)
+}
+
 // QueryExecutor represents a user query message executor.
 type QueryExecutor interface {
 	DDOExecutor
 	DMOExecutor
+	BulkExecutor
 }
 
 // Executor represents a frontend message executor.
