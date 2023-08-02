@@ -1,0 +1,11 @@
+digraph postgresql_protocol_flow {
+  rankdir=LR;
+  node [shape = doublecircle]; "Not Connected";
+  node [shape = circle];
+
+  "Not Connected" -> "Authentication" [ label = "Startup message" ];
+  "Authentication" -> "Ready for Query" [ label = "AuthenticationOk" ];
+  "Ready for Query" -> "Simple Query Flow / Extended Query Flow" [ label = "Simple Query | Extended Query" ];
+  "Simple Query Flow / Extended Query Flow" -> "Command Complete" [ label = "Query execution" ];
+  "Command Complete" -> "Ready for Query" [ label = "Ready for query" ];
+}
