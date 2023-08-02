@@ -35,7 +35,7 @@ type Startup struct {
 }
 
 // NewStartupWithReader returns a new startup message with the specified reader.
-func NewStartupWithReader(reader *Reader) (*Startup, error) {
+func NewStartupWithReader(reader *MessageReader) (*Startup, error) {
 	readLen := 0
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
