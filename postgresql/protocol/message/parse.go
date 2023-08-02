@@ -21,16 +21,16 @@ package message
 
 // Parse represents a parse message.
 type Parse struct {
-	Name          string
-	Query         string
-	MessageLength int32
-	NumDataTypes  int16
-	DataTypes     []int32
+	*RequestMessage
+	Name         string
+	Query        string
+	NumDataTypes int16
+	DataTypes    []int32
 }
 
 // NewParseWithReader returns a new parse message with the specified reader.
-func NewParseWithReader(reader *Reader) (*Parse, error) {
-	msgLen, err := reader.ReadInt32()
+func NewParseWithReader(reader *MessageReader) (*Parse, error) {
+	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +65,10 @@ func NewParseWithReader(reader *Reader) (*Parse, error) {
 	}
 
 	return &Parse{
-		MessageLength: msgLen,
-		Name:          name,
-		Query:         query,
-		NumDataTypes:  num,
-		DataTypes:     types,
+		RequestMessage: msg,
+		Name:           name,
+		Query:          query,
+		NumDataTypes:   num,
+		DataTypes:      types,
 	}, nil
 }
