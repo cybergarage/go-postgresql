@@ -21,25 +21,24 @@ package message
 
 // Query represents a parse message.
 type Query struct {
-	MessageLength int32
-	Query         string
+	*RequestMessage
+	Query string
 	BindParams
 }
 
 // NewQueryWithReader returns a new query message with specified reader.
-func NewQueryWithReader(reader *Reader) (*Query, error) {
-	msgLen, err := reader.ReadInt32()
+func NewQueryWithReader(reader *MessageReader) (*Query, error) {
+	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {
 		return nil, err
 	}
-
 	query, err := reader.ReadString()
 	if err != nil {
 		return nil, err
 	}
 	return &Query{
-		MessageLength: msgLen,
-		Query:         query,
+		RequestMessage: msg,
+		Query:          query,
 	}, nil
 }
 
@@ -47,8 +46,8 @@ func NewQueryWithReader(reader *Reader) (*Query, error) {
 func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
 	query := parseMsg.Query
 	return &Query{
-		MessageLength: int32(len(query)),
-		Query:         query,
-		BindParams:    bindMsg.Params,
+		RequestMessage: nil,
+		Query:          query,
+		BindParams:     bindMsg.Params,
 	}, nil
 }
