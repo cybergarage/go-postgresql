@@ -42,6 +42,7 @@ type (
 	Insert         = query.Insert
 	Update         = query.Update
 	Delete         = query.Delete
+	Copy           = query.Copy
 	Column         = query.Column
 	Table          = query.Table
 	Condition      = query.Condition
