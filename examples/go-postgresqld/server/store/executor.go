@@ -239,6 +239,7 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 		return nil, err
 	}
 
+	nCopy := 0
 	ok, err := stream.Next()
 	for {
 		if err != nil {
@@ -247,11 +248,13 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 		if !ok {
 			break
 		}
-		if data, err := stream.CopyData(); err != nil {
+		_, err := stream.CopyData()
+		if err != nil {
 			return nil, err
 		}
+		nCopy++
 		ok, err = stream.Next()
 	}
 
-	return message.NewResponsesWith(message.NewCopyDone()), nil
+	return message.NewCopyCompleteResponsesWith(nCopy)
 }
