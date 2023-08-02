@@ -52,6 +52,6 @@ func (stream *CopyStream) Next() (bool, error) {
 }
 
 // CopyData returns a copy data message.
-func (stream *CopyStream) DataRow() (*message.CopyData, error) {
+func (stream *CopyStream) CopyData() (*message.CopyData, error) {
 	return message.NewCopyDataWithReader(stream.MessageReader)
 }
