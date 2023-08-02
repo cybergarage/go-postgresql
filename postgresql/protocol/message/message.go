@@ -18,6 +18,15 @@ package message
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
+const (
+	// MessageTypeSize is the size of the message type.
+	MessageTypeSize = 1
+	// MessageLengthSize is the size of the message length.
+	MessageLengthSize = 4
+	// MessageHeaderSize is the size of the message header.
+	MessageHeaderSize = MessageTypeSize + MessageLengthSize
+)
+
 // Message represents a message of PostgreSQL packet.
 type Message struct {
 	*MessageReader
@@ -50,4 +59,9 @@ func (msg *Message) MessageType() Type {
 // MessageLength returns a message length.
 func (msg *Message) MessageLength() int32 {
 	return msg.Length
+}
+
+// MessageLength returns a message data length without the message header.
+func (msg *Message) MessageDataLength() int32 {
+	return msg.Length - MessageLengthSize
 }
