@@ -44,6 +44,7 @@ type (
 	Delete         = query.Delete
 	Copy           = query.Copy
 	Column         = query.Column
+	ColumnList     = query.ColumnList
 	Table          = query.Table
 	Condition      = query.Condition
 	Schema         = query.Schema
