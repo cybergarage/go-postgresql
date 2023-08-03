@@ -31,6 +31,9 @@ var ErrNotExist = errors.New("not exist")
 // ErrExist is returned when the specified object is exist.
 var ErrExist = errors.New("exist")
 
+// ErrNotEqual is returned when the specified object is not equal.
+var ErrNotEqual = errors.New("not equal")
+
 // NewErrNotImplemented returns a new ErrNotImplemented error.
 func NewErrNotImplemented(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotImplemented)
@@ -74,6 +77,11 @@ func NewErrTableExist(v string) error {
 // NewErrColumnNotExist returns a new column not exist error.
 func NewErrColumnNotExist(v any) error {
 	return fmt.Errorf("column (%v) is %w", v, ErrNotExist)
+}
+
+// NewErrColumnsNotEqual returns a new columns not equal error.
+func NewErrColumnsNotEqual(v1, v2 int) error {
+	return fmt.Errorf("columns are %w (%d != %d)", ErrNotEqual, v1, v2)
 }
 
 // NewErrPreparedQueryNotExist returns a new prepared query not exist error.
