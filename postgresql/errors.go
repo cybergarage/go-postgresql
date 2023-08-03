@@ -54,6 +54,11 @@ func NewErrNotExist(v any) error {
 	return fmt.Errorf("%v is %w", v, ErrNotExist)
 }
 
+// NewErrNotEqual returns a new not equal error.
+func NewErrNotEqual(v1, v2 any) error {
+	return fmt.Errorf("%w (%v != %v) ", ErrNotEqual, v1, v2)
+}
+
 // NewErrDatabaseNotExist returns a new database not exist error.
 func NewErrDatabaseNotExist(v string) error {
 	return fmt.Errorf("database (%v) is %w", v, ErrNotExist)
