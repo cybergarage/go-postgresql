@@ -79,15 +79,22 @@ func main() {
 
 	pktSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for pkt := range pktSource.Packets() {
-		reader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(pkt.Data())))
+		app := pkt.ApplicationLayer()
+		if app == nil {
+			continue
+		}
+		appPayload := app.Payload()
+		// println(hex.EncodeToString(appPayload))
+		reader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
 		msg, err := message.NewMessageWithReader(reader)
 		if err != nil {
-			exit(err)
+			continue
+			// exit(err)
 		}
-		reader = message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(pkt.Data())))
+		reader = message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
 		switch msg.Type { // nolint:exhaustive
 		case message.QueryMessage:
-			if !*isQueryEnabled {
+			if *isQueryEnabled {
 				query, err := message.NewQueryWithReader(reader)
 				if err != nil {
 					exit(err)
