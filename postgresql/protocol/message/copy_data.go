@@ -14,6 +14,8 @@
 
 package message
 
+import "strings"
+
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
@@ -21,10 +23,14 @@ package message
 // PostgreSQL: Documentation: 16: COPY
 // https://www.postgresql.org/docs/16/sql-copy.html
 
+const (
+	tabSep = '\t'
+)
+
 // CopyData represents a copy data message.
 type CopyData struct {
 	*RequestMessage
-	Data []byte
+	Data []string
 }
 
 // NewCopyDataWithReader returns a new copy data message with the specified reader.
@@ -39,11 +45,13 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 		return nil, newInvalidLengthError(int(dataLen))
 	}
 
-	data := make([]byte, dataLen)
-	_, err = reader.ReadBytes(data)
+	dataBytes := make([]byte, dataLen)
+	_, err = reader.ReadBytes(dataBytes)
 	if err != nil {
 		return nil, err
 	}
+
+	data := strings.Split(string(dataBytes), string(tabSep))
 
 	return &CopyData{
 		RequestMessage: msg,
