@@ -86,7 +86,7 @@ func NewErrColumnNotExist(v any) error {
 
 // NewErrColumnsNotEqual returns a new columns not equal error.
 func NewErrColumnsNotEqual(v1, v2 int) error {
-	return fmt.Errorf("columns are %w (%d != %d)", ErrNotEqual, v1, v2)
+	return fmt.Errorf("the number of columns (%d) is %w to the number of schema columns (%d)", v1, ErrNotEqual, v2)
 }
 
 // NewErrPreparedQueryNotExist returns a new prepared query not exist error.
