@@ -242,33 +242,36 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 	// PostgreSQL: Documentation: 16: COPY
 	// https://www.postgresql.org/docs/16/sql-copy.html
 
-	newQueryWith := func(schema *query.Schema, stream *postgresql.CopyStream) error {
+	newQueryWith := func(schema *query.Schema, stream *postgresql.CopyStream) (*query.Insert, error) {
 		copyData, err := stream.CopyData()
 		if err != nil {
-			return err
+			return nil, err
 		}
+		copyColums := copyData.Data
 		schemaColumns := schema.Columns()
 		// COPY FROM will raise an error if any line of the input file contains
 		//  more or fewer columns than are expected.
-		if len(copyData.Data) != len(schemaColumns) {
-			return postgresql.NewErrColumnsNotEqual(len(copyData.Data), len(schemaColumns))
+		if len(copyColums) != len(schemaColumns) {
+			return nil, postgresql.NewErrColumnsNotEqual(len(copyColums), len(schemaColumns))
 		}
 		columns := schemaColumns.Copy()
 		for idx, column := range columns {
-			v := copyData.Data[idx]
+			v := copyColums[idx]
 			if err := column.SetValue(v); err != nil {
-				return err
+				return nil, err
 			}
 		}
-		return nil
+
+		return query.NewInsertWith(schema.SchemaTable(), columns), nil
 	}
 
 	copyData := func(schema *query.Schema, stream *postgresql.CopyStream) error {
-		err := newQueryWith(schema, stream)
+		q, err := newQueryWith(schema, stream)
 		if err != nil {
 			return err
 		}
-		return nil
+		_, err = store.Insert(conn, q)
+		return err
 	}
 
 	schema := tbl.Schema
