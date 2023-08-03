@@ -71,6 +71,11 @@ func NewErrTableExist(v string) error {
 	return fmt.Errorf("table (%v) is %w", v, ErrExist)
 }
 
+// NewErrColumnNotExist returns a new column not exist error.
+func NewErrColumnNotExist(v any) error {
+	return fmt.Errorf("column (%v) is %w", v, ErrNotExist)
+}
+
 // NewErrPreparedQueryNotExist returns a new prepared query not exist error.
 func NewErrPreparedQueryNotExist(name string) error {
 	return fmt.Errorf("prepared query (%v) is %w", name, ErrNotExist)
