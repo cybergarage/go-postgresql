@@ -24,7 +24,8 @@ import "strings"
 // https://www.postgresql.org/docs/16/sql-copy.html
 
 const (
-	tabSep = '\t'
+	tabSep     = '\t'
+	newLineSep = '\n'
 )
 
 // CopyData represents a copy data message.
@@ -51,7 +52,8 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 		return nil, err
 	}
 
-	data := strings.Split(string(dataBytes), string(tabSep))
+	dataStr := strings.TrimSuffix(string(dataBytes), string(newLineSep))
+	data := strings.Split(dataStr, string(tabSep))
 
 	return &CopyData{
 		RequestMessage: msg,
