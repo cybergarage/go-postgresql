@@ -53,3 +53,8 @@ type (
 	AndExpr        = query.AndExpr
 	OrExpr         = query.OrExpr
 )
+
+// NewInsertWith returns a new insert statement instance with the specified parameters.
+func NewInsertWith(tbl *Table, columns ColumnList) *Insert {
+	return query.NewInsertWith(tbl, columns)
+}
