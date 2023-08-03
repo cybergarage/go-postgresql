@@ -234,12 +234,40 @@ func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.R
 
 // Copy handles a COPY query.
 func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
-	_, _, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
 
+	newQueryWith := func(schema *query.Schema, stream *postgresql.CopyStream) error {
+		copyData, err := stream.CopyData()
+		if err != nil {
+			return err
+		}
+		copyDataLen := len(copyData.Data)
+		columns := schema.Columns().Copy()
+		for idx, column := range columns {
+			if copyDataLen <= idx {
+				postgresql.NewErrColumnNotExist(idx)
+			}
+			if err := column.SetValue(copyData.Data[idx]); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	copyData := func(schema *query.Schema, stream *postgresql.CopyStream) error {
+		err := newQueryWith(schema, stream)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	schema := tbl.Schema
 	nCopy := 0
+	nFail := 0
 	ok, err := stream.Next()
 	for {
 		if err != nil {
@@ -248,11 +276,11 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 		if !ok {
 			break
 		}
-		_, err := stream.CopyData()
-		if err != nil {
-			return nil, err
+		if err := copyData(schema, stream); err == nil {
+			nCopy++
+		} else {
+			nFail++
 		}
-		nCopy++
 		ok, err = stream.Next()
 	}
 
