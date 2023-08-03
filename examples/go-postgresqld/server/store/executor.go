@@ -239,18 +239,24 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 		return nil, err
 	}
 
+	// PostgreSQL: Documentation: 16: COPY
+	// https://www.postgresql.org/docs/16/sql-copy.html
+
 	newQueryWith := func(schema *query.Schema, stream *postgresql.CopyStream) error {
 		copyData, err := stream.CopyData()
 		if err != nil {
 			return err
 		}
-		copyDataLen := len(copyData.Data)
-		columns := schema.Columns().Copy()
+		schemaColumns := schema.Columns()
+		// COPY FROM will raise an error if any line of the input file contains
+		//  more or fewer columns than are expected.
+		if len(copyData.Data) != len(schemaColumns) {
+			return postgresql.NewErrColumnsNotEqual(len(copyData.Data), len(schemaColumns))
+		}
+		columns := schemaColumns.Copy()
 		for idx, column := range columns {
-			if copyDataLen <= idx {
-				postgresql.NewErrColumnNotExist(idx)
-			}
-			if err := column.SetValue(copyData.Data[idx]); err != nil {
+			v := copyData.Data[idx]
+			if err := column.SetValue(v); err != nil {
 				return err
 			}
 		}
