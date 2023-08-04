@@ -81,6 +81,18 @@ func main() {
 		exit(err)
 	}
 
+	skipMessage := func(reader *message.MessageReader) error {
+		msg, err := message.NewMessageWithReader(reader)
+		if err != nil {
+			return err
+		}
+		_, err = msg.ReadMessageData()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	pktSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for pkt := range pktSource.Packets() {
 		tcpLayer := pkt.Layer(layers.LayerTypeTCP)
@@ -88,33 +100,46 @@ func main() {
 			continue
 		}
 		tcp, _ := tcpLayer.(*layers.TCP)
-		if tcp.DstPort != postgresql.DefaultPort {
+		if tcp.DstPort != postgresql.DefaultPort && tcp.SrcPort != postgresql.DefaultPort {
 			continue
 		}
 		for _, layer := range pkt.Layers() {
 			fmt.Println("PACKET LAYER:", layer.LayerType())
 		}
-		app := pkt.ApplicationLayer()
+		app := pkt.TransportLayer()
 		if app == nil {
 			continue
 		}
-		appPayload := app.Payload()
+		appPayload := app.LayerPayload()
 		println(hex.EncodeToString(appPayload))
-		reader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
-		msg, err := message.NewMessageWithReader(reader)
-		if err != nil {
-			continue
-			// exit(err)
-		}
-		reader = message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
-		switch msg.Type { // nolint:exhaustive
-		case message.QueryMessage:
-			if *isQueryEnabled {
-				query, err := message.NewQueryWithReader(reader)
+
+		msgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
+
+		for {
+			msgType, err := msgReader.PeekType()
+			if err != nil {
+				break
+			}
+
+			switch msgType { // nolint:exhaustive
+			case message.QueryMessage:
+				if *isQueryEnabled {
+					query, err := message.NewQueryWithReader(msgReader)
+					if err != nil {
+						exit(err)
+					}
+					println(query.Query)
+				} else {
+					err := skipMessage(msgReader)
+					if err != nil {
+						exit(err)
+					}
+				}
+			default:
+				err := skipMessage(msgReader)
 				if err != nil {
 					exit(err)
 				}
-				println(query.Query)
 			}
 		}
 	}
