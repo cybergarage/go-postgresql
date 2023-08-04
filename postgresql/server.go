@@ -369,12 +369,18 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				return nil
 			}
 		default:
-			reqErr = message.NewErrMessageNotSuppoted(reqType)
-			log.Warnf(reqErr.Error())
+			// Skip the not supported message.
+			msg, reqErr := message.NewMessageWithReader(msgReader)
+			if reqErr == nil {
+				_, reqErr = msg.ReadMessageData()
+				if reqErr == nil {
+					reqErr = message.NewErrMessageNotSuppoted(reqType)
+					log.Warnf(reqErr.Error())
+				}
+			}
 		}
 
 		if reqErr != nil {
-			// Return ErrorResponse (B)
 			responseError(reqErr)
 		}
 
