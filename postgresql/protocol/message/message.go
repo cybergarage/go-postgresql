@@ -65,3 +65,17 @@ func (msg *Message) MessageLength() int32 {
 func (msg *Message) MessageDataLength() int32 {
 	return msg.Length - MessageLengthSize
 }
+
+// ReadMessageData reads all message data.
+func (msg *Message) ReadMessageData() ([]byte, error) {
+	dataLen := msg.MessageDataLength()
+	if dataLen < 0 {
+		return nil, newInvalidLengthError(int(dataLen))
+	}
+	data := make([]byte, dataLen)
+	_, err := msg.ReadBytes(data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
