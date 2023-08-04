@@ -33,11 +33,15 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/hex"
 	"flag"
+	"fmt"
 	"os"
 
+	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 )
 
@@ -79,12 +83,23 @@ func main() {
 
 	pktSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for pkt := range pktSource.Packets() {
+		tcpLayer := pkt.Layer(layers.LayerTypeTCP)
+		if tcpLayer == nil {
+			continue
+		}
+		tcp, _ := tcpLayer.(*layers.TCP)
+		if tcp.DstPort != postgresql.DefaultPort {
+			continue
+		}
+		for _, layer := range pkt.Layers() {
+			fmt.Println("PACKET LAYER:", layer.LayerType())
+		}
 		app := pkt.ApplicationLayer()
 		if app == nil {
 			continue
 		}
 		appPayload := app.Payload()
-		// println(hex.EncodeToString(appPayload))
+		println(hex.EncodeToString(appPayload))
 		reader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
 		msg, err := message.NewMessageWithReader(reader)
 		if err != nil {
