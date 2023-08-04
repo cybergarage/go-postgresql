@@ -23,3 +23,7 @@ __debug_bin
 # MacOSX
 .DS_Store
 
+# Other output files
+*.html
+*.log
+*.pcapng
