@@ -311,6 +311,18 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
+	skipMessage := func(reader *message.MessageReader) error {
+		msg, err := message.NewMessageWithReader(reader)
+		if err != nil {
+			return err
+		}
+		_, err = msg.ReadMessageData()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	msgReader := message.NewMessageReaderWith(bufio.NewReader(conn))
 
 	// Handle a Start-up message.
@@ -369,14 +381,10 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				return nil
 			}
 		default:
-			// Skip the not supported message.
-			msg, reqErr := message.NewMessageWithReader(msgReader)
+			reqErr = skipMessage(msgReader)
 			if reqErr == nil {
-				_, reqErr = msg.ReadMessageData()
-				if reqErr == nil {
-					reqErr = message.NewErrMessageNotSuppoted(reqType)
-					log.Warnf(reqErr.Error())
-				}
+				reqErr = message.NewErrMessageNotSuppoted(reqType)
+				log.Warnf(reqErr.Error())
 			}
 		}
 
