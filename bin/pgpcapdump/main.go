@@ -33,6 +33,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
@@ -63,6 +64,10 @@ func usages() {
 func exit(err error) {
 	println("Error: " + err.Error())
 	os.Exit(1)
+}
+
+func outputf(format string, args ...interface{}) {
+	fmt.Printf(format+"\n", args...)
 }
 
 func main() {
@@ -104,35 +109,60 @@ func main() {
 			continue
 		}
 		tcp, _ := tcpLayer.(*layers.TCP)
-		if tcp.DstPort == postgresql.DefaultPort {
-			reqWriter.Write(tcp.Payload)
-		} else if tcp.SrcPort == postgresql.DefaultPort {
-			resWriter.Write(tcp.Payload)
+		if tcp.DstPort != postgresql.DefaultPort && tcp.SrcPort != postgresql.DefaultPort {
+			continue
 		}
+		appLayer := pkt.ApplicationLayer()
+		if appLayer == nil {
+			continue
+		}
+		payload := appLayer.Payload()
+		if tcp.DstPort == postgresql.DefaultPort {
+			reqWriter.Write(payload)
+		} else if tcp.SrcPort == postgresql.DefaultPort {
+			resWriter.Write(payload)
+		}
+		fmt.Printf("Payload = [%d] %s\n", len(appLayer.Payload()), hex.EncodeToString(appLayer.Payload()))
 	}
 
-	msgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(reqWriter.Bytes())))
+	fmt.Printf("reqWriter = %d %s\n", reqWriter.Len(), hex.EncodeToString(reqWriter.Bytes()[:128]))
+	fmt.Printf("resWriter = %d %s\n", resWriter.Len(), hex.EncodeToString(resWriter.Bytes()[:128]))
+
+	reqMsgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(reqWriter.Bytes())))
+
+	// Handle a Start-up message.
+
+	_, err = message.NewStartupWithReader(reqMsgReader)
+	if err != nil {
+		exit(err)
+	}
+
+	outputf("startup")
+
 	for {
-		msgType, err := msgReader.PeekType()
+		msgType, err := reqMsgReader.PeekType()
 		if err != nil {
 			break
 		}
+
+		outputf("%s (%s)", msgType.String(), hex.EncodeToString([]byte{byte(msgType)}))
+
 		switch msgType { // nolint:exhaustive
 		case message.QueryMessage:
 			if *isQueryEnabled {
-				query, err := message.NewQueryWithReader(msgReader)
+				query, err := message.NewQueryWithReader(reqMsgReader)
 				if err != nil {
 					exit(err)
 				}
 				println(query.Query)
 			} else {
-				err := skipMessage(msgReader)
+				err := skipMessage(reqMsgReader)
 				if err != nil {
 					exit(err)
 				}
 			}
 		default:
-			err := skipMessage(msgReader)
+			err := skipMessage(reqMsgReader)
 			if err != nil {
 				exit(err)
 			}
