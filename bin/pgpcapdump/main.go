@@ -33,7 +33,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
@@ -93,53 +92,49 @@ func main() {
 		return nil
 	}
 
+	reqWriter := &bytes.Buffer{}
+	resWriter := &bytes.Buffer{}
+
 	pktSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for pkt := range pktSource.Packets() {
+		fmt.Print(pkt)
+		// continue
 		tcpLayer := pkt.Layer(layers.LayerTypeTCP)
 		if tcpLayer == nil {
 			continue
 		}
 		tcp, _ := tcpLayer.(*layers.TCP)
-		if tcp.DstPort != postgresql.DefaultPort && tcp.SrcPort != postgresql.DefaultPort {
-			continue
+		if tcp.DstPort == postgresql.DefaultPort {
+			reqWriter.Write(tcp.Payload)
+		} else if tcp.SrcPort == postgresql.DefaultPort {
+			resWriter.Write(tcp.Payload)
 		}
-		for _, layer := range pkt.Layers() {
-			fmt.Println("PACKET LAYER:", layer.LayerType())
+	}
+
+	msgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(reqWriter.Bytes())))
+	for {
+		msgType, err := msgReader.PeekType()
+		if err != nil {
+			break
 		}
-		app := pkt.TransportLayer()
-		if app == nil {
-			continue
-		}
-		appPayload := app.LayerPayload()
-		println(hex.EncodeToString(appPayload))
-
-		msgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(appPayload)))
-
-		for {
-			msgType, err := msgReader.PeekType()
-			if err != nil {
-				break
-			}
-
-			switch msgType { // nolint:exhaustive
-			case message.QueryMessage:
-				if *isQueryEnabled {
-					query, err := message.NewQueryWithReader(msgReader)
-					if err != nil {
-						exit(err)
-					}
-					println(query.Query)
-				} else {
-					err := skipMessage(msgReader)
-					if err != nil {
-						exit(err)
-					}
+		switch msgType { // nolint:exhaustive
+		case message.QueryMessage:
+			if *isQueryEnabled {
+				query, err := message.NewQueryWithReader(msgReader)
+				if err != nil {
+					exit(err)
 				}
-			default:
+				println(query.Query)
+			} else {
 				err := skipMessage(msgReader)
 				if err != nil {
 					exit(err)
 				}
+			}
+		default:
+			err := skipMessage(msgReader)
+			if err != nil {
+				exit(err)
 			}
 		}
 	}
