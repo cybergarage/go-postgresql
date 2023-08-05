@@ -86,3 +86,68 @@ const (
 	CopyDataMessage Type = 'd'
 	CopyDoneMessage Type = 'c'
 )
+
+func (t Type) String() string {
+	switch t { // nolint:exhaustive
+	case BindMessage:
+		return "Bind"
+	case CopyFailMessage:
+		return "CopyFail"
+	case ExecuteMessage:
+		return "Execute"
+	case FunctionCallMessage:
+		return "FunctionCall"
+	case ParseMessage:
+		return "Parse"
+	case QueryMessage:
+		return "Query"
+	case SyncMessage:
+		return "Sync"
+	case TerminateMessage:
+		return "Terminate"
+	case BackendKeyDataMessage:
+		return "BackendKeyData"
+	case BindCompleteMessage:
+		return "BindComplete"
+	case CloseCompleteMessage:
+		return "CloseComplete"
+	case CommandCompleteMessage:
+		return "CommandComplete"
+	case CopyInResponseMessage:
+		return "CopyInResponse"
+	case CopyOutResponseMessage:
+		return "CopyOutResponse"
+	case CopyBothResponseMessage:
+		return "CopyBothResponse"
+	case DataRowMessage:
+		return "DataRow"
+	case EmptyQueryResponseMessage:
+		return "EmptyQueryResponse"
+	case FunctionCallResponseMessage:
+		return "FunctionCallResponse"
+	case NegotiateProtocolVersionMessage:
+		return "NegotiateProtocolVersion"
+	case NoDataMessage:
+		return "NoData"
+	case NoticeResponseMessage:
+		return "NoticeResponse"
+	case NotificationResponseMessage:
+		return "NotificationResponse"
+	case ParameterDescriptionMessage:
+		return "ParameterDescription"
+	case ParseCompleteMessage:
+		return "ParseComplete"
+	case PortalSuspendedMessage:
+		return "PortalSuspended"
+	case ReadyForQueryMessage:
+		return "ReadyForQuery"
+	case RowDescriptionMessage:
+		return "RowDescription"
+	case CopyDataMessage:
+		return "CopyData"
+	case CopyDoneMessage:
+		return "CopyDone"
+	default:
+		return "Unknown"
+	}
+}
