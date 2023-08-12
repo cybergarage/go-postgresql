@@ -130,6 +130,7 @@ func main() {
 
 	reqMsgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(reqWriter.Bytes())))
 
+<<<<<<< HEAD
 	// Handle a Start-up message.
 
 	_, err = message.NewStartupWithReader(reqMsgReader)
@@ -151,8 +152,31 @@ func main() {
 		case message.QueryMessage:
 			if *isQueryEnabled {
 				query, err := message.NewQueryWithReader(reqMsgReader)
+=======
+			fmt.Printf("msg : %c\n", rune(msgType))
+
+			switch msgType { // nolint:exhaustive
+			case message.QueryMessage:
+				if *isQueryEnabled {
+					query, err := message.NewQueryWithReader(msgReader)
+					if err != nil {
+						continue
+						// exit(err)
+					}
+					println(query.Query)
+				} else {
+					err := skipMessage(msgReader)
+					if err != nil {
+						continue
+						// exit(err)
+					}
+				}
+			default:
+				err := skipMessage(msgReader)
+>>>>>>> 4f48910 (Update pgpcapdump)
 				if err != nil {
-					exit(err)
+					continue
+					// exit(err)
 				}
 				println(query.Query)
 			} else {
