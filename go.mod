@@ -4,9 +4,10 @@ go 1.20
 
 require (
 	github.com/cybergarage/go-logger v1.3.4
-	github.com/cybergarage/go-sqlparser v0.9.1
+	github.com/cybergarage/go-sqlparser v0.9.2
 	github.com/cybergarage/go-sqltest v0.9.6
 	github.com/cybergarage/go-tracing v1.1.2
+	github.com/google/gopacket v1.1.19
 	github.com/jackc/pgx/v5 v5.4.0
 )
 
@@ -18,7 +19,10 @@ require (
 )
 
 require (
+	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
+	github.com/cybergarage/go-safecast v1.2.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/google/gopacket v1.1.19 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
 	golang.org/x/sys v0.8.0 // indirect
 )
