@@ -5,9 +5,11 @@
 
 ## v1.0.0 (2023-xx-xx)
 - Fix executor interface
-
-## v0.9.1 (2023-xx-xx)
 - Support CopyData message
+
+## v0.9.1 (2023-08-18)
+- Add new exeutor interfaces
+  - COPY
 
 ## v0.9.0 (2023-07-28)
 - Initial public release  
@@ -17,7 +19,7 @@
   - Bind
   - Query
   - Terminate
-- Add initial executor interface
+- Add initial executor interfaces
   - CREATE DATABASE
   - CREATE TABLE
   - CREATE INDEX
