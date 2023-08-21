@@ -32,7 +32,10 @@ func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateData
 	dbName := q.DatabaseName()
 
 	_, ok := store.GetDatabase(dbName)
-	if ok && !q.IfNotExists() {
+	if ok {
+		if q.IfNotExists() {
+			return message.NewCommandCompleteResponsesWith(q.String())
+		}
 		return nil, postgresql.NewErrDatabaseExist(dbName)
 	}
 
