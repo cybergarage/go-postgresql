@@ -33,8 +33,8 @@ type StatusHandler interface {
 	BackendKeyData(*Conn) (message.Response, error)
 }
 
-// ProtocolHandler represents a backend protocol message handler.
-type ProtocolHandler interface {
+// StartupHandler represents a backend protocol message handler.
+type StartupHandler interface {
 	StatusHandler
 }
 
@@ -74,18 +74,17 @@ type BulkExecutor interface {
 type QueryExecutor interface {
 	DDOExecutor
 	DMOExecutor
-	BulkExecutor
 }
 
 // Executor represents a frontend message executor.
 type Executor interface {
 	Authenticator
-	ProtocolHandler
+	StartupHandler
 	QueryExecutor
 	// SetAuthenticator sets a user authenticator.
 	SetAuthenticator(Authenticator)
-	// SetProtocolHandler sets a user protocol executor.
-	SetProtocolHandler(ProtocolHandler)
+	// SetStartupHandler sets a user startup handler.
+	SetStartupHandler(StartupHandler)
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
 }
