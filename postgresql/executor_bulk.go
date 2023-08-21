@@ -19,7 +19,16 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
+// BaseBulkExecutor represents a base bulk message executor.
+type BaseBulkExecutor struct {
+}
+
+// NewBaseBulkExecutor returns a base frontend message executor.
+func NewBaseBulkExecutor() *BaseBulkExecutor {
+	return &BaseBulkExecutor{}
+}
+
 // Copy handles a COPY query.
-func (executor *BaseQueryExecutor) Copy(*Conn, *query.Copy, *CopyStream) (message.Responses, error) {
+func (executor *BaseBulkExecutor) Copy(*Conn, *query.Copy, *CopyStream) (message.Responses, error) {
 	return nil, NewErrNotImplemented("COPY")
 }
