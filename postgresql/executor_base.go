@@ -17,16 +17,18 @@ package postgresql
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
 	Authenticator
-	ProtocolHandler
+	StartupHandler
 	QueryExecutor
+	BulkExecutor
 }
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	return &BaseExecutor{
-		Authenticator:   NewBaseAuthenticator(),
-		ProtocolHandler: NewBaseProtocolExecutor(),
-		QueryExecutor:   NewBaseQueryExecutor(),
+		Authenticator:  NewBaseAuthenticator(),
+		StartupHandler: NewBaseProtocolExecutor(),
+		QueryExecutor:  NewBaseQueryExecutor(),
+		BulkExecutor:   NewBaseBulkExecutor(),
 	}
 }
 
@@ -35,12 +37,17 @@ func (executor *BaseExecutor) SetAuthenticator(at Authenticator) {
 	executor.Authenticator = at
 }
 
-// SetProtocolHandler sets a user protocol executor.
-func (executor *BaseExecutor) SetProtocolHandler(pe ProtocolHandler) {
-	executor.ProtocolHandler = pe
+// SetStartupHandler sets a user startup handler.
+func (executor *BaseExecutor) SetStartupHandler(sh StartupHandler) {
+	executor.StartupHandler = sh
 }
 
 // SetQueryExecutor sets a user query executor.
 func (executor *BaseExecutor) SetQueryExecutor(qe QueryExecutor) {
 	executor.QueryExecutor = qe
+}
+
+// SetBulkExecutor sets a user bulk executor.
+func (executor *BaseExecutor) SetBulkExecutor(be BulkExecutor) {
+	executor.BulkExecutor = be
 }
