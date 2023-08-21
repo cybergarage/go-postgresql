@@ -73,6 +73,9 @@ func (server *Server) Stop() error {
 		return err
 	}
 
+	addr := net.JoinHostPort(server.host, strconv.Itoa(server.port))
+	log.Infof("%s/%s (%s) terminated", PackageName, Version, addr)
+
 	return nil
 }
 
