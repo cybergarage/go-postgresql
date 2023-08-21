@@ -58,7 +58,10 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 
 	tblName := q.TableName()
 	_, ok = db.GetTable(tblName)
-	if ok && !q.IfNotExists() {
+	if ok {
+		if q.IfNotExists() {
+			return message.NewCommandCompleteResponsesWith(q.String())
+		}
 		return nil, postgresql.NewErrTableNotExist(tblName)
 	}
 
