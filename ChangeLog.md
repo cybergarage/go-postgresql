@@ -1,15 +1,18 @@
 # Changelog
 
-## v1.1.0 (2023-xx-xx)
+## v1.x.0 (2023-xx-xx)
 - Update authenticator interface
 
 ## v1.0.0 (2023-xx-xx)
 - Fix executor interface
-- Support CopyData message
+  - StartupHandler
+  - Authenticator
+  - QueryExecutor
+  - BulkExecutor
 
 ## v0.9.1 (2023-08-18)
 - Add new exeutor interfaces
-  - COPY
+  - BulkExecutor for COPY messages
 
 ## v0.9.0 (2023-07-28)
 - Initial public release  
