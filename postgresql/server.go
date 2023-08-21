@@ -63,6 +63,9 @@ func (server *Server) Start() error {
 
 	go server.serve()
 
+	addr := net.JoinHostPort(server.host, strconv.Itoa(server.port))
+	log.Infof("%s/%s (%s) started", PackageName, Version, addr)
+
 	return nil
 }
 
