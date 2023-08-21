@@ -15,28 +15,28 @@
 package postgresql
 
 const (
-	defaultHost = "127.0.0.1"
+	defaultAddr = ""
 	defaultPort = DefaultPort
 )
 
 // Config stores server configuration parammeters.
 type Config struct {
-	host string
+	addr string
 	port int
 }
 
 // NewDefaultConfig returns a default configuration instance.
 func NewDefaultConfig() *Config {
 	config := &Config{
-		host: defaultHost,
+		addr: defaultAddr,
 		port: defaultPort,
 	}
 	return config
 }
 
-// SetHost sets a host address to the configuration.
-func (config *Config) SetHost(host string) {
-	config.host = host
+// SetAddress sets a listen address to the configuration.
+func (config *Config) SetAddress(addr string) {
+	config.addr = addr
 }
 
 // SetPort sets a listen port to the configuration.
@@ -44,12 +44,12 @@ func (config *Config) SetPort(port int) {
 	config.port = port
 }
 
-// Host returns a host address from the configuration.
-func (config *Config) Host() string {
-	return config.host
+// Address returns a listen address from the configuration.
+func (config *Config) Address() string {
+	return config.addr
 }
 
-// Port returns a port from the configuration.
+// Port returns a listen port from the configuration.
 func (config *Config) Port() int {
 	return config.port
 }
