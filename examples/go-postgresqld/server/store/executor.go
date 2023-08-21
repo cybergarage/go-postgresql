@@ -104,6 +104,9 @@ func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (mes
 	for _, dropTbl := range q.Tables() {
 		db, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), dropTbl.TableName())
 		if err != nil {
+			if q.IfExists() {
+				continue
+			}
 			return nil, err
 		}
 		err = db.DropTable(tbl)
