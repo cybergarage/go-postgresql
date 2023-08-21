@@ -81,7 +81,10 @@ func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase
 	dbName := q.DatabaseName()
 
 	db, ok := store.GetDatabase(dbName)
-	if !ok && !q.IfExists() {
+	if !ok {
+		if q.IfExists() {
+			return message.NewCommandCompleteResponsesWith(q.String())
+		}
 		return nil, postgresql.NewErrDatabaseNotExist(dbName)
 	}
 
