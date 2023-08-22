@@ -49,7 +49,7 @@ func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateData
 
 // CreateTable handles a CREATE TABLE query.
 func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) (message.Responses, error) {
-	dbName := conn.DatabaseName()
+	dbName := conn.Database()
 
 	db, ok := store.GetDatabase(dbName)
 	if !ok {
@@ -102,7 +102,7 @@ func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase
 // DropIndex handles a DROP INDEX query.
 func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (message.Responses, error) {
 	for _, dropTbl := range q.Tables() {
-		db, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), dropTbl.TableName())
+		db, tbl, err := store.GetDatabaseTable(conn, conn.Database(), dropTbl.TableName())
 		if err != nil {
 			if q.IfExists() {
 				continue
@@ -120,7 +120,7 @@ func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (mes
 
 // Insert handles a INSERT query.
 func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 	}
 	tblName := tbls[0].TableName()
 
-	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), tblName)
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), tblName)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +212,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 // Update handles a UPDATE query.
 func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (message.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (message.R
 
 // Delete handles a DELETE query.
 func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.R
 
 // Copy handles a COPY query.
 func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.DatabaseName(), q.TableName())
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}

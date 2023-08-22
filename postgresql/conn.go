@@ -62,13 +62,13 @@ func WithConnTracer(t tracer.Context) func(*Conn) {
 	}
 }
 
-// SetDatabaseName sets the database name.
-func (conn *Conn) SetDatabaseName(db string) {
+// SetDatabase sets the database name.
+func (conn *Conn) SetDatabase(db string) {
 	conn.db = db
 }
 
-// DatabaseName returns the database name.
-func (conn *Conn) DatabaseName() string {
+// Database returns the database name.
+func (conn *Conn) Database() string {
 	return conn.db
 }
 
