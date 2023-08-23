@@ -29,7 +29,7 @@ const (
 	BinaryFormat FormatCode = 1
 )
 
-// DataTypeFrom returns a data type from the specified query data type.
+// FormatCodeFrom returns a format code from the specified data type.
 func FormatCodeFrom(t query.DataType) FormatCode {
 	switch t {
 	case query.LongTextData:
