@@ -14,6 +14,11 @@
 
 package message
 
+import (
+	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-safecast/safecast"
+)
+
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
@@ -36,6 +41,16 @@ func NewDataRow() *DataRow {
 
 // AppendData appends a column value to the data row message.
 func (msg *DataRow) AppendData(rowField *RowField, v any) error {
+	switch rowField.DataType {
+	case query.BoolType:
+		if _, ok := v.(bool); !ok {
+			var to bool
+			if err := safecast.ToBool(v, &to); err != nil {
+				return err
+			}
+			v = to
+		}
+	}
 	msg.Data = append(msg.Data, v)
 	return nil
 }
