@@ -190,13 +190,14 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	for _, row := range rows {
 		dataRow := message.NewDataRow()
-		for _, name := range names {
+		for n, name := range names {
+			field := rowDesc.Field(n)
 			v, err := row.ValueByName(name)
 			if err != nil {
-				dataRow.AppendData(nil)
+				dataRow.AppendData(field, nil)
 				continue
 			}
-			dataRow.AppendData(v)
+			dataRow.AppendData(field, v)
 		}
 		res = res.Append(dataRow)
 	}
