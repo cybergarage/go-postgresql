@@ -40,6 +40,11 @@ func (msg *RowDescription) AppendField(field *RowField) {
 	msg.fileds = append(msg.fileds, field)
 }
 
+// Field returns a field at the specified index.
+func (msg *RowDescription) Field(n int) *RowField {
+	return msg.fileds[n]
+}
+
 // Bytes appends a length of the message content bytes, and returns the message bytes.
 func (msg *RowDescription) Bytes() ([]byte, error) {
 	msg.AppendInt16(int16(len(msg.fileds)))
