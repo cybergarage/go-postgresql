@@ -35,7 +35,7 @@ func NewDataRow() *DataRow {
 }
 
 // AppendData appends a column value to the data row message.
-func (msg *DataRow) AppendData(v any) error {
+func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 	msg.Data = append(msg.Data, v)
 	return nil
 }
