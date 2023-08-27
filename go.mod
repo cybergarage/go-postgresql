@@ -1,10 +1,10 @@
 module github.com/cybergarage/go-postgresql
 
-go 1.20
+go 1.21
 
 require (
 	github.com/cybergarage/go-logger v1.3.4
-	github.com/cybergarage/go-sqlparser v0.9.2
+	github.com/cybergarage/go-sqlparser v1.0.0
 	github.com/cybergarage/go-sqltest v1.0.0
 	github.com/cybergarage/go-tracing v1.1.2
 	github.com/google/gopacket v1.1.19
