@@ -1,6 +1,6 @@
 # Getting Started
 
-This section describes how to implement your MySQL-compatible server using the go-postgresql, and see  [Examples](doc/examples.md) about the sample implementation.
+This section describes how to implement your PostgreSQL-compatible server using the go-postgresql, and see  [Examples](doc/examples.md) about the sample implementation.
 
 ## STEP1: Inheriting Server
 
