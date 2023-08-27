@@ -21,6 +21,7 @@ PRODUCT_NAME=go-postgresql
 MODULE_ROOT=${GIT_ROOT}/${PRODUCT_NAME}
 
 PKG_NAME=postgresql
+PKG_VER=$(shell git describe --abbrev=0 --tags)
 PKG_COVER=${PKG_NAME}-cover
 PKG_SRC_ROOT=${PKG_NAME}
 PKG=${MODULE_ROOT}/${PKG_SRC_ROOT}
@@ -29,10 +30,12 @@ TEST_SRC_ROOT=${PKG_NAME}test
 TEST_PKG=${MODULE_ROOT}/${TEST_SRC_ROOT}
 
 EXAMPLES_ROOT=examples
+EXAMPLES_DEAMON_BIN=go-postgresqld
+EXAMPLES_DOCKER_TAG=cybergarage/${EXAMPLES_DEAMON_BIN}:${PKG_VER}
 EXAMPLES_PKG_ROOT=${GIT_ROOT}/${PRODUCT_NAME}/${EXAMPLES_ROOT}
 EXAMPLES_SRC_DIR=${EXAMPLES_ROOT}
 EXAMPLE_BINARIES=\
-	${EXAMPLES_PKG_ROOT}/go-postgresqld
+	${EXAMPLES_PKG_ROOT}/${EXAMPLES_DEAMON_BIN}
 
 BIN_ROOT=bin
 BIN_PKG_ROOT=${GIT_ROOT}/${PRODUCT_NAME}/${BIN_ROOT}
@@ -70,6 +73,15 @@ test_only:
 
 install:
 	go install -v -gcflags=${GCFLAGS} ${BINARIES}
+
+run: build
+	./${EXAMPLES_DEAMON_BIN}
+
+image: test
+	docker image build -t ${EXAMPLES_DOCKER_TAG} .
+
+rund: image
+	docker container run -it --rm -p 5432:5432 ${EXAMPLES_DOCKER_TAG}
 
 clean:
 	go clean -i ${PKG}
