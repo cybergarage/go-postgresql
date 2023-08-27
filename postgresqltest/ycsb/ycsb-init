@@ -2,10 +2,10 @@
 # Setting for Docker Desktop
 # postgres://postgres:postgrespw@localhost:32768
 set -e
-psql -v ON_ERROR_STOP=1 --host=localhost --port=32768 --username="postgres" <<-EOSQL
+psql -v ON_ERROR_STOP=1 --host=localhost --port=5432 --username="postgres" <<-EOSQL
 CREATE DATABASE ycsb;
 EOSQL
-psql -v ON_ERROR_STOP=1 --host=localhost --port=32768 --username="postgres" --dbname=ycsb <<-EOSQL
+psql -v ON_ERROR_STOP=1 --host=localhost --port=5432 --username="postgres" --dbname=ycsb <<-EOSQL
 CREATE TABLE usertable (
 	YCSB_KEY VARCHAR(255) PRIMARY KEY,
 	FIELD0 TEXT, FIELD1 TEXT,
