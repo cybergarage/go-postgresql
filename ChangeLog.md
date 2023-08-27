@@ -7,7 +7,7 @@
 - Support more data types
   - Timestamp, Year, .... 
 
-## v1.0.0 (2023-xx-xx)
+## v1.0.0 (2023-08-27)
 - Fix executor interface
   - StartupHandler
   - Authenticator
