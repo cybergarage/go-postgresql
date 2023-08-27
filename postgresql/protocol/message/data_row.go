@@ -15,7 +15,6 @@
 package message
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-safecast/safecast"
 )
 
@@ -41,8 +40,8 @@ func NewDataRow() *DataRow {
 
 // AppendData appends a column value to the data row message.
 func (msg *DataRow) AppendData(rowField *RowField, v any) error {
-	switch rowField.DataType {
-	case query.BoolType:
+	switch rowField.DataTypeID { //nolint:exhaustive
+	case BoolType:
 		if _, ok := v.(bool); !ok {
 			var to bool
 			if err := safecast.ToBool(v, &to); err != nil {
