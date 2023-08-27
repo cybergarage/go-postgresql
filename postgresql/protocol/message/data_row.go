@@ -49,15 +49,53 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case Int4Type:
-		if _, ok := v.(int); !ok {
-			if _, ok := v.(int32); !ok {
-				var to int32
-				if err := safecast.ToInt32(v, &to); err != nil {
-					return err
-				}
-				v = to
+	case Int2Type:
+		if _, ok := v.(int16); !ok {
+			var to int16
+			if err := safecast.ToInt16(v, &to); err != nil {
+				return err
 			}
+			v = to
+		}
+	case Int4Type:
+		if _, ok := v.(int32); !ok {
+			var to int32
+			if err := safecast.ToInt32(v, &to); err != nil {
+				return err
+			}
+			v = to
+		}
+	case Int8Type:
+		if _, ok := v.(int64); !ok {
+			var to int64
+			if err := safecast.ToInt64(v, &to); err != nil {
+				return err
+			}
+			v = to
+		}
+	case Float4Type:
+		if _, ok := v.(float32); !ok {
+			var to float32
+			if err := safecast.ToFloat32(v, &to); err != nil {
+				return err
+			}
+			v = to
+		}
+	case Float8Type:
+		if _, ok := v.(float64); !ok {
+			var to float64
+			if err := safecast.ToFloat64(v, &to); err != nil {
+				return err
+			}
+			v = to
+		}
+	case TextType, VarcharType:
+		if _, ok := v.(string); !ok {
+			var to string
+			if err := safecast.ToString(v, &to); err != nil {
+				return err
+			}
+			v = to
 		}
 	}
 	msg.Data = append(msg.Data, v)
