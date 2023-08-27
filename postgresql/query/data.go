@@ -15,6 +15,7 @@
 package query
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -22,120 +23,49 @@ import (
 // https://www.postgresql.org/docs/16/datatype.html
 
 // DataType represents a PostgreSQL data type using the object ID.
-type DataType int32
-
-const (
-	BoolType            DataType = 16
-	ByteaType           DataType = 17
-	CharType            DataType = 18
-	NameType            DataType = 19
-	Int8Type            DataType = 20
-	Int2Type            DataType = 21
-	Int2VectorType      DataType = 22
-	Int4Type            DataType = 23
-	RegProcType         DataType = 24
-	TextType            DataType = 25
-	OidType             DataType = 26
-	TidType             DataType = 27
-	XidType             DataType = 28
-	CidType             DataType = 29
-	XMLType             DataType = 142
-	PointType           DataType = 600
-	LsegType            DataType = 601
-	PathType            DataType = 602
-	BoxType             DataType = 603
-	PolygonType         DataType = 604
-	LineType            DataType = 628
-	LineArrayType       DataType = 629
-	CircleType          DataType = 718
-	CircleArrayType     DataType = 719
-	MacaddrType         DataType = 829
-	Macaddr8Type        DataType = 774
-	InetType            DataType = 869
-	InetArrayType       DataType = 1040
-	CidrType            DataType = 650
-	CidrArrayType       DataType = 651
-	Float4Type          DataType = 700
-	Float8Type          DataType = 701
-	UnknownType         DataType = 705
-	AbstimeType         DataType = 702
-	ReltimeType         DataType = 703
-	TintervalType       DataType = 704
-	PolygonArrayType    DataType = 628
-	OidvectorType       DataType = 30
-	BpcharType          DataType = 1042
-	VarcharType         DataType = 1043
-	DateType            DataType = 1082
-	TimeType            DataType = 1083
-	TimestampType       DataType = 1114
-	TimestampTzType     DataType = 1184
-	IntervalType        DataType = 1186
-	TimeTzType          DataType = 1266
-	BitType             DataType = 1560
-	VarbitType          DataType = 1562
-	NumericType         DataType = 1700
-	RefcursorType       DataType = 1790
-	RegprocedureType    DataType = 2202
-	RegoperType         DataType = 2203
-	RegoperatorType     DataType = 2204
-	RegclassType        DataType = 2205
-	RegtypeType         DataType = 2206
-	RecordType          DataType = 2249
-	CstringType         DataType = 2275
-	AnyType             DataType = 2276
-	AnyarrayType        DataType = 2277
-	VoidType            DataType = 2278
-	TriggerType         DataType = 2279
-	LanguageHandlerType DataType = 2280
-	InternalType        DataType = 2281
-	OpaqueType          DataType = 2282
-	AnyelementType      DataType = 2283
-	AnynonarrayType     DataType = 2776
-	GeometryType        DataType = 3614
-	GeograpyType        DataType = 4326
-)
+type DataType = message.DataType
 
 // DataTypeFrom returns a data type from the specified query data type.
 func DataTypeFrom(t query.DataType) DataType {
 	switch t {
 	case query.BigIntData:
-		return Int8Type
+		return message.Int8Type
 	case query.BinaryData:
-		return ByteaType
+		return message.ByteaType
 	case query.BitData:
-		return BitType
+		return message.BitType
 	case query.BlobData:
-		return ByteaType
+		return message.ByteaType
 	case query.BooleanData:
-		return BoolType
+		return message.BoolType
 	case query.CharData:
-		return CharType
+		return message.CharType
 	case query.CharacterData:
-		return VarcharType
+		return message.VarcharType
 	// case query.ClobData:
 	// 	return
 	case query.DateData:
-		return DateType
+		return message.DateType
 	// case query.DecimalData:
 	// 	return
 	case query.DoubleData:
-		return Float8Type
+		return message.Float8Type
 	case query.FloatData:
-		return Float4Type
+		return message.Float4Type
 	case query.IntData:
-		return Int4Type
+		return message.Int4Type
 	case query.IntegerData:
-		return Int4Type
+		return message.Int4Type
 	case query.LongBlobData:
-		return ByteaType
+		return message.ByteaType
 	case query.LongTextData:
-		return TextType
+		return message.TextType
 	case query.MediumBlobData:
-		return ByteaType
+		return message.ByteaType
 	// case query.MediumIntData:
 	// 	return
 	case query.MediumTextData:
-		return TextType
+		return message.TextType
 	// case query.NumericData:
 	// 	return
 	// case query.RealData:
@@ -143,25 +73,25 @@ func DataTypeFrom(t query.DataType) DataType {
 	// case query.SetData:
 	// 	return
 	case query.SmallIntData:
-		return Int2Type
+		return message.Int2Type
 	case query.TextData:
-		return TextType
+		return message.TextType
 	case query.TimeData:
-		return TimeType
+		return message.TimeType
 	case query.TimeStampData:
-		return TimestampType
+		return message.TimestampType
 	case query.TinyBlobData:
-		return ByteaType
+		return message.ByteaType
 	// case query.TinyIntData:
 	// 	return
 	case query.TinyTextData:
-		return TextType
+		return message.TextType
 	case query.VarBinaryData:
-		return ByteaType
+		return message.ByteaType
 	case query.VarCharData:
-		return VarcharType
+		return message.VarcharType
 	case query.VarCharacterData:
-		return VarcharType
+		return message.VarcharType
 		// case query.YearData:
 		// 	return
 	}

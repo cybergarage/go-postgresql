@@ -26,7 +26,7 @@ type RowField struct {
 	Name         string
 	TableID      int32
 	Number       int16
-	DataTypeID   int32
+	DataTypeID   DataType
 	DataTypeSize int16
 	TypeModifier int32
 	FormatCode   int16
@@ -68,7 +68,7 @@ func WithTableID(tableID int32) func(*RowField) {
 // WithDataTypeID sets a data type ID.
 func WithDataTypeID(dataTypeID int32) func(*RowField) {
 	return func(fileld *RowField) {
-		fileld.DataTypeID = dataTypeID
+		fileld.DataTypeID = DataType(dataTypeID)
 	}
 }
 
@@ -104,7 +104,7 @@ func (field *RowField) WirteBytes(w *Writer) error {
 	if err := w.AppendInt16(field.Number); err != nil {
 		return err
 	}
-	if err := w.AppendInt32(field.DataTypeID); err != nil {
+	if err := w.AppendInt32(int32(field.DataTypeID)); err != nil {
 		return err
 	}
 	if err := w.AppendInt16(field.DataTypeSize); err != nil {
