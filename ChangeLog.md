@@ -3,6 +3,10 @@
 ## v1.x.0 (2023-xx-xx)
 - Update authenticator interface
 
+## v1.1.0 (2023-xx-xx)
+- Support more data types
+  - Timestamp, Year, .... 
+
 ## v1.0.0 (2023-xx-xx)
 - Fix executor interface
   - StartupHandler
