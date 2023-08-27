@@ -49,6 +49,16 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
+	case Int4Type:
+		if _, ok := v.(int); !ok {
+			if _, ok := v.(int32); !ok {
+				var to int32
+				if err := safecast.ToInt32(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		}
 	}
 	msg.Data = append(msg.Data, v)
 	return nil
