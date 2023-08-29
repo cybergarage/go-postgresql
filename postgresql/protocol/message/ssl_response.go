@@ -38,6 +38,11 @@ func NewSSLResponseWith(enabled rune) *SSLResponse {
 	}
 }
 
+// Type returns the message type.
+func (msg *SSLResponse) Type() Type {
+	return SSLResponseMessage
+}
+
 // Bytes returns a byte array of the message.
 func (msg *SSLResponse) Bytes() ([]byte, error) {
 	return []byte{msg.Enabled}, nil
