@@ -51,12 +51,7 @@ func (server *Server) SetTracer(t tracer.Tracer) {
 
 // Start starts the server.
 func (server *Server) Start() error {
-	err := server.Stop()
-	if err != nil {
-		return err
-	}
-
-	err = server.open()
+	err := server.open()
 	if err != nil {
 		return err
 	}
