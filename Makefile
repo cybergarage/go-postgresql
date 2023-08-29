@@ -16,6 +16,9 @@ SHELL := bash
 
 PREFIX?=$(shell pwd)
 
+GOBIN := $(shell go env GOPATH)/bin
+PATH := $(GOBIN):$(PATH)
+
 GIT_ROOT=github.com/cybergarage
 PRODUCT_NAME=go-postgresql
 MODULE_ROOT=${GIT_ROOT}/${PRODUCT_NAME}
@@ -75,7 +78,7 @@ install:
 	go install -v -gcflags=${GCFLAGS} ${BINARIES}
 
 run: build
-	./${EXAMPLES_DEAMON_BIN}
+	${GOBIN}/${EXAMPLES_DEAMON_BIN}
 
 image: test
 	docker image build -t ${EXAMPLES_DOCKER_TAG} .
