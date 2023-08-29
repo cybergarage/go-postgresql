@@ -9,6 +9,7 @@
 
 ## v1.0.1 (2023-09-xx)
 - Support SSLRequest startup
+- Fix ParameterStatus message
 - go-postgresqld/
   - Update to set logger
 
