@@ -7,6 +7,10 @@
 - Support more data types
   - Timestamp, Year, .... 
 
+## v1.0.1 (2023-09-xx)
+- go-postgresqld/
+  - Update to set logger
+
 ## v1.0.0 (2023-08-27)
 - Fix executor interface
   - StartupHandler
