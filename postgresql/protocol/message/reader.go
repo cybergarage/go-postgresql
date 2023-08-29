@@ -32,6 +32,15 @@ func NewReaderWith(reader *bufio.Reader) *Reader {
 	}
 }
 
+// PeekInt32 reads a 32-bit integer.
+func (reader *Reader) PeekInt32() (int32, error) {
+	int32Bytes, err := reader.Peek(4)
+	if err != nil {
+		return 0, err
+	}
+	return util.BytesToInt32(int32Bytes), nil
+}
+
 // ReadInt32 reads a 32-bit integer.
 func (reader *Reader) ReadInt32() (int32, error) {
 	int32Bytes := make([]byte, 4)
