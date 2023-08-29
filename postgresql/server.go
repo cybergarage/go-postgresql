@@ -326,6 +326,26 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 	msgReader := message.NewMessageReaderWith(bufio.NewReader(conn))
 
+	// Checks the SSLRequest message.
+
+	startupMsgLength, err := msgReader.PeekInt32()
+	if err != nil {
+		responseError(err)
+		return err
+	}
+
+	if startupMsgLength == 8 {
+		_, err := message.NewSSLRequestWithReader(msgReader)
+		if err != nil {
+			responseError(err)
+			return err
+		}
+		err = responseMessage(message.NewSSLResponseWith(message.SSLDisabled))
+		if err != nil {
+			return err
+		}
+	}
+
 	// Handle a Start-up message.
 
 	startupMsg, err := message.NewStartupWithReader(msgReader)
