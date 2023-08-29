@@ -63,9 +63,6 @@ vet: format
 lint: vet
 	golangci-lint run ${PKG_SRC_ROOT}/... ${TEST_SRC_ROOT}/... ${EXAMPLES_SRC_DIR}/... ${BIN_SRC_DIR}/...
 
-build: vet
-	go build -v ${BINARIES}
-
 test: lint
 	go test -v -p 1 -timeout 60s -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
@@ -74,10 +71,13 @@ test_only:
 	go test -v -p 1 -timeout 60s -cover -coverpkg=${PKG} -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
+build: vet
+	go build -v ${BINARIES}
+
 install:
 	go install -v -gcflags=${GCFLAGS} ${BINARIES}
 
-run: build
+run: install
 	${GOBIN}/${EXAMPLES_DEAMON_BIN}
 
 image: test
