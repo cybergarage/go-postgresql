@@ -42,6 +42,7 @@ const (
 	SASLInitialResponseMessage Type = 'p'
 	SASLResponseMessage        Type = 'p'
 	SSLRequestMessage          Type = ' ' // Int32(8)
+	SSLResponseMessage         Type = ' '
 	StartupMessage             Type = ' ' // Int32
 	SyncMessage                Type = 'S'
 	TerminateMessage           Type = 'X'
