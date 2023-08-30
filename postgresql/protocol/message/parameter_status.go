@@ -61,38 +61,37 @@ func NewParameterStatus() *ParameterStatus {
 	}
 }
 
-// NewParameterStatusWith returns a parameter status response instance with the specified parameter statuses.
-func NewParameterStatusWith(m map[string]string) (*ParameterStatus, error) {
+// NewParameterStatusWith returns a parameter status response instance with the specified parameter status.
+func NewParameterStatusWith(name string, value string) (*ParameterStatus, error) {
 	msg := NewParameterStatus()
-	err := msg.AppendParameters(m)
+	err := msg.AppendParameters(name, value)
 	if err != nil {
 		return nil, err
 	}
 	return msg, nil
 }
 
-// AppendString appends the specified string.
-func (msg *ParameterStatus) AppendParameter(s ...string) error {
+// NewParameterStatusesWith returns parameter status response instances with the specified parameter statuses.
+func NewParameterStatusesWith(m map[string]string) ([]*ParameterStatus, error) {
+	msgs := make([]*ParameterStatus, len(m))
+	for k, v := range m {
+		msg, err := NewParameterStatusWith(k, v)
+		if err != nil {
+			return nil, err
+		}
+		msgs = append(msgs, msg)
+	}
+	return msgs, nil
+}
+
+// AppendParameters appends the specified parameters.
+func (msg *ParameterStatus) AppendParameters(s ...string) error {
 	for _, v := range s {
 		err := msg.AppendString(v)
 		if err != nil {
 			return err
 		}
-	}
-	if 1 < len(s) {
-		return nil
-	}
-	return msg.AppendTerminator()
-}
-
-// AppendString appends the specified string.
-func (msg *ParameterStatus) AppendParameters(m map[string]string) error {
-	for k, v := range m {
-		err := msg.AppendString(k)
-		if err != nil {
-			return err
-		}
-		err = msg.AppendString(v)
+		err = msg.AppendTerminator()
 		if err != nil {
 			return err
 		}
