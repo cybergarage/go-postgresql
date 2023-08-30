@@ -147,6 +147,16 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
+	responseMessages := func(resMsg message.Responses) error {
+		for _, res := range resMsg {
+			err := responseMessage(res)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
 	responseError := func(err error) {
 		errMsg, err := message.NewErrorResponseWith(err)
 		if err != nil {
@@ -189,11 +199,11 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return err
 		}
 		// Return ParameterStatus (S) message.
-		res, err = server.Executor.ParameterStatus(exConn)
+		reses, err := server.Executor.ParameterStatuses(exConn)
 		if err != nil {
 			return err
 		}
-		err = responseMessage(res)
+		err = responseMessages(reses)
 		if err != nil {
 			return err
 		}
