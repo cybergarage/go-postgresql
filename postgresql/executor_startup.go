@@ -47,14 +47,12 @@ func (executor *BaseProtocolExecutor) Authenticate(*Conn, *message.Startup) (mes
 	return message.NewAuthenticationOk()
 }
 
-// ParameterStatus returns the parameter status.
-func (executor *BaseProtocolExecutor) ParameterStatus(*Conn) (message.Response, error) {
+// ParameterStatuses returns the parameter statuses.
+func (executor *BaseProtocolExecutor) ParameterStatuses(*Conn) (message.Responses, error) {
 	m := map[string]string{}
 	m[message.ClientEncoding] = message.EncodingUTF8
 	m[message.ServerEncoding] = message.EncodingUTF8
-	// FIXME : Get the time zone name from the system
-	// m[message.TimeZone] = time.Now().Location().String()
-	return message.NewParameterStatusWith(m)
+	return message.NewParameterStatusesWith(m)
 }
 
 // BackendKeyData returns the backend key data.
