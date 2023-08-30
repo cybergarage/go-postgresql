@@ -91,10 +91,6 @@ func (msg *ParameterStatus) AppendParameters(s ...string) error {
 		if err != nil {
 			return err
 		}
-		err = msg.AppendTerminator()
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }
