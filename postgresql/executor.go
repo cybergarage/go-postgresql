@@ -27,8 +27,8 @@ type Authenticator interface {
 
 // StatusHandler represents a backend status message handler.
 type StatusHandler interface {
-	// ParameterStatus returns the parameter status.
-	ParameterStatus(*Conn) (message.Response, error)
+	// ParameterStatuses returns the parameter statuses.
+	ParameterStatuses(*Conn) (message.Responses, error)
 	// BackendKeyData returns the backend key data.
 	BackendKeyData(*Conn) (message.Response, error)
 }
