@@ -72,8 +72,8 @@ func NewParameterStatusWith(name string, value string) (*ParameterStatus, error)
 }
 
 // NewParameterStatusesWith returns parameter status response instances with the specified parameter statuses.
-func NewParameterStatusesWith(m map[string]string) ([]*ParameterStatus, error) {
-	msgs := make([]*ParameterStatus, len(m))
+func NewParameterStatusesWith(m map[string]string) (Responses, error) {
+	msgs := Responses{}
 	for k, v := range m {
 		msg, err := NewParameterStatusWith(k, v)
 		if err != nil {
