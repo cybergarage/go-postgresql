@@ -7,11 +7,11 @@
 - Support more data types
   - Timestamp, Year, .... 
 
-## v1.0.1 (2023-09-xx)
-- Support SSLRequest startup
-- Fix ParameterStatus message
-- go-postgresqld/
-  - Update to set logger
+## v1.0.1 (2023-08-30)
+- Add support for psql command
+  - Add support for SSLRequest startup
+  - Fix ParameterStatus responses
+- Update go-postgresqld to set verbose logger as default
 
 ## v1.0.0 (2023-08-27)
 - Fix executor interface
