@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package test
+package system
 
 import "testing"
 
-func TestEmbedTests(t *testing.T) {
+func TestEmbedCatalogs(t *testing.T) {
 	if len(Catalogs) == 0 {
 		t.Errorf("Catalogs: %v", len(Catalogs))
 		return
