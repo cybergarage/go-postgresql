@@ -28,8 +28,13 @@ type DataType = system.DataType
 // OID represents a object identifier.
 type OID = system.OID
 
-// DataFrom returns a data type from the specified query data type.
-func DataFrom(t query.DataType) OID {
+// NewDataTypeFrom returns a data type from the specified query data type.
+func NewDataTypeFrom(t query.DataType) (*DataType, error) {
+	return system.GetDataType(dataTypeOIDFrom(t))
+}
+
+// dataTypeOIDFrom returns a data type from the specified query data type.
+func dataTypeOIDFrom(t query.DataType) OID {
 	switch t {
 	case query.BigIntData:
 		return system.Int8
