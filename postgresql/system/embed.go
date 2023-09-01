@@ -18,13 +18,12 @@ import (
 	_ "embed"
 )
 
+// Catalogs is a map of catalog names and catalog bytes.
 // PostgreSQL: Documentation: System Catalogs
 // https://www.postgresql.org/docs/current/catalogs.html
-// Catalogs is a map of catalog names and catalog bytes.
-var Catalogs = map[string][]byte {
+var Catalogs = map[string][]byte{
 	"PgType": pgType,
 }
 
 //go:embed res/pg_type.csv
 var pgType []byte
-
