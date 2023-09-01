@@ -28,9 +28,9 @@ HEADER
 
 my $pg_type_file = "res/pg_type.csv";
 open(IN, $pg_type_file) or die "Failed to open $pg_type_file: $!";
-$line_no = 0;
-$name_idx = -1;
-$oid_idx = -1;
+my $line_no = 0;
+my $name_idx = -1;
+my $oid_idx = -1;
 while(<IN>){
   $line_no++;
   my @row = split(/,/, $_, -1);
