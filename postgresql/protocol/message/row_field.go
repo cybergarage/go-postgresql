@@ -26,7 +26,7 @@ type RowField struct {
 	Name         string
 	TableID      int32
 	Number       int16
-	DataTypeID   DataType
+	DataTypeID   OID
 	DataTypeSize int16
 	TypeModifier int32
 	FormatCode   int16
@@ -68,7 +68,7 @@ func WithTableID(tableID int32) func(*RowField) {
 // WithDataTypeID sets a data type ID.
 func WithDataTypeID(dataTypeID int32) func(*RowField) {
 	return func(fileld *RowField) {
-		fileld.DataTypeID = DataType(dataTypeID)
+		fileld.DataTypeID = OID(dataTypeID)
 	}
 }
 
