@@ -21,8 +21,8 @@ print<<HEADER;
 package system
 
 type DataType struct {
-  Name string
-  OID  OID
+	name string
+	oid  OID
 }
 
 // DataType represents a PostgreSQL data type.
@@ -38,10 +38,21 @@ func GetDataType(oid OID) (*DataType, error) {
 }
 
 func newDataType(name string, oid OID) *DataType {
-  return &DataType{
-    Name: name,
-    OID:  oid,
-  }
+	dataType := &DataType{
+		name: name,
+		oid:  oid,
+	}
+	return dataType
+}
+
+// Name returns the data type name.
+func (dataType *DataType) Name() string {
+	return dataType.name
+}
+
+// OID returns the data type OID.
+func (dataType *DataType) OID() OID {
+	return dataType.oid
 }
 
 func init() { //nolint: gochecknoinits, maintidx
