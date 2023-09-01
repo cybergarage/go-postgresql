@@ -1,2 +1,2 @@
 #!/bin/bash
-psql -d postgres -c "SELECT typname, oid, typlen FROM pg_type;" -A -F, > pg_type.csv
+psql -d postgres -c "SELECT * FROM pg_type;" -A -F,
