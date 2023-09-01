@@ -21,7 +21,7 @@ print<<HEADER;
 package system
 
 // OID represents a PostgreSQL object ID.
-type OID int32
+type OID = int32
 
 const (
 HEADER
