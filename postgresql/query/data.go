@@ -15,57 +15,60 @@
 package query
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
-// PostgreSQL: Documentation: 16: Chapter 8. Data Types
+// PostgreSQL: Documentation: 16: Chapter 8. Data s
 // https://www.postgresql.org/docs/16/datatype.html
 
-// DataType represents a PostgreSQL data type using the object ID.
-type DataType = message.DataType
+// DataType represents a data type.
+type DataType = system.DataType
 
-// DataTypeFrom returns a data type from the specified query data type.
-func DataTypeFrom(t query.DataType) DataType {
+// OID represents a object identifier.
+type OID = system.OID
+
+// DataFrom returns a data type from the specified query data type.
+func DataFrom(t query.DataType) OID {
 	switch t {
 	case query.BigIntData:
-		return message.Int8Type
+		return system.Int8
 	case query.BinaryData:
-		return message.ByteaType
+		return system.Bytea
 	case query.BitData:
-		return message.BitType
+		return system.Bit
 	case query.BlobData:
-		return message.ByteaType
+		return system.Bytea
 	case query.BooleanData:
-		return message.BoolType
+		return system.Bool
 	case query.CharData:
-		return message.CharType
+		return system.Char
 	case query.CharacterData:
-		return message.VarcharType
+		return system.Varchar
 	// case query.ClobData:
 	// 	return
 	case query.DateData:
-		return message.DateType
+		return system.Date
 	// case query.DecimalData:
 	// 	return
 	case query.DoubleData:
-		return message.Float8Type
+		return system.Float8
 	case query.FloatData:
-		return message.Float4Type
+		return system.Float4
 	case query.IntData:
-		return message.Int4Type
+		return system.Int4
 	case query.IntegerData:
-		return message.Int4Type
+		return system.Int4
 	case query.LongBlobData:
-		return message.ByteaType
+		return system.Bytea
 	case query.LongTextData:
-		return message.TextType
+		return system.Text
 	case query.MediumBlobData:
-		return message.ByteaType
+		return system.Bytea
 	// case query.MediumIntData:
 	// 	return
 	case query.MediumTextData:
-		return message.TextType
+		return system.Text
 	// case query.NumericData:
 	// 	return
 	// case query.RealData:
@@ -73,25 +76,25 @@ func DataTypeFrom(t query.DataType) DataType {
 	// case query.SetData:
 	// 	return
 	case query.SmallIntData:
-		return message.Int2Type
+		return system.Int2
 	case query.TextData:
-		return message.TextType
+		return system.Text
 	case query.TimeData:
-		return message.TimeType
+		return system.Time
 	case query.TimeStampData:
-		return message.TimestampType
+		return system.Timestamp
 	case query.TinyBlobData:
-		return message.ByteaType
+		return system.Bytea
 	// case query.TinyIntData:
 	// 	return
 	case query.TinyTextData:
-		return message.TextType
+		return system.Text
 	case query.VarBinaryData:
-		return message.ByteaType
+		return system.Bytea
 	case query.VarCharData:
-		return message.VarcharType
+		return system.Varchar
 	case query.VarCharacterData:
-		return message.VarcharType
+		return system.Varchar
 		// case query.YearData:
 		// 	return
 	}
