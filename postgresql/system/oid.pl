@@ -29,15 +29,28 @@ HEADER
 my $pg_type_file = "res/pg_type.csv";
 open(IN, $pg_type_file) or die "Failed to open $pg_type_file: $!";
 $line_no = 0;
+$name_idx = -1;
+$oid_idx = -1;
 while(<IN>){
   $line_no++;
+  my @row = split(/,/, $_, -1);
   if ($line_no <= 1) {
+    for (my $i = 0; $i < scalar(@row); $i++) {
+      if ($row[$i] eq "typname") {
+        $name_idx = $i;
+      }
+      if ($row[$i] eq "oid") {
+        $oid_idx = $i;
+      }
+    }
+    if ($name_idx < 0 || $oid_idx < 0) {
+      die "Failed to find typname or oid column";
+    }
     next;
   }
   chomp($_);
-  my @row = split(/,/, $_, -1);
-  my $name = $row[0];
-  my $val = $row[1];
+  my $name = $row[$name_idx];
+  my $oid = $row[$oid_idx];
   if ($name =~ /^_/){
     next;
   }
@@ -47,7 +60,7 @@ while(<IN>){
   $name =~ s/_([a-z])/\u$1/g;
   $name =~ s/^([a-z])/\u$1/;
   # check nil rows
-  if (length($name)<=0 || length($val)<=0) {
+  if (length($name)<=0 || length($oid)<=0) {
     next;
   }
   # stylecheck
@@ -59,8 +72,7 @@ while(<IN>){
     }
   }
 
-  print $name . " OID = " . $val . "\n";
-  # END: yd8c6549bwf9
+  print $name . " OID = " . $oid . "\n";
   }
   close(IN);
 
