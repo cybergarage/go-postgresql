@@ -15,6 +15,7 @@
 package message
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-safecast/safecast"
 )
 
@@ -41,7 +42,7 @@ func NewDataRow() *DataRow {
 // AppendData appends a column value to the data row message.
 func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 	switch rowField.DataTypeID { //nolint:exhaustive
-	case BoolType:
+	case system.Bool:
 		if _, ok := v.(bool); !ok {
 			var to bool
 			if err := safecast.ToBool(v, &to); err != nil {
@@ -49,7 +50,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case Int2Type:
+	case system.Int2:
 		if _, ok := v.(int16); !ok {
 			var to int16
 			if err := safecast.ToInt16(v, &to); err != nil {
@@ -57,7 +58,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case Int4Type:
+	case system.Int4:
 		if _, ok := v.(int32); !ok {
 			var to int32
 			if err := safecast.ToInt32(v, &to); err != nil {
@@ -65,7 +66,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case Int8Type:
+	case system.Int8:
 		if _, ok := v.(int64); !ok {
 			var to int64
 			if err := safecast.ToInt64(v, &to); err != nil {
@@ -73,7 +74,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case Float4Type:
+	case system.Float4:
 		if _, ok := v.(float32); !ok {
 			var to float32
 			if err := safecast.ToFloat32(v, &to); err != nil {
@@ -81,7 +82,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case Float8Type:
+	case system.Float8:
 		if _, ok := v.(float64); !ok {
 			var to float64
 			if err := safecast.ToFloat64(v, &to); err != nil {
@@ -89,7 +90,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
-	case TextType, VarcharType:
+	case system.Text, system.Varchar:
 		if _, ok := v.(string); !ok {
 			var to string
 			if err := safecast.ToString(v, &to); err != nil {
