@@ -14,12 +14,15 @@
 
 SHELL := bash
 
-SOURCE_FILES= \
-	oid.go
+.PHONY: all
 
-.PHONY: ${SOURCE_FILES}
+SOURCE_FILES= \
+	oid.go \
+	data_type.go
 
 all: ${SOURCE_FILES}
 
-oid.go : res/pg_type.csv
-	./oid.pl > $@
+${SOURCE_FILES}: $(wildcard res/*.csv)
+
+%.go : %.pl
+	./$< > $@
