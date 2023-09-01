@@ -14,17 +14,13 @@
 
 SHELL := bash
 
+TABLES= \
+	pg_type \
+	pg_attribute
+
 .PHONY: all
 
-CSV_FILES= \
-	pg_type.csv
-
-all: ${CSV_FILES}
-
-${CSV_FILES}:touch
-
-touch:
-	touch *.gen
-
-%.csv : %.gen
-	./$< > $@
+all:
+	for table in $(TABLES); do \
+		psql -d postgres -c "SELECT * FROM $$table" -A -F, > $$table.csv; \
+	done
