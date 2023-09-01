@@ -19,7 +19,7 @@ import (
 	"fmt"
 )
 
-// ErrNotFount represents a not found error.
+// ErrNotFound represents a not found error.
 var ErrNotFound = errors.New("not found")
 
 func newDataTypeNotFound(oid OID) error {
