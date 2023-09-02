@@ -38,7 +38,7 @@ func TestSQLTest(t *testing.T) {
 
 	testNames := []string{
 		"YcsbWorkload",
-		"SimpInsertSelect",
+		"SmplInsertSelect",
 	}
 
 	if err := sqltest.RunEmbedSuites(t, client, testNames...); err != nil {
