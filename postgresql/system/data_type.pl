@@ -135,8 +135,9 @@ while(<IN>){
       $name =~ s/$patterns[$i]/$replacements[$i]/g;
     }
   }
-  print "\tdataTypes[" . $oid . "] = newDataType(\"" . $name . "\", " . $oid . ", " . $size . ")\n";  }
-  close(IN);
+  print "\tdataTypes[" . $oid . "] = newDataType(\"" . $name . "\", " . $oid . ", " . $size . ")\n";  
+}
+close(IN);
 
 print<<FOTTER;
 }
