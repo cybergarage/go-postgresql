@@ -1,11 +1,13 @@
 # Changelog
 
-## v1.x.0 (2023-xx-xx)
-- Update authenticator interface
-
 ## v1.1.0 (2023-xx-xx)
 - Support more data types
   - Timestamp, Year, .... 
+
+## v1.0.2 (2023-09-xx)
+- Improve message response compatibility
+  -  Update RowDescription response using pg_type table
+  -  Update DataRow response
 
 ## v1.0.1 (2023-08-30)
 - Add support for psql command
