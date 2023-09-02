@@ -73,8 +73,8 @@ while(<IN>){
   }
 
   print $name . " OID = " . $oid . "\n";
-  }
-  close(IN);
+}
+close(IN);
 
 print<<FOTTER;
 )
