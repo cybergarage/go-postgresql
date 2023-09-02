@@ -33,27 +33,40 @@ func GetDataType(oid OID) (*DataType, error) {
 }
 
 func newDataType(name string, oid OID, size int) *DataType {
-	dataType := &DataType{
+	dt := &DataType{
 		name: name,
 		oid:  oid,
 		size: size,
 	}
-	return dataType
+	return dt
 }
 
 // Name returns the data type name.
-func (dataType *DataType) Name() string {
-	return dataType.name
+func (dt *DataType) Name() string {
+	return dt.name
 }
 
 // OID returns the data type OID.
-func (dataType *DataType) OID() OID {
-	return dataType.oid
+func (dt *DataType) OID() OID {
+	return dt.oid
 }
 
 // Size returns the data type size.
-func (dataType *DataType) Size() int {
-	return dataType.size
+func (dt *DataType) Size() int {
+	return dt.size
+}
+
+// FormatCodeFrom returns a format code from the specified data type.
+func (dt *DataType) FormatCode() FormatCode {
+	switch dt.oid {
+	case Name:
+		return TextFormat
+	case Text:
+		return TextFormat
+	case Varchar:
+		return TextFormat
+	}
+	return BinaryFormat
 }
 
 func init() { //nolint: gochecknoinits, maintidx

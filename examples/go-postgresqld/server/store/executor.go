@@ -179,12 +179,11 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		if err != nil {
 			return nil, err
 		}
-		fc := int32(query.FormatCodeFrom(schemaColumn.DataType()))
 		field := message.NewRowFieldWith(name,
 			message.WithNumber(int16(n+1)),
 			message.WithDataTypeID(dt.OID()),
 			message.WithDataTypeSize(int16(dt.Size())),
-			message.WithFormatCode(int16(fc)),
+			message.WithFormatCode(dt.FormatCode()),
 		)
 		rowDesc.AppendField(field)
 	}
