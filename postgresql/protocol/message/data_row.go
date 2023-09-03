@@ -41,62 +41,73 @@ func NewDataRow() *DataRow {
 
 // AppendData appends a column value to the data row message.
 func (msg *DataRow) AppendData(rowField *RowField, v any) error {
-	switch rowField.DataTypeID { //nolint:exhaustive
-	case system.Bool:
-		if _, ok := v.(bool); !ok {
-			var to bool
-			if err := safecast.ToBool(v, &to); err != nil {
-				return err
-			}
-			v = to
-		}
-	case system.Int2:
-		if _, ok := v.(int16); !ok {
-			var to int16
-			if err := safecast.ToInt16(v, &to); err != nil {
-				return err
-			}
-			v = to
-		}
-	case system.Int4:
-		if _, ok := v.(int32); !ok {
-			var to int32
-			if err := safecast.ToInt32(v, &to); err != nil {
-				return err
-			}
-			v = to
-		}
-	case system.Int8:
-		if _, ok := v.(int64); !ok {
-			var to int64
-			if err := safecast.ToInt64(v, &to); err != nil {
-				return err
-			}
-			v = to
-		}
-	case system.Float4:
-		if _, ok := v.(float32); !ok {
-			var to float32
-			if err := safecast.ToFloat32(v, &to); err != nil {
-				return err
-			}
-			v = to
-		}
-	case system.Float8:
-		if _, ok := v.(float64); !ok {
-			var to float64
-			if err := safecast.ToFloat64(v, &to); err != nil {
-				return err
-			}
-			v = to
-		}
-	case system.Text, system.Varchar:
+	switch rowField.FormatCode { //nolint:exhaustive
+	case system.TextFormat:
 		if _, ok := v.(string); !ok {
 			var to string
 			if err := safecast.ToString(v, &to); err != nil {
 				return err
 			}
 			v = to
+		}
+	case system.BinaryFormat:
+		switch rowField.DataTypeID { //nolint:exhaustive
+		case system.Bool:
+			if _, ok := v.(bool); !ok {
+				var to bool
+				if err := safecast.ToBool(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		case system.Int2:
+			if _, ok := v.(int16); !ok {
+				var to int16
+				if err := safecast.ToInt16(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		case system.Int4:
+			if _, ok := v.(int32); !ok {
+				var to int32
+				if err := safecast.ToInt32(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		case system.Int8:
+			if _, ok := v.(int64); !ok {
+				var to int64
+				if err := safecast.ToInt64(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		case system.Float4:
+			if _, ok := v.(float32); !ok {
+				var to float32
+				if err := safecast.ToFloat32(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		case system.Float8:
+			if _, ok := v.(float64); !ok {
+				var to float64
+				if err := safecast.ToFloat64(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
+		case system.Text, system.Varchar:
+			if _, ok := v.(string); !ok {
+				var to string
+				if err := safecast.ToString(v, &to); err != nil {
+					return err
+				}
+				v = to
+			}
 		}
 	}
 	msg.Data = append(msg.Data, v)
