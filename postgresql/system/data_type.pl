@@ -65,20 +65,10 @@ func (dt *DataType) Size() int {
 // FormatCodeFrom returns a format code from the specified data type.
 func (dt *DataType) FormatCode() FormatCode {
 	switch dt.oid {
-	case Name:
-		return TextFormat
-	case Text:
-		return TextFormat
-	case Varchar:
-		return TextFormat
-	case Int2:
-		return TextFormat
-	case Int4:
-		return TextFormat
-	case Int8:
-		return TextFormat
+	case Bytea:
+		return BinaryFormat
 	}
-	return BinaryFormat
+	return TextFormat
 }
 
 func init() { //nolint: gochecknoinits, maintidx
