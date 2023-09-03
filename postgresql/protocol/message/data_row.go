@@ -15,6 +15,8 @@
 package message
 
 import (
+	"time"
+
 	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-safecast/safecast"
 )
@@ -43,7 +45,12 @@ func NewDataRow() *DataRow {
 func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 	switch rowField.FormatCode { //nolint:exhaustive
 	case system.TextFormat:
-		if _, ok := v.(string); !ok {
+		switch sv := v.(type) {
+		case string:
+			// v = sv
+		case time.Time:
+			v = sv.Format(system.TimestampFormat)
+		default:
 			var to string
 			if err := safecast.ToString(v, &to); err != nil {
 				return err
