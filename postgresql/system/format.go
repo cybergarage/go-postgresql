@@ -21,6 +21,11 @@ package system
 type FormatCode = int16
 
 const (
-	TextFormat   FormatCode = 0
+	// TextFormat represents a text format code.
+	TextFormat FormatCode = 0
+	// BinaryFormat represents a binary format code.
 	BinaryFormat FormatCode = 1
 )
+
+// TimestampFormat represents a timestamp format.
+const TimestampFormat = "2006-01-02 15:04:05"
