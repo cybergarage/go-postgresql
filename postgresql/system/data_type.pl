@@ -71,6 +71,12 @@ func (dt *DataType) FormatCode() FormatCode {
 		return TextFormat
 	case Varchar:
 		return TextFormat
+	case Int2:
+		return TextFormat
+	case Int4:
+		return TextFormat
+	case Int8:
+		return TextFormat
 	}
 	return BinaryFormat
 }
