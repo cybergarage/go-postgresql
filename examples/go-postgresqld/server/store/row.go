@@ -19,6 +19,7 @@ import (
 
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-safecast/safecast"
 )
 
 // Row represents a row of a table.
@@ -44,12 +45,82 @@ func (row Row) IsMatched(cond *query.Condition) bool {
 		return true
 	}
 
+	deepEqual := func(r1 any, r2 any) bool {
+		switch v1 := r1.(type) {
+		case string:
+			var v2 string
+			err := safecast.ToString(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case int:
+			var v2 int
+			err := safecast.ToInt(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case int8:
+			var v2 int8
+			err := safecast.ToInt8(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case int16:
+			var v2 int16
+			err := safecast.ToInt16(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case int32:
+			var v2 int32
+			err := safecast.ToInt32(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case float32:
+			var v2 float32
+			err := safecast.ToFloat32(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case float64:
+			var v2 float64
+			err := safecast.ToFloat64(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		case bool:
+			var v2 bool
+			err := safecast.ToBool(r2, &v2)
+			if err == nil {
+				if v1 == v2 {
+					return true
+				}
+			}
+		}
+		return reflect.DeepEqual(r1, r2)
+	}
+
 	eq := func(name string, v any) bool {
 		rv, ok := row[name]
 		if !ok {
 			return false
 		}
-		return reflect.DeepEqual(rv, v)
+		return deepEqual(rv, v)
 	}
 
 	expr := cond.Expr()
