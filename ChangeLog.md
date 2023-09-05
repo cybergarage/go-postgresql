@@ -1,8 +1,12 @@
 # Changelog
 
-## v1.1.0 (2023-xx-xx)
+## v1.2.0 (2023-xx-xx)
 - Support more data types
   - Timestamp, Year, .... 
+
+## v1.1.0 (2023-xx-xx)
+- Update
+  - Add ErrorHandler to handler unsupported queries
 
 ## v1.0.2 (2023-09-05)
 - Improve message response compatibility
