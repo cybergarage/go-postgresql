@@ -76,15 +76,23 @@ type QueryExecutor interface {
 	DMOExecutor
 }
 
+// ErrorHandler represents a user error handler.
+type ErrorHandler interface {
+	ParserError(*Conn, *message.Query, error) (message.Responses, error)
+}
+
 // Executor represents a frontend message executor.
 type Executor interface {
 	Authenticator
 	StartupHandler
 	QueryExecutor
+	ErrorHandler
 	// SetAuthenticator sets a user authenticator.
 	SetAuthenticator(Authenticator)
 	// SetStartupHandler sets a user startup handler.
 	SetStartupHandler(StartupHandler)
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
+	// SetQueryExecutor sets a user query executor.
+	SetErrorHandler(ErrorHandler)
 }
