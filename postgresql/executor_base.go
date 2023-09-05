@@ -20,6 +20,7 @@ type BaseExecutor struct {
 	StartupHandler
 	QueryExecutor
 	BulkExecutor
+	ErrorHandler
 }
 
 // NewBaseExecutor returns a base frontend message executor.
@@ -29,6 +30,7 @@ func NewBaseExecutor() *BaseExecutor {
 		StartupHandler: NewBaseProtocolExecutor(),
 		QueryExecutor:  NewBaseQueryExecutor(),
 		BulkExecutor:   NewBaseBulkExecutor(),
+		ErrorHandler:   NewBaseErrorHandler(),
 	}
 }
 
@@ -50,4 +52,9 @@ func (executor *BaseExecutor) SetQueryExecutor(qe QueryExecutor) {
 // SetBulkExecutor sets a user bulk executor.
 func (executor *BaseExecutor) SetBulkExecutor(be BulkExecutor) {
 	executor.BulkExecutor = be
+}
+
+// SetErrorHandler sets a user error handler.
+func (executor *BaseExecutor) SetErrorHandler(eh ErrorHandler) {
+	executor.ErrorHandler = eh
 }
