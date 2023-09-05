@@ -4,7 +4,7 @@
 - Support more data types
   - Timestamp, Year, .... 
 
-## v1.0.2 (2023-09-xx)
+## v1.0.2 (2023-09-05)
 - Improve message response compatibility
   -  Update RowDescription response using pg_type table
   -  Update DataRow response
