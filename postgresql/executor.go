@@ -78,7 +78,7 @@ type QueryExecutor interface {
 
 // ErrorHandler represents a user error handler.
 type ErrorHandler interface {
-	ParserError(*Conn, *message.Query, error) (message.Responses, error)
+	ParserError(*Conn, string, error) (message.Responses, error)
 }
 
 // Executor represents a frontend message executor.

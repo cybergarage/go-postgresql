@@ -15,6 +15,8 @@
 package postgresql
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
@@ -28,6 +30,11 @@ func NewBaseErrorHandler() *BaseErrorHandler {
 }
 
 // ParserError handles a parser error.
-func (executor *BaseErrorHandler) ParserError(*Conn, *message.Query, error) (message.Responses, error) {
-	return nil, NewErrNotImplemented("COPY")
+func (executor *BaseErrorHandler) ParserError(conn *Conn, q string, err error) (message.Responses, error) {
+	resErr := fmt.Errorf("parser error : %w", err)
+	res, err := message.NewErrorResponseWith(resErr)
+	if err != nil {
+		return nil, err
+	}
+	return message.NewResponsesWith(res), nil
 }
