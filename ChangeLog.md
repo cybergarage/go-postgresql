@@ -7,6 +7,8 @@
 ## v1.1.0 (2023-xx-xx)
 - Update
   - Add ErrorHandler to handler unsupported queries
+- Improve
+  - Support pgbench
 
 ## v1.0.2 (2023-09-05)
 - Improve message response compatibility
