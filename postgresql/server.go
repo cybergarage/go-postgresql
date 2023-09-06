@@ -273,10 +273,18 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 	// executeQuery executes a query and returns the result.
 	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
+		q := queryMsg.Query
 		parser := query.NewParser()
-		stmts, err := parser.ParseString(queryMsg.Query)
+		stmts, err := parser.ParseString(q)
 		if err != nil {
-			return err
+			res, err := server.Executor.ParserError(conn, q, err)
+			if err != nil {
+				return err
+			}
+			err = responseMessages(res)
+			if err != nil {
+				return err
+			}
 		}
 
 		for _, stmt := range stmts {
@@ -308,13 +316,11 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				res, err = server.Executor.Delete(conn, stmt)
 			}
 
-			for _, r := range res {
-				err := responseMessage(r)
-				if err != nil {
-					return err
-				}
+			if err != nil {
+				return err
 			}
 
+			err = responseMessages(res)
 			if err != nil {
 				return err
 			}
