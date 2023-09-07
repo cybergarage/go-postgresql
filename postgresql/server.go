@@ -136,6 +136,8 @@ func (server *Server) serve() error {
 func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 	defer conn.Close()
 
+	log.Debugf("%s/%s (%s) accepted", PackageName, Version, conn.RemoteAddr().String())
+
 	responseMessage := func(resMsg message.Response) error {
 		resBytes, err := resMsg.Bytes()
 		if err != nil {
@@ -427,6 +429,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 		if reqErr != nil {
 			responseError(reqErr)
+			log.Error(reqErr)
 		}
 
 		// Return ReadyForQuery (B) message.
