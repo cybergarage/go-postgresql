@@ -78,7 +78,7 @@ install:
 	go install -v -gcflags=${GCFLAGS} ${BINARIES}
 
 run: install
-	${GOBIN}/${EXAMPLES_DEAMON_BIN}
+	${GOBIN}/${EXAMPLES_DEAMON_BIN} --trace
 
 image: test
 	docker image build -t ${EXAMPLES_DOCKER_TAG} .
