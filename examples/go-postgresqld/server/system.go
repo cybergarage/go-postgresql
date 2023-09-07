@@ -15,29 +15,20 @@
 package server
 
 import (
-	"github.com/cybergarage/go-postgresql/examples/go-postgresqld/server/store"
+	"fmt"
+
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
-// Server represents a test server.
-type Server struct {
-	*postgresql.Server
-	Store
-}
-
-// NewServerWithStore returns a test server instance with the specified store.
-func NewServerWithStore(store Store) *Server {
-	server := &Server{
-		Server: postgresql.NewServer(),
-		Store:  store,
+// ParserError handles a parser error.
+func (*Server) ParserError(conn *postgresql.Conn, q string, err error) (message.Responses, error) {
+	resErr := fmt.Errorf("parser error : %w", err)
+	log.Warnf(err.Error())
+	res, err := message.NewErrorResponseWith(resErr)
+	if err != nil {
+		return nil, err
 	}
-	server.SetAuthenticator(server)
-	server.SetQueryExecutor(server)
-	server.SetErrorHandler(server)
-	return server
-}
-
-// NewServer returns a test server instance.
-func NewServer() *Server {
-	return NewServerWithStore(store.NewMemStore())
+	return message.NewResponsesWith(res), nil
 }
