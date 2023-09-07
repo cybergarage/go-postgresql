@@ -53,11 +53,11 @@ func main() {
 	flag.Parse()
 
 	logLevel := clog.LevelInfo
-	if *isDebugEnabled {
-		logLevel = clog.LevelDebug
-	}
 	if *isTraceEnabled {
 		logLevel = clog.LevelTrace
+	}
+	if *isDebugEnabled {
+		logLevel = clog.LevelDebug
 	}
 	clog.SetSharedLogger(clog.NewStdoutLogger(logLevel))
 
