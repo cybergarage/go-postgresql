@@ -48,12 +48,16 @@ const (
 
 func main() {
 	isDebugEnabled := flag.Bool("debug", false, "enable debugging log output")
+	isTraceEnabled := flag.Bool("trace", false, "enable trace log output")
 	isProfileEnabled := flag.Bool("profile", false, "enable profiling server")
 	flag.Parse()
 
-	logLevel := clog.LevelTrace
+	logLevel := clog.LevelInfo
 	if *isDebugEnabled {
 		logLevel = clog.LevelDebug
+	}
+	if *isTraceEnabled {
+		logLevel = clog.LevelTrace
 	}
 	clog.SetSharedLogger(clog.NewStdoutLogger(logLevel))
 
