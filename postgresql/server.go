@@ -276,6 +276,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 	// executeQuery executes a query and returns the result.
 	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
 		q := queryMsg.Query
+		log.Tracef("%s %s", conn.conn.RemoteAddr(), q)
+
 		parser := query.NewParser()
 		stmts, err := parser.ParseString(q)
 		if err != nil {
