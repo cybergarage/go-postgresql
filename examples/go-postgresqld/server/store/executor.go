@@ -159,33 +159,36 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	// Row description response
 
-	colums := q.Columns()
-	if colums.IsSelectAll() {
-		colums = tbl.Columns()
+	selectors := q.Selectors()
+	if selectors.IsSelectAll() {
+		selectors = tbl.Selectors()
 	}
 
 	schema := tbl.Schema
-	names := colums.Names()
 
 	res := message.NewResponses()
 
 	rowDesc := message.NewRowDescription()
-	for n, name := range names {
-		schemaColumn, err := schema.ColumnByName(name)
-		if err != nil {
-			return nil, err
+	for n, selector := range selectors {
+		switch selector := selector.(type) {
+		case *query.Column:
+			name := selector.Name()
+			schemaColumn, err := schema.ColumnByName(name)
+			if err != nil {
+				return nil, err
+			}
+			dt, err := query.NewDataTypeFrom(schemaColumn.DataType())
+			if err != nil {
+				return nil, err
+			}
+			field := message.NewRowFieldWith(name,
+				message.WithNumber(int16(n+1)),
+				message.WithDataTypeID(dt.OID()),
+				message.WithDataTypeSize(int16(dt.Size())),
+				message.WithFormatCode(dt.FormatCode()),
+			)
+			rowDesc.AppendField(field)
 		}
-		dt, err := query.NewDataTypeFrom(schemaColumn.DataType())
-		if err != nil {
-			return nil, err
-		}
-		field := message.NewRowFieldWith(name,
-			message.WithNumber(int16(n+1)),
-			message.WithDataTypeID(dt.OID()),
-			message.WithDataTypeSize(int16(dt.Size())),
-			message.WithFormatCode(dt.FormatCode()),
-		)
-		rowDesc.AppendField(field)
 	}
 	res = res.Append(rowDesc)
 
@@ -193,16 +196,20 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	for _, row := range rows {
 		dataRow := message.NewDataRow()
-		for n, name := range names {
-			field := rowDesc.Field(n)
-			v, err := row.ValueByName(name)
-			if err != nil {
-				dataRow.AppendData(field, nil)
-				continue
+		for n, selector := range selectors {
+			switch selector := selector.(type) {
+			case *query.Column:
+				name := selector.Name()
+				field := rowDesc.Field(n)
+				v, err := row.ValueByName(name)
+				if err != nil {
+					dataRow.AppendData(field, nil)
+					continue
+				}
+				dataRow.AppendData(field, v)
 			}
-			dataRow.AppendData(field, v)
+			res = res.Append(dataRow)
 		}
-		res = res.Append(dataRow)
 	}
 
 	cmpRes, err := message.NewSelectCompleteWith(len(rows))
