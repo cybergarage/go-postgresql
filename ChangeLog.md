@@ -7,8 +7,16 @@
 ## v1.1.0 (2023-xx-xx)
 - Update
   - Add ErrorHandler to handler unsupported queries
+  - Query parser
+    - Support
+      - SELECT
+        - Support functions
+      - ALTER DATABASE
+      - ALTER TABLE 
+        - ADD, RENAME and DROP COLUMN
 - Improve
   - Support pgbench
+  - Support basic functions in SELECT query such as count, min and max
 
 ## v1.0.2 (2023-09-05)
 - Improve message response compatibility
