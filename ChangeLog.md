@@ -4,30 +4,36 @@
 - Support more data types
   - Timestamp, Year, .... 
 
-## v1.1.0 (2023-xx-xx)
-- Update
-  - Add ErrorHandler to handler unsupported queries
+## v1.1.1 (2023-xx-xx)
+- Improve
+  - Example server (go-postgresqld)
+  - Support basic functions in SELECT query such as count, min and max
+  - Support pgbench
+
+## v1.1.0 (2023-09-10)
+- Improved
+  - Executor
+    - Added ErrorHandler to handle unsupported queries
   - Query parser
-    - Support
+    - Supported
       - SELECT
-        - Support functions
+        - functions
       - ALTER DATABASE
       - ALTER TABLE 
         - ADD, RENAME and DROP COLUMN
-- Improve
-  - Support pgbench
-  - Support basic functions in SELECT query such as count, min and max
 
 ## v1.0.2 (2023-09-05)
-- Improve message response compatibility
-  -  Update RowDescription response using pg_type table
-  -  Update DataRow response
+- Improved
+  -  Message response compatibility
+     -  Update RowDescription response using pg_type table
+     -  Update DataRow response
 
 ## v1.0.1 (2023-08-30)
-- Add support for psql command
-  - Add support for SSLRequest startup
-  - Fix ParameterStatus responses
-- Update go-postgresqld to set verbose logger as default
+- Improved
+  - Added support for psql command
+    - Addde support for SSLRequest startup
+    - Fixed ParameterStatus responses
+  - Updated go-postgresqld to set verbose logger as default
 
 ## v1.0.0 (2023-08-27)
 - Fix executor interface
