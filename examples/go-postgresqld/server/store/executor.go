@@ -208,8 +208,8 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 				}
 				dataRow.AppendData(field, v)
 			}
-			res = res.Append(dataRow)
 		}
+		res = res.Append(dataRow)
 	}
 
 	cmpRes, err := message.NewSelectCompleteWith(len(rows))
