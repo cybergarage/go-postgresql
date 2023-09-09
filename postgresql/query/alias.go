@@ -58,3 +58,6 @@ type (
 func NewInsertWith(tbl *Table, columns ColumnList) *Insert {
 	return query.NewInsertWith(tbl, columns)
 }
+
+// Function represents a function.
+type Function = query.Function
