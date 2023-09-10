@@ -25,6 +25,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 )
 
 // CreateDatabase handles a CREATE DATABASE query.
@@ -170,46 +171,161 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	rowDesc := message.NewRowDescription()
 	for n, selector := range selectors {
-		switch selector := selector.(type) {
-		case *query.Column:
-			name := selector.Name()
-			schemaColumn, err := schema.ColumnByName(name)
-			if err != nil {
-				return nil, err
-			}
-			dt, err := query.NewDataTypeFrom(schemaColumn.DataType())
-			if err != nil {
-				return nil, err
-			}
-			field := message.NewRowFieldWith(name,
-				message.WithNumber(int16(n+1)),
-				message.WithDataTypeID(dt.OID()),
-				message.WithDataTypeSize(int16(dt.Size())),
-				message.WithFormatCode(dt.FormatCode()),
-			)
-			rowDesc.AppendField(field)
+		name := selector.Name()
+		schemaColumn, err := schema.ColumnByName(name)
+		if err != nil {
+			return nil, err
 		}
+		dt, err := query.NewDataTypeFrom(schemaColumn.DataType())
+		switch selector := selector.(type) {
+		case *query.Function:
+			dt, err = system.GetFunctionDataType(selector, dt)
+		}
+		if err != nil {
+			return nil, err
+		}
+		field := message.NewRowFieldWith(name,
+			message.WithNumber(int16(n+1)),
+			message.WithDataTypeID(dt.OID()),
+			message.WithDataTypeSize(int16(dt.Size())),
+			message.WithFormatCode(dt.FormatCode()),
+		)
+		rowDesc.AppendField(field)
 	}
 	res = res.Append(rowDesc)
 
 	// Data row response
 
-	for _, row := range rows {
-		dataRow := message.NewDataRow()
-		for n, selector := range selectors {
-			switch selector := selector.(type) {
-			case *query.Column:
-				name := selector.Name()
+	if !selectors.HasAggregateFunction() {
+		for _, row := range rows {
+			dataRow := message.NewDataRow()
+			for n, selector := range selectors {
 				field := rowDesc.Field(n)
-				v, err := row.ValueByName(name)
-				if err != nil {
-					dataRow.AppendData(field, nil)
-					continue
+				switch selector := selector.(type) {
+				case *query.Column:
+					name := selector.Name()
+					v, err := row.ValueByName(name)
+					if err != nil {
+						dataRow.AppendData(field, nil)
+						continue
+					}
+					dataRow.AppendData(field, v)
+				case *query.Function:
+					executor, err := selector.Executor()
+					if err != nil {
+						return nil, err
+					}
+					args := []any{}
+					for _, arg := range selector.Arguments() {
+						v, err := row.ValueByName(arg.Name())
+						if err != nil {
+							return nil, err
+						}
+						args = append(args, v)
+					}
+					v, err := executor.Execute(args...)
+					if err != nil {
+						return nil, err
+					}
+					dataRow.AppendData(field, v)
 				}
-				dataRow.AppendData(field, v)
+			}
+			res = res.Append(dataRow)
+		}
+	} else {
+		// Setups aggregate functions
+		aggrFns := []*query.Function{}
+		aggrExecutors := []*query.AggregateFunction{}
+		for _, selector := range selectors {
+			fn, ok := selector.(*query.Function)
+			if !ok {
+				continue
+			}
+			executor, err := fn.Executor()
+			if err != nil {
+				return nil, err
+			}
+			aggrExecutor, ok := executor.(*query.AggregateFunction)
+			if !ok {
+				return nil, fmt.Errorf("invalid aggregate function (%s)", fn.Name())
+			}
+			aggrFns = append(aggrFns, fn)
+			aggrExecutors = append(aggrExecutors, aggrExecutor)
+		}
+		// Executes aggregate functions
+		groupBy := q.GroupBy().Column()
+		for _, row := range rows {
+			for n, aggrFn := range aggrFns {
+				var groupKey any
+				groupKey = ""
+				if 0 < len(groupBy) {
+					groupVal, err := row.ValueByName(groupBy)
+					if err != nil {
+						return nil, err
+					}
+					groupKey = groupVal
+				}
+				args := []any{
+					groupKey,
+				}
+				for _, arg := range aggrFn.Arguments() {
+					v, err := row.ValueByName(arg.Name())
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, v)
+				}
+				_, err := aggrExecutors[n].Execute(args...)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
-		res = res.Append(dataRow)
+		// Add aggregate results
+		aggrResultSets := map[string]query.AggregateResultSet{}
+		groupKeys := []any{}
+		for _, aggaggrExecutor := range aggrExecutors {
+			aggResultSet := aggaggrExecutor.ResultSet()
+			aggrResultSets[aggaggrExecutor.Name()] = aggResultSet
+			for aggrResultKey := range aggResultSet {
+				hasGroupKey := false
+				for _, groupKey := range groupKeys {
+					if groupKey == aggrResultKey {
+						hasGroupKey = true
+					}
+				}
+				if hasGroupKey {
+					continue
+				}
+				groupKeys = append(groupKeys, aggrResultKey)
+			}
+		}
+		for _, groupKey := range groupKeys {
+			dataRow := message.NewDataRow()
+			for n, selector := range selectors {
+				field := rowDesc.Field(n)
+				name := selector.Name()
+				switch selector.(type) {
+				case *query.Column:
+					if name != groupBy {
+						return nil, fmt.Errorf("invalid column (%s)", name)
+					}
+					dataRow.AppendData(field, groupKey)
+				case *query.Function:
+					aggResultSet, ok := aggrResultSets[name]
+					if !ok {
+						return nil, fmt.Errorf("invalid aggregate function (%s)", name)
+					}
+					aggResult, ok := aggResultSet[groupKey]
+					if ok {
+						dataRow.AppendData(field, aggResult)
+					} else {
+						dataRow.AppendData(field, nil)
+					}
+				}
+			}
+			res = res.Append(dataRow)
+		}
 	}
 
 	cmpRes, err := message.NewSelectCompleteWith(len(rows))
