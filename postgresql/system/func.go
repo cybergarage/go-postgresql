@@ -14,27 +14,21 @@
 
 package system
 
-import "github.com/cybergarage/go-sqlparser/sql/query"
+import (
+	"github.com/cybergarage/go-sqlparser/sql/query"
+)
 
 // PostgreSQL: Documentation: 16: 9.21. Aggregate Functions
 // https://www.postgresql.org/docs/16/functions-aggregate.html
 
-const (
-	MaxFunctionName   = "MAX"
-	MinFunctionName   = "MIN"
-	SumFunctionName   = "SUM"
-	AvgFunctionName   = "AVG"
-	CountFunctionName = "COUNT"
-)
-
 // GetFunctionDataType returns the data type of the specified function.
 func GetFunctionDataType(fn *query.Function, dt *DataType) (*DataType, error) {
 	switch fn.Name() {
-	case MaxFunctionName:
+	case query.MaxFunctionName:
 		return dt, nil
-	case MinFunctionName:
+	case query.MinFunctionName:
 		return dt, nil
-	case SumFunctionName:
+	case query.SumFunctionName:
 		switch dt.OID() {
 		case Int2:
 			return dataTypes[Int8], nil
@@ -42,17 +36,16 @@ func GetFunctionDataType(fn *query.Function, dt *DataType) (*DataType, error) {
 			return dataTypes[Int8], nil
 		}
 	// NOTE: bigint for any integer-type argument instead of numeric
-	case AvgFunctionName:
-		switch dt.OID() {
-		case Float4:
-			return dataTypes[Float8], nil
-		case Int2:
-			return dataTypes[Int8], nil
-		case Int4:
-			return dataTypes[Int8], nil
-		}
-	case CountFunctionName:
+	case query.AvgFunctionName:
+		return dataTypes[Float8], nil
+	case query.CountFunctionName:
 		return dataTypes[Int8], nil
+	case query.AbsFunctionName:
+		return dataTypes[Float8], nil
+	case query.FloorFunctionName:
+		return dataTypes[Float8], nil
+	case query.CeilFunctionName:
+		return dataTypes[Float8], nil
 	}
 	return dt, nil
 }
