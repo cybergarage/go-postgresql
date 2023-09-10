@@ -64,3 +64,9 @@ type Function = query.Function
 
 // FunctionExecutor represents a function executor.
 type FunctionExecutor = query.FunctionExecutor
+
+// AggregateFunction represents an aggregate function.
+type AggregateFunction = query.AggregateFunction
+
+// AggregateResultSet represents an aggregate result set.
+type AggregateResultSet = query.AggregateResultSet
