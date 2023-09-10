@@ -61,3 +61,6 @@ func NewInsertWith(tbl *Table, columns ColumnList) *Insert {
 
 // Function represents a function.
 type Function = query.Function
+
+// FunctionExecutor represents a function executor.
+type FunctionExecutor = query.FunctionExecutor
