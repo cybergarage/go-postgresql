@@ -171,20 +171,44 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	rowDesc := message.NewRowDescription()
 	for n, selector := range selectors {
-		name := selector.Name()
-		schemaColumn, err := schema.ColumnByName(name)
-		if err != nil {
-			return nil, err
-		}
-		dt, err := query.NewDataTypeFrom(schemaColumn.DataType())
+		var columnName string
+		var dt *system.DataType
 		switch selector := selector.(type) {
+		case *query.Column:
+			var err error
+			columnName = selector.Name()
+			schemaColumn, err := schema.ColumnByName(columnName)
+			if err != nil {
+				return nil, err
+			}
+			dt, err = query.NewDataTypeFrom(schemaColumn.DataType())
+			if err != nil {
+				return nil, err
+			}
 		case *query.Function:
+			if !selector.IsSelectAll() {
+				var err error
+				args := selector.Arguments()
+				if len(args) != 1 {
+					return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Multiple arguments (%v)", args))
+				}
+				columnName = args[0].Name()
+				schemaColumn, err := schema.ColumnByName(columnName)
+				if err != nil {
+					return nil, err
+				}
+				dt, err = query.NewDataTypeFrom(schemaColumn.DataType())
+				if err != nil {
+					return nil, err
+				}
+			}
 			dt, err = system.GetFunctionDataType(selector, dt)
+			columnName = selector.SelectorString()
 		}
-		if err != nil {
-			return nil, err
+		if dt == nil {
+			return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Unknown data type (%v)", columnName))
 		}
-		field := message.NewRowFieldWith(name,
+		field := message.NewRowFieldWith(columnName,
 			message.WithNumber(int16(n+1)),
 			message.WithDataTypeID(dt.OID()),
 			message.WithDataTypeSize(int16(dt.Size())),
