@@ -38,6 +38,9 @@ func TestSQLTest(t *testing.T) {
 
 	testNames := []string{
 		"YcsbWorkload",
+		"FuncAggrInt",
+		"FuncAggrFloat",
+		"FuncAggrDouble",
 		// "Pgbench",
 		"SmplCrudText",
 		"SmplCrudInt",
