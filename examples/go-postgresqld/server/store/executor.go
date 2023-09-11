@@ -293,6 +293,10 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 					groupKey,
 				}
 				for _, arg := range aggrFn.Arguments() {
+					if arg.IsAsterisk() {
+						args = append(args, arg.Name())
+						continue
+					}
 					v, err := row.ValueByName(arg.Name())
 					if err != nil {
 						return nil, err
