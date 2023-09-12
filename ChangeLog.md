@@ -4,11 +4,17 @@
 - Support more data types
   - Timestamp, Year, .... 
 
-## v1.1.1 (2023-xx-xx)
-- Improve
+## v1.1.2 (2023-xx-xx)
+- Improved
   - Example server (go-postgresqld)
-  - Support basic functions in SELECT query such as count, min and max
-  - Support pgbench
+  - Support ALTER queries
+  - Support pgbench workload
+
+## v1.1.1 (2023-09-12)
+- Improved
+  - Example server (go-postgresqld)
+    - Supported basic aggregate functions in SELECT query
+      - COUNT, SUM, AVG, MIN and MAX
 
 ## v1.1.0 (2023-09-10)
 - Improved
