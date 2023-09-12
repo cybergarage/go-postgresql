@@ -25,7 +25,6 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
-	"github.com/cybergarage/go-postgresql/postgresql/system"
 )
 
 // CreateDatabase handles a CREATE DATABASE query.
@@ -37,7 +36,7 @@ func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateData
 		if q.IfNotExists() {
 			return message.NewCommandCompleteResponsesWith(q.String())
 		}
-		return nil, postgresql.NewErrDatabaseExist(dbName)
+		return nil, query.NewErrDatabaseExist(dbName)
 	}
 
 	err := store.AddDatabase(NewDatabaseWithName(dbName))
@@ -54,7 +53,7 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 
 	db, ok := store.GetDatabase(dbName)
 	if !ok {
-		return nil, postgresql.NewErrDatabaseExist(dbName)
+		return nil, query.NewErrDatabaseExist(dbName)
 	}
 
 	tblName := q.TableName()
@@ -63,7 +62,7 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 		if q.IfNotExists() {
 			return message.NewCommandCompleteResponsesWith(q.String())
 		}
-		return nil, postgresql.NewErrTableNotExist(tblName)
+		return nil, query.NewErrTableNotExist(tblName)
 	}
 
 	tbl := NewTableWith(tblName, q.Schema())
@@ -77,7 +76,7 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 
 // CreateIndex handles a CREATE INDEX query.
 func (store *MemStore) CreateIndex(conn *postgresql.Conn, q *query.CreateIndex) (message.Responses, error) {
-	return nil, postgresql.NewErrNotImplemented("CREATE INDEX")
+	return nil, query.NewErrNotImplemented("CREATE INDEX")
 }
 
 // DropDatabase handles a DROP DATABASE query.
@@ -89,7 +88,7 @@ func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase
 		if q.IfExists() {
 			return message.NewCommandCompleteResponsesWith(q.String())
 		}
-		return nil, postgresql.NewErrDatabaseNotExist(dbName)
+		return nil, query.NewErrDatabaseNotExist(dbName)
 	}
 
 	err := store.Databases.DropDatabase(db)
@@ -144,7 +143,7 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
 	tbls := q.Tables()
 	if len(tbls) != 1 {
-		return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", tbls.String()))
+		return nil, query.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", tbls.String()))
 	}
 	tblName := tbls[0].TableName()
 
@@ -171,49 +170,10 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	rowDesc := message.NewRowDescription()
 	for n, selector := range selectors {
-		var columnName string
-		var dt *system.DataType
-		switch selector := selector.(type) {
-		case *query.Column:
-			var err error
-			columnName = selector.Name()
-			schemaColumn, err := schema.ColumnByName(columnName)
-			if err != nil {
-				return nil, err
-			}
-			dt, err = query.NewDataTypeFrom(schemaColumn.DataType())
-			if err != nil {
-				return nil, err
-			}
-		case *query.Function:
-			if !selector.IsSelectAll() {
-				var err error
-				args := selector.Arguments()
-				if len(args) != 1 {
-					return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Multiple arguments (%v)", args))
-				}
-				columnName = args[0].Name()
-				schemaColumn, err := schema.ColumnByName(columnName)
-				if err != nil {
-					return nil, err
-				}
-				dt, err = query.NewDataTypeFrom(schemaColumn.DataType())
-				if err != nil {
-					return nil, err
-				}
-			}
-			dt, err = system.GetFunctionDataType(selector, dt)
-			columnName = selector.SelectorString()
+		field, err := query.NewRowFieldFrom(schema, selector, n)
+		if err != nil {
+			return nil, err
 		}
-		if dt == nil {
-			return nil, postgresql.NewErrNotImplemented(fmt.Sprintf("Unknown data type (%v)", columnName))
-		}
-		field := message.NewRowFieldWith(columnName,
-			message.WithNumber(int16(n+1)),
-			message.WithDataTypeID(dt.OID()),
-			message.WithDataTypeSize(int16(dt.Size())),
-			message.WithFormatCode(dt.FormatCode()),
-		)
 		rowDesc.AppendField(field)
 	}
 	res = res.Append(rowDesc)
@@ -222,136 +182,23 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	if !selectors.HasAggregateFunction() {
 		for _, row := range rows {
-			dataRow := message.NewDataRow()
-			for n, selector := range selectors {
-				field := rowDesc.Field(n)
-				switch selector := selector.(type) {
-				case *query.Column:
-					name := selector.Name()
-					v, err := row.ValueByName(name)
-					if err != nil {
-						dataRow.AppendData(field, nil)
-						continue
-					}
-					dataRow.AppendData(field, v)
-				case *query.Function:
-					executor, err := selector.Executor()
-					if err != nil {
-						return nil, err
-					}
-					args := []any{}
-					for _, arg := range selector.Arguments() {
-						v, err := row.ValueByName(arg.Name())
-						if err != nil {
-							return nil, err
-						}
-						args = append(args, v)
-					}
-					v, err := executor.Execute(args...)
-					if err != nil {
-						return nil, err
-					}
-					dataRow.AppendData(field, v)
-				}
+			dataRow, err := query.NewDataRowForSelectors(schema, rowDesc, selectors, row)
+			if err != nil {
+				return nil, err
 			}
 			res = res.Append(dataRow)
 		}
 	} else {
-		// Setups aggregate functions
-		aggrFns := []*query.Function{}
-		aggrExecutors := []*query.AggregateFunction{}
-		for _, selector := range selectors {
-			fn, ok := selector.(*query.Function)
-			if !ok {
-				continue
-			}
-			executor, err := fn.Executor()
-			if err != nil {
-				return nil, err
-			}
-			aggrExecutor, ok := executor.(*query.AggregateFunction)
-			if !ok {
-				return nil, fmt.Errorf("invalid aggregate function (%s)", fn.Name())
-			}
-			aggrFns = append(aggrFns, fn)
-			aggrExecutors = append(aggrExecutors, aggrExecutor)
-		}
-		// Executes aggregate functions
 		groupBy := q.GroupBy().Column()
+		queryRows := []query.Row{}
 		for _, row := range rows {
-			for n, aggrFn := range aggrFns {
-				var groupKey any
-				groupKey = ""
-				if 0 < len(groupBy) {
-					groupVal, err := row.ValueByName(groupBy)
-					if err != nil {
-						return nil, err
-					}
-					groupKey = groupVal
-				}
-				args := []any{
-					groupKey,
-				}
-				for _, arg := range aggrFn.Arguments() {
-					if arg.IsAsterisk() {
-						args = append(args, arg.Name())
-						continue
-					}
-					v, err := row.ValueByName(arg.Name())
-					if err != nil {
-						return nil, err
-					}
-					args = append(args, v)
-				}
-				_, err := aggrExecutors[n].Execute(args...)
-				if err != nil {
-					return nil, err
-				}
-			}
+			queryRows = append(queryRows, row)
 		}
-		// Add aggregate results
-		aggrResultSets := map[string]query.AggregateResultSet{}
-		groupKeys := []any{}
-		for _, aggaggrExecutor := range aggrExecutors {
-			aggResultSet := aggaggrExecutor.ResultSet()
-			aggrResultSets[aggaggrExecutor.Name()] = aggResultSet
-			for aggrResultKey := range aggResultSet {
-				hasGroupKey := false
-				for _, groupKey := range groupKeys {
-					if groupKey == aggrResultKey {
-						hasGroupKey = true
-					}
-				}
-				if hasGroupKey {
-					continue
-				}
-				groupKeys = append(groupKeys, aggrResultKey)
-			}
+		dataRows, err := query.NewDataRowsForAggregateFunction(schema, rowDesc, selectors, queryRows, groupBy)
+		if err != nil {
+			return nil, err
 		}
-		for _, groupKey := range groupKeys {
-			dataRow := message.NewDataRow()
-			for n, selector := range selectors {
-				field := rowDesc.Field(n)
-				name := selector.Name()
-				switch selector.(type) {
-				case *query.Column:
-					if name != groupBy {
-						return nil, fmt.Errorf("invalid column (%s)", name)
-					}
-					dataRow.AppendData(field, groupKey)
-				case *query.Function:
-					aggResultSet, ok := aggrResultSets[name]
-					if !ok {
-						return nil, fmt.Errorf("invalid aggregate function (%s)", name)
-					}
-					aggResult, ok := aggResultSet[groupKey]
-					if ok {
-						dataRow.AppendData(field, aggResult)
-					} else {
-						dataRow.AppendData(field, nil)
-					}
-				}
-			}
+		for _, dataRow := range dataRows {
 			res = res.Append(dataRow)
 		}
 	}
@@ -420,7 +267,7 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 		// COPY FROM will raise an error if any line of the input file contains
 		//  more or fewer columns than are expected.
 		if len(copyColums) != len(schemaColumns) {
-			return nil, postgresql.NewErrColumnsNotEqual(len(copyColums), len(schemaColumns))
+			return nil, query.NewErrColumnsNotEqual(len(copyColums), len(schemaColumns))
 		}
 		columns := schemaColumns.Copy()
 		for idx, column := range columns {
