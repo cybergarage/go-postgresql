@@ -13,8 +13,11 @@
 ## v1.1.1 (2023-09-12)
 - Improved
   - Example server (go-postgresqld)
-    - Supported basic aggregate functions in SELECT query
-      - COUNT, SUM, AVG, MIN and MAX
+    - SELECT
+      - Supported basic aggregate functions
+        - COUNT, SUM, AVG, MIN and MAX
+      - Supported basic math functions
+        - ABS, CEIL and FLOOR
 
 ## v1.1.0 (2023-09-10)
 - Improved
