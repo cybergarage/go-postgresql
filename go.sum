@@ -18,6 +18,8 @@ github.com/cybergarage/go-sqltest v1.0.1 h1:Hn1mTL9+tZthGbzgaOYxAKOWL2Yy9Cg3UtNZ
 github.com/cybergarage/go-sqltest v1.0.1/go.mod h1:PqfxQUcxPTlIeN7BDwNkZo0blRABVQ15U15+Fgbpb0g=
 github.com/cybergarage/go-sqltest v1.1.0 h1:le1bDKFGoSXOEI9Jca/M91FgTty5m4F5aiKawxirQaM=
 github.com/cybergarage/go-sqltest v1.1.0/go.mod h1:PqfxQUcxPTlIeN7BDwNkZo0blRABVQ15U15+Fgbpb0g=
+github.com/cybergarage/go-sqltest v1.1.1 h1:AmcmIjxv8Vx1PGNxZ3WQw/gmpqespv/ZLIamcbU7ruQ=
+github.com/cybergarage/go-sqltest v1.1.1/go.mod h1:PqfxQUcxPTlIeN7BDwNkZo0blRABVQ15U15+Fgbpb0g=
 github.com/cybergarage/go-tracing v1.1.2 h1:ISn5eeJF6myu9u8b0rpIvECujAZOBqvyKzexc0rcPmE=
 github.com/cybergarage/go-tracing v1.1.2/go.mod h1:zv2DMzPbVvJsatV+ZNbIQhDNRJnMxSCDXiiSf3/VQYU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
