@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package postgresql
+package query
 
 import (
 	"errors"
@@ -82,6 +82,16 @@ func NewErrTableExist(v string) error {
 // NewErrColumnNotExist returns a new column not exist error.
 func NewErrColumnNotExist(v any) error {
 	return fmt.Errorf("column (%v) is %w", v, ErrNotExist)
+}
+
+// NewErrColumnValueNotExist returns a new column value not exist error.
+func NewErrColumnValueNotExist(v any) error {
+	return fmt.Errorf("column (%v) value is %w", v, ErrNotExist)
+}
+
+// NewErrGroupByColumnValueNotExist returns a new group by column not exist error.
+func NewErrGroupByColumnValueNotExist(v any) error {
+	return fmt.Errorf("group by column (%v) value is %w", v, ErrNotExist)
 }
 
 // NewErrColumnsNotEqual returns a new columns not equal error.
