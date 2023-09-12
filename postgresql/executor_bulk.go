@@ -30,5 +30,5 @@ func NewBaseBulkExecutor() *BaseBulkExecutor {
 
 // Copy handles a COPY query.
 func (executor *BaseBulkExecutor) Copy(*Conn, *query.Copy, *CopyStream) (message.Responses, error) {
-	return nil, NewErrNotImplemented("COPY")
+	return nil, query.NewErrNotImplemented("COPY")
 }

@@ -16,6 +16,7 @@ package postgresql
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // PreparedQuery represents a prepared query.
@@ -33,7 +34,7 @@ func NewPreparedQueryMap() PreparedQueryMap {
 func (queries PreparedQueryMap) PreparedQuery(name string) (*PreparedQuery, error) {
 	q, oK := queries[name]
 	if !oK {
-		return nil, NewErrPreparedQueryNotExist(name)
+		return nil, query.NewErrPreparedQueryNotExist(name)
 	}
 	return q, nil
 }
