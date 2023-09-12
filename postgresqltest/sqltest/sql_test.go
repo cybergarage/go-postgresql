@@ -37,7 +37,6 @@ func TestSQLTest(t *testing.T) {
 	client := sqltest.NewPostgresClient()
 
 	testNames := []string{
-		// "Pgbench",
 		"SmplCrudText",
 		"SmplCrudInt",
 		"SmplCrudFloat",
@@ -46,6 +45,10 @@ func TestSQLTest(t *testing.T) {
 		"FuncAggrInt",
 		"FuncAggrFloat",
 		"FuncAggrDouble",
+		"FuncMathFloat",
+		"FuncMathDouble",
+		"FuncMathInt",
+		// "Pgbench",
 	}
 
 	if err := sqltest.RunEmbedSuites(t, client, testNames...); err != nil {
