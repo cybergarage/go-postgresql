@@ -55,13 +55,13 @@ BINARIES=\
 all: test
 
 format:
-	gofmt -s -w ${PKG_SRC_ROOT} ${TEST_SRC_ROOT} ${EXAMPLES_SRC_DIR} ${BIN_SRC_DIR}
+	gofmt -s -w ${PKG_SRC_ROOT} ${TEST_SRC_ROOT} ${EXAMPLES_SRC_DIR}
 
 vet: format
 	go vet ${PKG}
 
 lint: vet
-	golangci-lint run ${PKG_SRC_ROOT}/... ${TEST_SRC_ROOT}/... ${EXAMPLES_SRC_DIR}/... ${BIN_SRC_DIR}/...
+	golangci-lint run ${PKG_SRC_ROOT}/... ${TEST_SRC_ROOT}/... ${EXAMPLES_SRC_DIR}/...
 
 test: lint
 	go test -v -p 1 -timeout 60s -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
