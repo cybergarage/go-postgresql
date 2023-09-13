@@ -157,16 +157,17 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		return nil, err
 	}
 
+	// Responses
+
+	schema := tbl.Schema
+	res := message.NewResponses()
+
 	// Row description response
 
 	selectors := q.Selectors()
 	if selectors.IsSelectAll() {
 		selectors = tbl.Selectors()
 	}
-
-	schema := tbl.Schema
-
-	res := message.NewResponses()
 
 	rowDesc := message.NewRowDescription()
 	for n, selector := range selectors {
