@@ -181,6 +181,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	// Data row response
 
+	nDataRow := 0
 	if !selectors.HasAggregateFunction() {
 		for _, row := range rows {
 			dataRow, err := query.NewDataRowForSelectors(schema, rowDesc, selectors, row)
@@ -188,6 +189,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 				return nil, err
 			}
 			res = res.Append(dataRow)
+			nDataRow++
 		}
 	} else {
 		groupBy := q.GroupBy().Column()
@@ -201,10 +203,11 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 		}
 		for _, dataRow := range dataRows {
 			res = res.Append(dataRow)
+			nDataRow++
 		}
 	}
 
-	cmpRes, err := message.NewSelectCompleteWith(len(rows))
+	cmpRes, err := message.NewSelectCompleteWith(nDataRow)
 	if err != nil {
 		return nil, err
 	}
