@@ -47,8 +47,7 @@ BIN_BINARIES=\
 	${BIN_PKG_ROOT}/pgpcapdump
 
 BINARIES=\
-	${EXAMPLE_BINARIES} \
-	${BIN_BINARIES}
+	${EXAMPLE_BINARIES}
 
 .PHONY: clean test
 
