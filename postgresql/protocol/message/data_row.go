@@ -50,6 +50,8 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			// v = sv
 		case time.Time:
 			v = sv.Format(system.TimestampFormat)
+		case nil:
+			v = nil
 		default:
 			var to string
 			if err := safecast.ToString(v, &to); err != nil {
