@@ -6,6 +6,8 @@ github.com/cybergarage/go-safecast v1.2.1 h1:cmsSv0n/+lKRmfDjXsjaweI++KZ8n+B0SQO
 github.com/cybergarage/go-safecast v1.2.1/go.mod h1:dz7TU4jszZjIGA5xdA2nSKV3b7641D27cKN9Wmb+n/c=
 github.com/cybergarage/go-safecast v1.2.2 h1:aUHIRf7RSx8w0u/2VMXaZcroRhLFe3Jw0Bif96S6eD8=
 github.com/cybergarage/go-safecast v1.2.2/go.mod h1:bv+1ykIikB3xYPJFqu3ZsY3xfyEVQesq8+biHX3ZMWQ=
+github.com/cybergarage/go-safecast v1.2.3 h1:DlD/VxntuR+H6hy+TMprxkDIxbwd9pLn6CZ44FC5PlE=
+github.com/cybergarage/go-safecast v1.2.3/go.mod h1:bv+1ykIikB3xYPJFqu3ZsY3xfyEVQesq8+biHX3ZMWQ=
 github.com/cybergarage/go-sqlparser v1.0.0 h1:iD9+eKBQtoFjikvgAqeovR8bCCTZ2p2FO47/yr2hPwo=
 github.com/cybergarage/go-sqlparser v1.0.0/go.mod h1:pEy4IK9FrTDEh9tv3gFb724TWDfF7qqWexGpXnCvq9A=
 github.com/cybergarage/go-sqlparser v1.0.1 h1:ZWj6l9LxDuWRskZWMoePEPUEV6b+OyoMhKm7JrwPW1M=
