@@ -114,7 +114,7 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *message.RowD
 			}
 		}
 	}
-	// Add aggregate results
+	// Gets aggregate group keys
 	aggrResultSets := map[string]query.AggregateResultSet{}
 	groupKeys := []any{}
 	for _, aggaggrExecutor := range aggrExecutors {
@@ -133,27 +133,46 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *message.RowD
 			groupKeys = append(groupKeys, aggrResultKey)
 		}
 	}
+	// Add aggregate results
 	dataRows := []*message.DataRow{}
-	for _, groupKey := range groupKeys {
+	if 0 < len(groupKeys) { // ResultSet is not empty
+		for _, groupKey := range groupKeys {
+			dataRow := message.NewDataRow()
+			for n, selector := range selectors {
+				field := rowDesc.Field(n)
+				name := selector.Name()
+				switch selector.(type) {
+				case *query.Column:
+					if name != groupBy {
+						return nil, fmt.Errorf("invalid column (%s)", name)
+					}
+					dataRow.AppendData(field, groupKey)
+				case *query.Function:
+					aggResultSet, ok := aggrResultSets[name]
+					if !ok {
+						return nil, fmt.Errorf("invalid aggregate function (%s)", name)
+					}
+					aggResult, ok := aggResultSet[groupKey]
+					if ok {
+						dataRow.AppendData(field, aggResult)
+					} else {
+						dataRow.AppendData(field, nil)
+					}
+				}
+			}
+			dataRows = append(dataRows, dataRow)
+		}
+	} else { // ResultSet is empty
 		dataRow := message.NewDataRow()
 		for n, selector := range selectors {
 			field := rowDesc.Field(n)
 			name := selector.Name()
 			switch selector.(type) {
-			case *query.Column:
-				if name != groupBy {
-					return nil, fmt.Errorf("invalid column (%s)", name)
-				}
-				dataRow.AppendData(field, groupKey)
 			case *query.Function:
-				aggResultSet, ok := aggrResultSets[name]
-				if !ok {
-					return nil, fmt.Errorf("invalid aggregate function (%s)", name)
-				}
-				aggResult, ok := aggResultSet[groupKey]
-				if ok {
-					dataRow.AppendData(field, aggResult)
-				} else {
+				switch name {
+				case query.CountFunctionName:
+					dataRow.AppendData(field, 0)
+				default:
 					dataRow.AppendData(field, nil)
 				}
 			}
