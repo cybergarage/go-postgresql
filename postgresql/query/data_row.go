@@ -86,7 +86,7 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *message.RowD
 	for _, row := range rows {
 		for n, aggrFn := range aggrFns {
 			var groupKey any
-			groupKey = ""
+			groupKey = query.GroupByNone
 			if 0 < len(groupBy) {
 				v, ok := row[groupBy]
 				if !ok {
