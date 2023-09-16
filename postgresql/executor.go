@@ -64,6 +64,15 @@ type DMOExecutor interface {
 	Delete(*Conn, *query.Delete) (message.Responses, error)
 }
 
+type TransactionExecutor interface {
+	// Begin handles a BEGIN query.
+	Begin(*Conn, *query.Begin) (message.Responses, error)
+	// Commit handles a COMMIT query.
+	Commit(*Conn, *query.Commit) (message.Responses, error)
+	// Rollback handles a ROLLBACK query.
+	Rollback(*Conn, *query.Rollback) (message.Responses, error)
+}
+
 // BulkExecutor defines a executor interface for bulk operations.
 type BulkExecutor interface {
 	// Copy handles a COPY query.
@@ -74,6 +83,7 @@ type BulkExecutor interface {
 type QueryExecutor interface {
 	DDOExecutor
 	DMOExecutor
+	TransactionExecutor
 }
 
 // ErrorHandler represents a user error handler.
