@@ -300,6 +300,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 			var res message.Responses
 			switch stmt := stmt.Statement.(type) {
+			case *query.Begin:
+				res, err = server.Executor.Begin(conn, stmt)
+			case *query.Commit:
+				res, err = server.Executor.Commit(conn, stmt)
+			case *query.Rollback:
+				res, err = server.Executor.Rollback(conn, stmt)
 			case *query.CreateDatabase:
 				res, err = server.Executor.CreateDatabase(conn, stmt)
 			case *query.CreateTable:
