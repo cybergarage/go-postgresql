@@ -4,13 +4,14 @@
 - Support more data types
   - Timestamp, Year, .... 
 
-## v1.1.3 (2023-xx-xx)
+## v1.3.0 (2023-xx-xx)
 - Improved
   - Example server (go-postgresqld)
   - Support ALTER queries
   - Support pgbench workload
 
-## v1.1.2 (2023-09-xx)
+## v1.2.0 (2023-09-16)
+- Added TransactionExecutor interface
 - Improved
   - Update aggreation functions for empty result set
     - COUNT, SUM, AVG, MIN and MAX
