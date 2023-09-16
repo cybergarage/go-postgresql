@@ -13,22 +13,3 @@
 // limitations under the License.
 
 package server
-
-import (
-	"fmt"
-
-	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresql"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-)
-
-// ParserError handles a parser error.
-func (*Server) ParserError(conn *postgresql.Conn, q string, err error) (message.Responses, error) {
-	resErr := fmt.Errorf("parser error : %w", err)
-	log.Warnf(err.Error())
-	res, err := message.NewErrorResponseWith(resErr)
-	if err != nil {
-		return nil, err
-	}
-	return message.NewResponsesWith(res), nil
-}
