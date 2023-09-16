@@ -43,6 +43,9 @@ type (
 	Update         = query.Update
 	Delete         = query.Delete
 	Copy           = query.Copy
+	Begin          = query.Begin
+	Commit         = query.Commit
+	Rollback       = query.Rollback
 	Column         = query.Column
 	ColumnList     = query.ColumnList
 	Table          = query.Table
