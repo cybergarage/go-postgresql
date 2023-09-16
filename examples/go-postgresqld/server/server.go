@@ -34,6 +34,7 @@ func NewServerWithStore(store Store) *Server {
 	server.SetAuthenticator(server)
 	server.SetQueryExecutor(server)
 	server.SetErrorHandler(server)
+	server.SetTransactionExecutor(server)
 	return server
 }
 
