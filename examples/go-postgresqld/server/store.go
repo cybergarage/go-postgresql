@@ -21,4 +21,5 @@ import (
 // Store should support only DMOExecutor methods.
 type Store interface {
 	postgresql.QueryExecutor
+	postgresql.TransactionExecutor
 }
