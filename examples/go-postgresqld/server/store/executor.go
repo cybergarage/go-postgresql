@@ -27,6 +27,21 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
+// Begin handles a BEGIN query.
+func (store *MemStore) Begin(*postgresql.Conn, *query.Begin) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("BEGIN")
+}
+
+// Commit handles a COMMIT query.
+func (store *MemStore) Commit(*postgresql.Conn, *query.Commit) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("COMMIT")
+}
+
+// Rollback handles a ROLLBACK query.
+func (store *MemStore) Rollback(*postgresql.Conn, *query.Rollback) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("ROLLBACK")
+}
+
 // CreateDatabase handles a CREATE DATABASE query.
 func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateDatabase) (message.Responses, error) {
 	dbName := q.DatabaseName()
