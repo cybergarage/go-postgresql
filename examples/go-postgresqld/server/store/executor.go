@@ -28,13 +28,13 @@ import (
 )
 
 // Begin handles a BEGIN query.
-func (store *MemStore) Begin(*postgresql.Conn, *query.Begin) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("BEGIN")
+func (store *MemStore) Begin(conn *postgresql.Conn, q *query.Begin) (message.Responses, error) {
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // Commit handles a COMMIT query.
-func (store *MemStore) Commit(*postgresql.Conn, *query.Commit) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("COMMIT")
+func (store *MemStore) Commit(con *postgresql.Conn, q *query.Commit) (message.Responses, error) {
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // Rollback handles a ROLLBACK query.
