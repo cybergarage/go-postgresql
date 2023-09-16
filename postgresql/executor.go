@@ -83,7 +83,6 @@ type BulkExecutor interface {
 type QueryExecutor interface {
 	DDOExecutor
 	DMOExecutor
-	TransactionExecutor
 }
 
 // ErrorHandler represents a user error handler.
@@ -96,6 +95,7 @@ type Executor interface {
 	Authenticator
 	StartupHandler
 	QueryExecutor
+	TransactionExecutor
 	ErrorHandler
 	// SetAuthenticator sets a user authenticator.
 	SetAuthenticator(Authenticator)
@@ -103,6 +103,8 @@ type Executor interface {
 	SetStartupHandler(StartupHandler)
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
-	// SetQueryExecutor sets a user query executor.
+	// SetTransactionExecutor sets a user transaction executor.
+	SetTransactionExecutor(TransactionExecutor)
+	// SetErrorHandler sets a user error handler.
 	SetErrorHandler(ErrorHandler)
 }
