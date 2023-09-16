@@ -22,4 +22,5 @@ import (
 type Store interface {
 	postgresql.QueryExecutor
 	postgresql.TransactionExecutor
+	postgresql.ErrorHandler
 }
