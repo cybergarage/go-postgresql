@@ -1,17 +1,21 @@
 # Changelog
 
-## v1.2.0 (2023-xx-xx)
-- Support more data types
-  - Timestamp, Year, .... 
+## v1.3.x (2023-xx-xx)
+- Improved
+  - Support more data types
+    - Timestamp, Year, .... 
 
-## v1.3.0 (2023-xx-xx)
+## v1.2.1 (2023-09-xx)
 - Improved
   - Example server (go-postgresqld)
-  - Support ALTER queries
-  - Support pgbench workload
+    - Support pgbench workload
 
-## v1.2.0 (2023-09-16)
-- Added TransactionExecutor interface
+## v1.2.0 (2023-09-18)
+- Added
+  - Query executor interfaces
+    - ALTER, TRUNCATE, VACCUM
+  - Transaction executor interface
+    - BEGIN, COMMIT, ROLLBACK
 - Improved
   - Update aggreation functions for empty result set
     - COUNT, SUM, AVG, MIN and MAX
