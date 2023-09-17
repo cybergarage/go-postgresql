@@ -96,8 +96,8 @@ func newPgbenchGetPartitionResponse() (message.Responses, error) {
 	}
 
 	res := message.NewResponses()
-	res.Append(rowDesc)
-	res.Append(dataRow)
+	res = res.Append(rowDesc)
+	res = res.Append(dataRow)
 
 	cmpRes, err := message.NewSelectCompleteWith(1)
 	if err != nil {
