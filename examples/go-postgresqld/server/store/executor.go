@@ -96,7 +96,7 @@ func (store *MemStore) AlterDatabase(*postgresql.Conn, *query.AlterDatabase) (me
 
 // AlterTable handles a ALTER TABLE query.
 func (store *MemStore) AlterTable(*postgresql.Conn, *query.AlterTable) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("ALTER DATABASE")
+	return nil, query.NewErrNotImplemented("ALTER TABLE")
 }
 
 // DropDatabase handles a DROP DATABASE query.
