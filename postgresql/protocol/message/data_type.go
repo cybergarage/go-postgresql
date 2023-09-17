@@ -21,5 +21,5 @@ import (
 // DataType represents a data type.
 type DataType = system.DataType
 
-// OID represents a object identifier.
-type OID = system.OID
+// ObjectID represents a object identifier.
+type ObjectID = system.ObjectID

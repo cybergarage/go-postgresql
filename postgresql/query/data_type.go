@@ -26,7 +26,7 @@ import (
 type DataType = system.DataType
 
 // OID represents a object identifier.
-type OID = system.OID
+type OID = system.ObjectID
 
 // NewDataTypeFrom returns a data type from the specified query data type.
 func NewDataTypeFrom(t query.DataType) (*DataType, error) {

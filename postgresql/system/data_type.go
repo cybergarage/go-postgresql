@@ -16,15 +16,15 @@ package system
 
 type DataType struct {
 	name string
-	oid  OID
+	oid  ObjectID
 	size int
 }
 
 // DataType represents a PostgreSQL data type.
-var dataTypes = map[OID]*DataType{}
+var dataTypes = map[ObjectID]*DataType{}
 
 // GetDataType returns a data type for the specified OID.
-func GetDataType(oid OID) (*DataType, error) {
+func GetDataType(oid ObjectID) (*DataType, error) {
 	dt, ok := dataTypes[oid]
 	if !ok {
 		return nil, newDataTypeNotFound(oid)
@@ -32,7 +32,7 @@ func GetDataType(oid OID) (*DataType, error) {
 	return dt, nil
 }
 
-func newDataType(name string, oid OID, size int) *DataType {
+func newDataType(name string, oid ObjectID, size int) *DataType {
 	dt := &DataType{
 		name: name,
 		oid:  oid,
@@ -47,7 +47,7 @@ func (dt *DataType) Name() string {
 }
 
 // OID returns the data type OID.
-func (dt *DataType) OID() OID {
+func (dt *DataType) OID() ObjectID {
 	return dt.oid
 }
 

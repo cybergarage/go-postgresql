@@ -20,8 +20,8 @@ print<<HEADER;
 
 package system
 
-// OID represents a PostgreSQL object ID.
-type OID = int32
+// ObjectID represents a PostgreSQL object ID.
+type ObjectID = int32
 
 const (
 HEADER
@@ -72,7 +72,7 @@ while(<IN>){
     }
   }
 
-  print $name . " OID = " . $oid . "\n";
+  print $name . " ObjectID = " . $oid . "\n";
 }
 close(IN);
 
