@@ -35,7 +35,6 @@ type (
 	BindParam      = query.BindParam
 	CreateDatabase = query.CreateDatabase
 	CreateTable    = query.CreateTable
-	CreateIndex    = query.CreateIndex
 	AlterDatabase  = query.AlterDatabase
 	AlterTable     = query.AlterTable
 	DropDatabase   = query.DropDatabase
