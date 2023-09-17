@@ -45,7 +45,7 @@ func (executor *BaseQueryExecutor) AlterDatabase(*Conn, *query.AlterDatabase) (m
 
 // AlterTable handles a ALTER TABLE query.
 func (executor *BaseQueryExecutor) AlterTable(*Conn, *query.AlterTable) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("ALTER DATABASE")
+	return nil, query.NewErrNotImplemented("ALTER TABLE")
 }
 
 // DropDatabase handles a DROP DATABASE query.
