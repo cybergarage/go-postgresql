@@ -36,6 +36,8 @@ type (
 	CreateDatabase = query.CreateDatabase
 	CreateTable    = query.CreateTable
 	CreateIndex    = query.CreateIndex
+	AlterDatabase  = query.AlterDatabase
+	AlterTable     = query.AlterTable
 	DropDatabase   = query.DropDatabase
 	DropTable      = query.DropTable
 	Select         = query.Select
