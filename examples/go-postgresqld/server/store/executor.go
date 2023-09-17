@@ -198,13 +198,21 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.R
 
 	nDataRow := 0
 	if !selectors.HasAggregateFunction() {
-		for _, row := range rows {
+		offset := q.Limit().Offset()
+		limit := q.Limit().Limit()
+		for rowNo, row := range rows {
+			if 0 < offset && rowNo < offset {
+				continue
+			}
 			dataRow, err := query.NewDataRowForSelectors(schema, rowDesc, selectors, row)
 			if err != nil {
 				return nil, err
 			}
 			res = res.Append(dataRow)
 			nDataRow++
+			if 0 < limit && limit <= nDataRow {
+				break
+			}
 		}
 	} else {
 		groupBy := q.GroupBy().Column()
