@@ -60,7 +60,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			v = to
 		}
 	case system.BinaryFormat:
-		switch rowField.DataTypeID { //nolint:exhaustive
+		switch rowField.ObjectID { //nolint:exhaustive
 		case system.Bool:
 			if _, ok := v.(bool); !ok {
 				var to bool
