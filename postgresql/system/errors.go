@@ -22,6 +22,6 @@ import (
 // ErrNotFound represents a not found error.
 var ErrNotFound = errors.New("not found")
 
-func newDataTypeNotFound(oid OID) error {
+func newDataTypeNotFound(oid ObjectID) error {
 	return fmt.Errorf("data type (%d) is %w", oid, ErrNotFound)
 }
