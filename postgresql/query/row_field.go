@@ -60,9 +60,7 @@ func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*m
 		columnName = selector.SelectorString()
 	}
 	return message.NewRowFieldWith(columnName,
-		message.WithNumber(int16(idx+1)),
-		message.WithDataTypeID(dt.OID()),
-		message.WithDataTypeSize(int16(dt.Size())),
-		message.WithFormatCode(dt.FormatCode()),
+		message.WitRowFieldNumber(int16(idx+1)),
+		message.WithRowFieldDataType(dt),
 	), nil
 }

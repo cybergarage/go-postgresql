@@ -26,7 +26,7 @@ type RowField struct {
 	Name         string
 	TableID      int32
 	Number       int16
-	DataTypeID   int32
+	ObjectID     int32
 	DataTypeSize int16
 	TypeModifier int32
 	FormatCode   int16
@@ -41,7 +41,7 @@ func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 		Name:         name,
 		TableID:      0,
 		Number:       0,
-		DataTypeID:   0,
+		ObjectID:     0,
 		TypeModifier: 0,
 		FormatCode:   0,
 	}
@@ -51,45 +51,54 @@ func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 	return field
 }
 
-// WithNumber sets a number.
-func WithNumber(number int16) func(*RowField) {
+// WitRowFieldNumber sets a number.
+func WitRowFieldNumber(number int16) func(*RowField) {
 	return func(fileld *RowField) {
 		fileld.Number = number
 	}
 }
 
-// WithTableID sets a table ID.
-func WithTableID(tableID int32) func(*RowField) {
+// WithRowFieldTableID sets a table ID.
+func WithRowFieldTableID(tableID int32) func(*RowField) {
 	return func(fileld *RowField) {
 		fileld.TableID = tableID
 	}
 }
 
-// WithDataTypeID sets a data type ID.
-func WithDataTypeID(dataTypeID int32) func(*RowField) {
+// WithRowFieldObjectID sets a data type ID.
+func WithRowFieldObjectID(dataTypeID int32) func(*RowField) {
 	return func(fileld *RowField) {
-		fileld.DataTypeID = dataTypeID
+		fileld.ObjectID = dataTypeID
 	}
 }
 
-// WithDataTypeSize sets a data type size.
-func WithDataTypeSize(dataTypeSize int16) func(*RowField) {
+// WithRowFieldSize sets a data type size.
+func WithRowFieldSize(dataTypeSize int16) func(*RowField) {
 	return func(fileld *RowField) {
 		fileld.DataTypeSize = dataTypeSize
 	}
 }
 
-// WithTypeModifier sets a type modifier.
-func WithTypeModifier(typeModifier int32) func(*RowField) {
+// WithRowFieldModifier sets a type modifier.
+func WithRowFieldModifier(typeModifier int32) func(*RowField) {
 	return func(fileld *RowField) {
 		fileld.TypeModifier = typeModifier
 	}
 }
 
-// WithFormatCode sets a format code.
-func WithFormatCode(formatCode int16) func(*RowField) {
+// WithRowFieldFormatCode sets a format code.
+func WithRowFieldFormatCode(formatCode int16) func(*RowField) {
 	return func(fileld *RowField) {
 		fileld.FormatCode = formatCode
+	}
+}
+
+// WithRowFieldDataType sets a data type.
+func WithRowFieldDataType(dt *DataType) func(*RowField) {
+	return func(fileld *RowField) {
+		fileld.ObjectID = dt.OID()
+		fileld.DataTypeSize = int16(dt.Size())
+		fileld.FormatCode = dt.FormatCode()
 	}
 }
 
@@ -104,7 +113,7 @@ func (field *RowField) WirteBytes(w *Writer) error {
 	if err := w.AppendInt16(field.Number); err != nil {
 		return err
 	}
-	if err := w.AppendInt32(field.DataTypeID); err != nil {
+	if err := w.AppendInt32(field.ObjectID); err != nil {
 		return err
 	}
 	if err := w.AppendInt16(field.DataTypeSize); err != nil {
