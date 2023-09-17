@@ -307,8 +307,10 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				res, err = server.Executor.CreateDatabase(conn, stmt)
 			case *query.CreateTable:
 				res, err = server.Executor.CreateTable(conn, stmt)
-			case *query.CreateIndex:
-				res, err = server.Executor.CreateIndex(conn, stmt)
+			case *query.AlterDatabase:
+				res, err = server.Executor.AlterDatabase(conn, stmt)
+			case *query.AlterTable:
+				res, err = server.Executor.AlterTable(conn, stmt)
 			case *query.DropDatabase:
 				res, err = server.Executor.DropDatabase(conn, stmt)
 			case *query.DropTable:
@@ -321,6 +323,10 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				res, err = server.Executor.Update(conn, stmt)
 			case *query.Delete:
 				res, err = server.Executor.Delete(conn, stmt)
+			case *query.Truncate:
+				res, err = server.Executor.Truncate(conn, stmt)
+			case *query.Vacuum:
+				res, err = server.Executor.Vacuum(conn, stmt)
 			}
 
 			if err != nil {

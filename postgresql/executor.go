@@ -44,8 +44,10 @@ type DDOExecutor interface {
 	CreateDatabase(*Conn, *query.CreateDatabase) (message.Responses, error)
 	// CreateTable handles a CREATE TABLE query.
 	CreateTable(*Conn, *query.CreateTable) (message.Responses, error)
-	// CreateIndex handles a CREATE INDEX query.
-	CreateIndex(*Conn, *query.CreateIndex) (message.Responses, error)
+	// AlterDatabase handles a ALTER DATABASE query.
+	AlterDatabase(*Conn, *query.AlterDatabase) (message.Responses, error)
+	// AlterTable handles a ALTER TABLE query.
+	AlterTable(*Conn, *query.AlterTable) (message.Responses, error)
 	// DropDatabase handles a DROP DATABASE query.
 	DropDatabase(*Conn, *query.DropDatabase) (message.Responses, error)
 	// DropIndex handles a DROP INDEX query.
@@ -62,6 +64,14 @@ type DMOExecutor interface {
 	Update(*Conn, *query.Update) (message.Responses, error)
 	// Delete handles a DELETE query.
 	Delete(*Conn, *query.Delete) (message.Responses, error)
+}
+
+// DMOExtraExecutor defines a executor interface for DMO (Data Manipulation Operations).
+type DMOExtraExecutor interface {
+	// Vacuum handles a VACUUM query.
+	Vacuum(*Conn, *query.Vacuum) (message.Responses, error)
+	// Truncate handles a TRUNCATE query.
+	Truncate(*Conn, *query.Truncate) (message.Responses, error)
 }
 
 type TransactionExecutor interface {
@@ -85,16 +95,22 @@ type QueryExecutor interface {
 	DMOExecutor
 }
 
+// QueryExtraExecutor represents a user query message executor.
+type QueryExtraExecutor interface {
+	DMOExtraExecutor
+}
+
 // ErrorHandler represents a user error handler.
 type ErrorHandler interface {
 	ParserError(*Conn, string, error) (message.Responses, error)
 }
 
 // Executor represents a frontend message executor.
-type Executor interface {
+type Executor interface { // nolint: interfacebloat
 	Authenticator
 	StartupHandler
 	QueryExecutor
+	QueryExtraExecutor
 	TransactionExecutor
 	ErrorHandler
 	// SetAuthenticator sets a user authenticator.
@@ -103,6 +119,8 @@ type Executor interface {
 	SetStartupHandler(StartupHandler)
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
+	// SetQueryExecutor sets a user query executor.
+	SetQueryExtraExecutor(QueryExtraExecutor)
 	// SetTransactionExecutor sets a user transaction executor.
 	SetTransactionExecutor(TransactionExecutor)
 	// SetErrorHandler sets a user error handler.

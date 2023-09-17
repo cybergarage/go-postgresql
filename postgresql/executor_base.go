@@ -19,6 +19,7 @@ type BaseExecutor struct {
 	Authenticator
 	StartupHandler
 	QueryExecutor
+	QueryExtraExecutor
 	TransactionExecutor
 	BulkExecutor
 	ErrorHandler
@@ -26,14 +27,17 @@ type BaseExecutor struct {
 
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
-	return &BaseExecutor{
+	executor := &BaseExecutor{
 		Authenticator:       NewBaseAuthenticator(),
 		StartupHandler:      NewBaseProtocolExecutor(),
 		QueryExecutor:       NewBaseQueryExecutor(),
+		QueryExtraExecutor:  nil,
 		TransactionExecutor: NewBaseTransactionExecutor(),
 		BulkExecutor:        NewBaseBulkExecutor(),
 		ErrorHandler:        NewBaseErrorHandler(),
 	}
+	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
+	return executor
 }
 
 // SetAuthenticator sets a user authenticator.
@@ -49,6 +53,11 @@ func (executor *BaseExecutor) SetStartupHandler(sh StartupHandler) {
 // SetQueryExecutor sets a user query executor.
 func (executor *BaseExecutor) SetQueryExecutor(qe QueryExecutor) {
 	executor.QueryExecutor = qe
+}
+
+// SetQueryExtraExecutor sets a user query extra executor.
+func (executor *BaseExecutor) SetQueryExtraExecutor(qe QueryExtraExecutor) {
+	executor.QueryExtraExecutor = qe
 }
 
 // SetTransactionExecutor sets a user transaction executor.
