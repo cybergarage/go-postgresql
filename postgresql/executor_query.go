@@ -38,9 +38,14 @@ func (executor *BaseQueryExecutor) CreateTable(*Conn, *query.CreateTable) (messa
 	return nil, query.NewErrNotImplemented("CREATE TABLE")
 }
 
-// CreateIndex handles a CREATE INDEX query.
-func (executor *BaseQueryExecutor) CreateIndex(*Conn, *query.CreateIndex) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("CREATE INDEX")
+// AlterDatabase handles a ALTER DATABASE query.
+func (executor *BaseQueryExecutor) AlterDatabase(*Conn, *query.AlterDatabase) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("ALTER DATABASE")
+}
+
+// AlterTable handles a ALTER TABLE query.
+func (executor *BaseQueryExecutor) AlterTable(*Conn, *query.AlterTable) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // DropDatabase handles a DROP DATABASE query.

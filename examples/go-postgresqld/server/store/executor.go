@@ -89,9 +89,14 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
-// CreateIndex handles a CREATE INDEX query.
-func (store *MemStore) CreateIndex(conn *postgresql.Conn, q *query.CreateIndex) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("CREATE INDEX")
+// AlterDatabase handles a ALTER DATABASE query.
+func (store *MemStore) AlterDatabase(*postgresql.Conn, *query.AlterDatabase) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("ALTER DATABASE")
+}
+
+// AlterTable handles a ALTER TABLE query.
+func (store *MemStore) AlterTable(*postgresql.Conn, *query.AlterTable) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // DropDatabase handles a DROP DATABASE query.
