@@ -77,13 +77,21 @@ func newPgbenchGetPartitionResponse() (message.Responses, error) {
 				message.WithRowFieldNumber(int16(n+1)),
 				message.WithRowFieldDataType(dt),
 			)
-			rowDesc.AppendField(rowField)
-			dataRow.AppendData(nil, []byte("1"))
-			continue
+			dataRow.AppendData(rowField, 2)
 		case 1:
-			continue
+			dt, _ := system.GetDataType(system.Char)
+			rowField := message.NewRowFieldWith(fieldName,
+				message.WithRowFieldNumber(int16(n+1)),
+				message.WithRowFieldDataType(dt),
+			)
+			dataRow.AppendData(rowField, nil)
 		case 2:
-			continue
+			dt, _ := system.GetDataType(system.Int8)
+			rowField := message.NewRowFieldWith(fieldName,
+				message.WithRowFieldNumber(int16(n+1)),
+				message.WithRowFieldDataType(dt),
+			)
+			dataRow.AppendData(rowField, 0)
 		}
 	}
 
