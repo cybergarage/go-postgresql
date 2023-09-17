@@ -46,6 +46,8 @@ type (
 	Begin          = query.Begin
 	Commit         = query.Commit
 	Rollback       = query.Rollback
+	Vacuum         = query.Vacuum
+	Truncate       = query.Truncate
 	Column         = query.Column
 	ColumnList     = query.ColumnList
 	Table          = query.Table
