@@ -285,10 +285,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			if err != nil {
 				return err
 			}
-			err = responseMessages(res)
-			if err != nil {
-				return err
-			}
+			return responseMessages(res)
 		}
 
 		for _, stmt := range stmts {
