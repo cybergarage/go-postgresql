@@ -51,8 +51,8 @@ func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 	return field
 }
 
-// WitRowFieldNumber sets a number.
-func WitRowFieldNumber(number int16) func(*RowField) {
+// WithRowFieldNumber sets a number.
+func WithRowFieldNumber(number int16) func(*RowField) {
 	return func(fileld *RowField) {
 		fileld.Number = number
 	}

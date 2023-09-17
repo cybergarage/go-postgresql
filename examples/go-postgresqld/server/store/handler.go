@@ -20,6 +20,7 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 )
 
 var (
@@ -71,12 +72,10 @@ func newPgbenchGetPartitionResponse() (message.Responses, error) {
 	for n, fieldName := range resFieldNames {
 		switch n {
 		case 0:
-			// dt, err := system.GetDataType(system.Int4)
+			dt, _ := system.GetDataType(system.Int4)
 			rowField := message.NewRowFieldWith(fieldName,
-				message.WitRowFieldNumber(int16(n+1)),
-				// message.WithDataTypeID(system.Int4),
-				// message.WithDataTypeSize(int16(dt.Size())),
-				// message.WithFormatCode(dt.FormatCode()),
+				message.WithRowFieldNumber(int16(n+1)),
+				message.WithRowFieldDataType(dt),
 			)
 			rowDesc.AppendField(rowField)
 			dataRow.AppendData(nil, []byte("1"))
