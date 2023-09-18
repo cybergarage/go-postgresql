@@ -145,24 +145,11 @@ func (row Row) Update(colums []*query.Column) {
 	for _, col := range colums {
 		colName := col.Name()
 		if exe := col.Executor(); exe != nil {
-			args := col.Arguments()
-			if len(args) < 2 {
-				continue
-			}
-			leftExprName, ok := args[0].(string)
-			if !ok {
-				continue
-			}
-			v, ok := row[leftExprName]
-			if !ok {
-				continue
-			}
-			args[0] = v
-			rv, err := exe.Execute(args...)
+			v, err := col.ExecuteUpdator(row)
 			if err != nil {
 				continue
 			}
-			row[colName] = rv
+			row[colName] = v
 		} else {
 			if col.HasLiteral() {
 				row[colName] = col.Value()
