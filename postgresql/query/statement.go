@@ -35,6 +35,9 @@ func NewStatement(stmt query.Statement) *Statement {
 func (stmt *Statement) Bind(params message.BindParams) error {
 	updateBindColumns := func(columns []*query.Column, params message.BindParams) error {
 		for _, column := range columns {
+			if !column.HasLiteral() {
+				continue
+			}
 			v, ok := column.Value().(*query.BindParam)
 			if !ok {
 				continue
