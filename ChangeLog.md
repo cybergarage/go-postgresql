@@ -4,11 +4,20 @@
 - Improved
   - Support more data types
     - Timestamp, Year, .... 
-
-## v1.2.1 (2023-09-xx)
-- Improved
   - Example server (go-postgresqld)
     - Support pgbench workload
+  - SELECT
+    - Added tests for ORDER BY
+
+## v1.2.1 (2023-09-19)
+- Improved
+  - UPDATE
+    - Supported arithmetic operations
+  - Example server (go-postgresqld)
+    - SELECT
+      - Supported LIMIT clause
+    - UPDATE
+      - Supported arithmetic operations
 
 ## v1.2.0 (2023-09-18)
 - Added
