@@ -86,7 +86,9 @@ type TransactionExecutor interface {
 // BulkExecutor defines a executor interface for bulk operations.
 type BulkExecutor interface {
 	// Copy handles a COPY query.
-	Copy(*Conn, *query.Copy, *CopyStream) (message.Responses, error)
+	Copy(*Conn, *query.Copy) (message.Responses, error)
+	// CopyData handles a COPY data message.
+	CopyData(*Conn, *query.Copy, *CopyStream) (message.Responses, error)
 }
 
 // QueryExecutor represents a user query message executor.
@@ -112,6 +114,7 @@ type Executor interface { // nolint: interfacebloat
 	QueryExecutor
 	QueryExtraExecutor
 	TransactionExecutor
+	BulkExecutor
 	ErrorHandler
 	// SetAuthenticator sets a user authenticator.
 	SetAuthenticator(Authenticator)
@@ -123,6 +126,8 @@ type Executor interface { // nolint: interfacebloat
 	SetQueryExtraExecutor(QueryExtraExecutor)
 	// SetTransactionExecutor sets a user transaction executor.
 	SetTransactionExecutor(TransactionExecutor)
+	// SetBulkExecutor sets a user bulk executor.
+	SetBulkExecutor(BulkExecutor)
 	// SetErrorHandler sets a user error handler.
 	SetErrorHandler(ErrorHandler)
 }
