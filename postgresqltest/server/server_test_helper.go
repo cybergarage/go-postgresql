@@ -25,6 +25,8 @@ import (
 
 const testDBNamePrefix = "pgtest"
 
+type ServerTestFunc = func(*testing.T, *client.PqClient)
+
 func RunServerTests(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
@@ -59,4 +61,20 @@ func RunServerTests(t *testing.T) {
 		}
 	}()
 
+	testFuncs := []struct {
+		name string
+		fn   ServerTestFunc
+	}{
+		{"copy", TestServerCopy},
+	}
+
+	for _, testFunc := range testFuncs {
+		t.Run(testFunc.name, func(t *testing.T) {
+			testFunc.fn(t, client)
+		})
+	}
+}
+
+// TestServerCopy tests the COPY command.
+func TestServerCopy(t *testing.T, client *client.PqClient) {
 }
