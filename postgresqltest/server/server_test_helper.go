@@ -19,6 +19,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lib/pq"
+	_ "github.com/lib/pq"
+
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresqltest/client"
 )
@@ -77,4 +80,54 @@ func RunServerTests(t *testing.T) {
 
 // TestServerCopy tests the COPY command.
 func TestServerCopy(t *testing.T, client *client.PqClient) {
+	_, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT, cdouble DOUBLE);")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	db := client.DB()
+	txn, err := db.Begin()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	stmt, err := txn.Prepare(pq.CopyIn("cptest", "ctext", "cint", "cfloat", "cdouble"))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	records := [][]interface{}{
+		{"text1", 1, 1.1, 1.11},
+		{"text2", 2, 2.2, 2.22},
+		{"text3", 3, 3.3, 3.33},
+	}
+
+	for _, record := range records {
+		_, err = stmt.Exec(record...)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = stmt.Close()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = txn.Commit()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }
