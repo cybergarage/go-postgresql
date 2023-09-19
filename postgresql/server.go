@@ -274,7 +274,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 	}
 
 	// executeQuery executes a query and returns the result.
-	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
+	executeQuery := func(conn *Conn, reader *message.MessageReader, queryMsg *message.Query) error {
 		q := queryMsg.Query
 		log.Debugf("%s %s", conn.conn.RemoteAddr(), q)
 
@@ -419,13 +419,13 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			var queryMsg *message.Query
 			queryMsg, reqErr = handleBindMessage(exConn, msgReader)
 			if reqErr == nil {
-				reqErr = executeQuery(exConn, queryMsg)
+				reqErr = executeQuery(exConn, msgReader, queryMsg)
 			}
 		case message.QueryMessage:
 			var queryMsg *message.Query
 			queryMsg, reqErr = message.NewQueryWithReader(msgReader)
 			if reqErr == nil {
-				reqErr = executeQuery(exConn, queryMsg)
+				reqErr = executeQuery(exConn, msgReader, queryMsg)
 			}
 		case message.TerminateMessage:
 			_, reqErr := message.NewTerminateWithReader(msgReader)
