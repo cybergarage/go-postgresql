@@ -22,6 +22,7 @@ package store
 import (
 	"fmt"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
@@ -280,9 +281,15 @@ func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.R
 }
 
 // Copy handles a COPY query.
-func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
+func (store *MemStore) Copy(conn *postgresql.Conn, copy *query.Copy) (message.Responses, error) {
+	return nil, query.NewErrNotImplemented("COPY")
+}
+
+// Copy handles a COPY DATA message
+func (store *MemStore) CopyDataCopy(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 
@@ -317,6 +324,7 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 		if err != nil {
 			return err
 		}
+		log.Infof("%st", q.String())
 		_, err = store.Insert(conn, q)
 		return err
 	}
@@ -327,15 +335,17 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy, stream *postgr
 	ok, err := stream.Next()
 	for {
 		if err != nil {
+			log.Error(err)
 			return nil, err
 		}
 		if !ok {
 			break
 		}
-		if err := copyData(schema, stream); err == nil {
-			nCopy++
-		} else {
+		if err := copyData(schema, stream); err != nil {
+			log.Error(err)
 			nFail++
+		} else {
+			nCopy++
 		}
 		ok, err = stream.Next()
 	}
