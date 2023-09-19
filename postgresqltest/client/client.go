@@ -18,5 +18,20 @@ import (
 	"github.com/cybergarage/go-sqltest/sqltest"
 )
 
-// Client represents a client for PostgreSQL server.
+// Client represents a PostgreSQL client interface.
 type Client = sqltest.Client
+
+// NewDefaultClient returns a new default PostgreSQL client.
+func NewDefaultClient() Client {
+	return sqltest.NewDefaultClient()
+}
+
+// NewPgClient returns a new pq client.
+func NewPqClient() *sqltest.PgClient {
+	return sqltest.NewPqClient()
+}
+
+// NewPgxClient returns a new Pgx client.
+func NewPgxClient() *sqltest.PgxClient {
+	return sqltest.NewPgxClient()
+}
