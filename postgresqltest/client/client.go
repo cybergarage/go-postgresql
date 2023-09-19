@@ -23,11 +23,11 @@ type Client = sqltest.Client
 
 // NewDefaultClient returns a new default PostgreSQL client.
 func NewDefaultClient() Client {
-	return sqltest.NewDefaultClient()
+	return sqltest.NewPostgresClient()
 }
 
 // NewPgClient returns a new pq client.
-func NewPqClient() *sqltest.PgClient {
+func NewPqClient() *sqltest.PqClient {
 	return sqltest.NewPqClient()
 }
 
