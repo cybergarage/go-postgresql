@@ -21,6 +21,12 @@ import (
 // Client represents a PostgreSQL client interface.
 type Client = sqltest.Client
 
+// PqClient represents a PostgreSQL client.
+type PqClient = sqltest.PqClient
+
+// PgxClient represents a PostgreSQL client.
+type PgxClient = sqltest.PgxClient
+
 // NewDefaultClient returns a new default PostgreSQL client.
 func NewDefaultClient() Client {
 	return sqltest.NewPostgresClient()
