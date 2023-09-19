@@ -15,27 +15,48 @@
 package server
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresqltest/client"
 )
 
-func TestServer(t *testing.T) {
+const testDBNamePrefix = "pgtest"
+
+func RunServerTests(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
-	server := NewServer()
+	testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
 
-	err := server.Start()
+	client := client.NewPqClient()
+	client.SetDatabase(testDBName)
+
+	err := client.Open()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	RunServerTests(t)
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			t.Error(err)
+		}
+	}()
 
-	err = server.Stop()
+	err = client.CreateDatabase(testDBName)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	defer func() {
+		err := client.DropDatabase(testDBName)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
 }
