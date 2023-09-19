@@ -327,6 +327,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 				res, err = server.Executor.Truncate(conn, stmt)
 			case *query.Vacuum:
 				res, err = server.Executor.Vacuum(conn, stmt)
+			case *query.Copy:
+				res, err = server.Executor.Copy(conn, stmt)
 			}
 
 			if err != nil {
