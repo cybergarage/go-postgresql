@@ -33,7 +33,7 @@ func (executor *BaseBulkExecutor) Copy(*Conn, *query.Copy) (message.Responses, e
 	return nil, query.NewErrNotImplemented("COPY")
 }
 
-// Copy handles a COPY DATA message
+// Copy handles a COPY DATA message.
 func (executor *BaseBulkExecutor) CopyData(*Conn, *query.Copy, *CopyStream) (message.Responses, error) {
 	return nil, query.NewErrNotImplemented("COPY DATA")
 }
