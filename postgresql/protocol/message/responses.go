@@ -85,3 +85,13 @@ func NewCopyCompleteResponsesWith(n int) (Responses, error) {
 func (responses Responses) Append(res Response) Responses {
 	return append(responses, res)
 }
+
+// HasErrorResponse returns true whether this responses has an error response.
+func (responses Responses) HasErrorResponse() bool {
+	for _, response := range responses {
+		if response.Type() == ErrorResponseMessage {
+			return true
+		}
+	}
+	return false
+}
