@@ -15,18 +15,19 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
 
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresqltest/client"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
 )
 
 const testDBNamePrefix = "pgtest"
 
-type ServerTestFunc = func(*testing.T, *client.PqClient)
+type ServerTestFunc = func(*testing.T, *client.PgxClient)
 
 func RunServerTests(t *testing.T) {
 	t.Helper()
@@ -35,7 +36,7 @@ func RunServerTests(t *testing.T) {
 
 	testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
 
-	client := client.NewPqClient()
+	client := client.NewPgxClient()
 	client.SetDatabase(testDBName)
 
 	err := client.Open()
@@ -68,7 +69,7 @@ func RunServerTests(t *testing.T) {
 		name string
 		fn   ServerTestFunc
 	}{
-		// {"copy", TestServerCopy},
+		{"copy", TestServerCopy},
 	}
 
 	for _, testFunc := range testFuncs {
@@ -79,7 +80,7 @@ func RunServerTests(t *testing.T) {
 }
 
 // TestServerCopy tests the COPY command.
-func TestServerCopy(t *testing.T, client *client.PqClient) {
+func TestServerCopy(t *testing.T, client *client.PgxClient) {
 	t.Helper()
 
 	rows, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT, cdouble DOUBLE);")
@@ -90,57 +91,33 @@ func TestServerCopy(t *testing.T, client *client.PqClient) {
 
 	if rows.Err() != nil {
 		t.Error(rows.Err())
+		rows.Close()
 		return
 	}
+	rows.Close()
 
-	err = rows.Close() // nolint: sqlclosecheck
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	conn := client.Conn()
 
-	db := client.DB()
-	txn, err := db.Begin()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	stmt, err := txn.Prepare(pq.CopyIn("cptest", "ctext", "cint", "cfloat", "cdouble"))
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	records := [][]interface{}{
+	copyRows := [][]any{
 		{"text1", 1, 1.1, 1.11},
 		{"text2", 2, 2.2, 2.22},
 		{"text3", 3, 3.3, 3.33},
 	}
 
-	for _, record := range records {
-		_, err = stmt.Exec(record...)
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}
+	copyCount, err := conn.CopyFrom(
+		context.Background(),
+		pgx.Identifier{"cptest"},
+		[]string{"cptest", "ctext", "cint", "cfloat", "cdouble"},
+		pgx.CopyFromRows(copyRows),
+	)
 
-	_, err = stmt.Exec()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	err = stmt.Close() // nolint: sqlclosecheck
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = txn.Commit()
-	if err != nil {
-		t.Error(err)
+	if copyCount != int64(len(copyRows)) {
+		t.Errorf("copyCount (%d) != len(rows) (%d)", copyCount, len(copyRows))
 		return
 	}
 }
