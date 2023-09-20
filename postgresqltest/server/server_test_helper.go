@@ -31,6 +31,8 @@ const testDBNamePrefix = "pgtest"
 type ServerTestFunc = func(*testing.T, *client.PqClient)
 
 func RunServerTests(t *testing.T) {
+	t.Helper()
+
 	log.SetStdoutDebugEnbled(true)
 
 	testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
@@ -80,7 +82,20 @@ func RunServerTests(t *testing.T) {
 
 // TestServerCopy tests the COPY command.
 func TestServerCopy(t *testing.T, client *client.PqClient) {
-	_, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT, cdouble DOUBLE);")
+	t.Helper()
+
+	rows, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT, cdouble DOUBLE);")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if rows.Err() != nil {
+		t.Error(rows.Err())
+		return
+	}
+
+	err = rows.Close()
 	if err != nil {
 		t.Error(err)
 		return
