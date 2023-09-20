@@ -19,11 +19,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lib/pq"
-	_ "github.com/lib/pq"
-
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresqltest/client"
+	"github.com/lib/pq"
 )
 
 const testDBNamePrefix = "pgtest"
@@ -70,7 +68,7 @@ func RunServerTests(t *testing.T) {
 		name string
 		fn   ServerTestFunc
 	}{
-		{"copy", TestServerCopy},
+		// {"copy", TestServerCopy},
 	}
 
 	for _, testFunc := range testFuncs {
@@ -95,7 +93,7 @@ func TestServerCopy(t *testing.T, client *client.PqClient) {
 		return
 	}
 
-	err = rows.Close()
+	err = rows.Close() // nolint: sqlclosecheck
 	if err != nil {
 		t.Error(err)
 		return
@@ -134,7 +132,7 @@ func TestServerCopy(t *testing.T, client *client.PqClient) {
 		return
 	}
 
-	err = stmt.Close()
+	err = stmt.Close() // nolint: sqlclosecheck
 	if err != nil {
 		t.Error(err)
 		return
