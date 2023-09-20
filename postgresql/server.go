@@ -139,6 +139,9 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 	log.Debugf("%s/%s (%s) accepted", PackageName, Version, conn.RemoteAddr().String())
 
 	responseMessage := func(resMsg message.Response) error {
+		if resMsg == nil {
+			return nil
+		}
 		resBytes, err := resMsg.Bytes()
 		if err != nil {
 			return err
@@ -149,9 +152,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	responseMessages := func(resMsg message.Responses) error {
-		for _, res := range resMsg {
-			err := responseMessage(res)
+	responseMessages := func(resMsgs message.Responses) error {
+		if resMsgs == nil {
+			return nil
+		}
+		for _, resMsg := range resMsgs {
+			err := responseMessage(resMsg)
 			if err != nil {
 				return err
 			}
@@ -275,10 +281,20 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 	handleCopyQuery := func(conn *Conn, reader *message.MessageReader, stmt *query.Copy) (message.Responses, error) {
 		res, err := server.Executor.Copy(conn, stmt)
+		if err != nil || res.HasErrorResponse() {
+			return res, err
+		}
+		err = responseMessages(res)
 		if err != nil {
 			return nil, err
 		}
-		return res, nil
+
+		ok, err := reader.IsPeekType(message.CopyDataMessage)
+		if !ok || err != nil {
+			return nil, err
+		}
+
+		return server.Executor.CopyData(conn, stmt, NewCopyStreamWithReader(reader))
 	}
 
 	// executeQuery executes a query and returns the result.
