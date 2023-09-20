@@ -273,6 +273,14 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return q, nil
 	}
 
+	handleCopyQuery := func(conn *Conn, reader *message.MessageReader, stmt *query.Copy) (message.Responses, error) {
+		res, err := server.Executor.Copy(conn, stmt)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
 	// executeQuery executes a query and returns the result.
 	executeQuery := func(conn *Conn, reader *message.MessageReader, queryMsg *message.Query) error {
 		q := queryMsg.Query
@@ -328,7 +336,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			case *query.Vacuum:
 				res, err = server.Executor.Vacuum(conn, stmt)
 			case *query.Copy:
-				res, err = server.Executor.Copy(conn, stmt)
+				res, err = handleCopyQuery(conn, reader, stmt)
 			}
 
 			if err != nil {
