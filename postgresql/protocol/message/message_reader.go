@@ -28,6 +28,7 @@ type MessageReader struct {
 	Length int32
 }
 
+// NewMessageReader returns a new message reader.
 func NewMessageReaderWith(reader *bufio.Reader) *MessageReader {
 	return &MessageReader{
 		Reader: NewReaderWith(reader),
@@ -36,12 +37,22 @@ func NewMessageReaderWith(reader *bufio.Reader) *MessageReader {
 	}
 }
 
+// PeekType peeks a message type.
 func (reader *MessageReader) PeekType() (Type, error) {
 	bytes, err := reader.Reader.Peek(1)
 	if err != nil {
 		return 0, err
 	}
 	return Type(bytes[0]), nil
+}
+
+// IsPeekType returns true whether the peeked message type is the specified type.
+func (reader *MessageReader) IsPeekType(t Type) (bool, error) {
+	pt, err := reader.PeekType()
+	if err != nil {
+		return false, err
+	}
+	return pt == t, nil
 }
 
 // ReadType reads a message type.
