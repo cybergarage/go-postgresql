@@ -21,6 +21,7 @@ type BaseExecutor struct {
 	QueryExecutor
 	QueryExtraExecutor
 	TransactionExecutor
+	ExtendedQueryExecutor
 	BulkExecutor
 	ErrorHandler
 }
@@ -28,13 +29,14 @@ type BaseExecutor struct {
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	executor := &BaseExecutor{
-		Authenticator:       NewBaseAuthenticator(),
-		StartupHandler:      NewBaseProtocolExecutor(),
-		QueryExecutor:       NewBaseQueryExecutor(),
-		QueryExtraExecutor:  nil,
-		TransactionExecutor: NewBaseTransactionExecutor(),
-		BulkExecutor:        NewBaseBulkExecutor(),
-		ErrorHandler:        NewBaseErrorHandler(),
+		Authenticator:         NewBaseAuthenticator(),
+		StartupHandler:        NewBaseProtocolExecutor(),
+		QueryExecutor:         NewBaseQueryExecutor(),
+		QueryExtraExecutor:    nil,
+		ExtendedQueryExecutor: NewBaseExtendedQueryExecutor(),
+		TransactionExecutor:   NewBaseTransactionExecutor(),
+		BulkExecutor:          NewBaseBulkExecutor(),
+		ErrorHandler:          NewBaseErrorHandler(),
 	}
 	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
 	return executor
@@ -63,6 +65,11 @@ func (executor *BaseExecutor) SetQueryExtraExecutor(qe QueryExtraExecutor) {
 // SetTransactionExecutor sets a user transaction executor.
 func (executor *BaseExecutor) SetTransactionExecutor(te TransactionExecutor) {
 	executor.TransactionExecutor = te
+}
+
+// SetExtendedQueryExecutor sets a user extended query executor.
+func (executor *BaseExecutor) SetExtendedQueryExecutor(eqe ExtendedQueryExecutor) {
+	executor.ExtendedQueryExecutor = eqe
 }
 
 // SetBulkExecutor sets a user bulk executor.
