@@ -238,16 +238,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return err
 		}
 
+		res, err := server.Executor.Parse(conn, parseMsg)
 		if err != nil {
 			return err
 		}
 
-		err = conn.SetPreparedQuery(parseMsg)
-		if err != nil {
-			return err
-		}
-
-		err = responseMessage(message.NewParseComplete())
+		err = responseMessages(res)
 		if err != nil {
 			return err
 		}
@@ -261,17 +257,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return nil, err
 		}
 
-		preparedQuery, err := conn.PreparedQuery(bindMsg.Name)
+		res, q, err := server.Executor.Bind(conn, bindMsg)
 		if err != nil {
 			return nil, err
 		}
 
-		q, err := message.NewQueryWith(preparedQuery, bindMsg)
-		if err != nil {
-			return nil, err
-		}
-
-		err = responseMessage(message.NewBindComplete())
+		err = responseMessages(res)
 		if err != nil {
 			return nil, err
 		}
