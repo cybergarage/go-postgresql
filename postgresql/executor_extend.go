@@ -15,6 +15,8 @@
 package postgresql
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
@@ -54,5 +56,14 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (
 
 // Describe handles a describe message.
 func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("Describe")
+	if msg.IsPortal() {
+		return nil, query.NewErrNotSupported(fmt.Sprintf("Describe (%v)", string([]byte{byte(msg.Type)})))
+	}
+
+	q, err := conn.PreparedQuery(msg.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, query.NewErrNotSupported(fmt.Sprintf("Describe (%s)", q.Query))
 }
