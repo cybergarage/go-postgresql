@@ -29,16 +29,20 @@ func NewBaseExtendedQueryExecutor() *BaseExtendedQueryExecutor {
 }
 
 // Prepare handles a parse message.
-func (executor *BaseExtendedQueryExecutor) Parse(*Conn, *message.Parse) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("Parse")
+func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse) (message.Responses, error) {
+	err := conn.SetPreparedQuery(msg)
+	if err != nil {
+		return nil, err
+	}
+	return message.NewResponsesWith(message.NewParseComplete()), nil
 }
 
 // Bind handles a bind message.
-func (executor *BaseExtendedQueryExecutor) Bind(*Conn, *message.Bind) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, error) {
 	return nil, query.NewErrNotImplemented("Bind")
 }
 
 // Describe handles a describe message.
-func (executor *BaseExtendedQueryExecutor) Describe(*Conn, *message.Describe) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
 	return nil, query.NewErrNotImplemented("Describe")
 }
