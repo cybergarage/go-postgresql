@@ -270,6 +270,25 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return q, nil
 	}
 
+	handleDescMessage := func(conn *Conn, reader *message.MessageReader) error {
+		descMsg, err := message.NewDescribeWithReader(reader)
+		if err != nil {
+			return err
+		}
+
+		res, err := server.Executor.Describe(conn, descMsg)
+		if err != nil {
+			return err
+		}
+
+		err = responseMessages(res)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	handleCopyQuery := func(conn *Conn, reader *message.MessageReader, stmt *query.Copy) (message.Responses, error) {
 		res, err := server.Executor.Copy(conn, stmt)
 		if err != nil || res.HasErrorResponse() {
@@ -436,6 +455,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, msgReader, queryMsg)
 			}
+		case message.DescribeMessage:
+			reqErr = handleDescMessage(exConn, msgReader)
 		case message.QueryMessage:
 			var queryMsg *message.Query
 			queryMsg, reqErr = message.NewQueryWithReader(msgReader)
