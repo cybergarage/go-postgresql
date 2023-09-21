@@ -60,10 +60,12 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 		return nil, query.NewErrNotSupported(fmt.Sprintf("Describe (%v)", string([]byte{byte(msg.Type)})))
 	}
 
-	q, err := conn.PreparedQuery(msg.Name)
+	_, err := conn.PreparedQuery(msg.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, query.NewErrNotSupported(fmt.Sprintf("Describe (%s)", q.Query))
+	return message.NewResponsesWith(
+		message.NewParameterDescription(),
+		message.NewNoData()), nil
 }
