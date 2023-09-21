@@ -78,3 +78,13 @@ func NewDescribeWithReader(reader *MessageReader) (*Describe, error) {
 		Name:           name,
 	}, nil
 }
+
+// IsStatement returns true whether the describe type is statement.
+func (msg *Describe) IsStatement() bool {
+	return msg.Type == DescribeTypeStatement
+}
+
+// IsPortal returns true whether the describe type is portal.
+func (msg *Describe) IsPortal() bool {
+	return msg.Type == DescribeTypePortal
+}
