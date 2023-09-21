@@ -88,7 +88,7 @@ type ExtendedQueryExecutor interface {
 	// Prepare handles a parse message.
 	Parse(*Conn, *message.Parse) (message.Responses, error)
 	// Bind handles a bind message.
-	Bind(*Conn, *message.Bind) (message.Responses, error)
+	Bind(*Conn, *message.Bind) (message.Responses, *message.Query, error)
 	// Describe handles a describe message.
 	Describe(*Conn, *message.Describe) (message.Responses, error)
 }

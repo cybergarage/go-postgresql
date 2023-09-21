@@ -38,8 +38,18 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse)
 }
 
 // Bind handles a bind message.
-func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("Bind")
+func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, *message.Query, error) {
+	preparedQuery, err := conn.PreparedQuery(msg.Name)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	q, err := message.NewQueryWith(preparedQuery, msg)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return message.NewResponsesWith(message.NewBindComplete()), q, nil
 }
 
 // Describe handles a describe message.
