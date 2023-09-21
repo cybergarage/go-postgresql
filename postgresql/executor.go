@@ -124,6 +124,7 @@ type Executor interface { // nolint: interfacebloat
 	QueryExecutor
 	QueryExtraExecutor
 	TransactionExecutor
+	ExtendedQueryExecutor
 	BulkExecutor
 	ErrorHandler
 	// SetAuthenticator sets a user authenticator.
