@@ -82,6 +82,11 @@ func (conn *Conn) Timestamp() time.Time {
 	return conn.ts
 }
 
+// SetSpanContext sets the tracer span context of the connection.
+func (conn *Conn) SetSpanContext(ctx tracer.Context) {
+	conn.Context = ctx
+}
+
 // SpanContext returns the tracer span context of the connection.
 func (conn *Conn) SpanContext() tracer.Context {
 	return conn.Context
