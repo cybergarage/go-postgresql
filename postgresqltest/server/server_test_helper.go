@@ -35,11 +35,32 @@ func RunServerTests(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
 	testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
-
 	client := client.NewPgxClient()
-	client.SetDatabase(testDBName)
 
+	// Create a test database
+
+	client.SetDatabase("postgres")
 	err := client.Open()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = client.CreateDatabase(testDBName)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = client.Close()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Run tests
+
+	client.SetDatabase(testDBName)
+	err = client.Open()
 	if err != nil {
 		t.Error(err)
 		return
@@ -51,12 +72,6 @@ func RunServerTests(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-
-	err = client.CreateDatabase(testDBName)
-	if err != nil {
-		t.Error(err)
-		return
-	}
 
 	defer func() {
 		err := client.DropDatabase(testDBName)
@@ -83,7 +98,7 @@ func RunServerTests(t *testing.T) {
 func TestServerCopy(t *testing.T, client *client.PgxClient) {
 	t.Helper()
 
-	rows, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT, cdouble DOUBLE);")
+	rows, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT);")
 	if err != nil {
 		t.Error(err)
 		return
@@ -99,15 +114,15 @@ func TestServerCopy(t *testing.T, client *client.PgxClient) {
 	conn := client.Conn()
 
 	copyRows := [][]any{
-		{"text1", 1, 1.1, 1.11},
-		{"text2", 2, 2.2, 2.22},
-		{"text3", 3, 3.3, 3.33},
+		{"text1", 1, 1.1},
+		{"text2", 2, 2.2},
+		{"text3", 3, 3.3},
 	}
 
 	copyCount, err := conn.CopyFrom(
 		context.Background(),
 		pgx.Identifier{"cptest"},
-		[]string{"cptest", "ctext", "cint", "cfloat", "cdouble"},
+		[]string{"ctext", "cint", "cfloat"},
 		pgx.CopyFromRows(copyRows),
 	)
 
