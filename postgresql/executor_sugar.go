@@ -20,12 +20,12 @@ import (
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
-// BaseSugarExecutor represents a base bulk message executor.
+// BaseSugarExecutor represents a base sugar query executor.
 type BaseSugarExecutor struct {
 	*BaseExecutor
 }
 
-// NewBaseSugarExecutor returns a base frontend message executor.
+// NewBaseSugarExecutor returns a base sugar query executor.
 func NewBaseSugarExecutorWith(executor *BaseExecutor) *BaseSugarExecutor {
 	return &BaseSugarExecutor{
 		BaseExecutor: executor,
