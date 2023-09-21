@@ -10,6 +10,8 @@
     - Added tests for ORDER BY
 
 ## v1.2.1 (2023-09-19)
+- Supported
+  - Sync message
 - Improved
   - UPDATE
     - Supported arithmetic operations
