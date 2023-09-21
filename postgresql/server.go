@@ -451,8 +451,11 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, msgReader, queryMsg)
 			}
+		case message.SyncMessage:
+			// Ignore the Sync message.
+			_, reqErr = message.NewTerminateWithReader(msgReader)
 		case message.TerminateMessage:
-			_, reqErr := message.NewTerminateWithReader(msgReader)
+			_, reqErr := message.NewSyncWithReader(msgReader)
 			if reqErr == nil {
 				return nil
 			}
