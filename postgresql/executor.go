@@ -83,6 +83,16 @@ type TransactionExecutor interface {
 	Rollback(*Conn, *query.Rollback) (message.Responses, error)
 }
 
+// ExtendedQueryExecutor defines a executor interface for extended query operations.
+type ExtendedQueryExecutor interface {
+	// Prepare handles a parse message.
+	Parse(*Conn, *message.Parse) (message.Responses, error)
+	// Bind handles a bind message.
+	Bind(*Conn, *message.Bind) (message.Responses, error)
+	// Describe handles a describe message.
+	Describe(*Conn, *message.Describe) (message.Responses, error)
+}
+
 // BulkExecutor defines a executor interface for bulk operations.
 type BulkExecutor interface {
 	// Copy handles a COPY query.
