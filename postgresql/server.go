@@ -432,10 +432,12 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		dbname = db
 	}
 
+	exConn := NewConnWith(conn, WithConnDatabase(dbname))
+
 	for {
 		loopSpan := server.Tracer.StartSpan(PackageName)
-		exConn := NewConnWith(conn, WithConnTracer(loopSpan), WithConnDatabase(dbname))
 		loopSpan.StartSpan("parse")
+		exConn.SetSpanContext(loopSpan)
 
 		var reqErr error
 		var reqType message.Type
