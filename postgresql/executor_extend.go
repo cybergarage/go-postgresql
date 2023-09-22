@@ -115,6 +115,10 @@ func (executor *BaseExtendedQueryExecutor) Sync(conn *Conn, msg *message.Sync) (
 
 // Flush handles a flush message.
 func (executor *BaseExtendedQueryExecutor) Flush(conn *Conn, msg *message.Flush) (message.Responses, error) {
+	// PostgreSQL: Documentation: 16: 55.2. Message Flow
+	// https://www.postgresql.org/docs/16/protocol-flow.html
+	// The Flush message does not cause any specific output to be generated,
+	// but forces the backend to deliver any data pending in its output buffers.
 	return nil, nil
 }
 
