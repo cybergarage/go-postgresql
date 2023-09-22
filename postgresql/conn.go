@@ -144,3 +144,16 @@ func (conn *Conn) ResponseError(err error) {
 		log.Error(err)
 	}
 }
+
+// ReadyForMessage sends a ready for message.
+func (conn *Conn) ReadyForMessage(status message.TransactionStatus) error {
+	readyMsg, err := message.NewReadyForQueryWith(status)
+	if err != nil {
+		return err
+	}
+	err = conn.ResponseMessage(readyMsg)
+	if err != nil {
+		return err
+	}
+	return nil
+}
