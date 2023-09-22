@@ -129,6 +129,9 @@ func (conn *Conn) ResponseMessages(resMsgs message.Responses) error {
 
 // ResponseError sends an error response.
 func (conn *Conn) ResponseError(err error) error {
+	if err == nil {
+		return nil
+	}
 	errMsg, err := message.NewErrorResponseWith(err)
 	if err != nil {
 		return err
