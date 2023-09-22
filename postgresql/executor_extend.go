@@ -69,16 +69,18 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 		if err != nil {
 			return nil, err
 		}
+		return message.NewResponsesWith(
+			message.NewParameterDescription(),
+			message.NewNoData()), nil
 	case message.PreparedPortal:
 		_, err := conn.PreparedPortal(msg.Name)
 		if err != nil {
 			return nil, err
 		}
+		return message.NewResponsesWith(
+			message.NewNoData()), nil
 	}
-
-	return message.NewResponsesWith(
-		message.NewParameterDescription(),
-		message.NewNoData()), nil
+	return nil, nil
 }
 
 // Execute handles a execute message.
