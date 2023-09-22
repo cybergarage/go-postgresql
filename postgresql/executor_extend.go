@@ -20,11 +20,14 @@ import (
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
 type BaseExtendedQueryExecutor struct {
+	QueryExecutor
 }
 
 // NewBaseExtendedQueryExecutor returns a base extended query message executor.
-func NewBaseExtendedQueryExecutor() *BaseExtendedQueryExecutor {
-	return &BaseExtendedQueryExecutor{}
+func NewBaseExtendedQueryExecutor(executor QueryExecutor) *BaseExtendedQueryExecutor {
+	return &BaseExtendedQueryExecutor{
+		QueryExecutor: executor,
+	}
 }
 
 // Prepare handles a parse message.
