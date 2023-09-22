@@ -19,6 +19,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -125,4 +126,21 @@ func (conn *Conn) ResponseMessages(resMsgs message.Responses) error {
 		}
 	}
 	return nil
+}
+
+// ResponseError sends an error response.
+func (conn *Conn) ResponseError(err error) {
+	errMsg, err := message.NewErrorResponseWith(err)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	errBytes, err := errMsg.Bytes()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	if _, err := conn.conn.Write(errBytes); err != nil {
+		log.Error(err)
+	}
 }
