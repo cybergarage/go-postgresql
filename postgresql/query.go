@@ -22,16 +22,16 @@ import (
 // PreparedQuery represents a prepared query.
 type PreparedQuery = message.Parse
 
-// PreparedQueryMap represents a prepared query map.
-type PreparedQueryMap map[string]*PreparedQuery
+// PreparedStatementMap represents a prepared query map.
+type PreparedStatementMap map[string]*PreparedQuery
 
-// NewPreparedQueryMap returns a new prepared query map.
-func NewPreparedQueryMap() PreparedQueryMap {
-	return make(PreparedQueryMap)
+// NewPreparedStatementMap returns a new prepared query map.
+func NewPreparedStatementMap() PreparedStatementMap {
+	return make(PreparedStatementMap)
 }
 
 // PreparedQuery returns a prepared query.
-func (queries PreparedQueryMap) PreparedQuery(name string) (*PreparedQuery, error) {
+func (queries PreparedStatementMap) PreparedQuery(name string) (*PreparedQuery, error) {
 	q, oK := queries[name]
 	if !oK {
 		return nil, query.NewErrPreparedQueryNotExist(name)
@@ -40,7 +40,7 @@ func (queries PreparedQueryMap) PreparedQuery(name string) (*PreparedQuery, erro
 }
 
 // SetPreparedQuery sets a prepared query.
-func (queries PreparedQueryMap) SetPreparedQuery(query *PreparedQuery) error {
+func (queries PreparedStatementMap) SetPreparedQuery(query *PreparedQuery) error {
 	queries[query.Name] = query
 	return nil
 }

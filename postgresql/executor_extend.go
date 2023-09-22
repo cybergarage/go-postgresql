@@ -15,10 +15,7 @@
 package postgresql
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
@@ -57,7 +54,8 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (
 // Describe handles a describe message.
 func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
 	if msg.IsPortal() {
-		return nil, query.NewErrNotSupported(fmt.Sprintf("Describe (%v)", string([]byte{byte(msg.Type)})))
+		return message.NewResponsesWith(
+			message.NewNoData()), nil
 	}
 
 	_, err := conn.PreparedQuery(msg.Name)
