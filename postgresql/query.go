@@ -45,6 +45,16 @@ func (stmtMap PreparedStatementMap) SetPreparedStatement(query *PreparedStatemen
 	return nil
 }
 
+// RemovePreparedStatement removes a prepared statement.
+func (stmtMap PreparedStatementMap) RemovePreparedStatement(name string) error {
+	_, oK := stmtMap[name]
+	if !oK {
+		return query.NewErrPreparedStatementNotExist(name)
+	}
+	delete(stmtMap, name)
+	return nil
+}
+
 // PreparedPortal represents a prepared query statement.
 type PreparedPortal = message.Query
 
