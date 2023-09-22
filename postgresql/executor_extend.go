@@ -83,7 +83,12 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 
 // Execute handles a execute message.
 func (executor *BaseExtendedQueryExecutor) Execute(conn *Conn, msg *message.Execute) (message.Responses, error) {
-	return nil, nil
+	q, err := conn.PreparedPortal(msg.PortalName)
+	if err != nil {
+		return nil, err
+	}
+
+	return executor.Query(conn, q)
 }
 
 // Close handles a close message.
