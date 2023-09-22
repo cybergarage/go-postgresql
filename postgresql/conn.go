@@ -145,6 +145,19 @@ func (conn *Conn) ResponseError(err error) {
 	}
 }
 
+// SkipMessage skips a message.
+func (conn *Conn) SkipMessage() error {
+	msg, err := message.NewMessageWithReader(conn.MessageReader)
+	if err != nil {
+		return err
+	}
+	_, err = msg.ReadMessageData()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ReadyForMessage sends a ready for message.
 func (conn *Conn) ReadyForMessage(status message.TransactionStatus) error {
 	readyMsg, err := message.NewReadyForQueryWith(status)
