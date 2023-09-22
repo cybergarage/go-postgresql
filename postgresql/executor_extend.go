@@ -112,11 +112,29 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 	parser := query.NewParser()
 	stmts, err := parser.ParseString(q)
 	if err != nil {
-		res, err := executor.QueryExecutor.ParserError(conn, q, err)
+		res, err := executor.ErrorHandler.ParserError(conn, q, err)
 		if err != nil {
 			return nil, err
 		}
 		return res, nil
+	}
+
+	handleCopyQuery := func(conn *Conn, stmt *query.Copy) (message.Responses, error) {
+		res, err := executor.BulkExecutor.Copy(conn, stmt)
+		if err != nil || res.HasErrorResponse() {
+			return res, err
+		}
+		err = conn.ResponseMessages(res)
+		if err != nil {
+			return nil, err
+		}
+
+		ok, err := conn.IsPeekType(message.CopyDataMessage)
+		if !ok || err != nil {
+			return nil, err
+		}
+
+		return executor.BulkExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader))
 	}
 
 	for _, stmt := range stmts {
@@ -155,20 +173,23 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 		case *query.Delete:
 			res, err = executor.QueryExecutor.Delete(conn, stmt)
 		case *query.Truncate:
-			res, err = executor.QueryExecutor.Truncate(conn, stmt)
+			res, err = executor.DMOExtraExecutor.Truncate(conn, stmt)
 		case *query.Vacuum:
-			res, err = executor.QueryExecutor.Vacuum(conn, stmt)
+			res, err = executor.DMOExtraExecutor.Vacuum(conn, stmt)
 		case *query.Copy:
-			res, err = handleCopyQuery(conn, reader, stmt)
+			res, err = handleCopyQuery(conn, stmt)
 		}
 
+		if 0 < len(res) {
+			err = conn.ResponseMessages(res)
+			if err != nil {
+				return nil, err
+			}
+		}
 		if err != nil {
 			return nil, err
 		}
-
-		err = conn.ResponseMessages(res)
-		if err != nil {
-			return err
-		}
 	}
+
+	return nil, nil
 }
