@@ -99,7 +99,7 @@ func NewErrColumnsNotEqual(v1, v2 int) error {
 	return fmt.Errorf("the number of columns (%d) is %w to the number of schema columns (%d)", v1, ErrNotEqual, v2)
 }
 
-// NewErrPreparedQueryNotExist returns a new prepared query not exist error.
-func NewErrPreparedQueryNotExist(name string) error {
-	return fmt.Errorf("prepared query (%v) is %w", name, ErrNotExist)
+// NewErrPreparedStatementNotExist returns a new prepared statement not exist error.
+func NewErrPreparedStatementNotExist(name string) error {
+	return fmt.Errorf("prepared statement (%v) is %w", name, ErrNotExist)
 }
