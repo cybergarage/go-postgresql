@@ -38,7 +38,7 @@ func NewBaseExecutor() *BaseExecutor {
 		BulkExecutor:          NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 	}
-	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor.QueryExecutor)
+	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
 	executor.ExtendedQueryExecutor = NewBaseExtendedQueryExecutorWith(
 		executor.TransactionExecutor,
 		executor.QueryExecutor,
