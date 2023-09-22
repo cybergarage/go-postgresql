@@ -18,6 +18,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -92,4 +93,33 @@ func (conn *Conn) SetSpanContext(ctx tracer.Context) {
 // SpanContext returns the tracer span context of the connection.
 func (conn *Conn) SpanContext() tracer.Context {
 	return conn.Context
+}
+
+// ResponseMessage sends a response message.
+func (conn *Conn) ResponseMessage(resMsg message.Response) error {
+	if resMsg == nil {
+		return nil
+	}
+	resBytes, err := resMsg.Bytes()
+	if err != nil {
+		return err
+	}
+	if _, err := conn.conn.Write(resBytes); err != nil {
+		return err
+	}
+	return nil
+}
+
+// ResponseMessages sends response messages.
+func (conn *Conn) ResponseMessages(resMsgs message.Responses) error {
+	if resMsgs == nil {
+		return nil
+	}
+	for _, resMsg := range resMsgs {
+		err := conn.ResponseMessage(resMsg)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
