@@ -22,13 +22,13 @@ import (
 
 // BaseSugarExecutor represents a base sugar query executor.
 type BaseSugarExecutor struct {
-	*BaseExecutor
+	QueryExecutor
 }
 
 // NewBaseSugarExecutor returns a base sugar query executor.
-func NewBaseSugarExecutorWith(executor *BaseExecutor) *BaseSugarExecutor {
+func NewBaseSugarExecutorWith(executor QueryExecutor) *BaseSugarExecutor {
 	return &BaseSugarExecutor{
-		BaseExecutor: executor,
+		QueryExecutor: executor,
 	}
 }
 
@@ -41,7 +41,7 @@ func (executor *BaseSugarExecutor) Vacuum(conn *Conn, stmt *query.Vacuum) (messa
 func (executor *BaseSugarExecutor) Truncate(conn *Conn, stmt *query.Truncate) (message.Responses, error) {
 	for _, table := range stmt.Tables() {
 		stmt := sql.NewDeleteWith(table)
-		_, err := executor.BaseExecutor.Delete(conn, stmt)
+		_, err := executor.QueryExecutor.Delete(conn, stmt)
 		if err != nil {
 			return nil, err
 		}
