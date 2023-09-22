@@ -31,8 +31,8 @@ func NewPreparedStatementMap() PreparedStatementMap {
 }
 
 // PreparedStatement returns a prepared statement.
-func (queries PreparedStatementMap) PreparedStatement(name string) (*PreparedStatement, error) {
-	q, oK := queries[name]
+func (stmtMap PreparedStatementMap) PreparedStatement(name string) (*PreparedStatement, error) {
+	q, oK := stmtMap[name]
 	if !oK {
 		return nil, query.NewErrPreparedStatementNotExist(name)
 	}
@@ -40,7 +40,33 @@ func (queries PreparedStatementMap) PreparedStatement(name string) (*PreparedSta
 }
 
 // SetPreparedStatement sets a prepared statement.
-func (queries PreparedStatementMap) SetPreparedStatement(query *PreparedStatement) error {
-	queries[query.Name] = query
+func (stmtMap PreparedStatementMap) SetPreparedStatement(query *PreparedStatement) error {
+	stmtMap[query.Name] = query
+	return nil
+}
+
+// PreparedPortal represents a prepared query statement.
+type PreparedPortal = message.Query
+
+// PreparedPortalMap represents a prepared query statement map.
+type PreparedPortalMap map[string]PreparedPortal
+
+// NewPreparedPortalMap returns a new prepared query statement map.
+func NewPreparedPortalMap() PreparedPortalMap {
+	return make(PreparedPortalMap)
+}
+
+// PreparedPortal returns a prepared query statement.
+func (portalMap PreparedPortalMap) PreparedPortal(name string) (*PreparedPortal, error) {
+	q, oK := portalMap[name]
+	if !oK {
+		return nil, query.NewErrPreparedPortalNotExist(name)
+	}
+	return &q, nil
+}
+
+// SetPreparedPortal sets a prepared query statement.
+func (portalMap PreparedPortalMap) SetPreparedPortal(name string, query *PreparedPortal) error {
+	portalMap[name] = *query
 	return nil
 }
