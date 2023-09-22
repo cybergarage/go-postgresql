@@ -23,8 +23,8 @@ type BaseExtendedQueryExecutor struct {
 	QueryExecutor
 }
 
-// NewBaseExtendedQueryExecutor returns a base extended query message executor.
-func NewBaseExtendedQueryExecutor(executor QueryExecutor) *BaseExtendedQueryExecutor {
+// NewBaseExtendedQueryExecutorWith returns a base extended query message executor.
+func NewBaseExtendedQueryExecutorWith(executor QueryExecutor) *BaseExtendedQueryExecutor {
 	return &BaseExtendedQueryExecutor{
 		QueryExecutor: executor,
 	}
