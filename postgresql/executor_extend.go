@@ -15,7 +15,9 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
@@ -75,26 +77,90 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 }
 
 // Execute handles a execute message.
-func (executor *BaseExtendedQueryExecutor) Execute(*Conn, *message.Execute) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Execute(conn *Conn, msg *message.Execute) (message.Responses, error) {
 	return nil, nil
 }
 
 // Close handles a close message.
-func (executor *BaseExtendedQueryExecutor) Close(*Conn, *message.Close) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Close(conn *Conn, msg *message.Close) (message.Responses, error) {
 	return nil, nil
 }
 
 // Sync handles a sync message.
-func (executor *BaseExtendedQueryExecutor) Sync(*Conn, *message.Sync) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Sync(conn *Conn, msg *message.Sync) (message.Responses, error) {
 	return nil, nil
 }
 
 // Flush handles a flush message.
-func (executor *BaseExtendedQueryExecutor) Flush(*Conn, *message.Flush) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Flush(conn *Conn, msg *message.Flush) (message.Responses, error) {
 	return nil, nil
 }
 
 // Query handles a query message.
-func (executor *BaseExtendedQueryExecutor) Query(*Conn, *message.Query) (message.Responses, error) {
-	return nil, nil
+func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query) (message.Responses, error) {
+	q := msg.Query
+	log.Debugf("%s %s", conn.conn.RemoteAddr(), q)
+
+	parser := query.NewParser()
+	stmts, err := parser.ParseString(q)
+	if err != nil {
+		res, err := executor.QueryExecutor.ParserError(conn, q, err)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
+	for _, stmt := range stmts {
+		var err error
+		err = stmt.Bind(msg.BindParams)
+		if err != nil {
+			return nil, err
+		}
+
+		var res message.Responses
+		switch stmt := stmt.Statement.(type) {
+		case *query.Begin:
+			res, err = executor.QueryExecutor.Begin(conn, stmt)
+		case *query.Commit:
+			res, err = executor.QueryExecutor.Commit(conn, stmt)
+		case *query.Rollback:
+			res, err = executor.QueryExecutor.Rollback(conn, stmt)
+		case *query.CreateDatabase:
+			res, err = executor.QueryExecutor.CreateDatabase(conn, stmt)
+		case *query.CreateTable:
+			res, err = executor.QueryExecutor.CreateTable(conn, stmt)
+		case *query.AlterDatabase:
+			res, err = executor.QueryExecutor.AlterDatabase(conn, stmt)
+		case *query.AlterTable:
+			res, err = executor.QueryExecutor.AlterTable(conn, stmt)
+		case *query.DropDatabase:
+			res, err = executor.QueryExecutor.DropDatabase(conn, stmt)
+		case *query.DropTable:
+			res, err = executor.QueryExecutor.DropTable(conn, stmt)
+		case *query.Insert:
+			res, err = executor.QueryExecutor.Insert(conn, stmt)
+		case *query.Select:
+			res, err = executor.QueryExecutor.Select(conn, stmt)
+		case *query.Update:
+			res, err = executor.QueryExecutor.Update(conn, stmt)
+		case *query.Delete:
+			res, err = executor.QueryExecutor.Delete(conn, stmt)
+		case *query.Truncate:
+			res, err = executor.QueryExecutor.Truncate(conn, stmt)
+		case *query.Vacuum:
+			res, err = executor.QueryExecutor.Vacuum(conn, stmt)
+		case *query.Copy:
+			res, err = handleCopyQuery(conn, reader, stmt)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		err = conn.ResponseMessages(res)
+		if err != nil {
+			return err
+		}
+	}
 }
