@@ -31,6 +31,7 @@ type Conn struct {
 	tracer.Context
 	conn net.Conn
 	PreparedStatementMap
+	PreparedPortalMap
 }
 
 // NewConnWith returns a connection with a raw connection.
@@ -41,6 +42,7 @@ func NewConnWith(c net.Conn, opts ...ConnOption) *Conn {
 		Context:              nil,
 		conn:                 c,
 		PreparedStatementMap: NewPreparedStatementMap(),
+		PreparedPortalMap:    NewPreparedPortalMap(),
 	}
 	for _, opt := range opts {
 		opt(conn)
