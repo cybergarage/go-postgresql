@@ -56,7 +56,12 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (
 		return nil, err
 	}
 
-	_, err = message.NewQueryWith(preparedQuery, msg)
+	q, err := message.NewQueryWith(preparedQuery, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	err = conn.SetPreparedPortal(msg.PortalName, q)
 	if err != nil {
 		return nil, err
 	}
