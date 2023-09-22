@@ -266,9 +266,24 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Execute(conn, reqMsg)
 			}
+		case message.CloseMessage:
+			var reqMsg *message.Close
+			reqMsg, err := message.NewCloseWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Close(conn, reqMsg)
+			}
 		case message.SyncMessage:
-			// Ignore the Sync message.
-			_, reqErr = message.NewSyncWithReader(conn.MessageReader)
+			var reqMsg *message.Sync
+			reqMsg, err := message.NewSyncWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Sync(conn, reqMsg)
+			}
+		case message.FlushMessage:
+			var reqMsg *message.Flush
+			reqMsg, err := message.NewFlushWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Flush(conn, reqMsg)
+			}
 		case message.TerminateMessage:
 			_, reqErr = message.NewTerminateWithReader(conn.MessageReader)
 			if reqErr == nil {
@@ -282,11 +297,9 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			}
 		}
 
-		if 0 < len(resMsgs) {
-			err = conn.ResponseMessages(resMsgs)
-			if err != nil {
-				return err
-			}
+		err = conn.ResponseMessages(resMsgs)
+		if err != nil {
+			return err
 		}
 
 		if reqErr != nil {
