@@ -220,18 +220,17 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 	conn.SetDatabase(dbname)
 
 	for {
-		loopSpan := server.Tracer.StartSpan(PackageName)
-		loopSpan.StartSpan("parse")
-		conn.SetSpanContext(loopSpan)
-
 		var reqErr error
 		var reqType message.Type
 		reqType, reqErr = conn.PeekType()
 		if reqErr != nil {
 			conn.ResponseError(reqErr)
-			loopSpan.FinishSpan()
 			break
 		}
+
+		loopSpan := server.Tracer.StartSpan(PackageName)
+		loopSpan.StartSpan(reqType.String())
+		conn.SetSpanContext(loopSpan)
 
 		var resMsgs message.Responses
 
