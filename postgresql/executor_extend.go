@@ -37,33 +37,61 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse)
 }
 
 // Bind handles a bind message.
-func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, *message.Query, error) {
+func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, error) {
 	preparedQuery, err := conn.PreparedStatement(msg.StatementName)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	q, err := message.NewQueryWith(preparedQuery, msg)
+	_, err = message.NewQueryWith(preparedQuery, msg)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return message.NewResponsesWith(message.NewBindComplete()), q, nil
+	return message.NewResponsesWith(message.NewBindComplete()), nil
 }
 
 // Describe handles a describe message.
 func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
-	if msg.IsPortal() {
-		return message.NewResponsesWith(
-			message.NewNoData()), nil
-	}
-
-	_, err := conn.PreparedStatement(msg.Name)
-	if err != nil {
-		return nil, err
+	switch msg.Type {
+	case message.PreparedStatement:
+		_, err := conn.PreparedStatement(msg.Name)
+		if err != nil {
+			return nil, err
+		}
+	case message.PreparedPortal:
+		_, err := conn.PreparedPortal(msg.Name)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return message.NewResponsesWith(
 		message.NewParameterDescription(),
 		message.NewNoData()), nil
+}
+
+// Execute handles a execute message.
+func (executor *BaseExtendedQueryExecutor) Execute(*Conn, *message.Execute) (message.Responses, error) {
+	return nil, nil
+}
+
+// Close handles a close message.
+func (executor *BaseExtendedQueryExecutor) Close(*Conn, *message.Close) (message.Responses, error) {
+	return nil, nil
+}
+
+// Sync handles a sync message.
+func (executor *BaseExtendedQueryExecutor) Sync(*Conn, *message.Sync) (message.Responses, error) {
+	return nil, nil
+}
+
+// Flush handles a flush message.
+func (executor *BaseExtendedQueryExecutor) Flush(*Conn, *message.Flush) (message.Responses, error) {
+	return nil, nil
+}
+
+// Query handles a query message.
+func (executor *BaseExtendedQueryExecutor) Query(*Conn, *message.Query) (message.Responses, error) {
+	return nil, nil
 }

@@ -251,23 +251,23 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleBindMessage := func(conn *Conn, reader *message.MessageReader) (*message.Query, error) {
+	handleBindMessage := func(conn *Conn, reader *message.MessageReader) error {
 		bindMsg, err := message.NewBindWithReader(reader)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		res, q, err := server.Executor.Bind(conn, bindMsg)
+		res, err := server.Executor.Bind(conn, bindMsg)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		err = responseMessages(res)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		return q, nil
+		return nil
 	}
 
 	handleDescMessage := func(conn *Conn, reader *message.MessageReader) error {
@@ -277,6 +277,25 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		}
 
 		res, err := server.Executor.Describe(conn, descMsg)
+		if err != nil {
+			return err
+		}
+
+		err = responseMessages(res)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	handleExecuteMessage := func(conn *Conn, reader *message.MessageReader) error {
+		execMsg, err := message.NewExecuteWithReader(reader)
+		if err != nil {
+			return err
+		}
+
+		res, err := server.Executor.Execute(conn, execMsg)
 		if err != nil {
 			return err
 		}
@@ -453,7 +472,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			reqErr = handleParseMessage(exConn, msgReader)
 		case message.BindMessage:
 			var queryMsg *message.Query
-			queryMsg, reqErr = handleBindMessage(exConn, msgReader)
+			reqErr = handleBindMessage(exConn, msgReader)
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, msgReader, queryMsg)
 			}
@@ -465,6 +484,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			if reqErr == nil {
 				reqErr = executeQuery(exConn, msgReader, queryMsg)
 			}
+		case message.ExecuteMessage:
+			reqErr = handleExecuteMessage(exConn, msgReader)
 		case message.SyncMessage:
 			// Ignore the Sync message.
 			_, reqErr = message.NewTerminateWithReader(msgReader)

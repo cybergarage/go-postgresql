@@ -85,12 +85,22 @@ type TransactionExecutor interface {
 
 // ExtendedQueryExecutor defines a executor interface for extended query operations.
 type ExtendedQueryExecutor interface {
+	// Query handles a query message.
+	Query(*Conn, *message.Query) (message.Responses, error)
 	// Prepare handles a parse message.
 	Parse(*Conn, *message.Parse) (message.Responses, error)
 	// Bind handles a bind message.
-	Bind(*Conn, *message.Bind) (message.Responses, *message.Query, error)
+	Bind(*Conn, *message.Bind) (message.Responses, error)
 	// Describe handles a describe message.
 	Describe(*Conn, *message.Describe) (message.Responses, error)
+	// Execute handles a execute message.
+	Execute(*Conn, *message.Execute) (message.Responses, error)
+	// Close handles a close message.
+	Close(*Conn, *message.Close) (message.Responses, error)
+	// Sync handles a sync message.
+	Sync(*Conn, *message.Sync) (message.Responses, error)
+	// Flush handles a flush message.
+	Flush(*Conn, *message.Flush) (message.Responses, error)
 }
 
 // BulkExecutor defines a executor interface for bulk operations.
