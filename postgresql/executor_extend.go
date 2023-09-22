@@ -93,7 +93,19 @@ func (executor *BaseExtendedQueryExecutor) Execute(conn *Conn, msg *message.Exec
 
 // Close handles a close message.
 func (executor *BaseExtendedQueryExecutor) Close(conn *Conn, msg *message.Close) (message.Responses, error) {
-	return nil, nil
+	// PostgreSQL: Documentation: 16: 55.2. Message Flow
+	// https://www.postgresql.org/docs/16/protocol-flow.html
+	// The Close message closes an existing prepared statement or portal and releases resources.
+	// It is not an error to issue Close against a nonexistent statement or portal name.
+
+	switch msg.Type {
+	case message.PreparedStatement:
+		_ = conn.RemovePreparedStatement(msg.Name)
+	case message.PreparedPortal:
+		_ = conn.RemovePreparedPortal(msg.Name)
+	}
+
+	return message.NewResponsesWith(message.NewCloseComplete()), nil
 }
 
 // Sync handles a sync message.
