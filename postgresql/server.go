@@ -15,7 +15,6 @@
 package postgresql
 
 import (
-	"bufio"
 	"net"
 	"strconv"
 
@@ -133,10 +132,10 @@ func (server *Server) serve() error {
 }
 
 // receive handles client messages.
-func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
-	defer conn.Close()
+func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintidx
+	defer netConn.Close()
 
-	log.Debugf("%s/%s (%s) accepted", PackageName, Version, conn.RemoteAddr().String())
+	log.Debugf("%s/%s (%s) accepted", PackageName, Version, netConn.RemoteAddr().String())
 
 	responseMessage := func(resMsg message.Response) error {
 		if resMsg == nil {
@@ -146,7 +145,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		if err != nil {
 			return err
 		}
-		if _, err := conn.Write(resBytes); err != nil {
+		if _, err := netConn.Write(resBytes); err != nil {
 			return err
 		}
 		return nil
@@ -176,7 +175,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			log.Error(err)
 			return
 		}
-		if _, err := conn.Write(errBytes); err != nil {
+		if _, err := netConn.Write(errBytes); err != nil {
 			log.Error(err)
 		}
 	}
@@ -202,7 +201,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		if err != nil {
 			return err
 		}
-		err = responseMessage(res)
+		err = exConn.ResponseMessage(res)
 		if err != nil {
 			return err
 		}
@@ -211,7 +210,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		if err != nil {
 			return err
 		}
-		err = responseMessages(reses)
+		err = exConn.ResponseMessages(reses)
 		if err != nil {
 			return err
 		}
@@ -220,7 +219,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		if err != nil {
 			return err
 		}
-		err = responseMessage(res)
+		err = exConn.ResponseMessage(res)
 		if err != nil {
 			return err
 		}
@@ -232,8 +231,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleParseMessage := func(conn *Conn, reader *message.MessageReader) error {
-		parseMsg, err := message.NewParseWithReader(reader)
+	handleParseMessage := func(conn *Conn) error {
+		parseMsg, err := message.NewParseWithReader(conn.MessageReader)
 		if err != nil {
 			return err
 		}
@@ -251,8 +250,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleBindMessage := func(conn *Conn, reader *message.MessageReader) error {
-		bindMsg, err := message.NewBindWithReader(reader)
+	handleBindMessage := func(conn *Conn) error {
+		bindMsg, err := message.NewBindWithReader(conn.MessageReader)
 		if err != nil {
 			return err
 		}
@@ -270,8 +269,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleDescMessage := func(conn *Conn, reader *message.MessageReader) error {
-		descMsg, err := message.NewDescribeWithReader(reader)
+	handleDescMessage := func(conn *Conn) error {
+		descMsg, err := message.NewDescribeWithReader(conn.MessageReader)
 		if err != nil {
 			return err
 		}
@@ -289,8 +288,8 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleExecuteMessage := func(conn *Conn, reader *message.MessageReader) error {
-		execMsg, err := message.NewExecuteWithReader(reader)
+	handleExecuteMessage := func(conn *Conn) error {
+		execMsg, err := message.NewExecuteWithReader(conn.MessageReader)
 		if err != nil {
 			return err
 		}
@@ -308,7 +307,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	handleCopyQuery := func(conn *Conn, reader *message.MessageReader, stmt *query.Copy) (message.Responses, error) {
+	handleCopyQuery := func(conn *Conn, stmt *query.Copy) (message.Responses, error) {
 		res, err := server.Executor.Copy(conn, stmt)
 		if err != nil || res.HasErrorResponse() {
 			return res, err
@@ -318,16 +317,16 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			return nil, err
 		}
 
-		ok, err := reader.IsPeekType(message.CopyDataMessage)
+		ok, err := conn.IsPeekType(message.CopyDataMessage)
 		if !ok || err != nil {
 			return nil, err
 		}
 
-		return server.Executor.CopyData(conn, stmt, NewCopyStreamWithReader(reader))
+		return server.Executor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader))
 	}
 
 	// executeQuery executes a query and returns the result.
-	executeQuery := func(conn *Conn, reader *message.MessageReader, queryMsg *message.Query) error {
+	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
 		q := queryMsg.Query
 		log.Debugf("%s %s", conn.conn.RemoteAddr(), q)
 
@@ -381,7 +380,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 			case *query.Vacuum:
 				res, err = server.Executor.Vacuum(conn, stmt)
 			case *query.Copy:
-				res, err = handleCopyQuery(conn, reader, stmt)
+				res, err = handleCopyQuery(conn, stmt)
 			}
 
 			if err != nil {
@@ -408,18 +407,18 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		return nil
 	}
 
-	msgReader := message.NewMessageReaderWith(bufio.NewReader(conn))
+	conn := NewConnWith(netConn)
 
 	// Checks the SSLRequest message.
 
-	startupMsgLength, err := msgReader.PeekInt32()
+	startupMsgLength, err := conn.PeekInt32()
 	if err != nil {
 		responseError(err)
 		return err
 	}
 
 	if startupMsgLength == 8 {
-		_, err := message.NewSSLRequestWithReader(msgReader)
+		_, err := message.NewSSLRequestWithReader(conn.MessageReader)
 		if err != nil {
 			responseError(err)
 			return err
@@ -432,13 +431,13 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 	// Handle a Start-up message.
 
-	startupMsg, err := message.NewStartupWithReader(msgReader)
+	startupMsg, err := message.NewStartupWithReader(conn.MessageReader)
 	if err != nil {
 		responseError(err)
 		return err
 	}
 
-	err = handleStartupMessage(conn, startupMsg)
+	err = handleStartupMessage(netConn, startupMsg)
 	if err != nil {
 		responseError(err)
 		return err
@@ -451,16 +450,16 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		dbname = db
 	}
 
-	exConn := NewConnWith(conn, WithConnDatabase(dbname))
+	conn.SetDatabase(dbname)
 
 	for {
 		loopSpan := server.Tracer.StartSpan(PackageName)
 		loopSpan.StartSpan("parse")
-		exConn.SetSpanContext(loopSpan)
+		conn.SetSpanContext(loopSpan)
 
 		var reqErr error
 		var reqType message.Type
-		reqType, reqErr = msgReader.PeekType()
+		reqType, reqErr = conn.PeekType()
 		if reqErr != nil {
 			responseError(reqErr)
 			loopSpan.FinishSpan()
@@ -469,36 +468,33 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
-			reqErr = handleParseMessage(exConn, msgReader)
+			reqErr = handleParseMessage(conn)
 		case message.BindMessage:
 			var queryMsg *message.Query
-			reqErr = handleBindMessage(exConn, msgReader)
+			reqErr = handleBindMessage(conn)
 			if reqErr == nil {
-				reqErr = executeQuery(exConn, msgReader, queryMsg)
+				reqErr = executeQuery(conn, queryMsg)
 			}
 		case message.DescribeMessage:
-			reqErr = handleDescMessage(exConn, msgReader)
+			reqErr = handleDescMessage(conn)
 		case message.QueryMessage:
 			var queryMsg *message.Query
-			queryMsg, reqErr = message.NewQueryWithReader(msgReader)
+			queryMsg, reqErr = message.NewQueryWithReader(conn.MessageReader)
 			if reqErr == nil {
-				reqErr = executeQuery(exConn, msgReader, queryMsg)
+				reqErr = executeQuery(conn, queryMsg)
 			}
 		case message.ExecuteMessage:
-			reqErr = handleExecuteMessage(exConn, msgReader)
-			if reqErr == nil {
-				reqErr = executeQuery(exConn, msgReader, queryMsg)
-			}
+			reqErr = handleExecuteMessage(conn)
 		case message.SyncMessage:
 			// Ignore the Sync message.
-			_, reqErr = message.NewTerminateWithReader(msgReader)
+			_, reqErr = message.NewTerminateWithReader(conn.MessageReader)
 		case message.TerminateMessage:
-			_, reqErr := message.NewSyncWithReader(msgReader)
+			_, reqErr := message.NewSyncWithReader(conn.MessageReader)
 			if reqErr == nil {
 				return nil
 			}
 		default:
-			reqErr = skipMessage(msgReader)
+			reqErr = skipMessage(conn.MessageReader)
 			if reqErr == nil {
 				reqErr = message.NewErrMessageNotSuppoted(reqType)
 				log.Warnf(reqErr.Error())
@@ -511,7 +507,7 @@ func (server *Server) receive(conn net.Conn) error { //nolint:gocyclo,maintidx
 		}
 
 		// Return ReadyForQuery (B) message.
-		err := readyForMessage(exConn, message.TransactionIdle)
+		err := readyForMessage(conn, message.TransactionIdle)
 
 		loopSpan.FinishSpan()
 
