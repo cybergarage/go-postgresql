@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"bufio"
 	"net"
 	"time"
 
@@ -27,21 +28,23 @@ type ConnOption = func(*Conn)
 
 // Conn represents a connection of PostgreSQL binary protocol.
 type Conn struct {
+	conn net.Conn
+	*message.MessageReader
 	db string
 	ts time.Time
 	tracer.Context
-	conn net.Conn
 	PreparedStatementMap
 	PreparedPortalMap
 }
 
 // NewConnWith returns a connection with a raw connection.
-func NewConnWith(c net.Conn, opts ...ConnOption) *Conn {
+func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
+		conn:                 netConn,
+		MessageReader:        message.NewMessageReaderWith(bufio.NewReader(netConn)),
 		db:                   "",
 		ts:                   time.Now(),
 		Context:              nil,
-		conn:                 c,
 		PreparedStatementMap: NewPreparedStatementMap(),
 		PreparedPortalMap:    NewPreparedPortalMap(),
 	}
