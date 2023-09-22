@@ -115,7 +115,7 @@ func (conn *Conn) ResponseMessage(resMsg message.Response) error {
 
 // ResponseMessages sends response messages.
 func (conn *Conn) ResponseMessages(resMsgs message.Responses) error {
-	if resMsgs == nil {
+	if len(resMsgs) == 0 {
 		return nil
 	}
 	for _, resMsg := range resMsgs {
