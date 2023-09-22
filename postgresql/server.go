@@ -164,22 +164,6 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return nil
 	}
 
-	responseError := func(err error) {
-		errMsg, err := message.NewErrorResponseWith(err)
-		if err != nil {
-			log.Error(err)
-			return
-		}
-		errBytes, err := errMsg.Bytes()
-		if err != nil {
-			log.Error(err)
-			return
-		}
-		if _, err := netConn.Write(errBytes); err != nil {
-			log.Error(err)
-		}
-	}
-
 	readyForMessage := func(exConn *Conn, status message.TransactionStatus) error {
 		readyMsg, err := message.NewReadyForQueryWith(status)
 		if err != nil {
@@ -242,7 +226,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 
-		err = responseMessages(res)
+		err = conn.ResponseMessages(res)
 		if err != nil {
 			return err
 		}
@@ -261,7 +245,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 
-		err = responseMessages(res)
+		err = conn.ResponseMessages(res)
 		if err != nil {
 			return err
 		}
@@ -413,14 +397,14 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	startupMsgLength, err := conn.PeekInt32()
 	if err != nil {
-		responseError(err)
+		conn.ResponseError(err)
 		return err
 	}
 
 	if startupMsgLength == 8 {
 		_, err := message.NewSSLRequestWithReader(conn.MessageReader)
 		if err != nil {
-			responseError(err)
+			conn.ResponseError(err)
 			return err
 		}
 		err = responseMessage(message.NewSSLResponseWith(message.SSLDisabled))
@@ -433,13 +417,13 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	startupMsg, err := message.NewStartupWithReader(conn.MessageReader)
 	if err != nil {
-		responseError(err)
+		conn.ResponseError(err)
 		return err
 	}
 
 	err = handleStartupMessage(netConn, startupMsg)
 	if err != nil {
-		responseError(err)
+		conn.ResponseError(err)
 		return err
 	}
 
@@ -461,7 +445,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		var reqType message.Type
 		reqType, reqErr = conn.PeekType()
 		if reqErr != nil {
-			responseError(reqErr)
+			conn.ResponseError(reqErr)
 			loopSpan.FinishSpan()
 			break
 		}
@@ -502,7 +486,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		}
 
 		if reqErr != nil {
-			responseError(reqErr)
+			conn.ResponseError(reqErr)
 			log.Error(reqErr)
 		}
 
