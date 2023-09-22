@@ -24,15 +24,17 @@ import (
 type BaseExtendedQueryExecutor struct {
 	TransactionExecutor
 	QueryExecutor
+	DMOExtraExecutor
 	BulkExecutor
 	ErrorHandler
 }
 
 // NewBaseExtendedQueryExecutorWith returns a base extended query message executor.
-func NewBaseExtendedQueryExecutorWith(te TransactionExecutor, qe QueryExecutor, be BulkExecutor, eh ErrorHandler) *BaseExtendedQueryExecutor {
+func NewBaseExtendedQueryExecutorWith(te TransactionExecutor, qe QueryExecutor, de DMOExtraExecutor, be BulkExecutor, eh ErrorHandler) *BaseExtendedQueryExecutor {
 	return &BaseExtendedQueryExecutor{
 		TransactionExecutor: te,
 		QueryExecutor:       qe,
+		DMOExtraExecutor:    de,
 		BulkExecutor:        be,
 		ErrorHandler:        eh,
 	}
