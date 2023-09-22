@@ -339,18 +339,6 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return nil
 	}
 
-	skipMessage := func(reader *message.MessageReader) error {
-		msg, err := message.NewMessageWithReader(reader)
-		if err != nil {
-			return err
-		}
-		_, err = msg.ReadMessageData()
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
 	conn := NewConnWith(netConn)
 
 	// Checks the SSLRequest message.
@@ -438,7 +426,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 				return nil
 			}
 		default:
-			reqErr = skipMessage(conn.MessageReader)
+			reqErr = conn.SkipMessage()
 			if reqErr == nil {
 				reqErr = message.NewErrMessageNotSuppoted(reqType)
 				log.Warnf(reqErr.Error())
