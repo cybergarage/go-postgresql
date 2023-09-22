@@ -22,21 +22,13 @@ import (
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
 type BaseExtendedQueryExecutor struct {
-	TransactionExecutor
-	QueryExecutor
-	DMOExtraExecutor
-	BulkExecutor
-	ErrorHandler
+	*BaseExecutor
 }
 
 // NewBaseExtendedQueryExecutorWith returns a base extended query message executor.
-func NewBaseExtendedQueryExecutorWith(te TransactionExecutor, qe QueryExecutor, de DMOExtraExecutor, be BulkExecutor, eh ErrorHandler) *BaseExtendedQueryExecutor {
+func NewBaseExtendedQueryExecutorWith(executor *BaseExecutor) *BaseExtendedQueryExecutor {
 	return &BaseExtendedQueryExecutor{
-		TransactionExecutor: te,
-		QueryExecutor:       qe,
-		DMOExtraExecutor:    de,
-		BulkExecutor:        be,
-		ErrorHandler:        eh,
+		BaseExecutor: executor,
 	}
 }
 
@@ -178,9 +170,9 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 		case *query.Delete:
 			res, err = executor.QueryExecutor.Delete(conn, stmt)
 		case *query.Truncate:
-			res, err = executor.DMOExtraExecutor.Truncate(conn, stmt)
+			res, err = executor.QueryExtraExecutor.Truncate(conn, stmt)
 		case *query.Vacuum:
-			res, err = executor.DMOExtraExecutor.Vacuum(conn, stmt)
+			res, err = executor.QueryExtraExecutor.Vacuum(conn, stmt)
 		case *query.Copy:
 			res, err = handleCopyQuery(conn, stmt)
 		}
