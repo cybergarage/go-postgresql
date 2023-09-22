@@ -103,3 +103,8 @@ func NewErrColumnsNotEqual(v1, v2 int) error {
 func NewErrPreparedStatementNotExist(name string) error {
 	return fmt.Errorf("prepared statement (%v) is %w", name, ErrNotExist)
 }
+
+// NewErrPreparedPortalNotExist returns a new prepared portal not exist error.
+func NewErrPreparedPortalNotExist(name string) error {
+	return fmt.Errorf("prepared portal (%v) is %w", name, ErrNotExist)
+}
