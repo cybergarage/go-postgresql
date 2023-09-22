@@ -20,7 +20,6 @@ import (
 
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -175,63 +174,6 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return nil
 	}
 
-	handleParseMessage := func(conn *Conn) error {
-		parseMsg, err := message.NewParseWithReader(conn.MessageReader)
-		if err != nil {
-			return err
-		}
-
-		res, err := server.Executor.Parse(conn, parseMsg)
-		if err != nil {
-			return err
-		}
-
-		err = conn.ResponseMessages(res)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}
-
-	handleBindMessage := func(conn *Conn) error {
-		bindMsg, err := message.NewBindWithReader(conn.MessageReader)
-		if err != nil {
-			return err
-		}
-
-		res, err := server.Executor.Bind(conn, bindMsg)
-		if err != nil {
-			return err
-		}
-
-		err = conn.ResponseMessages(res)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}
-
-	handleDescMessage := func(conn *Conn) error {
-		descMsg, err := message.NewDescribeWithReader(conn.MessageReader)
-		if err != nil {
-			return err
-		}
-
-		res, err := server.Executor.Describe(conn, descMsg)
-		if err != nil {
-			return err
-		}
-
-		err = conn.ResponseMessages(res)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}
-
 	handleExecuteMessage := func(conn *Conn) error {
 		execMsg, err := message.NewExecuteWithReader(conn.MessageReader)
 		if err != nil {
@@ -248,94 +190,6 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 
-		return nil
-	}
-
-	handleCopyQuery := func(conn *Conn, stmt *query.Copy) (message.Responses, error) {
-		res, err := server.Executor.Copy(conn, stmt)
-		if err != nil || res.HasErrorResponse() {
-			return res, err
-		}
-		err = conn.ResponseMessages(res)
-		if err != nil {
-			return nil, err
-		}
-
-		ok, err := conn.IsPeekType(message.CopyDataMessage)
-		if !ok || err != nil {
-			return nil, err
-		}
-
-		return server.Executor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader))
-	}
-
-	// executeQuery executes a query and returns the result.
-	executeQuery := func(conn *Conn, queryMsg *message.Query) error {
-		q := queryMsg.Query
-		log.Debugf("%s %s", conn.conn.RemoteAddr(), q)
-
-		parser := query.NewParser()
-		stmts, err := parser.ParseString(q)
-		if err != nil {
-			res, err := server.Executor.ParserError(conn, q, err)
-			if err != nil {
-				return err
-			}
-			return conn.ResponseMessages(res)
-		}
-
-		for _, stmt := range stmts {
-			var err error
-			err = stmt.Bind(queryMsg.BindParams)
-			if err != nil {
-				return err
-			}
-
-			var res message.Responses
-			switch stmt := stmt.Statement.(type) {
-			case *query.Begin:
-				res, err = server.Executor.Begin(conn, stmt)
-			case *query.Commit:
-				res, err = server.Executor.Commit(conn, stmt)
-			case *query.Rollback:
-				res, err = server.Executor.Rollback(conn, stmt)
-			case *query.CreateDatabase:
-				res, err = server.Executor.CreateDatabase(conn, stmt)
-			case *query.CreateTable:
-				res, err = server.Executor.CreateTable(conn, stmt)
-			case *query.AlterDatabase:
-				res, err = server.Executor.AlterDatabase(conn, stmt)
-			case *query.AlterTable:
-				res, err = server.Executor.AlterTable(conn, stmt)
-			case *query.DropDatabase:
-				res, err = server.Executor.DropDatabase(conn, stmt)
-			case *query.DropTable:
-				res, err = server.Executor.DropTable(conn, stmt)
-			case *query.Insert:
-				res, err = server.Executor.Insert(conn, stmt)
-			case *query.Select:
-				res, err = server.Executor.Select(conn, stmt)
-			case *query.Update:
-				res, err = server.Executor.Update(conn, stmt)
-			case *query.Delete:
-				res, err = server.Executor.Delete(conn, stmt)
-			case *query.Truncate:
-				res, err = server.Executor.Truncate(conn, stmt)
-			case *query.Vacuum:
-				res, err = server.Executor.Vacuum(conn, stmt)
-			case *query.Copy:
-				res, err = handleCopyQuery(conn, stmt)
-			}
-
-			if err != nil {
-				return err
-			}
-
-			err = conn.ResponseMessages(res)
-			if err != nil {
-				return err
-			}
-		}
 		return nil
 	}
 
@@ -402,28 +256,36 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
-			reqErr = handleParseMessage(conn)
+			var reqMsg *message.Parse
+			reqMsg, reqErr = message.NewParseWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Parse(conn, reqMsg)
+			}
 		case message.BindMessage:
-			var queryMsg *message.Query
-			reqErr = handleBindMessage(conn)
-			if reqErr == nil {
-				reqErr = executeQuery(conn, queryMsg)
+			var reqMsg *message.Bind
+			reqMsg, reqErr = message.NewBindWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Bind(conn, reqMsg)
 			}
 		case message.DescribeMessage:
-			reqErr = handleDescMessage(conn)
+			var reqMsg *message.Describe
+			reqMsg, reqErr = message.NewDescribeWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Describe(conn, reqMsg)
+			}
 		case message.QueryMessage:
-			var queryMsg *message.Query
-			queryMsg, reqErr = message.NewQueryWithReader(conn.MessageReader)
+			var reqMsg *message.Query
+			reqMsg, reqErr = message.NewQueryWithReader(conn.MessageReader)
 			if reqErr == nil {
-				reqErr = executeQuery(conn, queryMsg)
+				resMsgs, reqErr = server.Executor.Query(conn, reqMsg)
 			}
 		case message.ExecuteMessage:
 			reqErr = handleExecuteMessage(conn)
 		case message.SyncMessage:
 			// Ignore the Sync message.
-			_, reqErr = message.NewTerminateWithReader(conn.MessageReader)
+			_, reqErr = message.NewSyncWithReader(conn.MessageReader)
 		case message.TerminateMessage:
-			_, reqErr := message.NewSyncWithReader(conn.MessageReader)
+			_, reqErr = message.NewTerminateWithReader(conn.MessageReader)
 			if reqErr == nil {
 				return nil
 			}
