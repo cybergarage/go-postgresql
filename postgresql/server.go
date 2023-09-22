@@ -137,78 +137,38 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	log.Debugf("%s/%s (%s) accepted", PackageName, Version, netConn.RemoteAddr().String())
 
-	responseMessage := func(resMsg message.Response) error {
-		if resMsg == nil {
-			return nil
-		}
-		resBytes, err := resMsg.Bytes()
-		if err != nil {
-			return err
-		}
-		if _, err := netConn.Write(resBytes); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	responseMessages := func(resMsgs message.Responses) error {
-		if resMsgs == nil {
-			return nil
-		}
-		for _, resMsg := range resMsgs {
-			err := responseMessage(resMsg)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-
-	readyForMessage := func(exConn *Conn, status message.TransactionStatus) error {
-		readyMsg, err := message.NewReadyForQueryWith(status)
-		if err != nil {
-			return err
-		}
-		err = responseMessage(readyMsg)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
-	handleStartupMessage := func(conn net.Conn, startupMsg *message.Startup) error {
-		exConn := NewConnWith(conn)
+	handleStartupMessage := func(conn *Conn, startupMsg *message.Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error message.
-		res, err := server.Executor.Authenticate(exConn, startupMsg)
+		res, err := server.Executor.Authenticate(conn, startupMsg)
 		if err != nil {
 			return err
 		}
-		err = exConn.ResponseMessage(res)
+		err = conn.ResponseMessage(res)
 		if err != nil {
 			return err
 		}
 		// Return ParameterStatus (S) message.
-		reses, err := server.Executor.ParameterStatuses(exConn)
+		reses, err := server.Executor.ParameterStatuses(conn)
 		if err != nil {
 			return err
 		}
-		err = exConn.ResponseMessages(reses)
+		err = conn.ResponseMessages(reses)
 		if err != nil {
 			return err
 		}
 		// Return BackendKeyData (K) message.
-		res, err = server.Executor.BackendKeyData(exConn)
+		res, err = server.Executor.BackendKeyData(conn)
 		if err != nil {
 			return err
 		}
-		err = exConn.ResponseMessage(res)
+		err = conn.ResponseMessage(res)
 		if err != nil {
 			return err
 		}
 		// Return ReadyForQuery (B) message.
-		err = readyForMessage(exConn, message.TransactionIdle)
+		err = conn.ReadyForMessage(message.TransactionIdle)
 		if err != nil {
 			return err
 		}
@@ -264,7 +224,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 
-		err = responseMessages(res)
+		err = conn.ResponseMessages(res)
 		if err != nil {
 			return err
 		}
@@ -283,7 +243,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 
-		err = responseMessages(res)
+		err = conn.ResponseMessages(res)
 		if err != nil {
 			return err
 		}
@@ -296,7 +256,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil || res.HasErrorResponse() {
 			return res, err
 		}
-		err = responseMessages(res)
+		err = conn.ResponseMessages(res)
 		if err != nil {
 			return nil, err
 		}
@@ -321,7 +281,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			if err != nil {
 				return err
 			}
-			return responseMessages(res)
+			return conn.ResponseMessages(res)
 		}
 
 		for _, stmt := range stmts {
@@ -371,7 +331,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 				return err
 			}
 
-			err = responseMessages(res)
+			err = conn.ResponseMessages(res)
 			if err != nil {
 				return err
 			}
@@ -407,7 +367,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			conn.ResponseError(err)
 			return err
 		}
-		err = responseMessage(message.NewSSLResponseWith(message.SSLDisabled))
+		err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLDisabled))
 		if err != nil {
 			return err
 		}
@@ -421,7 +381,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return err
 	}
 
-	err = handleStartupMessage(netConn, startupMsg)
+	err = handleStartupMessage(conn, startupMsg)
 	if err != nil {
 		conn.ResponseError(err)
 		return err
@@ -491,7 +451,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		}
 
 		// Return ReadyForQuery (B) message.
-		err := readyForMessage(conn, message.TransactionIdle)
+		err := conn.ReadyForMessage(message.TransactionIdle)
 
 		loopSpan.FinishSpan()
 
