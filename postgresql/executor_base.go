@@ -33,11 +33,12 @@ func NewBaseExecutor() *BaseExecutor {
 		StartupHandler:        NewBaseProtocolExecutor(),
 		QueryExecutor:         NewBaseQueryExecutor(),
 		QueryExtraExecutor:    nil,
-		ExtendedQueryExecutor: NewBaseExtendedQueryExecutor(),
+		ExtendedQueryExecutor: nil,
 		TransactionExecutor:   NewBaseTransactionExecutor(),
 		BulkExecutor:          NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 	}
+	executor.ExtendedQueryExecutor = NewBaseExtendedQueryExecutor(executor.QueryExecutor)
 	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
 	return executor
 }
