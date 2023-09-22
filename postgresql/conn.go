@@ -19,7 +19,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -129,20 +128,17 @@ func (conn *Conn) ResponseMessages(resMsgs message.Responses) error {
 }
 
 // ResponseError sends an error response.
-func (conn *Conn) ResponseError(err error) {
+func (conn *Conn) ResponseError(err error) error {
 	errMsg, err := message.NewErrorResponseWith(err)
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
 	errBytes, err := errMsg.Bytes()
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
-	if _, err := conn.conn.Write(errBytes); err != nil {
-		log.Error(err)
-	}
+	_, err = conn.conn.Write(errBytes)
+	return err
 }
 
 // SkipMessage skips a message.
