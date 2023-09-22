@@ -30,17 +30,17 @@ type Conn struct {
 	ts time.Time
 	tracer.Context
 	conn net.Conn
-	PreparedQueryMap
+	PreparedStatementMap
 }
 
 // NewConnWith returns a connection with a raw connection.
 func NewConnWith(c net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
-		db:               "",
-		ts:               time.Now(),
-		Context:          nil,
-		conn:             c,
-		PreparedQueryMap: NewPreparedQueryMap(),
+		db:                   "",
+		ts:                   time.Now(),
+		Context:              nil,
+		conn:                 c,
+		PreparedStatementMap: NewPreparedStatementMap(),
 	}
 	for _, opt := range opts {
 		opt(conn)
