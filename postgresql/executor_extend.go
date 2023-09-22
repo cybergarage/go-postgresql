@@ -38,7 +38,7 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse)
 
 // Bind handles a bind message.
 func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, *message.Query, error) {
-	preparedQuery, err := conn.PreparedStatement(msg.Name)
+	preparedQuery, err := conn.PreparedStatement(msg.StatementName)
 	if err != nil {
 		return nil, nil, err
 	}
