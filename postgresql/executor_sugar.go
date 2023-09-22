@@ -22,13 +22,13 @@ import (
 
 // BaseSugarExecutor represents a base sugar query executor.
 type BaseSugarExecutor struct {
-	QueryExecutor
+	*BaseExecutor
 }
 
 // NewBaseSugarExecutor returns a base sugar query executor.
-func NewBaseSugarExecutorWith(executor QueryExecutor) *BaseSugarExecutor {
+func NewBaseSugarExecutorWith(executor *BaseExecutor) *BaseSugarExecutor {
 	return &BaseSugarExecutor{
-		QueryExecutor: executor,
+		BaseExecutor: executor,
 	}
 }
 
