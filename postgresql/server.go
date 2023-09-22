@@ -174,25 +174,6 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return nil
 	}
 
-	handleExecuteMessage := func(conn *Conn) error {
-		execMsg, err := message.NewExecuteWithReader(conn.MessageReader)
-		if err != nil {
-			return err
-		}
-
-		res, err := server.Executor.Execute(conn, execMsg)
-		if err != nil {
-			return err
-		}
-
-		err = conn.ResponseMessages(res)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}
-
 	conn := NewConnWith(netConn)
 
 	// Checks the SSLRequest message.
@@ -280,7 +261,11 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 				resMsgs, reqErr = server.Executor.Query(conn, reqMsg)
 			}
 		case message.ExecuteMessage:
-			reqErr = handleExecuteMessage(conn)
+			var reqMsg *message.Execute
+			reqMsg, err := message.NewExecuteWithReader(conn.MessageReader)
+			if err == nil {
+				resMsgs, reqErr = server.Executor.Execute(conn, reqMsg)
+			}
 		case message.SyncMessage:
 			// Ignore the Sync message.
 			_, reqErr = message.NewSyncWithReader(conn.MessageReader)
