@@ -31,10 +31,10 @@ const (
 // Bind represents a bind message.
 type Bind struct {
 	*RequestMessage
-	Portal    string
-	Name      string
-	NumParams int16
-	Params    BindParams
+	PortalName    string
+	StatementName string
+	NumParams     int16
+	Params        BindParams
 }
 
 // BindParamType represents a bind parameter type.
@@ -70,8 +70,8 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 		return nil, err
 	}
 
-	// The name of the source prepared statement (an empty string selects the unnamed prepared statement).
-	name, err := reader.ReadString()
+	// The stmt of the source prepared statement (an empty string selects the unnamed prepared statement).
+	stmt, err := reader.ReadString()
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +150,8 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 
 	return &Bind{
 		RequestMessage: msg,
-		Portal:         portal,
-		Name:           name,
+		PortalName:     portal,
+		StatementName:  stmt,
 		NumParams:      num,
 		Params:         params,
 	}, nil
