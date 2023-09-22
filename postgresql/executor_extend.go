@@ -22,13 +22,19 @@ import (
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
 type BaseExtendedQueryExecutor struct {
+	TransactionExecutor
 	QueryExecutor
+	BulkExecutor
+	ErrorHandler
 }
 
 // NewBaseExtendedQueryExecutorWith returns a base extended query message executor.
-func NewBaseExtendedQueryExecutorWith(executor QueryExecutor) *BaseExtendedQueryExecutor {
+func NewBaseExtendedQueryExecutorWith(te TransactionExecutor, qe QueryExecutor, be BulkExecutor, eh ErrorHandler) *BaseExtendedQueryExecutor {
 	return &BaseExtendedQueryExecutor{
-		QueryExecutor: executor,
+		TransactionExecutor: te,
+		QueryExecutor:       qe,
+		BulkExecutor:        be,
+		ErrorHandler:        eh,
 	}
 }
 
@@ -121,11 +127,11 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 		var res message.Responses
 		switch stmt := stmt.Statement.(type) {
 		case *query.Begin:
-			res, err = executor.QueryExecutor.Begin(conn, stmt)
+			res, err = executor.TransactionExecutor.Begin(conn, stmt)
 		case *query.Commit:
-			res, err = executor.QueryExecutor.Commit(conn, stmt)
+			res, err = executor.TransactionExecutor.Commit(conn, stmt)
 		case *query.Rollback:
-			res, err = executor.QueryExecutor.Rollback(conn, stmt)
+			res, err = executor.TransactionExecutor.Rollback(conn, stmt)
 		case *query.CreateDatabase:
 			res, err = executor.QueryExecutor.CreateDatabase(conn, stmt)
 		case *query.CreateTable:

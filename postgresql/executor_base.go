@@ -38,8 +38,12 @@ func NewBaseExecutor() *BaseExecutor {
 		BulkExecutor:          NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 	}
-	executor.ExtendedQueryExecutor = NewBaseExtendedQueryExecutorWith(executor.QueryExecutor)
 	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
+	executor.ExtendedQueryExecutor = NewBaseExtendedQueryExecutorWith(
+		executor.TransactionExecutor,
+		executor.QueryExecutor,
+		executor.BulkExecutor,
+		executor.ErrorHandler)
 	return executor
 }
 
