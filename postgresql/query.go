@@ -80,3 +80,13 @@ func (portalMap PreparedPortalMap) SetPreparedPortal(name string, query *Prepare
 	portalMap[name] = *query
 	return nil
 }
+
+// RemovePreparedPortal removes a prepared query statement.
+func (portalMap PreparedPortalMap) RemovePreparedPortal(name string) error {
+	_, oK := portalMap[name]
+	if !oK {
+		return query.NewErrPreparedPortalNotExist(name)
+	}
+	delete(portalMap, name)
+	return nil
+}
