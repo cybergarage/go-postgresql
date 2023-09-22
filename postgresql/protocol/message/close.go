@@ -14,34 +14,15 @@
 
 package message
 
-import "fmt"
-
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
-// CloseType represents a close type.
-type CloseType int
-
-const (
-	// CloseTypeStatementByte represents a close statement.
-	CloseTypeStatementByte = 'S'
-	// CloseTypePortalByte represents a close portal.
-	CloseTypePortalByte = 'P'
-)
-
-const (
-	// CloseTypeStatement represents a close statement.
-	CloseTypeStatement CloseType = iota
-	// CloseTypePortal represents a close portal.
-	CloseTypePortal
-)
-
 // Close represents a close message.
 type Close struct {
 	*RequestMessage
-	Type CloseType
+	Type PreparedType
 	Name string
 }
 
@@ -62,14 +43,9 @@ func NewCloseWithReader(reader *MessageReader) (*Close, error) {
 		return nil, err
 	}
 
-	var dt CloseType
-	switch bt {
-	case CloseTypeStatementByte:
-		dt = CloseTypeStatement
-	case CloseTypePortalByte:
-		dt = CloseTypePortal
-	default:
-		return nil, fmt.Errorf("%w close type (%d)", ErrInvalid, bt)
+	dt, err := NewPreparedTypeWithByte(bt)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Close{
@@ -77,14 +53,4 @@ func NewCloseWithReader(reader *MessageReader) (*Close, error) {
 		Type:           dt,
 		Name:           name,
 	}, nil
-}
-
-// IsStatement returns true whether the close type is statement.
-func (msg *Close) IsStatement() bool {
-	return msg.Type == CloseTypeStatement
-}
-
-// IsPortal returns true whether the close type is portal.
-func (msg *Close) IsPortal() bool {
-	return msg.Type == CloseTypePortal
 }

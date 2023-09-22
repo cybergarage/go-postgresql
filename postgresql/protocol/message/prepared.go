@@ -14,43 +14,39 @@
 
 package message
 
+import "fmt"
+
+// PostgreSQL: Documentation: 16: 55.1. Overview
+// https://www.postgresql.org/docs/current/protocol-overview.html
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
-// Describe represents a describe message.
-type Describe struct {
-	*RequestMessage
-	Type PreparedType
-	Name string
-}
+// PreparedType represents a prepared type.
+type PreparedType int
 
-// NewDescribeWithReader returns a new describe message with the specified reader.
-func NewDescribeWithReader(reader *MessageReader) (*Describe, error) {
-	msg, err := NewRequestMessageWithReader(reader)
-	if err != nil {
-		return nil, err
+const (
+	// PreparedStatementByte represents a prepared statement.
+	PreparedStatementByte = 'S'
+	// PreparedPortalByte represents a prepared portal.
+	PreparedPortalByte = 'P'
+)
+
+const (
+	// PreparedStatement represents a prepared statement.
+	PreparedStatement PreparedType = iota
+	// PreparedPortal represents a prepared portal.
+	PreparedPortal
+)
+
+// NewPreparedTypeWithByte returns a new prepared type with the specified byte.
+func NewPreparedTypeWithByte(bt byte) (PreparedType, error) {
+	switch bt {
+	case PreparedStatementByte:
+		return PreparedStatement, nil
+	case PreparedPortalByte:
+		return PreparedPortal, nil
 	}
-
-	bt, err := reader.ReadByte()
-	if err != nil {
-		return nil, err
-	}
-
-	name, err := reader.ReadString()
-	if err != nil {
-		return nil, err
-	}
-
-	dt, err := NewPreparedTypeWithByte(bt)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Describe{
-		RequestMessage: msg,
-		Type:           dt,
-		Name:           name,
-	}, nil
+	return 0, fmt.Errorf("%w prepared type (%d)", ErrInvalid, bt)
 }
