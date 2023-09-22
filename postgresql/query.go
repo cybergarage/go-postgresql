@@ -19,28 +19,28 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// PreparedQuery represents a prepared query.
-type PreparedQuery = message.Parse
+// PreparedStatement represents a prepared statement.
+type PreparedStatement = message.Parse
 
-// PreparedStatementMap represents a prepared query map.
-type PreparedStatementMap map[string]*PreparedQuery
+// PreparedStatementMap represents a prepared statement map.
+type PreparedStatementMap map[string]*PreparedStatement
 
-// NewPreparedStatementMap returns a new prepared query map.
+// NewPreparedStatementMap returns a new prepared statement map.
 func NewPreparedStatementMap() PreparedStatementMap {
 	return make(PreparedStatementMap)
 }
 
-// PreparedQuery returns a prepared query.
-func (queries PreparedStatementMap) PreparedQuery(name string) (*PreparedQuery, error) {
+// PreparedStatement returns a prepared statement.
+func (queries PreparedStatementMap) PreparedStatement(name string) (*PreparedStatement, error) {
 	q, oK := queries[name]
 	if !oK {
-		return nil, query.NewErrPreparedQueryNotExist(name)
+		return nil, query.NewErrPreparedStatementNotExist(name)
 	}
 	return q, nil
 }
 
-// SetPreparedQuery sets a prepared query.
-func (queries PreparedStatementMap) SetPreparedQuery(query *PreparedQuery) error {
+// SetPreparedStatement sets a prepared statement.
+func (queries PreparedStatementMap) SetPreparedStatement(query *PreparedStatement) error {
 	queries[query.Name] = query
 	return nil
 }

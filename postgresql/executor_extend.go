@@ -29,7 +29,7 @@ func NewBaseExtendedQueryExecutor() *BaseExtendedQueryExecutor {
 
 // Prepare handles a parse message.
 func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse) (message.Responses, error) {
-	err := conn.SetPreparedQuery(msg)
+	err := conn.SetPreparedStatement(msg)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse)
 
 // Bind handles a bind message.
 func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, *message.Query, error) {
-	preparedQuery, err := conn.PreparedQuery(msg.Name)
+	preparedQuery, err := conn.PreparedStatement(msg.Name)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -58,7 +58,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 			message.NewNoData()), nil
 	}
 
-	_, err := conn.PreparedQuery(msg.Name)
+	_, err := conn.PreparedStatement(msg.Name)
 	if err != nil {
 		return nil, err
 	}
