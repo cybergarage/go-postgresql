@@ -398,6 +398,8 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			break
 		}
 
+		var resMsgs message.Responses
+
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
 			reqErr = handleParseMessage(conn)
@@ -433,16 +435,23 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			}
 		}
 
+		if 0 < len(resMsgs) {
+			err = conn.ResponseMessages(resMsgs)
+			if err != nil {
+				return err
+			}
+		}
+
 		if reqErr != nil {
-			conn.ResponseError(reqErr)
-			log.Error(reqErr)
+			err := conn.ResponseError(reqErr)
+			if err != nil {
+				return err
+			}
 		}
 
 		// Return ReadyForQuery (B) message.
 		err := conn.ReadyForMessage(message.TransactionIdle)
-
 		loopSpan.FinishSpan()
-
 		if err != nil {
 			return err
 		}
