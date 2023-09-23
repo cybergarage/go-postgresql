@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.x (2023-xx-xx)
+## v1.4.x (2023-xx-xx)
 - Improved
   - Support more data types
     - Timestamp, Year, .... 
@@ -8,6 +8,11 @@
     - Support pgbench workload
   - SELECT
     - Added tests for ORDER BY
+
+## v1.3.0 (2023-09-xx)
+- Improved
+  - Added system query executor interface
+  - Added extended query executor interface
 
 ## v1.2.1 (2023-09-19)
 - Supported
