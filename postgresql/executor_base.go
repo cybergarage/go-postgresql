@@ -24,6 +24,7 @@ type BaseExecutor struct {
 	ExtendedQueryExecutor
 	BulkExecutor
 	ErrorHandler
+	SystemQueryExecutor
 }
 
 // NewBaseExecutor returns a base frontend message executor.
@@ -37,6 +38,7 @@ func NewBaseExecutor() *BaseExecutor {
 		TransactionExecutor:   NewBaseTransactionExecutor(),
 		BulkExecutor:          NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
+		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
 	}
 	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
 	executor.ExtendedQueryExecutor = NewBaseExtendedQueryExecutorWith(executor)
@@ -81,4 +83,9 @@ func (executor *BaseExecutor) SetBulkExecutor(be BulkExecutor) {
 // SetErrorHandler sets a user error handler.
 func (executor *BaseExecutor) SetErrorHandler(eh ErrorHandler) {
 	executor.ErrorHandler = eh
+}
+
+// SetSystemQueryExecutor sets a system query executor.
+func (executor *BaseExecutor) SetSystemQueryExecutor(sq SystemQueryExecutor) {
+	executor.SystemQueryExecutor = sq
 }
