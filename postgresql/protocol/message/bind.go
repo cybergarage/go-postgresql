@@ -40,7 +40,6 @@ type Bind struct {
 // BindParam represents a bind parameter.
 type BindParam struct {
 	FormatCode int16
-	numValues  int16
 	Value      any
 }
 
@@ -117,20 +116,6 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 				return nil, newShortMessageError(int(nBytes), nRead)
 			}
 		}
-		// The number of result-column format codes that follow (denoted R below).
-		resFmtNum, err := reader.ReadInt16()
-		if err != nil {
-			return nil, err
-		}
-		// The result-column format codes. Each must presently be zero (text) or one (binary).
-		resFmts := make([]int16, resFmtNum)
-		for n := 0; n < int(resFmtNum); n++ {
-			fmt, err := reader.ReadInt16()
-			if err != nil {
-				return nil, err
-			}
-			resFmts[n] = fmt
-		}
 
 		paramFmt := TextFormat
 		if n < len(paramFmts) {
@@ -145,9 +130,24 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 		}
 		params[n] = &BindParam{
 			FormatCode: paramFmt,
-			numValues:  paramFmtNum,
 			Value:      paramVal,
 		}
+	}
+
+	// The number of result-column format codes that follow (denoted R below).
+	resFmtNum, err := reader.ReadInt16()
+	if err != nil {
+		return nil, err
+	}
+
+	// The result-column format codes. Each must presently be zero (text) or one (binary).
+	resFmts := make([]int16, resFmtNum)
+	for n := 0; n < int(resFmtNum); n++ {
+		fmt, err := reader.ReadInt16()
+		if err != nil {
+			return nil, err
+		}
+		resFmts[n] = fmt
 	}
 
 	return &Bind{
