@@ -28,23 +28,37 @@ const (
 	bindParamPrefix = "$"
 )
 
-// Bind represents a bind message.
-type Bind struct {
-	*RequestMessage
-	PortalName    string
-	StatementName string
-	NumParams     int16
-	Params        BindParams
-}
-
 // BindParam represents a bind parameter.
 type BindParam struct {
 	FormatCode int16
 	Value      any
 }
 
+// FindBindParam returns a bind parameter with specified id.
+func (params BindParams) FindBindParam(id string) (*BindParam, error) {
+	if !strings.HasPrefix(id, bindParamPrefix) {
+		return nil, NewErrNotExist(id)
+	}
+	idx, err := strconv.Atoi(id[len(bindParamPrefix):])
+	if err != nil {
+		return nil, NewErrNotExist(id)
+	}
+	if len(params) < idx {
+		return nil, NewErrNotExist(id)
+	}
+	return params[idx-1], nil
+}
+
 // BindParams represents bind parameters.
 type BindParams []*BindParam
+
+// Bind represents a bind message.
+type Bind struct {
+	*RequestMessage
+	PortalName    string
+	StatementName string
+	Params        BindParams
+}
 
 // NewBind returns a new bind message.
 func NewBindWithReader(reader *MessageReader) (*Bind, error) {
@@ -88,7 +102,7 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 		return nil, err
 	}
 
-	params := make([]*BindParam, paramValNum)
+	paramBytes := make([][]byte, paramValNum)
 	for n := 0; n < int(paramValNum); n++ {
 		// The length of the parameter value, in bytes (this count does not include itself).
 		// Can be zero. As a special case, -1 indicates a NULL parameter value. No value bytes follow in the NULL case.
@@ -116,22 +130,7 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 				return nil, newShortMessageError(int(nBytes), nRead)
 			}
 		}
-
-		paramFmt := TextFormat
-		if n < len(paramFmts) {
-			paramFmt = paramFmts[n]
-		}
-		var paramVal any
-		switch paramFmt {
-		case TextFormat:
-			paramVal = string(bytes)
-		case BinaryFormat:
-			paramVal = bytes
-		}
-		params[n] = &BindParam{
-			FormatCode: paramFmt,
-			Value:      paramVal,
-		}
+		paramBytes[n] = bytes
 	}
 
 	// The number of result-column format codes that follow (denoted R below).
@@ -150,26 +149,33 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 		resFmts[n] = fmt
 	}
 
+	params := make([]*BindParam, paramValNum)
+	for n := 0; n < int(paramValNum); n++ {
+		paramFmt := TextFormat
+		if n < len(paramFmts) {
+			paramFmt = paramFmts[n]
+		}
+		paramValBytes := []byte{}
+		if n < len(paramBytes) {
+			paramValBytes = paramBytes[n]
+		}
+		var paramVal any
+		switch paramFmt {
+		case TextFormat:
+			paramVal = string(paramValBytes)
+		case BinaryFormat:
+			paramVal = paramValBytes
+		}
+		params[n] = &BindParam{
+			FormatCode: paramFmt,
+			Value:      paramVal,
+		}
+	}
+
 	return &Bind{
 		RequestMessage: msg,
 		PortalName:     portal,
 		StatementName:  stmt,
-		NumParams:      paramFmtNum,
 		Params:         params,
 	}, nil
-}
-
-// FindBindParam returns a bind parameter with specified id.
-func (params BindParams) FindBindParam(id string) (*BindParam, error) {
-	if !strings.HasPrefix(id, bindParamPrefix) {
-		return nil, NewErrNotExist(id)
-	}
-	idx, err := strconv.Atoi(id[len(bindParamPrefix):])
-	if err != nil {
-		return nil, NewErrNotExist(id)
-	}
-	if len(params) < idx {
-		return nil, NewErrNotExist(id)
-	}
-	return params[idx-1], nil
 }
