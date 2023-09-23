@@ -37,21 +37,11 @@ type Bind struct {
 	Params        BindParams
 }
 
-// BindParamType represents a bind parameter type.
-type BindParamType int16
-
-const (
-	// BindParamTypeString represents a string type.
-	BindParamTypeString BindParamType = 0
-	// BindParamTypeBinary represents a binary type.
-	BindParamTypeBinary BindParamType = 1
-)
-
 // BindParam represents a bind parameter.
 type BindParam struct {
-	Type      BindParamType
-	numValues int16
-	Value     any
+	FormatCode int16
+	numValues  int16
+	Value      any
 }
 
 // BindParams represents bind parameters.
@@ -78,25 +68,29 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 
 	// The number of parameter format codes that follow (denoted C below).
 	// This can be zero to indicate that there are no parameters or that the parameters all use the default format (text); or one, in which case the specified format code is applied to all parameters; or it can equal the actual number of parameters.
-	_, err = reader.ReadInt16()
+	paramFmtNum, err := reader.ReadInt16()
 	if err != nil {
 		return nil, err
 	}
 
 	// The parameter format codes. Each must presently be zero (text) or one (binary).
-	t, err := reader.ReadInt16()
-	if err != nil {
-		return nil, err
+	paramFmts := make([]int16, paramFmtNum)
+	for n := 0; n < int(paramFmtNum); n++ {
+		fmt, err := reader.ReadInt16()
+		if err != nil {
+			return nil, err
+		}
+		paramFmts[n] = fmt
 	}
 
 	// The number of parameter values that follow (possibly zero). This must match the number of parameters needed by the query.
-	num, err := reader.ReadInt16()
+	paramValNum, err := reader.ReadInt16()
 	if err != nil {
 		return nil, err
 	}
 
-	params := make([]*BindParam, num)
-	for n := int16(0); n < num; n++ {
+	params := make([]*BindParam, paramValNum)
+	for n := 0; n < int(paramValNum); n++ {
 		// The length of the parameter value, in bytes (this count does not include itself).
 		// Can be zero. As a special case, -1 indicates a NULL parameter value. No value bytes follow in the NULL case.
 		nBytes, err := reader.ReadInt32()
@@ -123,36 +117,44 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 				return nil, newShortMessageError(int(nBytes), nRead)
 			}
 		}
-		var v any
-		if BindParamType(t) == BindParamTypeString {
-			v = string(bytes)
-		} else {
-			v = bytes
+		// The number of result-column format codes that follow (denoted R below).
+		resFmtNum, err := reader.ReadInt16()
+		if err != nil {
+			return nil, err
+		}
+		// The result-column format codes. Each must presently be zero (text) or one (binary).
+		resFmts := make([]int16, resFmtNum)
+		for n := 0; n < int(resFmtNum); n++ {
+			fmt, err := reader.ReadInt16()
+			if err != nil {
+				return nil, err
+			}
+			resFmts[n] = fmt
+		}
+
+		paramFmt := TextFormat
+		if n < len(paramFmts) {
+			paramFmt = paramFmts[n]
+		}
+		var paramVal any
+		switch paramFmt {
+		case TextFormat:
+			paramVal = string(bytes)
+		case BinaryFormat:
+			paramVal = bytes
 		}
 		params[n] = &BindParam{
-			Type:      BindParamType(t),
-			numValues: num,
-			Value:     v,
+			FormatCode: paramFmt,
+			numValues:  paramFmtNum,
+			Value:      paramVal,
 		}
-	}
-
-	// The number of result-column format codes that follow (denoted R below).
-	_, err = reader.ReadInt16()
-	if err != nil {
-		return nil, err
-	}
-
-	// The result-column format codes. Each must presently be zero (text) or one (binary).
-	_, err = reader.ReadInt16()
-	if err != nil {
-		return nil, err
 	}
 
 	return &Bind{
 		RequestMessage: msg,
 		PortalName:     portal,
 		StatementName:  stmt,
-		NumParams:      num,
+		NumParams:      paramFmtNum,
 		Params:         params,
 	}, nil
 }
