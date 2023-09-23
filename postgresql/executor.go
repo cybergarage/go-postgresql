@@ -117,6 +117,12 @@ type QueryExecutor interface {
 	DMOExecutor
 }
 
+// SystemQueryExecutor represents a system query message executor.
+type SystemQueryExecutor interface {
+	// SystemSelect handles a SELECT query for system tables.
+	SystemSelect(*Conn, *query.Select) (message.Responses, error)
+}
+
 // QueryExtraExecutor represents a user query message executor.
 type QueryExtraExecutor interface {
 	DMOExtraExecutor
@@ -135,6 +141,7 @@ type Executor interface { // nolint: interfacebloat
 	QueryExtraExecutor
 	TransactionExecutor
 	ExtendedQueryExecutor
+	SystemQueryExecutor
 	BulkExecutor
 	ErrorHandler
 	// SetAuthenticator sets a user authenticator.
@@ -147,6 +154,8 @@ type Executor interface { // nolint: interfacebloat
 	SetQueryExtraExecutor(QueryExtraExecutor)
 	// SetTransactionExecutor sets a user transaction executor.
 	SetTransactionExecutor(TransactionExecutor)
+	// SetSystemQueryExecutor sets a system query executor.
+	SetSystemQueryExecutor(SystemQueryExecutor)
 	// SetBulkExecutor sets a user bulk executor.
 	SetBulkExecutor(BulkExecutor)
 	// SetErrorHandler sets a user error handler.
