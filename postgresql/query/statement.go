@@ -32,7 +32,7 @@ func NewStatement(stmt query.Statement) *Statement {
 }
 
 // Bind binds the statement with the specified parameters.
-func (stmt *Statement) Bind(params message.BindParams) error {
+func (stmt *Statement) Bind(bindParams message.BindParams) error {
 	updateBindColumns := func(columns []*query.Column, params message.BindParams) error {
 		for _, column := range columns {
 			if !column.HasLiteral() {
@@ -42,23 +42,23 @@ func (stmt *Statement) Bind(params message.BindParams) error {
 			if !ok {
 				continue
 			}
-			param, err := params.FindBindParam(v.Name())
+			bindParam, err := params.FindBindParam(v.Name())
 			if err != nil {
 				return err
 			}
-			column.SetValue(param.Value)
+			column.SetValue(bindParam.Value)
 		}
 		return nil
 	}
 
 	switch stmt := stmt.Statement.(type) {
 	case *query.Insert:
-		err := updateBindColumns(stmt.Columns(), params)
+		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
 			return err
 		}
 	case *query.Update:
-		err := updateBindColumns(stmt.Columns(), params)
+		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
 			return err
 		}
