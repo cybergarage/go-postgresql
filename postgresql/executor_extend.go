@@ -15,10 +15,13 @@
 package postgresql
 
 import (
+	"strings"
+
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
+	"github.com/cybergarage/go-safecast/safecast"
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -71,23 +74,70 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 			return nil, query.NewErrMultipleTableNotSupported(stmt.From().String())
 		}
 		table := tables[0]
-		cond := sql.NewEQWith(
-			sql.NewColumnWithOptions(sql.WithColumnName(system.InformationSchemaColumnsTableName)),
-			sql.NewLiteralWith(table.TableName()),
-		)
 		return sql.NewSelectWith(
-			stmt.Selectors(),
+			sql.NewSelectorsWith(
+				sql.NewColumnWithName(system.InformationSchemaColumnsColumnName),
+				sql.NewColumnWithName(system.InformationSchemaColumnsDataType),
+			),
 			sql.NewTablesWith(sql.NewTableWith(system.InformationSchemaColumns)),
-			sql.NewConditionWith(cond),
+			sql.NewConditionWith(
+				sql.NewEQWith(
+					sql.NewColumnWithOptions(sql.WithColumnName(system.InformationSchemaColumnsTableName)),
+					sql.NewLiteralWith(table.TableName()),
+				),
+			),
 		), nil
 	}
 
 	selectObjectIds := func(stmt *query.Select) ([]int32, error) {
+		objIDFromResponses := func(responses message.Responses, colName string) (int32, bool) {
+			for r, res := range responses {
+				if r == 0 {
+					continue
+				}
+				dataRow, ok := res.(*message.DataRow)
+				if !ok {
+					continue
+				}
+				if len(dataRow.Data) < 2 {
+					continue
+				}
+				columnName, ok := dataRow.Data[0].(string)
+				if !ok {
+					continue
+				}
+				if !strings.EqualFold(columnName, colName) {
+					continue
+				}
+				var objID int32
+				err := safecast.ToInt32(dataRow.Data[1], &objID)
+				if err != nil {
+					continue
+				}
+				return objID, true
+			}
+			return 0, false
+		}
+
 		query, err := newSystemSelectQuery(stmt)
 		if err != nil {
 			return nil, err
 		}
-		objIDs := []int32{}
+		res, err := executor.SystemQueryExecutor.SystemSelect(conn, query)
+		if err != nil {
+			return nil, err
+		}
+		sels := stmt.Selectors()
+		objIDs := make([]int32, len(sels))
+		for n, sel := range sels {
+			selName := sel.Name()
+			objID, ok := objIDFromResponses(res, selName)
+			if !ok {
+				objIDs[n] = 0
+				continue
+			}
+			objIDs[n] = objID
+		}
 		return objIDs, nil
 	}
 
