@@ -75,13 +75,3 @@ type AggregateFunction = query.AggregateFunction
 
 // AggregateResultSet represents an aggregate result set.
 type AggregateResultSet = query.AggregateResultSet
-
-// NewInsertWith returns a new insert statement instance with the specified parameters.
-func NewInsertWith(tbl *Table, columns ColumnList) *Insert {
-	return query.NewInsertWith(tbl, columns)
-}
-
-// NewSelectWith returns a new Select statement instance with the specified parameters.
-func NewSelectWith(selectors SelectorList, tbls TableList, w *Condition, opts ...SelectOption) *Select {
-	return query.NewSelectWith(selectors, tbls, w, opts...)
-}
