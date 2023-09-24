@@ -20,7 +20,14 @@ import (
 )
 
 // PreparedStatement represents a prepared statement.
-type PreparedStatement = message.Parse
+type PreparedStatement struct {
+	*message.Parse
+}
+
+// Name returns a prepared statement name.
+func (stmt *PreparedStatement) Name() string {
+	return stmt.Parse.Name
+}
 
 // PreparedStatementMap represents a prepared statement map.
 type PreparedStatementMap map[string]*PreparedStatement
@@ -40,8 +47,11 @@ func (stmtMap PreparedStatementMap) PreparedStatement(name string) (*PreparedSta
 }
 
 // SetPreparedStatement sets a prepared statement.
-func (stmtMap PreparedStatementMap) SetPreparedStatement(query *PreparedStatement) error {
-	stmtMap[query.Name] = query
+func (stmtMap PreparedStatementMap) SetPreparedStatement(msg *message.Parse) error {
+	stmt := &PreparedStatement{
+		Parse: msg,
+	}
+	stmtMap[msg.Name] = stmt
 	return nil
 }
 
