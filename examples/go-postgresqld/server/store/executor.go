@@ -280,13 +280,22 @@ func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (message.R
 	return message.NewDeleteCompleteResponsesWith(n)
 }
 
+// SystemSelect handles a SELECT query for system tables.
+func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
+	// PostgreSQL: Documentation: 8.0: System Catalogs
+	// https://www.postgresql.org/docs/8.0/catalogs.html
+	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
+	// https://www.postgresql.org/docs/current/client-interfaces.html
+	return nil, query.NewErrNotImplemented("SELECT")
+}
+
 // Copy handles a COPY query.
 func (store *MemStore) Copy(conn *postgresql.Conn, copy *query.Copy) (message.Responses, error) {
 	return nil, query.NewErrNotImplemented("COPY")
 }
 
 // Copy handles a COPY DATA message.
-func (store *MemStore) CopyDataCopy(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
+func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (message.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		log.Error(err)
