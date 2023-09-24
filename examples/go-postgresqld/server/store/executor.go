@@ -26,6 +26,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 )
 
 // Begin handles a BEGIN query.
@@ -286,7 +287,23 @@ func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (mes
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
 	// https://www.postgresql.org/docs/current/client-interfaces.html
-	return nil, query.NewErrNotImplemented("SELECT")
+
+	selectInformationSchemaColumns := func(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
+		return nil, query.NewErrNotImplemented("SELECT")
+	}
+
+	from := q.From()
+	if len(from) != 1 {
+		return nil, query.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", from.String()))
+	}
+
+	tbl := from[0]
+	switch tbl.Name() {
+	case system.InformationSchemaColumns:
+		return selectInformationSchemaColumns(conn, q)
+	}
+
+	return nil, query.NewErrNotSupported(tbl.Name())
 }
 
 // Copy handles a COPY query.
