@@ -24,8 +24,8 @@ type Statement struct {
 	obj query.Statement
 }
 
-// NewStatement returns a new statement.
-func NewStatement(stmt query.Statement) *Statement {
+// NewStatementWith returns a new statement.
+func NewStatementWith(stmt query.Statement) *Statement {
 	return &Statement{
 		obj: stmt,
 	}
