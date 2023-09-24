@@ -38,7 +38,7 @@ func (parser *Parser) ParseString(query string) ([]*Statement, error) {
 	}
 	pgStmts := make([]*Statement, len(stmts))
 	for n, stmt := range stmts {
-		pgStmts[n] = NewStatement(stmt)
+		pgStmts[n] = NewStatementWith(stmt)
 	}
 	return pgStmts, nil
 }
