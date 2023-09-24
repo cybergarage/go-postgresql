@@ -27,6 +27,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
+	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Begin handles a BEGIN query.
@@ -342,7 +343,7 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 			}
 		}
 
-		return query.NewInsertWith(schema.SchemaTable(), columns), nil
+		return sql.NewInsertWith(schema.SchemaTable(), columns), nil
 	}
 
 	copyData := func(schema *query.Schema, stream *postgresql.CopyStream) error {
