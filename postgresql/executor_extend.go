@@ -44,12 +44,12 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn *Conn, msg *message.Parse)
 
 // Bind handles a bind message.
 func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (message.Responses, error) {
-	preparedQuery, err := conn.PreparedStatement(msg.StatementName)
+	prepStmt, err := conn.PreparedStatement(msg.StatementName)
 	if err != nil {
 		return nil, err
 	}
 
-	q, err := message.NewQueryWith(preparedQuery, msg)
+	q, err := message.NewQueryWith(prepStmt.Parse, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -66,11 +66,16 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (
 func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
 	switch msg.Type {
 	case message.PreparedStatement:
-		_, err := conn.PreparedStatement(msg.Name)
+		prepStmt, err := conn.PreparedStatement(msg.Name)
 		if err != nil {
 			return nil, err
 		}
-		paramDesc, err := message.NewParameterDescriptionWith()
+		objIDs := []int32{}
+		switch stmt := prepStmt.ParsedStatement.Object().(type) {
+		case *query.Select:
+			// query := query.NewSelectWith(stmt)
+		}
+		paramDesc, err := message.NewParameterDescriptionWith(objIDs...)
 		if err != nil {
 			return nil, err
 		}
