@@ -19,6 +19,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
+	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
@@ -64,7 +65,28 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (
 
 // Describe handles a describe message.
 func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
+	newSystemSelectQuery := func(stmt *query.Select) (*sql.Select, error) {
+		tables := stmt.From().Tables()
+		if len(tables) != 1 {
+			return nil, query.NewErrMultipleTableNotSupported(stmt.From().String())
+		}
+		table := tables[0]
+		cond := sql.NewEQWith(
+			sql.NewColumnWithOptions(sql.WithColumnName(system.InformationSchemaColumnsTableName)),
+			sql.NewLiteralWith(table.TableName()),
+		)
+		return sql.NewSelectWith(
+			stmt.Selectors(),
+			sql.NewTablesWith(sql.NewTableWith(system.InformationSchemaColumns)),
+			sql.NewConditionWith(cond),
+		), nil
+	}
+
 	selectObjectIds := func(stmt *query.Select) ([]int32, error) {
+		query, err := newSystemSelectQuery(stmt)
+		if err != nil {
+			return nil, err
+		}
 		objIDs := []int32{}
 		return objIDs, nil
 	}
