@@ -21,14 +21,19 @@ import (
 
 // Statement represents a statement instance.
 type Statement struct {
-	query.Statement
+	obj query.Statement
 }
 
 // NewStatement returns a new statement.
 func NewStatement(stmt query.Statement) *Statement {
 	return &Statement{
-		Statement: stmt,
+		obj: stmt,
 	}
+}
+
+// Statement returns a statement object.
+func (stmt *Statement) Object() query.Statement {
+	return stmt.obj
 }
 
 // Bind binds the statement with the specified parameters.
@@ -51,7 +56,7 @@ func (stmt *Statement) Bind(bindParams message.BindParams) error {
 		return nil
 	}
 
-	switch stmt := stmt.Statement.(type) {
+	switch stmt := stmt.obj.(type) {
 	case *query.Insert:
 		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
