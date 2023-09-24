@@ -18,6 +18,7 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 )
 
 // BaseExtendedQueryExecutor represents a base extended query message executor.
@@ -194,7 +195,11 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 		case *query.Insert:
 			res, err = executor.QueryExecutor.Insert(conn, stmt)
 		case *query.Select:
-			res, err = executor.QueryExecutor.Select(conn, stmt)
+			if stmt.From().HasSchemaTable(system.SystemSchemaNames...) {
+				res, err = executor.SystemQueryExecutor.SystemSelect(conn, stmt)
+			} else {
+				res, err = executor.QueryExecutor.Select(conn, stmt)
+			}
 		case *query.Update:
 			res, err = executor.QueryExecutor.Update(conn, stmt)
 		case *query.Delete:
