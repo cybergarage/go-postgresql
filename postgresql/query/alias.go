@@ -52,18 +52,17 @@ type (
 	Column         = query.Column
 	ColumnList     = query.ColumnList
 	Table          = query.Table
+	TableList      = query.TableList
 	Condition      = query.Condition
 	Schema         = query.Schema
+	Selector       = query.Selector
+	SelectorList   = query.SelectorList
 	Expr           = query.Expr
 	CmpExpr        = query.CmpExpr
 	AndExpr        = query.AndExpr
 	OrExpr         = query.OrExpr
+	SelectOption   = query.SelectOption
 )
-
-// NewInsertWith returns a new insert statement instance with the specified parameters.
-func NewInsertWith(tbl *Table, columns ColumnList) *Insert {
-	return query.NewInsertWith(tbl, columns)
-}
 
 // Function represents a function.
 type Function = query.Function
@@ -76,3 +75,13 @@ type AggregateFunction = query.AggregateFunction
 
 // AggregateResultSet represents an aggregate result set.
 type AggregateResultSet = query.AggregateResultSet
+
+// NewInsertWith returns a new insert statement instance with the specified parameters.
+func NewInsertWith(tbl *Table, columns ColumnList) *Insert {
+	return query.NewInsertWith(tbl, columns)
+}
+
+// NewSelectWith returns a new Select statement instance with the specified parameters.
+func NewSelectWith(selectors SelectorList, tbls TableList, w *Condition, opts ...SelectOption) *Select {
+	return query.NewSelectWith(selectors, tbls, w, opts...)
+}
