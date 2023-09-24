@@ -19,12 +19,17 @@ const (
 	SystemDatabaseName = "postgres"
 	// SystemSchemaName represents a system schema name.
 	SystemSchemaName = "pg_catalog"
-	// SystemInformationSchemaName represents a system information schema name.
-	SystemInformationSchemaName = "information_schema"
+	// SystemInformationSchema represents a system information schema name.
+	SystemInformationSchema = "information_schema"
 )
 
 // SystemSchemaNames represents system schema names.
 var SystemSchemaNames = []string{
 	SystemSchemaName,
-	SystemInformationSchemaName,
+	SystemInformationSchema,
 }
+
+const (
+	// InformationSchemaColumns represents a system information schema cloumns tables name.
+	InformationSchemaColumns = SystemInformationSchema + "." + "columns"
+)
