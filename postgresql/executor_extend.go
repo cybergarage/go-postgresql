@@ -64,6 +64,11 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn *Conn, msg *message.Bind) (
 
 // Describe handles a describe message.
 func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Describe) (message.Responses, error) {
+	selectObjectIds := func(stmt *query.Select) ([]int32, error) {
+		objIDs := []int32{}
+		return objIDs, nil
+	}
+
 	switch msg.Type {
 	case message.PreparedStatement:
 		prepStmt, err := conn.PreparedStatement(msg.Name)
@@ -73,7 +78,10 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn *Conn, msg *message.Des
 		objIDs := []int32{}
 		switch stmt := prepStmt.ParsedStatement.Object().(type) {
 		case *query.Select:
-			// query := query.NewSelectWith(stmt)
+			objIDs, err = selectObjectIds(stmt)
+			if err != nil {
+				return nil, err
+			}
 		}
 		paramDesc, err := message.NewParameterDescriptionWith(objIDs...)
 		if err != nil {
@@ -178,7 +186,7 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 		}
 
 		var res message.Responses
-		switch stmt := stmt.Statement.(type) {
+		switch stmt := stmt.Object().(type) {
 		case *query.Begin:
 			res, err = executor.TransactionExecutor.Begin(conn, stmt)
 		case *query.Commit:
