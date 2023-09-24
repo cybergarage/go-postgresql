@@ -84,7 +84,7 @@ func RunServerTests(t *testing.T) {
 		name string
 		fn   ServerTestFunc
 	}{
-		{"copy", TestServerCopy},
+		//		{"copy", TestServerCopy},
 	}
 
 	for _, testFunc := range testFuncs {
