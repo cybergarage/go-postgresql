@@ -34,6 +34,9 @@ var ErrExist = errors.New("exist")
 // ErrNotEqual is returned when the specified object is not equal.
 var ErrNotEqual = errors.New("not equal")
 
+// ErrInvalid is returned when the specified object is invalid.
+var ErrInvalid = errors.New("invalid")
+
 // NewErrNotImplemented returns a new ErrNotImplemented error.
 func NewErrNotImplemented(msg string) error {
 	return fmt.Errorf("%s is %w", msg, ErrNotImplemented)
@@ -52,6 +55,11 @@ func NewErrExist(v any) error {
 // NewErrNotExist returns a new not exist error.
 func NewErrNotExist(v any) error {
 	return fmt.Errorf("%v is %w", v, ErrNotExist)
+}
+
+// NewErrInvalid returns a new invalid error.
+func NewErrInvalid(v any) error {
+	return fmt.Errorf("%v is %w", v, ErrInvalid)
 }
 
 // NewErrNotEqual returns a new not equal error.
