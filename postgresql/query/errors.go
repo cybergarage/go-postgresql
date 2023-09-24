@@ -113,3 +113,8 @@ func NewErrPreparedPortalNotExist(name string) error {
 func NewErrMultiplePreparedStatementNotSupported(query string) error {
 	return fmt.Errorf("multiple prepared statement (%v) is %w", query, ErrNotSupported)
 }
+
+// NewErrMultipleTableNotSupported returns a new prepared statement multi table error.
+func NewErrMultipleTableNotSupported(query string) error {
+	return fmt.Errorf("multiple table (%v) is %w", query, ErrNotSupported)
+}
