@@ -367,9 +367,13 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 
 		columns := make(sql.ColumnList, len(copyColumns))
 		for idx, copyColumn := range copyColumns {
+			copyColumnData := copyColumData[idx]
+			if len(copyColumnData) == 0 {
+				copyColumnData = "NULL"
+			}
 			columns[idx] = sql.NewColumnWithOptions(
 				sql.WithColumnName(copyColumn.Name()),
-				sql.WithColumnLiteral(sql.NewLiteralWith(copyColumData[idx])),
+				sql.WithColumnLiteral(sql.NewLiteralWith(copyColumnData)),
 			)
 		}
 
@@ -381,7 +385,7 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		if err != nil {
 			return err
 		}
-		log.Infof("%st", q.String())
+		log.Infof("%s", q.String())
 		_, err = store.Insert(conn, q)
 		return err
 	}
