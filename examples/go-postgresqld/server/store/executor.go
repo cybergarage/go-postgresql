@@ -166,7 +166,7 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
 	tbls := q.Tables()
 	if len(tbls) != 1 {
-		return nil, query.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", tbls.String()))
+		return nil, query.NewErrMultipleTableNotSupported(tbls.String())
 	}
 	tblName := tbls[0].TableName()
 
