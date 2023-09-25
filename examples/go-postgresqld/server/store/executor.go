@@ -20,8 +20,6 @@ package store
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
@@ -164,11 +162,11 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (message.R
 
 // Select handles a SELECT query.
 func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (message.Responses, error) {
-	tbls := q.Tables()
-	if len(tbls) != 1 {
-		return nil, query.NewErrMultipleTableNotSupported(tbls.String())
+	from := q.Tables()
+	if len(from) != 1 {
+		return nil, query.NewErrMultipleTableNotSupported(from.String())
 	}
-	tblName := tbls[0].TableName()
+	tblName := from[0].TableName()
 
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), tblName)
 	if err != nil {
@@ -295,7 +293,7 @@ func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (mes
 
 	from := q.From()
 	if len(from) != 1 {
-		return nil, query.NewErrNotImplemented(fmt.Sprintf("Multiple tables (%v)", from.String()))
+		return nil, query.NewErrMultipleTableNotSupported(from.String())
 	}
 
 	tbl := from[0]
