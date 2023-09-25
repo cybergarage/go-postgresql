@@ -315,8 +315,8 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (message.Respo
 		return nil, err
 	}
 
-	colums := q.Columns()
-	if 0 < len(colums) {
+	copyColums := q.Columns()
+	if 0 < len(copyColums) {
 		for _, copyColumn := range q.Columns() {
 			_, err := tbl.Schema.ColumnByName(copyColumn.Name())
 			if err != nil {
@@ -324,12 +324,12 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (message.Respo
 			}
 		}
 	} else {
-		colums = tbl.Schema.Columns()
+		copyColums = tbl.Schema.Columns()
 	}
 
 	// Support only text format
 	res := message.NewCopyInResponseWith(message.TextCopy)
-	for n := 0; n < len(colums); n++ {
+	for n := 0; n < len(copyColums); n++ {
 		res.AppendFormatCode(message.TextFormat)
 	}
 
@@ -347,21 +347,26 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 	// PostgreSQL: Documentation: 16: COPY
 	// https://www.postgresql.org/docs/16/sql-copy.html
 
-	newQueryWith := func(schema *query.Schema, stream *postgresql.CopyStream) (*query.Insert, error) {
+	schema := tbl.Schema
+	copyColums := q.Columns()
+	if len(copyColums) == 0 {
+		copyColums = schema.Columns()
+	}
+
+	newQueryWith := func(schema *query.Schema, copyColumns sql.ColumnList, stream *postgresql.CopyStream) (*query.Insert, error) {
+		// COPY FROM will raise an error if any line of the input file contains
+		// more or fewer columns than are expected.
 		copyData, err := stream.CopyData()
 		if err != nil {
 			return nil, err
 		}
-		copyColums := copyData.Data
-		schemaColumns := schema.Columns()
-		// COPY FROM will raise an error if any line of the input file contains
-		//  more or fewer columns than are expected.
-		if len(copyColums) != len(schemaColumns) {
-			return nil, query.NewErrColumnsNotEqual(len(copyColums), len(schemaColumns))
+		copyColumData := copyData.Data
+		if len(copyColumData) != len(copyColumns) {
+			return nil, query.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
 		}
-		columns := schemaColumns.Copy()
+		columns := copyColumns.Copy()
 		for idx, column := range columns {
-			v := copyColums[idx]
+			v := copyColumData[idx]
 			if err := column.SetValue(v); err != nil {
 				return nil, err
 			}
@@ -370,8 +375,8 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		return sql.NewInsertWith(schema.SchemaTable(), columns), nil
 	}
 
-	copyData := func(schema *query.Schema, stream *postgresql.CopyStream) error {
-		q, err := newQueryWith(schema, stream)
+	copyData := func(schema *query.Schema, colums sql.ColumnList, stream *postgresql.CopyStream) error {
+		q, err := newQueryWith(schema, colums, stream)
 		if err != nil {
 			return err
 		}
@@ -380,7 +385,6 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		return err
 	}
 
-	schema := tbl.Schema
 	nCopy := 0
 	nFail := 0
 	ok, err := stream.Next()
@@ -392,7 +396,7 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		if !ok {
 			break
 		}
-		if err := copyData(schema, stream); err != nil {
+		if err := copyData(schema, copyColums, stream); err != nil {
 			log.Error(err)
 			nFail++
 		} else {
