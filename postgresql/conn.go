@@ -68,6 +68,11 @@ func WithConnTracer(t tracer.Context) func(*Conn) {
 	}
 }
 
+// SetDeadline sets the read and write deadlines associated with the connection.
+func (conn *Conn) SetDeadline(t time.Time) error {
+	return conn.conn.SetDeadline(t)
+}
+
 // SetDatabase sets the database name.
 func (conn *Conn) SetDatabase(db string) {
 	conn.db = db
