@@ -395,6 +395,7 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 	ok, err := stream.Next()
 	for {
 		if err != nil {
+			log.Infof("nCopy=%d, nFail=%d", nCopy, nFail)
 			log.Error(err)
 			return nil, err
 		}
