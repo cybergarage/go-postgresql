@@ -364,12 +364,13 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		if len(copyColumData) != len(copyColumns) {
 			return nil, query.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
 		}
-		columns := copyColumns.Copy()
-		for idx, column := range columns {
-			v := copyColumData[idx]
-			if err := column.SetValue(v); err != nil {
-				return nil, err
-			}
+
+		columns := make(sql.ColumnList, len(copyColumns))
+		for idx, copyColumn := range copyColumns {
+			columns[idx] = sql.NewColumnWithOptions(
+				sql.WithColumnName(copyColumn.Name()),
+				sql.WithColumnLiteral(sql.NewLiteralWith(copyColumData[idx])),
+			)
 		}
 
 		return sql.NewInsertWith(schema.SchemaTable(), columns), nil
