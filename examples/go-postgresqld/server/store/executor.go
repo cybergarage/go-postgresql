@@ -306,8 +306,34 @@ func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (mes
 }
 
 // Copy handles a COPY query.
-func (store *MemStore) Copy(conn *postgresql.Conn, copy *query.Copy) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("COPY")
+func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (message.Responses, error) {
+	// PostgreSQL: Documentation: 16: COPY
+	// https://www.postgresql.org/docs/16/sql-copy.html
+
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	if err != nil {
+		return nil, err
+	}
+
+	colums := q.Columns()
+	if 0 < len(colums) {
+		for _, copyColumn := range q.Columns() {
+			_, err := tbl.Schema.ColumnByName(copyColumn.Name())
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		colums = tbl.Schema.Columns()
+	}
+
+	// Support only text format
+	res := message.NewCopyInResponseWith(message.TextCopy)
+	for n := 0; n < len(colums); n++ {
+		res.AppendFormatCode(message.TextFormat)
+	}
+
+	return message.NewResponsesWith(res), nil
 }
 
 // Copy handles a COPY DATA message.
