@@ -23,6 +23,10 @@ import (
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
+const (
+	defaultBufSize = 1024 * 1024 * 8
+)
+
 // ConnOption represents a connection option.
 type ConnOption = func(*Conn)
 
@@ -39,9 +43,10 @@ type Conn struct {
 
 // NewConnWith returns a connection with a raw connection.
 func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
+	conReader := bufio.NewReaderSize(netConn, defaultBufSize)
 	conn := &Conn{
 		conn:                 netConn,
-		MessageReader:        message.NewMessageReaderWith(bufio.NewReader(netConn)),
+		MessageReader:        message.NewMessageReaderWith(conReader),
 		db:                   "",
 		ts:                   time.Now(),
 		Context:              nil,
