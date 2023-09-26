@@ -14,9 +14,7 @@
 
 package message
 
-import (
-	"bufio"
-)
+import "io"
 
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
@@ -29,7 +27,7 @@ type MessageReader struct {
 }
 
 // NewMessageReader returns a new message reader.
-func NewMessageReaderWith(reader *bufio.Reader) *MessageReader {
+func NewMessageReaderWith(reader io.Reader) *MessageReader {
 	return &MessageReader{
 		Reader: NewReaderWith(reader),
 		Type:   0,
