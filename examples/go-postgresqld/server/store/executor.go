@@ -20,6 +20,10 @@ package store
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 import (
+	"errors"
+	"fmt"
+	"io"
+
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
@@ -353,13 +357,9 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		copyColums = schema.Columns()
 	}
 
-	newQueryWith := func(schema *query.Schema, copyColumns sql.ColumnList, stream *postgresql.CopyStream) (*query.Insert, error) {
+	newQueryWith := func(schema *query.Schema, copyColumns sql.ColumnList, copyData *message.CopyData) (*query.Insert, error) {
 		// COPY FROM will raise an error if any line of the input file contains
 		// more or fewer columns than are expected.
-		copyData, err := stream.CopyData()
-		if err != nil {
-			return nil, err
-		}
 		copyColumData := copyData.Data
 		if len(copyColumData) != len(copyColumns) {
 			return nil, query.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
@@ -380,8 +380,8 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		return sql.NewInsertWith(schema.SchemaTable(), columns), nil
 	}
 
-	copyData := func(schema *query.Schema, colums sql.ColumnList, stream *postgresql.CopyStream) error {
-		q, err := newQueryWith(schema, colums, stream)
+	copyData := func(schema *query.Schema, colums sql.ColumnList, copyData *message.CopyData) error {
+		q, err := newQueryWith(schema, colums, copyData)
 		if err != nil {
 			return err
 		}
@@ -392,26 +392,28 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 
 	nCopy := 0
 	nFail := 0
-	ok, err := stream.Next()
+	cpData, err := stream.Next()
 	for {
 		if err != nil {
-			nFail++
-			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
-			return nil, err
-		}
-		if !ok {
 			break
 		}
-		if err := copyData(schema, copyColums, stream); err != nil {
+		if err := copyData(schema, copyColums, cpData); err != nil {
 			nFail++
 			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
 		} else {
 			nCopy++
 		}
-		ok, err = stream.Next()
+		cpData, err = stream.Next()
 	}
 
-	log.Infof("%s (%d)", q.String(), nCopy)
+	if !errors.Is(err, io.EOF) {
+		log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err.Error())
+		return nil, err
+	}
+
+	if 0 < nFail {
+		return nil, fmt.Errorf("%s (%d/%d)", q.String(), nCopy, nFail)
+	}
 
 	return message.NewCopyCompleteResponsesWith(nCopy)
 }
