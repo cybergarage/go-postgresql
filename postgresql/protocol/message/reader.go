@@ -15,35 +15,64 @@
 package message
 
 import (
-	"bufio"
 	"io"
 
 	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
 )
 
-const (
-	defaultBufSize = 1024
-)
-
 // Reader represents a message reader.
 type Reader struct {
-	reader io.Reader
-	*bufio.Reader
+	io.Reader
+	peekBuf []byte
 }
 
 // NewReader returns a new message reader.
 func NewReaderWith(reader io.Reader) *Reader {
-	bufReader := bufio.NewReaderSize(reader, defaultBufSize)
-
 	return &Reader{
-		reader: reader,
-		Reader: bufReader,
+		Reader:  reader,
+		peekBuf: make([]byte, 0),
 	}
+}
+
+func (reader *Reader) ReadBytes(buf []byte) (int, error) {
+	if len(reader.peekBuf) <= 0 {
+		return reader.Reader.Read(buf)
+	}
+	nBufSize := len(buf)
+	nCopy := copy(buf, reader.peekBuf)
+	reader.peekBuf = reader.peekBuf[nCopy:]
+	if nCopy == nBufSize {
+		return nBufSize, nil
+	}
+	nRead, err := reader.Reader.Read(buf[:nCopy])
+	return (nCopy + nRead), err
+}
+
+func (reader *Reader) ReadByte() (byte, error) {
+	b := make([]byte, 1)
+	_, err := reader.ReadBytes(b)
+	if err != nil {
+		return 0, err
+	}
+	return b[0], nil
+}
+
+func (reader *Reader) PeekBytes(n int) ([]byte, error) {
+	buf := make([]byte, n)
+	nRead, err := reader.ReadBytes(buf)
+	if err != nil {
+		return nil, err
+	}
+	if nRead != n {
+		return nil, newShortMessageError(n, nRead)
+	}
+	reader.peekBuf = append(reader.peekBuf, buf...)
+	return buf, nil
 }
 
 // PeekInt32 reads a 32-bit integer.
 func (reader *Reader) PeekInt32() (int32, error) {
-	int32Bytes, err := reader.Peek(4)
+	int32Bytes, err := reader.PeekBytes(4)
 	if err != nil {
 		return 0, err
 	}
@@ -53,7 +82,7 @@ func (reader *Reader) PeekInt32() (int32, error) {
 // ReadInt32 reads a 32-bit integer.
 func (reader *Reader) ReadInt32() (int32, error) {
 	int32Bytes := make([]byte, 4)
-	nRead, err := reader.Read(int32Bytes)
+	nRead, err := reader.ReadBytes(int32Bytes)
 	if err != nil {
 		return 0, err
 	}
@@ -66,7 +95,7 @@ func (reader *Reader) ReadInt32() (int32, error) {
 // ReadInt16 reads a 16-bit integer.
 func (reader *Reader) ReadInt16() (int16, error) {
 	int16Bytes := make([]byte, 2)
-	nRead, err := reader.Read(int16Bytes)
+	nRead, err := reader.ReadBytes(int16Bytes)
 	if err != nil {
 		return 0, err
 	}
@@ -76,22 +105,26 @@ func (reader *Reader) ReadInt16() (int16, error) {
 	return util.BytesToInt16(int16Bytes), nil
 }
 
-// ReadByte reads a byte array data into the specified buffer.
-func (reader *Reader) ReadBytes(buf []byte) (int, error) {
-	return reader.Read(buf)
+func (reader *Reader) ReadBytesUntil(delim byte) ([]byte, error) {
+	buf := make([]byte, 0)
+	for {
+		b, err := reader.ReadByte()
+		if err != nil {
+			return nil, err
+		}
+		buf = append(buf, b)
+		if b == delim {
+			break
+		}
+	}
+	return buf, nil
 }
 
 // ReadString reads a string.
 func (reader *Reader) ReadString() (string, error) {
-	b, err := reader.Reader.ReadBytes(0x00)
+	strBytes, err := reader.ReadBytesUntil(0x00)
 	if err != nil {
 		return "", err
 	}
-	return string(b[:len(b)-1]), nil
-}
-
-// Reset resets the reader.
-func (reader *Reader) Reset() error {
-	reader.Reader.Reset(reader.reader)
-	return nil
+	return string(strBytes), nil
 }

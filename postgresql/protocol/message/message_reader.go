@@ -37,7 +37,7 @@ func NewMessageReaderWith(reader io.Reader) *MessageReader {
 
 // PeekType peeks a message type.
 func (reader *MessageReader) PeekType() (Type, error) {
-	bytes, err := reader.Reader.Peek(1)
+	bytes, err := reader.Reader.PeekBytes(1)
 	if err != nil {
 		return 0, err
 	}
