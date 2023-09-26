@@ -319,25 +319,7 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (message.Respo
 		return nil, err
 	}
 
-	copyColums := q.Columns()
-	if 0 < len(copyColums) {
-		for _, copyColumn := range q.Columns() {
-			_, err := tbl.Schema.ColumnByName(copyColumn.Name())
-			if err != nil {
-				return nil, err
-			}
-		}
-	} else {
-		copyColums = tbl.Schema.Columns()
-	}
-
-	// Support only text format
-	res := message.NewCopyInResponseWith(message.TextCopy)
-	for n := 0; n < len(copyColums); n++ {
-		res.AppendFormatCode(message.TextFormat)
-	}
-
-	return message.NewResponsesWith(res), nil
+	return postgresql.NewCopyInResponseFrom(q, tbl.Schema)
 }
 
 // Copy handles a COPY DATA message.
