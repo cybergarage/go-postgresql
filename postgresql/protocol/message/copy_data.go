@@ -25,7 +25,7 @@ import "strings"
 
 const (
 	tabSep     = '\t'
-	newLineSep = '\n'
+	newLineSep = "\r\n"
 )
 
 // CopyData represents a copy data message.
@@ -52,7 +52,7 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 		return nil, err
 	}
 
-	dataStr := strings.TrimSuffix(string(dataBytes), string(newLineSep))
+	dataStr := strings.TrimRight(string(dataBytes), newLineSep)
 	data := strings.Split(dataStr, string(tabSep))
 
 	return &CopyData{
