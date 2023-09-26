@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	defaultBufSize = 1024 * 1024 * 8
+	defaultBufSize = 1024
 )
 
 // Reader represents a message reader.
@@ -88,4 +88,10 @@ func (reader *Reader) ReadString() (string, error) {
 		return "", err
 	}
 	return string(b[:len(b)-1]), nil
+}
+
+// Reset resets the reader.
+func (reader *Reader) Reset() error {
+	reader.Reader.Reset(reader.reader)
+	return nil
 }
