@@ -16,19 +16,28 @@ package message
 
 import (
 	"bufio"
+	"io"
 
 	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
 )
 
+const (
+	defaultBufSize = 1024 * 1024 * 8
+)
+
 // Reader represents a message reader.
 type Reader struct {
+	reader io.Reader
 	*bufio.Reader
 }
 
 // NewReader returns a new message reader.
-func NewReaderWith(reader *bufio.Reader) *Reader {
+func NewReaderWith(reader io.Reader) *Reader {
+	bufReader := bufio.NewReaderSize(reader, defaultBufSize)
+
 	return &Reader{
-		Reader: reader,
+		reader: reader,
+		Reader: bufReader,
 	}
 }
 
