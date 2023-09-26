@@ -15,41 +15,44 @@
 package postgresql
 
 import (
+	"io"
+
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
 // CopyStream represents a copy stream.
 type CopyStream struct {
 	*message.MessageReader
-	latestCopyData *message.CopyData
 }
 
 // NewCopyStreamWithReader returns a new copy stream with the specified reader.
 func NewCopyStreamWithReader(reader *message.MessageReader) *CopyStream {
 	return &CopyStream{
-		MessageReader:  reader,
-		latestCopyData: nil,
+		MessageReader: reader,
 	}
 }
 
 // Next returns true if the next message is available.
-func (stream *CopyStream) Next() (bool, error) {
-	ok, err := stream.MessageReader.IsPeekType(message.CopyDataMessage)
-	if !ok || err != nil {
-		return ok, err
-	}
-
-	copyData, err := message.NewCopyDataWithReader(stream.MessageReader)
+func (stream *CopyStream) Next() (*message.CopyData, error) {
+	t, err := stream.MessageReader.PeekType()
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	stream.latestCopyData = copyData
+	switch t { // nolint:exhaustive
+	case message.CopyDataMessage:
+		copyData, err := message.NewCopyDataWithReader(stream.MessageReader)
+		if err != nil {
+			return nil, err
+		}
+		return copyData, nil
+	case message.CopyDoneMessage:
+		_, err := message.NewCopyDoneWithReader(stream.MessageReader)
+		if err != nil {
+			return nil, err
+		}
+		return nil, io.EOF
+	}
 
-	return true, nil
-}
-
-// CopyData returns a latest copy data message.
-func (stream *CopyStream) CopyData() (*message.CopyData, error) {
-	return stream.latestCopyData, nil
+	return nil, io.EOF
 }
