@@ -126,5 +126,5 @@ func (reader *Reader) ReadString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(strBytes), nil
+	return string(strBytes[:len(strBytes)-1]), nil
 }
