@@ -306,9 +306,6 @@ func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (mes
 
 // Copy handles a COPY query.
 func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (message.Responses, error) {
-	// PostgreSQL: Documentation: 16: COPY
-	// https://www.postgresql.org/docs/16/sql-copy.html
-
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
@@ -324,6 +321,5 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		log.Error(err)
 		return nil, err
 	}
-
 	return postgresql.NewCopyCompleteResponsesFrom(q, stream, conn, tbl.Schema, store)
 }
