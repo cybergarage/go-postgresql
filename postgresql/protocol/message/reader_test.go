@@ -21,13 +21,11 @@ import (
 
 func TestReader(t *testing.T) {
 	// Create a buffer with some data
-	buf := bytes.NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+	buf := []byte{0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x00}
 
-	// Create a new reader with the buffer
-	reader := NewReaderWith(buf)
-
-	// Test PeekInt32
-	expectedInt32 := int32(0x01020304)
+	// Test PeekInt32 and ReadInt32
+	reader := NewReaderWith(bytes.NewBuffer(buf))
+	expectedInt32 := int32(0x61626364)
 	actualInt32, err := reader.PeekInt32()
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -35,8 +33,14 @@ func TestReader(t *testing.T) {
 	if actualInt32 != expectedInt32 {
 		t.Errorf("Expected %v, but got %v", expectedInt32, actualInt32)
 	}
-
-	// Test ReadInt32
+	actualInt32, err = reader.ReadInt32()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if actualInt32 != expectedInt32 {
+		t.Errorf("Expected %v, but got %v", expectedInt32, actualInt32)
+	}
+	expectedInt32 = int32(0x65666768)
 	actualInt32, err = reader.ReadInt32()
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -46,7 +50,8 @@ func TestReader(t *testing.T) {
 	}
 
 	// Test ReadInt16
-	expectedInt16 := int16(0x0102)
+	reader = NewReaderWith(bytes.NewBuffer(buf))
+	expectedInt16 := int16(0x6162)
 	actualInt16, err := reader.ReadInt16()
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -56,8 +61,9 @@ func TestReader(t *testing.T) {
 	}
 
 	// Test ReadBytesUntil
-	expectedBytes := []byte{0x01, 0x02, 0x03}
-	actualBytes, err := reader.ReadBytesUntil(0x04)
+	reader = NewReaderWith(bytes.NewBuffer(buf))
+	expectedBytes := []byte{0x61, 0x62, 0x63, 0x64}
+	actualBytes, err := reader.ReadBytesUntil(0x64)
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
@@ -66,7 +72,8 @@ func TestReader(t *testing.T) {
 	}
 
 	// Test ReadString
-	expectedString := "\x01\x02\x03"
+	reader = NewReaderWith(bytes.NewBuffer(buf))
+	expectedString := "\x61\x62\x63\x64\x65\x66\x67\x68"
 	actualString, err := reader.ReadString()
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
