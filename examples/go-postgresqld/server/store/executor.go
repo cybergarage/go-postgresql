@@ -339,31 +339,8 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		copyColums = schema.Columns()
 	}
 
-	newQueryWith := func(schema *query.Schema, copyColumns sql.ColumnList, copyData *message.CopyData) (*query.Insert, error) {
-		// COPY FROM will raise an error if any line of the input file contains
-		// more or fewer columns than are expected.
-		copyColumData := copyData.Data
-		if len(copyColumData) != len(copyColumns) {
-			return nil, query.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
-		}
-
-		columns := make(sql.ColumnList, len(copyColumns))
-		for idx, copyColumn := range copyColumns {
-			copyColumnData := copyColumData[idx]
-			if len(copyColumnData) == 0 {
-				copyColumnData = "NULL"
-			}
-			columns[idx] = sql.NewColumnWithOptions(
-				sql.WithColumnName(copyColumn.Name()),
-				sql.WithColumnLiteral(sql.NewLiteralWith(copyColumnData)),
-			)
-		}
-
-		return sql.NewInsertWith(schema.SchemaTable(), columns), nil
-	}
-
 	copyData := func(schema *query.Schema, colums sql.ColumnList, copyData *message.CopyData) error {
-		q, err := newQueryWith(schema, colums, copyData)
+		q, err := postgresql.NewCopyQueryFrom(schema, colums, copyData)
 		if err != nil {
 			return err
 		}
