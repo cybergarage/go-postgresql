@@ -394,7 +394,6 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 	nFail := 0
 	ok, err := stream.Next()
 	for {
-		// log.Infof("%d %d", nCopy, stream.MessageReader.Buffered())
 		if err != nil {
 			nFail++
 			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
