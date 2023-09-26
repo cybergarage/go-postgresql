@@ -4,15 +4,17 @@
 - Improved
   - Support more data types
     - Timestamp, Year, .... 
-  - Example server (go-postgresqld)
-    - Support pgbench workload
   - SELECT
     - Added tests for ORDER BY
 
-## v1.3.0 (2023-09-xx)
+## v1.3.0 (2023-09-28)
 - Improved
-  - Added system query executor interface
-  - Added extended query executor interface
+  - Added system query executor interface to implement system tables
+  - Updated extended query executor interface to handle exteded query messages
+- Updated
+  - Updated bulk executor interface to handle more COPY messages
+  - Example server (go-postgresqld)
+    - Support pgbench workload
 
 ## v1.2.1 (2023-09-19)
 - Supported
