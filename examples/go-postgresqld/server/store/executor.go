@@ -20,16 +20,11 @@ package store
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
 import (
-	"errors"
-	"fmt"
-	"io"
-
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
-	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Begin handles a BEGIN query.
@@ -319,7 +314,7 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (message.Respo
 		return nil, err
 	}
 
-	return postgresql.NewCopyInResponseFrom(q, tbl.Schema)
+	return postgresql.NewCopyInResponsesFrom(q, tbl.Schema)
 }
 
 // Copy handles a COPY DATA message.
@@ -330,49 +325,5 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 		return nil, err
 	}
 
-	// PostgreSQL: Documentation: 16: COPY
-	// https://www.postgresql.org/docs/16/sql-copy.html
-
-	schema := tbl.Schema
-	copyColums := q.Columns()
-	if len(copyColums) == 0 {
-		copyColums = schema.Columns()
-	}
-
-	copyData := func(schema *query.Schema, colums sql.ColumnList, copyData *message.CopyData) error {
-		q, err := postgresql.NewCopyQueryFrom(schema, colums, copyData)
-		if err != nil {
-			return err
-		}
-		log.Infof("%s", q.String())
-		_, err = store.Insert(conn, q)
-		return err
-	}
-
-	nCopy := 0
-	nFail := 0
-	cpData, err := stream.Next()
-	for {
-		if err != nil {
-			break
-		}
-		if err := copyData(schema, copyColums, cpData); err != nil {
-			nFail++
-			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
-		} else {
-			nCopy++
-		}
-		cpData, err = stream.Next()
-	}
-
-	if !errors.Is(err, io.EOF) {
-		log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err.Error())
-		return nil, err
-	}
-
-	if 0 < nFail {
-		return nil, fmt.Errorf("%s (%d/%d)", q.String(), nCopy, nFail)
-	}
-
-	return message.NewCopyCompleteResponsesWith(nCopy)
+	return postgresql.NewCopyCompleteResponsesFrom(q, stream, conn, tbl.Schema, store)
 }
