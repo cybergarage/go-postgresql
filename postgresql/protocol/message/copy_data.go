@@ -14,7 +14,11 @@
 
 package message
 
-import "strings"
+import (
+	"bytes"
+	"io"
+	"strings"
+)
 
 // PostgreSQL: Documentation: 16: 55.2. Message Flow
 // https://www.postgresql.org/docs/16/protocol-flow.html
@@ -52,8 +56,22 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 		return nil, err
 	}
 
-	dataStr := strings.TrimRight(string(dataBytes), newLineSep)
-	data := strings.Split(dataStr, string(tabSep))
+	dataBytes = bytes.TrimRight(dataBytes, newLineSep)
+
+	isEOFData := func(data []byte) bool {
+		for _, b := range data {
+			if b != 0x5C && b != 0x2E {
+				return false
+			}
+		}
+		return true
+	}
+
+	if isEOFData(dataBytes) {
+		return nil, io.EOF
+	}
+
+	data := strings.Split(string(dataBytes), string(tabSep))
 
 	return &CopyData{
 		RequestMessage: msg,
