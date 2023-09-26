@@ -394,22 +394,25 @@ func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *po
 	nFail := 0
 	ok, err := stream.Next()
 	for {
+		log.Infof("%d %d", nCopy, stream.MessageReader.Buffered())
 		if err != nil {
-			log.Infof("nCopy=%d, nFail=%d", nCopy, nFail)
-			log.Error(err)
+			nFail++
+			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
 			return nil, err
 		}
 		if !ok {
 			break
 		}
 		if err := copyData(schema, copyColums, stream); err != nil {
-			log.Error(err)
 			nFail++
+			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
 		} else {
 			nCopy++
 		}
 		ok, err = stream.Next()
 	}
+
+	log.Infof("%s (%d)", q.String(), nCopy)
 
 	return message.NewCopyCompleteResponsesWith(nCopy)
 }
