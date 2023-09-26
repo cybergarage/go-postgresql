@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"errors"
 	"io"
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
@@ -39,15 +40,33 @@ func (stream *CopyStream) Next() (*message.CopyData, error) {
 		return nil, err
 	}
 
+	skipCopyDone := func(reader *message.MessageReader) error {
+		_, err := message.NewCopyDoneWithReader(reader)
+		return err
+	}
+
 	switch t { // nolint:exhaustive
 	case message.CopyDataMessage:
-		copyData, err := message.NewCopyDataWithReader(stream.MessageReader)
-		if err != nil {
-			return nil, err
+		copyData, copyErr := message.NewCopyDataWithReader(stream.MessageReader)
+		if copyErr == nil {
+			return copyData, nil
 		}
-		return copyData, nil
+		if !errors.Is(copyErr, io.EOF) {
+			return nil, copyErr
+		}
+		ok, peekErr := stream.MessageReader.IsPeekType(message.CopyDoneMessage)
+		if peekErr != nil {
+			return nil, peekErr
+		}
+		if !ok {
+			return nil, copyErr
+		}
+		if skipErr := skipCopyDone(stream.MessageReader); skipErr != nil {
+			return nil, skipErr
+		}
+		return nil, copyErr
 	case message.CopyDoneMessage:
-		_, err := message.NewCopyDoneWithReader(stream.MessageReader)
+		err := skipCopyDone(stream.MessageReader)
 		if err != nil {
 			return nil, err
 		}
