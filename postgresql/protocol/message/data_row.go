@@ -42,7 +42,7 @@ func NewDataRow() *DataRow {
 }
 
 // AppendData appends a column value to the data row message.
-func (msg *DataRow) AppendData(rowField *RowField, v any) error {
+func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocyclo
 	switch rowField.ObjectID { //nolint:exhaustive
 	case system.Bool:
 		if _, ok := v.(bool); !ok {
