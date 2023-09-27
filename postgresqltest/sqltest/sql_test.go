@@ -41,6 +41,7 @@ func TestSQLTest(t *testing.T) {
 		"SmplCrudInt",
 		"SmplCrudFloat",
 		"SmplCrudDouble",
+		"SmplCrudTimestamp",
 		"YcsbWorkload",
 		"FuncAggrInt",
 		"FuncAggrFloat",
