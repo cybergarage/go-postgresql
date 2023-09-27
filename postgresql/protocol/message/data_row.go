@@ -100,6 +100,14 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error {
 			}
 			v = to
 		}
+	case system.Timestamp:
+		if _, ok := v.(time.Time); !ok {
+			var to time.Time
+			if err := safecast.ToTime(v, &to); err != nil {
+				return err
+			}
+			v = to
+		}
 	}
 
 	switch rowField.FormatCode { //nolint:exhaustive
