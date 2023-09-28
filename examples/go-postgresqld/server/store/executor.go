@@ -25,6 +25,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
+	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Begin handles a BEGIN query.
@@ -105,6 +106,21 @@ func (store *MemStore) AlterTable(conn *postgresql.Conn, q *query.AlterTable) (m
 
 	if column, ok := q.AddColumn(); ok {
 		err := schema.AddColumn(column)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if index, ok := q.AddIndex(); ok {
+		indexColums := sql.NewColumns()
+		for _, indexColumn := range index.Columns() {
+			schemaColum, err := schema.ColumnByName(indexColumn.Name())
+			if err != nil {
+				return nil, err
+			}
+			indexColums = append(indexColums, schemaColum)
+		}
+		err := schema.AddIndex(sql.NewIndexWith(index.Name(), index.Type(), indexColums))
 		if err != nil {
 			return nil, err
 		}
