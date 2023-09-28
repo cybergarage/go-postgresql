@@ -7,6 +7,12 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.3.1 (2023-09-28)
+- Improvements
+  - Example Server (go-postgresqld)
+    - ALTER
+      - Added support for ALTER TABLE ADD and DROP COLUMN
+
 ## v1.3.0 (2023-09-28)
 - Improvements
   - Query Executor Interfaces
