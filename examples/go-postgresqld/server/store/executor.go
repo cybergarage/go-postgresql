@@ -90,13 +90,42 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 }
 
 // AlterDatabase handles a ALTER DATABASE query.
-func (store *MemStore) AlterDatabase(*postgresql.Conn, *query.AlterDatabase) (message.Responses, error) {
+func (store *MemStore) AlterDatabase(conn *postgresql.Conn, q *query.AlterDatabase) (message.Responses, error) {
 	return nil, query.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // AlterTable handles a ALTER TABLE query.
-func (store *MemStore) AlterTable(*postgresql.Conn, *query.AlterTable) (message.Responses, error) {
-	return nil, query.NewErrNotImplemented("ALTER TABLE")
+func (store *MemStore) AlterTable(conn *postgresql.Conn, q *query.AlterTable) (message.Responses, error) {
+	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	if err != nil {
+		return nil, err
+	}
+
+	schema := tbl.Schema
+
+	if column, ok := q.AddColumn(); ok {
+		err := schema.AddColumn(column)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if column, ok := q.DropColumn(); ok {
+		err := schema.DropColumn(column.Name())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if _, ok := q.RenameTable(); ok {
+		return nil, query.NewErrNotImplemented(q.String())
+	}
+
+	if _, _, ok := q.RenameColumns(); ok {
+		return nil, query.NewErrNotImplemented(q.String())
+	}
+
+	return message.NewCommandCompleteResponsesWith(q.String())
 }
 
 // DropDatabase handles a DROP DATABASE query.
