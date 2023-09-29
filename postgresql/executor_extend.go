@@ -222,8 +222,10 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 	q := msg.Query
 	log.Debugf("%s %s", conn.conn.RemoteAddr(), q)
 
+	conn.StartSpan("parse")
 	parser := query.NewParser()
 	stmts, err := parser.ParseString(q)
+	conn.FinishSpan()
 	if err != nil {
 		res, err := executor.ErrorHandler.ParserError(conn, q, err)
 		if err != nil {
