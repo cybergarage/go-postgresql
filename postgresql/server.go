@@ -229,8 +229,8 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		}
 
 		loopSpan := server.Tracer.StartSpan(PackageName)
-		loopSpan.StartSpan(reqType.String())
 		conn.SetSpanContext(loopSpan)
+		conn.StartSpan(reqType.String())
 
 		var resMsgs message.Responses
 
@@ -286,6 +286,8 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		case message.TerminateMessage:
 			_, reqErr = message.NewTerminateWithReader(conn.MessageReader)
 			if reqErr == nil {
+				conn.FinishSpan()
+				loopSpan.Span().Finish()
 				return nil
 			}
 		default:
@@ -296,24 +298,34 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			}
 		}
 
+		conn.FinishSpan()
+
+		conn.StartSpan("response")
 		err = conn.ResponseMessages(resMsgs)
+		conn.FinishSpan()
 		if err != nil {
+			loopSpan.Span().Finish()
 			return err
 		}
 
 		if reqErr != nil {
 			err := conn.ResponseError(reqErr)
 			if err != nil {
+				loopSpan.Span().Finish()
 				return err
 			}
 		}
 
 		// Return ReadyForQuery (B) message.
+		conn.StartSpan("ready")
 		err := conn.ReadyForMessage(message.TransactionIdle)
-		loopSpan.FinishSpan()
+		conn.FinishSpan()
 		if err != nil {
+			loopSpan.Span().Finish()
 			return err
 		}
+
+		loopSpan.Span().Finish()
 	}
 
 	return nil
