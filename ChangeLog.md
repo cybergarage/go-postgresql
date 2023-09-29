@@ -7,7 +7,7 @@
   - SELECT
     - Added tests for ORDER BY
 
-## v1.3.1 (2023-09-28)
+## v1.3.1 (2023-09-29)
 - Improvements
   - Example Server (go-postgresqld)
     - ALTER
