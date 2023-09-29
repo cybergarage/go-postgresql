@@ -7,6 +7,9 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.3.2 (2023-09-30)
+- Fixed to close all tracer spans normally
+
 ## v1.3.1 (2023-09-29)
 - Improvements
   - Example Server (go-postgresqld)
