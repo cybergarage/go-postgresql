@@ -10,7 +10,7 @@
 ## v1.3.3 (2023-10-xx)
 - Updated
   - Connection
-    - Updated to generate a connection ID to each connection
+    - Add Conn.UUID() method to retrieve the UUID of a connection
 
 ## v1.3.2 (2023-09-30)
 - Improvements
