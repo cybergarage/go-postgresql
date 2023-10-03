@@ -20,6 +20,7 @@ import (
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-tracing/tracer"
+	"github.com/google/uuid"
 )
 
 // ConnOption represents a connection option.
@@ -29,8 +30,9 @@ type ConnOption = func(*Conn)
 type Conn struct {
 	conn net.Conn
 	*message.MessageReader
-	db string
-	ts time.Time
+	db   string
+	ts   time.Time
+	uuid uuid.UUID
 	tracer.Context
 	PreparedStatementMap
 	PreparedPortalMap
@@ -43,6 +45,7 @@ func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 		MessageReader:        message.NewMessageReaderWith(netConn),
 		db:                   "",
 		ts:                   time.Now(),
+		uuid:                 uuid.New(),
 		Context:              nil,
 		PreparedStatementMap: NewPreparedStatementMap(),
 		PreparedPortalMap:    NewPreparedPortalMap(),
@@ -90,6 +93,11 @@ func (conn *Conn) Conn() net.Conn {
 // Timestamp returns the creation time of the connection.
 func (conn *Conn) Timestamp() time.Time {
 	return conn.ts
+}
+
+// UUID returns the UUID of the connection.
+func (conn *Conn) UUID() uuid.UUID {
+	return conn.uuid
 }
 
 // SetSpanContext sets the tracer span context of the connection.
