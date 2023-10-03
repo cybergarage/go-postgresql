@@ -7,7 +7,7 @@
   - SELECT
     - Added tests for ORDER BY
 
-## v1.3.3 (2023-10-xx)
+## v1.3.3 (2023-10-03)
 - Updated
   - Connection
     - Add Conn.UUID() method to retrieve the UUID of a connection
