@@ -7,6 +7,11 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.3.3 (2023-10-xx)
+- Updated
+  - Connection
+    - Updated to generate a connection ID to each connection
+
 ## v1.3.2 (2023-09-30)
 - Improvements
   - Tracer
