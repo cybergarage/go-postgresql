@@ -262,11 +262,11 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 		var res message.Responses
 		switch stmt := stmt.Object().(type) {
 		case *query.Begin:
-			res, err = executor.TransactionExecutor.Begin(conn, stmt)
+			res, err = executor.TCLExecutor.Begin(conn, stmt)
 		case *query.Commit:
-			res, err = executor.TransactionExecutor.Commit(conn, stmt)
+			res, err = executor.TCLExecutor.Commit(conn, stmt)
 		case *query.Rollback:
-			res, err = executor.TransactionExecutor.Rollback(conn, stmt)
+			res, err = executor.TCLExecutor.Rollback(conn, stmt)
 		case *query.CreateDatabase:
 			res, err = executor.QueryExecutor.CreateDatabase(conn, stmt)
 		case *query.CreateTable:
