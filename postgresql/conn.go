@@ -75,6 +75,16 @@ func (conn *Conn) SetDeadline(t time.Time) error {
 	return conn.conn.SetDeadline(t)
 }
 
+// SetReadDeadline sets the deadline for future Read calls.
+func (conn *Conn) SetReadDeadline(t time.Time) error {
+	return conn.conn.SetReadDeadline(t)
+}
+
+// SetWriteDeadline sets the deadline for future Write calls.
+func (conn *Conn) SetWriteDeadline(t time.Time) error {
+	return conn.conn.SetWriteDeadline(t)
+}
+
 // SetDatabase sets the database name.
 func (conn *Conn) SetDatabase(db string) {
 	conn.db = db
