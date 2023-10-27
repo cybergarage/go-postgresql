@@ -7,6 +7,11 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.3.4 (2023-10-27)
+- Updated
+  - Connection
+    - Add deadline methods to Conn
+
 ## v1.3.3 (2023-10-03)
 - Updated
   - Connection
