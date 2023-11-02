@@ -23,14 +23,14 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresqltest/server"
 )
 
-func TestPgBench(t *testing.T) {
+func BenchmarkPgBench(b *testing.B) {
 	log.SetStdoutDebugEnbled(true)
 
 	server := server.NewServer()
 
 	err := server.Start()
 	if err != nil {
-		t.Error(err)
+		b.Error(err)
 		return
 	}
 
@@ -43,15 +43,15 @@ func TestPgBench(t *testing.T) {
 		cmd := exec.Command(script)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			t.Skip(err)
+			b.Skip(err)
 			return
 		}
-		t.Log(string(output))
+		b.Log(string(output))
 	}
 
 	err = server.Stop()
 	if err != nil {
-		t.Error(err)
+		b.Error(err)
 		return
 	}
 }
