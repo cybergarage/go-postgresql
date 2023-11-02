@@ -7,6 +7,11 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.3.5 (2023-11-02)
+- Updated
+  - Protocol Messager Reader
+    - Updated to wait until the specified number of bytes are read
+
 ## v1.3.4 (2023-10-27)
 - Updated
   - Connection
