@@ -35,17 +35,22 @@ func NewReaderWith(reader io.Reader) *Reader {
 }
 
 func (reader *Reader) ReadBytes(buf []byte) (int, error) {
-	if len(reader.peekBuf) <= 0 {
-		return reader.Reader.Read(buf)
-	}
 	nBufSize := len(buf)
-	nCopy := copy(buf, reader.peekBuf)
-	reader.peekBuf = reader.peekBuf[nCopy:]
-	if nCopy == nBufSize {
-		return nBufSize, nil
+	nReadBuf := 0
+	if 0 < len(reader.peekBuf) {
+		nCopy := copy(buf, reader.peekBuf)
+		reader.peekBuf = reader.peekBuf[nCopy:]
+		nReadBuf = nCopy
 	}
-	nRead, err := reader.Reader.Read(buf[:nCopy])
-	return (nCopy + nRead), err
+	if nBufSize <= nReadBuf {
+		return nReadBuf, nil
+	}
+	nRead, err := io.ReadAtLeast(reader.Reader, buf[nReadBuf:], nBufSize-nReadBuf)
+	if err != nil {
+		return nReadBuf, err
+	}
+	nReadBuf += nRead
+	return nReadBuf, err
 }
 
 func (reader *Reader) ReadByte() (byte, error) {
