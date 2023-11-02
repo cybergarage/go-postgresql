@@ -9,6 +9,7 @@ require (
 	github.com/cybergarage/go-sqltest v1.2.4
 	github.com/cybergarage/go-tracing v1.1.3
 	github.com/google/gopacket v1.1.19
+	github.com/google/uuid v1.4.0
 	github.com/jackc/pgx/v5 v5.4.0
 )
 
