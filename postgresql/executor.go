@@ -19,23 +19,14 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// Authenticator represents a frontend message authenticator.
-type Authenticator interface {
+// StartupHandler represents a backend protocol message handler.
+type StartupHandler interface {
 	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse message.
 	Authenticate(*Conn, *message.Startup) (message.Response, error)
-}
-
-// StatusHandler represents a backend status message handler.
-type StatusHandler interface {
 	// ParameterStatuses returns the parameter statuses.
 	ParameterStatuses(*Conn) (message.Responses, error)
 	// BackendKeyData returns the backend key data.
 	BackendKeyData(*Conn) (message.Response, error)
-}
-
-// StartupHandler represents a backend protocol message handler.
-type StartupHandler interface {
-	StatusHandler
 }
 
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
@@ -136,7 +127,6 @@ type ErrorHandler interface {
 
 // Executor represents a frontend message executor.
 type Executor interface { // nolint: interfacebloat
-	Authenticator
 	StartupHandler
 	QueryExecutor
 	QueryExtraExecutor
@@ -145,8 +135,6 @@ type Executor interface { // nolint: interfacebloat
 	SystemQueryExecutor
 	BulkExecutor
 	ErrorHandler
-	// SetAuthenticator sets a user authenticator.
-	SetAuthenticator(Authenticator)
 	// SetStartupHandler sets a user startup handler.
 	SetStartupHandler(StartupHandler)
 	// SetQueryExecutor sets a user query executor.
