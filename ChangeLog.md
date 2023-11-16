@@ -7,6 +7,11 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.4.0 (2023-11-XX)
+- New Features
+  - Added authencator interface
+    - Added support for password authentication 
+
 ## v1.3.5 (2023-11-02)
 - Updated
   - Protocol Messager Reader
