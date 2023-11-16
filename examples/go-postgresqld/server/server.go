@@ -31,7 +31,6 @@ func NewServerWithStore(store Store) *Server {
 		Server: postgresql.NewServer(),
 		Store:  store,
 	}
-	server.SetAuthenticator(server)
 	server.SetQueryExecutor(server)
 	server.SetBulkExecutor(server)
 	server.SetErrorHandler(server)
