@@ -19,25 +19,25 @@ type PasswordAuthenticator interface {
 	AuthenticatePassword(conn *Conn, username string, password string) (bool, error)
 }
 
-// Authenticator represents a authenticator.
-type Authenticator struct {
+// AuthServer represents a authenticator.
+type AuthServer struct {
 	passwdAuthHandler PasswordAuthenticator
 }
 
 // NewAuthenticator returns a new authenticator.
-func NewAuthenticator() *Authenticator {
-	authenticator := &Authenticator{
+func NewAuthenticator() *AuthServer {
+	authenticator := &AuthServer{
 		passwdAuthHandler: nil,
 	}
 	return authenticator
 }
 
 // SetPasswordAuthenticator sets a new password authenticator.
-func (authenticator *Authenticator) SetPasswordAuthenticator(handler PasswordAuthenticator) {
-	authenticator.passwdAuthHandler = handler
+func (server *AuthServer) SetPasswordAuthenticator(handler PasswordAuthenticator) {
+	server.passwdAuthHandler = handler
 }
 
 // PasswordAuthenticator returns the password authenticator.
-func (authenticator *Authenticator) PasswordAuthenticator() PasswordAuthenticator {
-	return authenticator.passwdAuthHandler
+func (server *AuthServer) PasswordAuthenticator() PasswordAuthenticator {
+	return server.passwdAuthHandler
 }

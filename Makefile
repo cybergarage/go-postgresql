@@ -33,10 +33,10 @@ TEST_SRC_ROOT=${PKG_NAME}test
 TEST_PKG=${MODULE_ROOT}/${TEST_SRC_ROOT}
 
 EXAMPLES_ROOT=examples
+EXAMPLES_SRC_ROOT=${EXAMPLES_ROOT}
 EXAMPLES_DEAMON_BIN=go-postgresqld
 EXAMPLES_DOCKER_TAG=cybergarage/${EXAMPLES_DEAMON_BIN}:${PKG_VER}
 EXAMPLES_PKG_ROOT=${GIT_ROOT}/${PRODUCT_NAME}/${EXAMPLES_ROOT}
-EXAMPLES_SRC_DIR=${EXAMPLES_ROOT}
 EXAMPLE_BINARIES=\
 	${EXAMPLES_PKG_ROOT}/${EXAMPLES_DEAMON_BIN}
 
@@ -54,13 +54,13 @@ BINARIES=\
 all: test
 
 format:
-	gofmt -s -w ${PKG_SRC_ROOT} ${TEST_SRC_ROOT} ${EXAMPLES_SRC_DIR}
+	gofmt -s -w ${PKG_SRC_ROOT} ${TEST_SRC_ROOT} ${EXAMPLES_SRC_ROOT}
 
 vet: format
 	go vet ${PKG}
 
 lint: vet
-	golangci-lint run ${PKG_SRC_ROOT}/... ${TEST_SRC_ROOT}/... ${EXAMPLES_SRC_DIR}/...
+	golangci-lint run ${PKG_SRC_ROOT}/... ${TEST_SRC_ROOT}/... ${EXAMPLES_SRC_ROOT}/...
 
 test: lint
 	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
