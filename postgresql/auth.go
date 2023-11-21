@@ -15,8 +15,8 @@
 package postgresql
 
 type PasswordAuthenticator interface {
-	// AuthenticatePassword authenticates the user with the given credentials.
-	AuthenticatePassword(conn *Conn, username string, password string) (bool, error)
+	// AuthenticateUser authenticates the user with the given credentials.
+	AuthenticateUser(conn *Conn, username string, password string) (bool, error)
 }
 
 // AuthServer represents a authenticator.
