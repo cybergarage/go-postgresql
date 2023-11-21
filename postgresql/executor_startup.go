@@ -24,31 +24,28 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
-// BaseProtocolExecutor represents a base frontend message executor.
-type BaseProtocolExecutor struct {
+// BaseStartupExecutor represents a base frontend message executor.
+type BaseStartupExecutor struct {
+	*BaseAuthExecutor
 	processID int32
 	secretKey int32
 }
 
 // NewBaseProtocolExecutor returns a base frontend message executor.
-func NewBaseProtocolExecutor() *BaseProtocolExecutor {
+func NewBaseProtocolExecutor() *BaseStartupExecutor {
 	r, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
 	if err != nil {
 		log.Error(err)
 	}
-	return &BaseProtocolExecutor{
-		processID: int32(os.Getpid()),
-		secretKey: int32(r.Int64()),
+	return &BaseStartupExecutor{
+		BaseAuthExecutor: NewBaseAuthExecutor(),
+		processID:        int32(os.Getpid()),
+		secretKey:        int32(r.Int64()),
 	}
 }
 
-// Authenticate authenticates the connection with the startup message.
-func (executor *BaseProtocolExecutor) Authenticate(*Conn, *message.Startup) (message.Response, error) {
-	return message.NewAuthenticationOk()
-}
-
 // ParameterStatuses returns the parameter statuses.
-func (executor *BaseProtocolExecutor) ParameterStatuses(*Conn) (message.Responses, error) {
+func (executor *BaseStartupExecutor) ParameterStatuses(*Conn) (message.Responses, error) {
 	m := map[string]string{}
 	m[message.ClientEncoding] = message.EncodingUTF8
 	m[message.ServerEncoding] = message.EncodingUTF8
@@ -56,6 +53,6 @@ func (executor *BaseProtocolExecutor) ParameterStatuses(*Conn) (message.Response
 }
 
 // BackendKeyData returns the backend key data.
-func (executor *BaseProtocolExecutor) BackendKeyData(*Conn) (message.Response, error) {
+func (executor *BaseStartupExecutor) BackendKeyData(*Conn) (message.Response, error) {
 	return message.NewBackendKeyDataWith(executor.processID, executor.secretKey)
 }
