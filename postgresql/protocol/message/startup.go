@@ -21,6 +21,7 @@ package message
 
 const (
 	StartUpUser            = "user"
+	StartUpPassword        = "password"
 	StartUpDatabase        = "database"
 	StartUpApplicationName = "application_name"
 	StartUpClientEncoding  = "client_encoding"
@@ -83,6 +84,12 @@ func NewStartupWithReader(reader *MessageReader) (*Startup, error) {
 // User returns the user name.
 func (msg *Startup) User() (string, bool) {
 	val, ok := msg.Parameters[StartUpUser]
+	return val, ok
+}
+
+// Password returns the password.
+func (msg *Startup) Password() (string, bool) {
+	val, ok := msg.Parameters[StartUpPassword]
 	return val, ok
 }
 
