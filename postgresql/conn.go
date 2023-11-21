@@ -28,7 +28,7 @@ type ConnOption = func(*Conn)
 
 // Conn represents a connection of PostgreSQL binary protocol.
 type Conn struct {
-	conn net.Conn
+	net.Conn
 	*message.MessageReader
 	db   string
 	ts   time.Time
@@ -41,7 +41,7 @@ type Conn struct {
 // NewConnWith returns a connection with a raw connection.
 func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
-		conn:                 netConn,
+		Conn:                 netConn,
 		MessageReader:        message.NewMessageReaderWith(netConn),
 		db:                   "",
 		ts:                   time.Now(),
@@ -70,21 +70,6 @@ func WithConnTracer(t tracer.Context) func(*Conn) {
 	}
 }
 
-// SetDeadline sets the read and write deadlines associated with the connection.
-func (conn *Conn) SetDeadline(t time.Time) error {
-	return conn.conn.SetDeadline(t)
-}
-
-// SetReadDeadline sets the deadline for future Read calls.
-func (conn *Conn) SetReadDeadline(t time.Time) error {
-	return conn.conn.SetReadDeadline(t)
-}
-
-// SetWriteDeadline sets the deadline for future Write calls.
-func (conn *Conn) SetWriteDeadline(t time.Time) error {
-	return conn.conn.SetWriteDeadline(t)
-}
-
 // SetDatabase sets the database name.
 func (conn *Conn) SetDatabase(db string) {
 	conn.db = db
@@ -93,11 +78,6 @@ func (conn *Conn) SetDatabase(db string) {
 // Database returns the database name.
 func (conn *Conn) Database() string {
 	return conn.db
-}
-
-// Conn returns the raw connection.
-func (conn *Conn) Conn() net.Conn {
-	return conn.conn
 }
 
 // Timestamp returns the creation time of the connection.
@@ -129,7 +109,7 @@ func (conn *Conn) ResponseMessage(resMsg message.Response) error {
 	if err != nil {
 		return err
 	}
-	if _, err := conn.conn.Write(resBytes); err != nil {
+	if _, err := conn.Conn.Write(resBytes); err != nil {
 		return err
 	}
 	return nil
@@ -162,7 +142,7 @@ func (conn *Conn) ResponseError(err error) error {
 	if err != nil {
 		return err
 	}
-	_, err = conn.conn.Write(errBytes)
+	_, err = conn.Conn.Write(errBytes)
 	return err
 }
 
