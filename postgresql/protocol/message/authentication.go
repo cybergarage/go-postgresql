@@ -14,8 +14,16 @@
 
 package message
 
-// NewAuthenticationOk returns a new AuthenticationOk message.
-func NewAuthenticationOk() (*ResponseMessage, error) {
-	msg := NewResponseMessageWith(AuthenticationOkMessage)
-	return msg, msg.AppendInt32(AuthenticationOk)
-}
+const (
+	AuthenticationKerberosV5Required        = 2
+	AuthenticationCleartextPasswordRequired = 3
+	AuthenticationMD5PasswordRequired       = 5
+	AuthenticationSCMCredentialRequired     = 6
+	AuthenticationGSSRequired               = 7
+	AuthenticationGSSContinueRequired       = 8
+	AuthenticationSSPIRequired              = 9
+	AuthenticationSASLRequired              = 10
+	AuthenticationSASLContinueRequired      = 11
+	AuthenticationSASLFinalRequired         = 12
+	AuthenticationOk                        = 0
+)
