@@ -220,7 +220,7 @@ func (executor *BaseExtendedQueryExecutor) Flush(conn *Conn, msg *message.Flush)
 // Query handles a query message.
 func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query) (message.Responses, error) {
 	q := msg.Query
-	log.Debugf("%s %s", conn.conn.RemoteAddr(), q)
+	log.Debugf("%s %s", conn.RemoteAddr(), q)
 
 	conn.StartSpan("parse")
 	parser := query.NewParser()
