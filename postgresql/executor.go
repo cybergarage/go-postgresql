@@ -15,14 +15,22 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// StartupHandler represents a backend protocol message handler.
-type StartupHandler interface {
+// StartupAuthHandler represents a start-up authenticatation handler.
+type StartupAuthHandler interface {
 	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse message.
 	Authenticate(*Conn, *message.Startup) (message.Response, error)
+	// AddAuthenticator adds a new authenticator.
+	AddAuthenticator(auth.Authenticator)
+}
+
+// StartupAuthHandler represents a start-up message handler.
+type StartupHandler interface {
+	StartupAuthHandler
 	// ParameterStatuses returns the parameter statuses.
 	ParameterStatuses(*Conn) (message.Responses, error)
 	// BackendKeyData returns the backend key data.
