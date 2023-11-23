@@ -19,3 +19,11 @@ func NewAuthenticationCleartextPassword() (*ResponseMessage, error) {
 	msg := NewResponseMessageWith(AuthenticationCleartextPasswordMessage)
 	return msg, msg.AppendInt32(AuthenticationCleartextPasswordRequired)
 }
+
+// NewAuthenticationMD5Password returns a new AuthenticationMD5Password message.
+func NewAuthenticationMD5Password(salt []byte) (*ResponseMessage, error) {
+	msg := NewResponseMessageWith(AuthenticationMD5PasswordMessage)
+	msg.AppendInt32(AuthenticationMD5PasswordRequired)
+	msg.AppendBytes(salt)
+	return msg, nil
+}
