@@ -244,12 +244,12 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 			return nil, err
 		}
 
-		ok, err := conn.IsPeekType(message.CopyDataMessage)
+		ok, err := conn.MessageReader().IsPeekType(message.CopyDataMessage)
 		if !ok || err != nil {
 			return nil, err
 		}
 
-		return executor.BulkExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader))
+		return executor.BulkExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader()))
 	}
 
 	for _, stmt := range stmts {
