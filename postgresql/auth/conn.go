@@ -23,6 +23,8 @@ import (
 // Conn represents a connection.
 type Conn interface {
 	net.Conn
+	// MessageReader returns a message reader.
+	MessageReader() *message.MessageReader
 	// ResponseMessage returns a response message.
 	ResponseMessage(resMsg message.Response) error
 	// ResponseMessages returns response messages.
