@@ -15,6 +15,8 @@
 package auth
 
 import (
+	"errors"
+
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
@@ -46,10 +48,15 @@ func (mgr *AuthManager) Authenticate(conn Conn, startup *message.Startup) (bool,
 	if len(mgr.authenticators) <= 0 {
 		return true, nil
 	}
+	var authErr error
 	for _, authenticator := range mgr.authenticators {
-		if ok, err := authenticator.Authenticate(conn, startup); ok {
-			return true, err
+		ok, err := authenticator.Authenticate(conn, startup)
+		if ok {
+			return true, nil
+		}
+		if err != nil {
+			authErr = errors.Join(authErr, err)
 		}
 	}
-	return false, nil
+	return false, authErr
 }
