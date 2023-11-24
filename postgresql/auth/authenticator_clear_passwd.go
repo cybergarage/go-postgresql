@@ -33,7 +33,15 @@ func NewCleartextPasswordAuthenticatorWith(username string, password string) *Cl
 	return authenticator
 }
 
+// Authenticate authenticates the specified connection.
 func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn, startupMessage *message.Startup) (bool, error) {
+	clientUsername, ok := startupMessage.User()
+	if !ok {
+		return false, nil
+	}
+	if clientUsername != authenticator.username {
+		return false, nil
+	}
 	authMsg, err := message.NewAuthenticationCleartextPassword()
 	if err != nil {
 		return false, err
@@ -41,6 +49,13 @@ func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn, sta
 	err = conn.ResponseMessage(authMsg)
 	if err != nil {
 		return false, err
+	}
+	clientPassword, err := message.NewPasswordWithReader(conn.MessageReader())
+	if err != nil {
+		return false, err
+	}
+	if clientPassword != authenticator.password {
+		return false, nil
 	}
 	return true, nil
 }
