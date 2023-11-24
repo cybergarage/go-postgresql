@@ -178,14 +178,14 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	// Checks the SSLRequest message.
 
-	startupMsgLength, err := conn.PeekInt32()
+	startupMsgLength, err := conn.MessageReader().PeekInt32()
 	if err != nil {
 		conn.ResponseError(err)
 		return err
 	}
 
 	if startupMsgLength == 8 {
-		_, err := message.NewSSLRequestWithReader(conn.MessageReader)
+		_, err := message.NewSSLRequestWithReader(conn.MessageReader())
 		if err != nil {
 			conn.ResponseError(err)
 			return err
@@ -198,7 +198,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	// Handle a Start-up message.
 
-	startupMsg, err := message.NewStartupWithReader(conn.MessageReader)
+	startupMsg, err := message.NewStartupWithReader(conn.MessageReader())
 	if err != nil {
 		conn.ResponseError(err)
 		return err
@@ -222,7 +222,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 	for {
 		var reqErr error
 		var reqType message.Type
-		reqType, reqErr = conn.PeekType()
+		reqType, reqErr = conn.MessageReader().PeekType()
 		if reqErr != nil {
 			conn.ResponseError(reqErr)
 			break
@@ -237,54 +237,54 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		switch reqType { // nolint:exhaustive
 		case message.ParseMessage:
 			var reqMsg *message.Parse
-			reqMsg, reqErr = message.NewParseWithReader(conn.MessageReader)
+			reqMsg, reqErr = message.NewParseWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Parse(conn, reqMsg)
 			}
 		case message.BindMessage:
 			var reqMsg *message.Bind
-			reqMsg, reqErr = message.NewBindWithReader(conn.MessageReader)
+			reqMsg, reqErr = message.NewBindWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Bind(conn, reqMsg)
 			}
 		case message.DescribeMessage:
 			var reqMsg *message.Describe
-			reqMsg, reqErr = message.NewDescribeWithReader(conn.MessageReader)
+			reqMsg, reqErr = message.NewDescribeWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Describe(conn, reqMsg)
 			}
 		case message.QueryMessage:
 			var reqMsg *message.Query
-			reqMsg, reqErr = message.NewQueryWithReader(conn.MessageReader)
+			reqMsg, reqErr = message.NewQueryWithReader(conn.MessageReader())
 			if reqErr == nil {
 				resMsgs, reqErr = server.Executor.Query(conn, reqMsg)
 			}
 		case message.ExecuteMessage:
 			var reqMsg *message.Execute
-			reqMsg, err := message.NewExecuteWithReader(conn.MessageReader)
+			reqMsg, err := message.NewExecuteWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Execute(conn, reqMsg)
 			}
 		case message.CloseMessage:
 			var reqMsg *message.Close
-			reqMsg, err := message.NewCloseWithReader(conn.MessageReader)
+			reqMsg, err := message.NewCloseWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Close(conn, reqMsg)
 			}
 		case message.SyncMessage:
 			var reqMsg *message.Sync
-			reqMsg, err := message.NewSyncWithReader(conn.MessageReader)
+			reqMsg, err := message.NewSyncWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Sync(conn, reqMsg)
 			}
 		case message.FlushMessage:
 			var reqMsg *message.Flush
-			reqMsg, err := message.NewFlushWithReader(conn.MessageReader)
+			reqMsg, err := message.NewFlushWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Flush(conn, reqMsg)
 			}
 		case message.TerminateMessage:
-			_, reqErr = message.NewTerminateWithReader(conn.MessageReader)
+			_, reqErr = message.NewTerminateWithReader(conn.MessageReader())
 			if reqErr == nil {
 				conn.FinishSpan()
 				loopSpan.Span().Finish()

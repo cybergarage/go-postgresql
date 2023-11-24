@@ -29,10 +29,10 @@ type ConnOption = func(*Conn)
 // Conn represents a connection of PostgreSQL binary protocol.
 type Conn struct {
 	net.Conn
-	*message.MessageReader
-	db   string
-	ts   time.Time
-	uuid uuid.UUID
+	msgReader *message.MessageReader
+	db        string
+	ts        time.Time
+	uuid      uuid.UUID
 	tracer.Context
 	PreparedStatementMap
 	PreparedPortalMap
@@ -42,7 +42,7 @@ type Conn struct {
 func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
 		Conn:                 netConn,
-		MessageReader:        message.NewMessageReaderWith(netConn),
+		msgReader:            message.NewMessageReaderWith(netConn),
 		db:                   "",
 		ts:                   time.Now(),
 		uuid:                 uuid.New(),
@@ -100,6 +100,11 @@ func (conn *Conn) SpanContext() tracer.Context {
 	return conn.Context
 }
 
+// MessageReader returns a message reader.
+func (conn *Conn) MessageReader() *message.MessageReader {
+	return conn.msgReader
+}
+
 // ResponseMessage sends a response message.
 func (conn *Conn) ResponseMessage(resMsg message.Response) error {
 	if resMsg == nil {
@@ -148,7 +153,7 @@ func (conn *Conn) ResponseError(err error) error {
 
 // SkipMessage skips a message.
 func (conn *Conn) SkipMessage() error {
-	msg, err := message.NewMessageWithReader(conn.MessageReader)
+	msg, err := message.NewMessageWithReader(conn.MessageReader())
 	if err != nil {
 		return err
 	}
