@@ -16,9 +16,17 @@ package auth
 
 import (
 	"net"
+
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
 // Conn represents a connection.
 type Conn interface {
 	net.Conn
+	// ResponseMessage returns a response message.
+	ResponseMessage(resMsg message.Response) error
+	// ResponseMessages returns response messages.
+	ResponseMessages(resMsgs message.Responses) error
+	// ResponseError returns a response error.
+	ResponseError(err error) error
 }
