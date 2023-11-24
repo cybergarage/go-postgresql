@@ -14,13 +14,22 @@
 
 package auth
 
-import "github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+import (
+	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+)
 
+// CleartextPasswordAuthenticator represents an authenticator for the cleartext password.
 type CleartextPasswordAuthenticator struct {
+	username string
+	password string
 }
 
-func NewCleartextPasswordAuthenticator() *CleartextPasswordAuthenticator {
-	authenticator := &CleartextPasswordAuthenticator{}
+// NewCleartextPasswordAuthenticator returns a new authenticator with the specified username and password.
+func NewCleartextPasswordAuthenticatorWith(username string, password string) *CleartextPasswordAuthenticator {
+	authenticator := &CleartextPasswordAuthenticator{
+		username: username,
+		password: password,
+	}
 	return authenticator
 }
 
