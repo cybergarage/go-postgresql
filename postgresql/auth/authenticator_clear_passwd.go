@@ -34,5 +34,13 @@ func NewCleartextPasswordAuthenticatorWith(username string, password string) *Cl
 }
 
 func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn, startupMessage *message.Startup) (bool, error) {
+	authMsg, err := message.NewAuthenticationCleartextPassword()
+	if err != nil {
+		return false, err
+	}
+	err = conn.ResponseMessage(authMsg)
+	if err != nil {
+		return false, err
+	}
 	return true, nil
 }
