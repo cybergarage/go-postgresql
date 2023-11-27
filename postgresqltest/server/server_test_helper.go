@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	"github.com/cybergarage/go-postgresql/postgresqltest/client"
 	"github.com/jackc/pgx/v5"
 )
@@ -38,6 +39,7 @@ func RunServerTests(t *testing.T, server *Server) {
 		name string
 		fn   ServerTestFunc
 	}{
+		{"authenticator", RunAuthenticatorTest},
 		//		{"copy", TestServerCopy},
 	}
 
@@ -83,8 +85,37 @@ func RunServerTests(t *testing.T, server *Server) {
 	}
 }
 
-func RunAuthClearPasswordTest(t *testing.T, server *Server, testDBName string) {
+// RunAuthenticatorTest tests the authenticator.
+func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
+
+	username := "testuser"
+	password := "testpassword"
+
+	authenticators := []auth.Authenticator{
+		auth.NewCleartextPasswordAuthenticatorWith(username, password),
+	}
+
+	for _, authenticator := range authenticators {
+		server.AddAuthenticator(authenticator)
+
+		client := client.NewDefaultClient()
+		client.SetUser(username)
+		client.SetPassword(password)
+		client.SetDatabase(testDBName)
+		err := client.Open()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		err = client.Close()
+		if err != nil {
+			t.Error(err)
+		}
+
+		server.ClearAuthenticators()
+	}
 }
 
 // RunServerCopyTest tests the COPY command.
