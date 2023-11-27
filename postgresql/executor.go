@@ -26,6 +26,8 @@ type StartupAuthHandler interface {
 	Authenticate(*Conn, *message.Startup) (message.Response, error)
 	// AddAuthenticator adds a new authenticator.
 	AddAuthenticator(auth.Authenticator)
+	// ClearAuthenticators clears all authenticators.
+	ClearAuthenticators()
 }
 
 // StartupAuthHandler represents a start-up message handler.
