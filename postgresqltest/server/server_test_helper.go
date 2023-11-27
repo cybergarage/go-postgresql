@@ -27,40 +27,74 @@ import (
 
 const testDBNamePrefix = "pgtest"
 
-type ServerTestFunc = func(*testing.T, *client.PgxClient)
+type ServerTestFunc = func(*testing.T, *Server, string)
 
-func RunServerTests(t *testing.T) {
+func RunServerTests(t *testing.T, server *Server) {
 	t.Helper()
 
 	log.SetStdoutDebugEnbled(true)
 
-	testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
-	client := client.NewPgxClient()
-
-	// Create a test database
-
-	client.SetDatabase("postgres")
-	err := client.Open()
-	if err != nil {
-		t.Error(err)
-		return
+	testFuncs := []struct {
+		name string
+		fn   ServerTestFunc
+	}{
+		//		{"copy", TestServerCopy},
 	}
 
-	err = client.CreateDatabase(testDBName)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	for _, testFunc := range testFuncs {
+		testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
+		t.Run(testFunc.name, func(t *testing.T) {
+			// Create a test database
 
-	err = client.Close()
-	if err != nil {
-		t.Error(err)
+			client := client.NewDefaultClient()
+
+			client.SetDatabase("postgres")
+			err := client.Open()
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			err = client.CreateDatabase(testDBName)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			err = client.Close()
+			if err != nil {
+				t.Error(err)
+			}
+
+			// Run tests
+
+			testFunc.fn(t, server, testDBName)
+
+			err = client.DropDatabase(testDBName)
+			if err != nil {
+				t.Error(err)
+			}
+
+			err = client.Close()
+			if err != nil {
+				t.Error(err)
+			}
+		})
 	}
+}
+
+func RunAuthClearPasswordTest(t *testing.T, server *Server, testDBName string) {
+}
+
+// RunServerCopyTest tests the COPY command.
+func RunServerCopyTest(t *testing.T, server *Server, testDBName string) {
+	t.Helper()
 
 	// Run tests
 
+	client := client.NewPgxClient()
 	client.SetDatabase(testDBName)
-	err = client.Open()
+	err := client.Open()
 	if err != nil {
 		t.Error(err)
 		return
@@ -79,24 +113,6 @@ func RunServerTests(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-
-	testFuncs := []struct {
-		name string
-		fn   ServerTestFunc
-	}{
-		//		{"copy", TestServerCopy},
-	}
-
-	for _, testFunc := range testFuncs {
-		t.Run(testFunc.name, func(t *testing.T) {
-			testFunc.fn(t, client)
-		})
-	}
-}
-
-// TestServerCopy tests the COPY command.
-func TestServerCopy(t *testing.T, client *client.PgxClient) {
-	t.Helper()
 
 	rows, err := client.Query("CREATE TABLE cptest (ctext TEXT PRIMARY KEY, cint INT, cfloat FLOAT);")
 	if err != nil {
