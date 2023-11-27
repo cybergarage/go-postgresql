@@ -84,6 +84,7 @@ func RunServerTests(t *testing.T, server *Server) {
 }
 
 func RunAuthClearPasswordTest(t *testing.T, server *Server, testDBName string) {
+	t.Helper()
 }
 
 // RunServerCopyTest tests the COPY command.
