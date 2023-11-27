@@ -31,7 +31,7 @@ func TestServer(t *testing.T) {
 		return
 	}
 
-	RunServerTests(t)
+	RunServerTests(t, server)
 
 	err = server.Stop()
 	if err != nil {
