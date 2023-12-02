@@ -14,11 +14,26 @@
 
 package message
 
+// Password represents a password message.
+type Password struct {
+	*RequestMessage
+	Password string
+}
+
 // NewPasswordWithReader returns a new password message.
-func NewPasswordWithReader(reader *MessageReader) (string, error) {
+func NewPasswordWithReader(reader *MessageReader) (*Password, error) {
+	msg, err := NewRequestMessageWithReader(reader)
+	if err != nil {
+		return nil, err
+	}
+
 	password, err := reader.ReadString()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return password, nil
+
+	return &Password{
+		RequestMessage: msg,
+		Password:       password,
+	}, nil
 }
