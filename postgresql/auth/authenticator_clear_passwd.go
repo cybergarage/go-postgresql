@@ -50,11 +50,11 @@ func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn, sta
 	if err != nil {
 		return false, err
 	}
-	clientPassword, err := message.NewPasswordWithReader(conn.MessageReader())
+	msg, err := message.NewPasswordWithReader(conn.MessageReader())
 	if err != nil {
 		return false, err
 	}
-	if clientPassword != authenticator.password {
+	if msg.Password != authenticator.password {
 		return false, nil
 	}
 	return true, nil
