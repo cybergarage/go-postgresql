@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/cybergarage/go-logger/log"
@@ -22,6 +23,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-safecast/safecast"
+	sqlparser "github.com/cybergarage/go-sqlparser/sql/parser"
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -227,6 +229,9 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 	stmts, err := parser.ParseString(q)
 	conn.FinishSpan()
 	if err != nil {
+		if errors.Is(err, sqlparser.ErrEmptyQuery) {
+			return message.Responses{message.NewCommandComplete()}, nil
+		}
 		res, err := executor.ErrorHandler.ParserError(conn, q, err)
 		if err != nil {
 			return nil, err
