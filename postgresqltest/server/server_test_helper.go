@@ -109,6 +109,11 @@ func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 			return
 		}
 
+		err = client.Ping()
+		if err != nil {
+			t.Error(err)
+		}
+
 		err = client.Close()
 		if err != nil {
 			t.Error(err)
