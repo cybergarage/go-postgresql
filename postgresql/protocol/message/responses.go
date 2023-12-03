@@ -81,6 +81,15 @@ func NewCopyCompleteResponsesWith(n int) (Responses, error) {
 	return Responses{res}, nil
 }
 
+// NewEmptyCompleteResponses returns a new responses with the specified message.
+func NewEmptyCompleteResponses() (Responses, error) {
+	res, err := NewEmptyComplete()
+	if err != nil {
+		return nil, err
+	}
+	return Responses{res}, nil
+}
+
 // Append appends the specified response to this responses.
 func (responses Responses) Append(res Response) Responses {
 	return append(responses, res)

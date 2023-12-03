@@ -220,7 +220,7 @@ func (executor *BaseExtendedQueryExecutor) Flush(conn *Conn, msg *message.Flush)
 }
 
 // Query handles a query message.
-func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query) (message.Responses, error) {
+func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query) (message.Responses, error) { //nolint:gocyclo
 	q := msg.Query
 	log.Debugf("%s %s", conn.RemoteAddr(), q)
 
@@ -229,8 +229,9 @@ func (executor *BaseExtendedQueryExecutor) Query(conn *Conn, msg *message.Query)
 	stmts, err := parser.ParseString(q)
 	conn.FinishSpan()
 	if err != nil {
+		// Is it a empty query for ping?
 		if errors.Is(err, sqlparser.ErrEmptyQuery) {
-			return message.Responses{message.NewCommandComplete()}, nil
+			return message.NewEmptyCompleteResponses()
 		}
 		res, err := executor.ErrorHandler.ParserError(conn, q, err)
 		if err != nil {
