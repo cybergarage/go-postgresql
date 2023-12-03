@@ -7,10 +7,12 @@
   - SELECT
     - Added tests for ORDER BY
 
-## v1.4.0 (2023-11-XX)
+## v1.4.0 (2023-12-03)
 - New Features
   - Added authencator interface
     - Added support for password authentication 
+- Improvements
+  - Supported empty query for ping queries
 
 ## v1.3.5 (2023-11-02)
 - Updated
