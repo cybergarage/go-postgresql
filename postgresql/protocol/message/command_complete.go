@@ -78,3 +78,9 @@ func NewCommitComplete() (*CommandComplete, error) {
 	msg := NewCommandComplete()
 	return msg, msg.AppendString("COMMIT")
 }
+
+// NewEmptyComplete returns a new command complete message for empty ping query.
+func NewEmptyComplete() (*CommandComplete, error) {
+	msg := NewCommandComplete()
+	return msg, msg.AppendString("EMPTY")
+}
