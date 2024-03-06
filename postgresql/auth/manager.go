@@ -45,7 +45,7 @@ func (mgr *AuthManager) ClearAuthenticators() {
 
 // Authenticate authenticates the connection with the startup message.
 func (mgr *AuthManager) Authenticate(conn Conn, startup *message.Startup) (bool, error) {
-	if len(mgr.authenticators) <= 0 {
+	if len(mgr.authenticators) == 0 {
 		return true, nil
 	}
 	var authErr error
