@@ -71,7 +71,7 @@ func (dt *DataType) FormatCode() FormatCode {
 	return TextFormat
 }
 
-func init() { //nolint: gochecknoinits, maintidx
+func init() { //nolint: maintidx
 HEADER
 
 my $pg_type_file = "res/pg_type.csv";

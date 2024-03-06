@@ -65,7 +65,7 @@ func (dt *DataType) FormatCode() FormatCode {
 	return TextFormat
 }
 
-func init() { //nolint: gochecknoinits, maintidx
+func init() { //nolint: maintidx
 	dataTypes[16] = newDataType("Bool", 16, 1)
 	dataTypes[17] = newDataType("Bytea", 17, -1)
 	dataTypes[18] = newDataType("Char", 18, 1)
