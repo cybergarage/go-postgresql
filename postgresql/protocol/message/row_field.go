@@ -42,6 +42,7 @@ func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 		TableID:      0,
 		Number:       0,
 		ObjectID:     0,
+		DataTypeSize: 0,
 		TypeModifier: 0,
 		FormatCode:   0,
 	}

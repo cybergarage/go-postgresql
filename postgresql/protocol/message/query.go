@@ -39,6 +39,7 @@ func NewQueryWithReader(reader *MessageReader) (*Query, error) {
 	return &Query{
 		RequestMessage: msg,
 		Query:          query,
+		BindParams:     BindParams{},
 	}, nil
 }
 
