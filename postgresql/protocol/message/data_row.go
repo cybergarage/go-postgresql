@@ -38,6 +38,7 @@ type DataRow struct {
 func NewDataRow() *DataRow {
 	return &DataRow{
 		ResponseMessage: NewResponseMessageWith(DataRowMessage),
+		Data:            []any{},
 	}
 }
 
