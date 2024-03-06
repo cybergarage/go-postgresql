@@ -206,7 +206,7 @@ func (executor *BaseExtendedQueryExecutor) Close(conn *Conn, msg *message.Close)
 func (executor *BaseExtendedQueryExecutor) Sync(conn *Conn, msg *message.Sync) (message.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
-	//At completion of each series of extended-query messages, the frontend should issue a Sync message.
+	// At completion of each series of extended-query messages, the frontend should issue a Sync message.
 	return nil, nil
 }
 
