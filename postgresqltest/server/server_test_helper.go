@@ -23,7 +23,7 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	"github.com/cybergarage/go-postgresql/postgresqltest/client"
-	"github.com/jackc/pgx/v5"
+	pgx "github.com/jackc/pgx/v5"
 )
 
 const testDBNamePrefix = "pgtest"
