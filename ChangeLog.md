@@ -1,11 +1,14 @@
 # Changelog
 
-## v1.4.x (2023-xx-xx)
+## v1.5.0 (2024-xx-xx)
 - Improved
   - Support more data types
     -  .... 
   - SELECT
     - Added tests for ORDER BY
+
+## v1.4.1 (2024-xx-xx)
+- Fix lint warnings
 
 ## v1.4.0 (2023-12-03)
 - New Features
