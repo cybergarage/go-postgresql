@@ -19,6 +19,9 @@ package message
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
+// SSLRequestCode represents a SSLRequest message code.
+const SSLRequestCode = 80877103
+
 // SSLRequest represents a SSLRequest message.
 type SSLRequest struct {
 	RequestCode int32
@@ -33,6 +36,9 @@ func NewSSLRequestWithReader(reader *MessageReader) (*SSLRequest, error) {
 	code, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
+	}
+	if code != SSLRequestCode {
+		return nil, newErrInvalidSSLRequestCode(code)
 	}
 	return &SSLRequest{
 		RequestCode: code,
