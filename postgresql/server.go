@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"crypto/tls"
 	"net"
 	"strconv"
 
@@ -184,16 +185,26 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return err
 	}
 
+	// PostgreSQL: Documentation: 16: 55.2.10. SSL Session Encryption
+	// https://www.postgresql.org/docs/16/protocol-flow.html
 	if startupMsgLength == 8 {
 		_, err := message.NewSSLRequestWithReader(conn.MessageReader())
 		if err != nil {
 			conn.ResponseError(err)
 			return err
 		}
-		err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLDisabled))
+		tlsConfig := server.Config.TLSConfig()
+		if tlsConfig == nil {
+			err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLDisabled))
+			if err != nil {
+				return err
+			}
+		}
+		err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLEnabled))
 		if err != nil {
 			return err
 		}
+		conn = NewConnWith(tls.Client(conn, tlsConfig))
 	}
 
 	// Handle a Start-up message.
