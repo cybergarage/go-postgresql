@@ -40,6 +40,7 @@ func RunServerTests(t *testing.T, server *Server) {
 		fn   ServerTestFunc
 	}{
 		{"authenticator", RunAuthenticatorTest},
+		{"tls", RunTLSSessionTest},
 		//		{"copy", TestServerCopy},
 	}
 
@@ -85,7 +86,7 @@ func RunServerTests(t *testing.T, server *Server) {
 	}
 }
 
-// RunAuthenticatorTest tests the authenticator.
+// RunAuthenticatorTest tests the authenticators.
 func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
@@ -121,6 +122,44 @@ func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 
 		server.ClearAuthenticators()
 	}
+}
+
+// RunTLSSessionTest tests the TLS session.
+func RunTLSSessionTest(t *testing.T, server *Server, testDBName string) {
+	t.Helper()
+
+	username := "testuser"
+	password := "testpassword"
+
+	authenticators := []auth.Authenticator{
+		auth.NewCleartextPasswordAuthenticatorWith(username, password),
+	}
+
+	for _, authenticator := range authenticators {
+		server.AddAuthenticator(authenticator)
+	}
+
+	client := client.NewDefaultClient()
+	client.SetUser(username)
+	client.SetPassword(password)
+	client.SetDatabase(testDBName)
+	err := client.Open()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = client.Ping()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = client.Close()
+	if err != nil {
+		t.Error(err)
+	}
+
+	server.ClearAuthenticators()
 }
 
 // RunServerCopyTest tests the COPY command.
