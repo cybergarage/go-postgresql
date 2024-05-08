@@ -43,6 +43,10 @@ func newInvalidLengthError(v int) error {
 	return fmt.Errorf("%d is %w length", v, ErrInvalid)
 }
 
+func newErrInvalidSSLRequestCode(v int32) error {
+	return fmt.Errorf("SSL request code (%d) is %w", v, ErrInvalid)
+}
+
 // NewErrMessageNotSuppoted returns a new message not supported error.
 func NewErrMessageNotSuppoted(t Type) error {
 	return fmt.Errorf("message type (%c:%02X) is %w", t, uint8(t), ErrNotSupported)
