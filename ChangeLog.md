@@ -1,13 +1,17 @@
 # Changelog
 
-## v1.5.0 (2024-xx-xx)
+## v1.6.0 (2024-xx-xx)
 - Improved
   - Support more data types
     -  .... 
   - SELECT
     - Added tests for ORDER BY
 
-## v1.4.1 (2024-xx-xx)
+## v1.5.0 (2024-xx-xx)
+- New Features
+  - Add TLS interface
+
+## v1.4.1 (2024-03-20)
 - Fix lint warnings
 
 ## v1.4.0 (2023-12-03)
