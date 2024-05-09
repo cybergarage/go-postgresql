@@ -125,6 +125,10 @@ func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 }
 
 // RunTLSSessionTest tests the TLS session.
+// PostgreSQL: Documentation: 16: 34.19. SSL Support
+// https://www.postgresql.org/docs/current/libpq-ssl.html
+// PostgreSQL: Documentation: 16: 19.9. Secure TCP/IP Connections with SSL
+// https://www.postgresql.org/docs/current/ssl-tcp.html#SSL-CERTIFICATE-CREATION
 func RunTLSSessionTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
