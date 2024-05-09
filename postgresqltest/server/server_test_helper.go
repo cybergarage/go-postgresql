@@ -135,6 +135,9 @@ func RunTLSSessionTest(t *testing.T, server *Server, testDBName string) {
 	username := "testuser"
 	password := "testpassword"
 
+	// Set a TLS configuration
+	// https://cloud.google.com/sql/docs/postgres/samples/cloud-sql-postgres-databasesql-connect-tcp-sslcerts?hl=ja
+
 	authenticators := []auth.Authenticator{
 		auth.NewCleartextPasswordAuthenticatorWith(username, password),
 	}
