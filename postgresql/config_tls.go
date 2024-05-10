@@ -54,7 +54,7 @@ func (config *TLSConf) SetServerCertFile(file string) {
 }
 
 // SetRootCertFile sets a SSL root certificates.
-func (config *TLSConf) SetRootCertFiles(files []string) {
+func (config *TLSConf) SetRootCertFiles(files ...string) {
 	config.RootCertFiles = files
 }
 
