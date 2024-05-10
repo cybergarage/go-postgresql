@@ -15,6 +15,8 @@
 package server
 
 import (
+	"crypto/tls"
+
 	"github.com/cybergarage/go-postgresql/examples/go-postgresqld/server"
 )
 
@@ -23,10 +25,22 @@ type Server struct {
 	*server.Server
 }
 
+const (
+	serverCert = "../certs/cert.pem"
+	serverKey  = "../certs/key.pem"
+	rootCert   = "../certs/root_cert.pem"
+)
+
 // NewServer returns a test server instance.
 func NewServer() *Server {
-	s := &Server{
-		Server: server.NewServer(),
+	server := server.NewServer()
+
+	server.SetServerCertFile(serverCert)
+	server.SetServerKeyFile(serverCert)
+	server.SetRootCertFiles(rootCert)
+	server.SetClientAuthType(tls.NoClientCert)
+
+	return &Server{
+		Server: server,
 	}
-	return s
 }
