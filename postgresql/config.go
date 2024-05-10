@@ -14,10 +14,6 @@
 
 package postgresql
 
-import (
-	"crypto/tls"
-)
-
 const (
 	defaultAddr = ""
 	defaultPort = DefaultPort
@@ -27,15 +23,15 @@ const (
 type Config struct {
 	addr string
 	port int
-	tls  *tls.Config
+	*TLSPathConfig
 }
 
 // NewDefaultConfig returns a default configuration instance.
 func NewDefaultConfig() *Config {
 	config := &Config{
-		addr: defaultAddr,
-		port: defaultPort,
-		tls:  nil,
+		addr:          defaultAddr,
+		port:          defaultPort,
+		TLSPathConfig: NewTLSPathConfig(),
 	}
 	return config
 }
@@ -50,11 +46,6 @@ func (config *Config) SetPort(port int) {
 	config.port = port
 }
 
-// SetTLSConfig sets a TLS configuration to the configuration.
-func (config *Config) SetTLSConfig(conf *tls.Config) {
-	config.tls = conf
-}
-
 // Address returns a listen address from the configuration.
 func (config *Config) Address() string {
 	return config.addr
@@ -63,9 +54,4 @@ func (config *Config) Address() string {
 // Port returns a listen port from the configuration.
 func (config *Config) Port() int {
 	return config.port
-}
-
-// TLSConfig returns a TLS configuration from the configuration.
-func (config *Config) TLSConfig() *tls.Config {
-	return config.tls
 }

@@ -193,7 +193,11 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			conn.ResponseError(err)
 			return err
 		}
-		tlsConfig := server.Config.TLSConfig()
+		tlsConfig, err := server.Config.TLSConfig()
+		if err != nil {
+			conn.ResponseError(err)
+			return err
+		}
 		if tlsConfig == nil {
 			err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLDisabled))
 			if err != nil {
