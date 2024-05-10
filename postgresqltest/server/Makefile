@@ -20,14 +20,10 @@ all: certgen
 # https://www.postgresql.org/docs/current/ssl-tcp.html#SSL-CERTIFICATE-CREATION
 
 certgen: clean
-	openssl req -new -x509 -days 365 -nodes -text -out server.crt -keyout server.key -subj "/CN=dbhost.yourdomain.com"
-	chmod og-rwx server.key
-	openssl req -new -nodes -text -out root.csr -keyout root.key -subj "/CN=root.yourdomain.com"
-	chmod og-rwx root.key
-	openssl x509 -req -in root.csr -text -days 3650 -extfile /etc/ssl/openssl.cnf -signkey root.key -out root.crt
-	openssl req -new -nodes -text -out server.csr -keyout server.key -subj "/CN=dbhost.yourdomain.com"
-	chmod og-rwx server.key
-	openssl x509 -req -in server.csr -text -days 365 -CA root.crt -CAkey root.key -CAcreateserial -out server.crt
+	openssl req -new -x509 -days 365 -nodes -text -out cert.pem -keyout key.pem -subj "/CN=dbhost.yourdomain.com"
+	chmod og-rwx key.pem
+	openssl req -new -nodes -text -out root_cert.pem -keyout root_key.pem -subj "/CN=root.yourdomain.com"
+	chmod og-rwx root_key.pem
 
 clean:
-	rm -f server.crt server.csr server.key root.crt root.csr root.key root.srl
+	rm -f server.crt server.csr server.key root.crt root.pem root.key root.srl
