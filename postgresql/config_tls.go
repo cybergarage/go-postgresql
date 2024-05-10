@@ -20,39 +20,46 @@ import (
 	"os"
 )
 
-// TLSPathConfig represents a TLS configuration.
-type TLSPathConfig struct {
+// TLSConf represents a TLS configuration.
+type TLSConf struct {
+	ClientAuthType tls.ClientAuthType
 	ServerCertFile string
 	ServerKeyFile  string
 	RootCertFiles  []string
 }
 
-// NewTLSPathConfig returns a new TLS configuration.
-func NewTLSPathConfig() *TLSPathConfig {
-	return &TLSPathConfig{
+// NewTLSConf returns a new TLS configuration.
+func NewTLSConf() *TLSConf {
+	return &TLSConf{
+		ClientAuthType: tls.RequireAndVerifyClientCert,
 		ServerCertFile: "",
 		ServerKeyFile:  "",
 		RootCertFiles:  []string{},
 	}
 }
 
+// SetClientAuthType sets a client authentication type.
+func (config *TLSConf) SetClientAuthType(authType tls.ClientAuthType) {
+	config.ClientAuthType = authType
+}
+
 // SetServerKeyFile sets a SSL server key file.
-func (config *TLSPathConfig) SetServerKeyFile(file string) {
+func (config *TLSConf) SetServerKeyFile(file string) {
 	config.ServerKeyFile = file
 }
 
 // SetServerCertFile sets a SSL server certificate file.
-func (config *TLSPathConfig) SetServerCertFile(file string) {
+func (config *TLSConf) SetServerCertFile(file string) {
 	config.ServerCertFile = file
 }
 
 // SetRootCertFile sets a SSL root certificates.
-func (config *TLSPathConfig) SetRootCertFiles(files []string) {
+func (config *TLSConf) SetRootCertFiles(files []string) {
 	config.RootCertFiles = files
 }
 
 // TLSConfig returns a TLS configuration from the configuration.
-func (config *TLSPathConfig) TLSConfig() (*tls.Config, error) {
+func (config *TLSConf) TLSConfig() (*tls.Config, error) {
 	if len(config.ServerCertFile) == 0 || len(config.ServerKeyFile) == 0 {
 		return nil, nil
 	}
@@ -73,7 +80,7 @@ func (config *TLSPathConfig) TLSConfig() (*tls.Config, error) {
 		Certificates: []tls.Certificate{serverCert},
 		ClientCAs:    certPool,
 		RootCAs:      certPool,
-		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientAuth:   config.ClientAuthType,
 	}
 	return tlsConfig, nil
 }
