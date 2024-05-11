@@ -90,8 +90,10 @@ func RunServerTests(t *testing.T, server *Server) {
 func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
-	username := "testuser"
-	password := "testpassword"
+	const (
+		username = "testuser"
+		password = "testpassword"
+	)
 
 	authenticators := []auth.Authenticator{
 		auth.NewCleartextPasswordAuthenticatorWith(username, password),
@@ -132,24 +134,17 @@ func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 func RunTLSSessionTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
-	username := "testuser"
-	password := "testpassword"
-
-	// Set a TLS configuration
-	// https://cloud.google.com/sql/docs/postgres/samples/cloud-sql-postgres-databasesql-connect-tcp-sslcerts?hl=ja
-
-	authenticators := []auth.Authenticator{
-		auth.NewCleartextPasswordAuthenticatorWith(username, password),
-	}
-
-	for _, authenticator := range authenticators {
-		server.AddAuthenticator(authenticator)
-	}
+	const (
+		clientKey  = "../certs/key.pem"
+		clientCert = "../certs/cert.pem"
+		rootCert   = "../certs/root_cert.pem"
+	)
 
 	client := client.NewDefaultClient()
-	client.SetUser(username)
-	client.SetPassword(password)
-	client.SetDatabase(testDBName)
+	client.SetClientKeyFile(clientKey)
+	client.SetClientCertFile(clientCert)
+	client.SetRootCertFile(rootCert)
+
 	err := client.Open()
 	if err != nil {
 		t.Error(err)
