@@ -26,6 +26,7 @@ type TLSConf struct {
 	ServerCertFile string
 	ServerKeyFile  string
 	RootCertFiles  []string
+	tlsConfig      *tls.Config
 }
 
 // NewTLSConf returns a new TLS configuration.
@@ -35,6 +36,7 @@ func NewTLSConf() *TLSConf {
 		ServerCertFile: "",
 		ServerKeyFile:  "",
 		RootCertFiles:  []string{},
+		tlsConfig:      nil,
 	}
 }
 
@@ -60,6 +62,9 @@ func (config *TLSConf) SetRootCertFiles(files ...string) {
 
 // TLSConfig returns a TLS configuration from the configuration.
 func (config *TLSConf) TLSConfig() (*tls.Config, error) {
+	if config.tlsConfig != nil {
+		return config.tlsConfig, nil
+	}
 	if len(config.ServerCertFile) == 0 || len(config.ServerKeyFile) == 0 {
 		return nil, nil
 	}
@@ -75,12 +80,12 @@ func (config *TLSConf) TLSConfig() (*tls.Config, error) {
 		}
 		certPool.AppendCertsFromPEM(rootCert)
 	}
-	tlsConfig := &tls.Config{ // nolint: exhaustruct
+	config.tlsConfig = &tls.Config{ // nolint: exhaustruct
 		MinVersion:   tls.VersionTLS12,
 		Certificates: []tls.Certificate{serverCert},
 		ClientCAs:    certPool,
 		RootCAs:      certPool,
 		ClientAuth:   config.ClientAuthType,
 	}
-	return tlsConfig, nil
+	return config.tlsConfig, nil
 }
