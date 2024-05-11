@@ -40,8 +40,8 @@ func RunServerTests(t *testing.T, server *Server) {
 		fn   ServerTestFunc
 	}{
 		{"authenticator", RunAuthenticatorTest},
-		// {"tls", RunTLSSessionTest},
-		//		{"copy", TestServerCopy},
+		{"tls", RunTLSSessionTest},
+		// {"copy", TestServerCopy},
 	}
 
 	for _, testFunc := range testFuncs {
