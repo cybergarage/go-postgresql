@@ -21,7 +21,7 @@ all: certgen
 
 certgen: clean
 	openssl req -new -x509 -days 365 -nodes -text -out cert.pem -keyout key.pem -subj "/CN=dbhost.yourdomain.com"
-	chmod og-rwx key.pem
+	chmod 0640 key.pem
 	cp cert.pem root_cert.pem
 
 clean:
