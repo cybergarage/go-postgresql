@@ -26,8 +26,8 @@ type Server struct {
 }
 
 const (
-	serverCert = "../certs/cert.pem"
 	serverKey  = "../certs/key.pem"
+	serverCert = "../certs/cert.pem"
 	rootCert   = "../certs/root_cert.pem"
 )
 
@@ -35,8 +35,8 @@ const (
 func NewServer() *Server {
 	server := server.NewServer()
 
+	server.SetServerKeyFile(serverKey)
 	server.SetServerCertFile(serverCert)
-	server.SetServerKeyFile(serverCert)
 	server.SetRootCertFiles(rootCert)
 	server.SetClientAuthType(tls.NoClientCert)
 
