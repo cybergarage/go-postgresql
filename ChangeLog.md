@@ -7,9 +7,9 @@
   - SELECT
     - Added tests for ORDER BY
 
-## v1.5.0 (2024-xx-xx)
+## v1.5.0 (2024-05-12)
 - New Features
-  - Add TLS interface
+  - Update configuration to support TLS settings
 
 ## v1.4.1 (2024-03-20)
 - Fix lint warnings
