@@ -43,21 +43,25 @@ func NewTLSConf() *TLSConf {
 // SetClientAuthType sets a client authentication type.
 func (config *TLSConf) SetClientAuthType(authType tls.ClientAuthType) {
 	config.ClientAuthType = authType
+	config.tlsConfig = nil
 }
 
 // SetServerKeyFile sets a SSL server key file.
 func (config *TLSConf) SetServerKeyFile(file string) {
 	config.ServerKeyFile = file
+	config.tlsConfig = nil
 }
 
 // SetServerCertFile sets a SSL server certificate file.
 func (config *TLSConf) SetServerCertFile(file string) {
 	config.ServerCertFile = file
+	config.tlsConfig = nil
 }
 
 // SetRootCertFile sets a SSL root certificates.
 func (config *TLSConf) SetRootCertFiles(files ...string) {
 	config.RootCertFiles = files
+	config.tlsConfig = nil
 }
 
 // TLSConfig returns a TLS configuration from the configuration.
