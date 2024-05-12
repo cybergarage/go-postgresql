@@ -208,7 +208,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return err
 		}
-		conn = NewConnWith(tls.Client(conn, tlsConfig))
+		conn = NewConnWith(tls.Server(conn, tlsConfig))
 	}
 
 	// Handle a Start-up message.
