@@ -7,6 +7,10 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.5.1 (2024-05-14)
+- Update 
+  - TLS settings
+
 ## v1.5.0 (2024-05-12)
 - New Features
   - Update configuration to support TLS settings
