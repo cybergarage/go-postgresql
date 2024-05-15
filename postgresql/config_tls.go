@@ -26,6 +26,7 @@ type TLSConf struct {
 	ServerCertFile string
 	ServerKeyFile  string
 	RootCertFiles  []string
+	enabled        bool
 	tlsConfig      *tls.Config
 }
 
@@ -37,40 +38,56 @@ func NewTLSConf() *TLSConf {
 		ServerKeyFile:  "",
 		RootCertFiles:  []string{},
 		tlsConfig:      nil,
+		enabled:        false,
 	}
+}
+
+// SetEnabled sets a TLS enabled flag.
+func (config *TLSConf) SetEnabled(enabled bool) {
+	config.enabled = enabled
+	config.tlsConfig = nil
+}
+
+// IsEnabled returns true if the TLS is enabled.
+func (config *TLSConf) IsEnabled() bool {
+	return config.enabled
 }
 
 // SetClientAuthType sets a client authentication type.
 func (config *TLSConf) SetClientAuthType(authType tls.ClientAuthType) {
 	config.ClientAuthType = authType
 	config.tlsConfig = nil
+	config.SetEnabled(true)
 }
 
 // SetServerKeyFile sets a SSL server key file.
 func (config *TLSConf) SetServerKeyFile(file string) {
 	config.ServerKeyFile = file
 	config.tlsConfig = nil
+	config.SetEnabled(true)
 }
 
 // SetServerCertFile sets a SSL server certificate file.
 func (config *TLSConf) SetServerCertFile(file string) {
 	config.ServerCertFile = file
 	config.tlsConfig = nil
+	config.SetEnabled(true)
 }
 
 // SetRootCertFile sets a SSL root certificates.
 func (config *TLSConf) SetRootCertFiles(files ...string) {
 	config.RootCertFiles = files
 	config.tlsConfig = nil
+	config.SetEnabled(true)
 }
 
 // TLSConfig returns a TLS configuration from the configuration.
 func (config *TLSConf) TLSConfig() (*tls.Config, error) {
+	if !config.IsEnabled() {
+		return nil, nil
+	}
 	if config.tlsConfig != nil {
 		return config.tlsConfig, nil
-	}
-	if len(config.ServerCertFile) == 0 || len(config.ServerKeyFile) == 0 {
-		return nil, nil
 	}
 	serverCert, err := tls.LoadX509KeyPair(config.ServerCertFile, config.ServerKeyFile)
 	if err != nil {
