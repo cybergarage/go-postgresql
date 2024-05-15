@@ -38,7 +38,7 @@ func NewServer() *Server {
 	server.SetServerKeyFile(serverKey)
 	server.SetServerCertFile(serverCert)
 	server.SetRootCertFiles(rootCert)
-	server.SetClientAuthType(tls.NoClientCert)
+	server.SetClientAuthType(tls.RequireAndVerifyClientCert)
 
 	return &Server{
 		Server: server,
