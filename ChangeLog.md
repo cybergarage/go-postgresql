@@ -7,16 +7,20 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.5.2 (2024-05-18)
+- Updated 
+  - TLS settings to allow binary certificates
+
 ## v1.5.1 (2024-05-14)
-- Update 
-  - TLS settings
+- Updated 
+  - TLS settings to add enable/disable options
 
 ## v1.5.0 (2024-05-12)
 - New Features
   - Update configuration to support TLS settings
 
 ## v1.4.1 (2024-03-20)
-- Fix lint warnings
+- Fixed lint warnings
 
 ## v1.4.0 (2023-12-03)
 - New Features
