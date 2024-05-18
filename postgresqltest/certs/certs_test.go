@@ -17,7 +17,7 @@ package certs
 import (
 	"testing"
 
-	"github.com/cybergarage/go-redis/redis"
+	"github.com/cybergarage/go-postgresql/postgresql"
 )
 
 const (
@@ -27,12 +27,12 @@ const (
 )
 
 func TestCerts(t *testing.T) {
-	conf := redis.NewDefaultServerConfig()
-	conf.SetTLSCertFile(certFile)
-	conf.SetTLSKeyFile(keyFile)
-	conf.SetTLSCaCertFile(caCertFile)
+	conf := postgresql.NewTLSConf()
+	conf.SetServerCertFile(certFile)
+	conf.SetServerKeyFile(keyFile)
+	conf.SetRootCertFiles(caCertFile)
 
-	_, err := redis.NewTLSConfigFrom(conf)
+	_, err := conf.TLSConfig()
 	if err != nil {
 		t.Error(err)
 	}
