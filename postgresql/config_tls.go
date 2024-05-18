@@ -23,9 +23,9 @@ import (
 // TLSConf represents a TLS configuration.
 type TLSConf struct {
 	ClientAuthType tls.ClientAuthType
-	ServerCertFile string
-	ServerKeyFile  string
-	RootCertFiles  []string
+	ServerCert     []byte
+	ServerKey      []byte
+	RootCerts      [][]byte
 	enabled        bool
 	tlsConfig      *tls.Config
 }
@@ -34,9 +34,9 @@ type TLSConf struct {
 func NewTLSConf() *TLSConf {
 	return &TLSConf{
 		ClientAuthType: tls.RequireAndVerifyClientCert,
-		ServerCertFile: "",
-		ServerKeyFile:  "",
-		RootCertFiles:  []string{},
+		ServerCert:     []byte{},
+		ServerKey:      []byte{},
+		RootCerts:      [][]byte{},
 		tlsConfig:      nil,
 		enabled:        false,
 	}
@@ -61,22 +61,56 @@ func (config *TLSConf) SetClientAuthType(authType tls.ClientAuthType) {
 }
 
 // SetServerKeyFile sets a SSL server key file.
-func (config *TLSConf) SetServerKeyFile(file string) {
-	config.ServerKeyFile = file
-	config.tlsConfig = nil
-	config.SetTLSEnabled(true)
+func (config *TLSConf) SetServerKeyFile(file string) error {
+	key, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	config.SetServerKey(key)
+	return nil
 }
 
 // SetServerCertFile sets a SSL server certificate file.
-func (config *TLSConf) SetServerCertFile(file string) {
-	config.ServerCertFile = file
+func (config *TLSConf) SetServerCertFile(file string) error {
+	cert, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	config.SetServerCert(cert)
+	return nil
+}
+
+// SetRootCertFile sets a SSL root certificates.
+func (config *TLSConf) SetRootCertFiles(files ...string) error {
+	certs := make([][]byte, len(files))
+	for n, file := range files {
+		cert, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+		certs[n] = cert
+	}
+	config.SetRootCerts(certs...)
+	return nil
+}
+
+// SetServerKey sets a SSL server key.
+func (config *TLSConf) SetServerKey(key []byte) {
+	config.ServerKey = key
 	config.tlsConfig = nil
 	config.SetTLSEnabled(true)
 }
 
-// SetRootCertFile sets a SSL root certificates.
-func (config *TLSConf) SetRootCertFiles(files ...string) {
-	config.RootCertFiles = files
+// SetServerCert sets a SSL server certificate.
+func (config *TLSConf) SetServerCert(cert []byte) {
+	config.ServerCert = cert
+	config.tlsConfig = nil
+	config.SetTLSEnabled(true)
+}
+
+// SetRootCerts sets a SSL root certificates.
+func (config *TLSConf) SetRootCerts(certs ...[]byte) {
+	config.RootCerts = certs
 	config.tlsConfig = nil
 	config.SetTLSEnabled(true)
 }
@@ -89,16 +123,12 @@ func (config *TLSConf) TLSConfig() (*tls.Config, error) {
 	if config.tlsConfig != nil {
 		return config.tlsConfig, nil
 	}
-	serverCert, err := tls.LoadX509KeyPair(config.ServerCertFile, config.ServerKeyFile)
+	serverCert, err := tls.X509KeyPair(config.ServerCert, config.ServerKey)
 	if err != nil {
 		return nil, err
 	}
 	certPool := x509.NewCertPool()
-	for _, rootCertFile := range config.RootCertFiles {
-		rootCert, err := os.ReadFile(rootCertFile)
-		if err != nil {
-			return nil, err
-		}
+	for _, rootCert := range config.RootCerts {
 		certPool.AppendCertsFromPEM(rootCert)
 	}
 	config.tlsConfig = &tls.Config{ // nolint: exhaustruct
