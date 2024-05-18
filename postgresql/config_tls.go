@@ -45,7 +45,6 @@ func NewTLSConf() *TLSConf {
 // SetTLSEnabled sets a TLS enabled flag.
 func (config *TLSConf) SetTLSEnabled(enabled bool) {
 	config.enabled = enabled
-	config.tlsConfig = nil
 }
 
 // IsEnabled returns true if the TLS is enabled.
