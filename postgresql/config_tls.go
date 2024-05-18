@@ -115,6 +115,12 @@ func (config *TLSConf) SetRootCerts(certs ...[]byte) {
 	config.SetTLSEnabled(true)
 }
 
+// SetTLSConfig sets a TLS configuration.
+func (config *TLSConf) SetTLSConfig(tlsConfig *tls.Config) {
+	config.tlsConfig = tlsConfig
+	config.SetTLSEnabled(true)
+}
+
 // TLSConfig returns a TLS configuration from the configuration.
 func (config *TLSConf) TLSConfig() (*tls.Config, error) {
 	if !config.IsTLSEnabled() {
