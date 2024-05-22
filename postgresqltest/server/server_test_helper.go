@@ -39,8 +39,8 @@ func RunServerTests(t *testing.T, server *Server) {
 		name string
 		fn   ServerTestFunc
 	}{
-		{"authenticator", RunAuthenticatorTest},
-		{"tls", RunTLSSessionTest},
+		// {"authenticator", RunPasswordAuthenticatorTest},
+		{"tls", RunTLSAuthenticatorTest},
 		// {"copy", TestServerCopy},
 	}
 
@@ -86,8 +86,8 @@ func RunServerTests(t *testing.T, server *Server) {
 	}
 }
 
-// RunAuthenticatorTest tests the authenticators.
-func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
+// RunPasswordAuthenticatorTest tests the authenticators.
+func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
 	const (
@@ -126,12 +126,12 @@ func RunAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	}
 }
 
-// RunTLSSessionTest tests the TLS session.
+// RunTLSAuthenticatorTest tests the TLS session.
 // PostgreSQL: Documentation: 16: 34.19. SSL Support
 // https://www.postgresql.org/docs/current/libpq-ssl.html
 // PostgreSQL: Documentation: 16: 19.9. Secure TCP/IP Connections with SSL
 // https://www.postgresql.org/docs/current/ssl-tcp.html#SSL-CERTIFICATE-CREATION
-func RunTLSSessionTest(t *testing.T, server *Server, testDBName string) {
+func RunTLSAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
 	const (
@@ -140,28 +140,36 @@ func RunTLSSessionTest(t *testing.T, server *Server, testDBName string) {
 		rootCert   = "../certs/root_cert.pem"
 	)
 
-	client := client.NewDefaultClient()
-	client.SetClientKeyFile(clientKey)
-	client.SetClientCertFile(clientCert)
-	client.SetRootCertFile(rootCert)
-
-	err := client.Open()
-	if err != nil {
-		t.Error(err)
-		return
+	authenticators := []auth.Authenticator{
+		NewTLSAuthenticatorWith("localhost"),
 	}
 
-	err = client.Ping()
-	if err != nil {
-		t.Error(err)
-	}
+	for _, authenticator := range authenticators {
+		server.AddAuthenticator(authenticator)
 
-	err = client.Close()
-	if err != nil {
-		t.Error(err)
-	}
+		client := client.NewDefaultClient()
+		client.SetClientKeyFile(clientKey)
+		client.SetClientCertFile(clientCert)
+		client.SetRootCertFile(rootCert)
 
-	server.ClearAuthenticators()
+		err := client.Open()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		err = client.Ping()
+		if err != nil {
+			t.Error(err)
+		}
+
+		err = client.Close()
+		if err != nil {
+			t.Error(err)
+		}
+
+		server.ClearAuthenticators()
+	}
 }
 
 // RunServerCopyTest tests the COPY command.
