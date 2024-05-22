@@ -15,6 +15,7 @@
 package auth
 
 import (
+	"crypto/tls"
 	"net"
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
@@ -23,6 +24,14 @@ import (
 // Conn represents a connection.
 type Conn interface {
 	net.Conn
+
+	// StartupMessage return the startup message.
+	StartupMessage() (*message.Startup, bool)
+	// IsTLSConnection return true if the connection is enabled TLS.
+	IsTLSConnection() bool
+	// TLSConnectionState returns the TLS connection state.
+	TLSConnectionState() (*tls.ConnectionState, bool)
+
 	// MessageReader returns a message reader.
 	MessageReader() *message.MessageReader
 	// ResponseMessage returns a response message.

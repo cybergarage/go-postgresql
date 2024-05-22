@@ -16,8 +16,6 @@ package auth
 
 import (
 	"errors"
-
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
 // AuthManager represent an authenticator manager.
@@ -44,13 +42,13 @@ func (mgr *AuthManager) ClearAuthenticators() {
 }
 
 // Authenticate authenticates the connection with the startup message.
-func (mgr *AuthManager) Authenticate(conn Conn, startup *message.Startup) (bool, error) {
+func (mgr *AuthManager) Authenticate(conn Conn) (bool, error) {
 	if len(mgr.authenticators) == 0 {
 		return true, nil
 	}
 	var authErr error
 	for _, authenticator := range mgr.authenticators {
-		ok, err := authenticator.Authenticate(conn, startup)
+		ok, err := authenticator.Authenticate(conn)
 		if ok {
 			return true, nil
 		}
