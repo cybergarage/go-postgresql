@@ -23,7 +23,7 @@ import (
 // StartupAuthHandler represents a start-up authenticatation handler.
 type StartupAuthHandler interface {
 	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse message.
-	Authenticate(*Conn, *message.Startup) (message.Response, error)
+	Authenticate(*Conn) (message.Response, error)
 	// AddAuthenticator adds a new authenticator.
 	AddAuthenticator(auth.Authenticator)
 	// ClearAuthenticators clears all authenticators.

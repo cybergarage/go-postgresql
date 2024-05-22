@@ -141,7 +141,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error message.
-		res, err := server.Executor.Authenticate(conn, startupMsg)
+		res, err := server.Executor.Authenticate(conn)
 		if err != nil {
 			return err
 		}
@@ -220,6 +220,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn.ResponseError(err)
 		return err
 	}
+	conn.SetStartupMessage(startupMsg)
 
 	err = handleStartupMessage(conn, startupMsg)
 	if err != nil {

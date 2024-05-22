@@ -34,7 +34,12 @@ func NewCleartextPasswordAuthenticatorWith(username string, password string) *Cl
 }
 
 // Authenticate authenticates the specified connection.
-func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn, startupMessage *message.Startup) (bool, error) {
+func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn) (bool, error) {
+	startupMessage, ok := conn.StartupMessage()
+	if !ok {
+		return false, nil
+	}
+
 	clientUsername, ok := startupMessage.User()
 	if !ok {
 		return false, nil

@@ -14,11 +14,7 @@
 
 package auth
 
-import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
-)
-
 // Authenticator represents an authenticator interface.
 type Authenticator interface {
-	Authenticate(Conn, *message.Startup) (bool, error)
+	Authenticate(Conn) (bool, error)
 }
