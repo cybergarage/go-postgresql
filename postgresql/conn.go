@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"crypto/tls"
 	"net"
 	"time"
 
@@ -36,6 +37,7 @@ type Conn struct {
 	tracer.Context
 	PreparedStatementMap
 	PreparedPortalMap
+	tlsState *tls.ConnectionState
 }
 
 // NewConnWith returns a connection with a raw connection.
@@ -49,6 +51,7 @@ func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 		Context:              nil,
 		PreparedStatementMap: NewPreparedStatementMap(),
 		PreparedPortalMap:    NewPreparedPortalMap(),
+		tlsState:             nil,
 	}
 	for _, opt := range opts {
 		opt(conn)
@@ -56,17 +59,24 @@ func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 	return conn
 }
 
-// WithConnDatabase sets the database name.
+// WithConnDatabase sets a database name.
 func WithConnDatabase(name string) func(*Conn) {
 	return func(conn *Conn) {
 		conn.db = name
 	}
 }
 
-// WithConnDatabase sets the database name.
+// WithConnTracer sets a tracer context.
 func WithConnTracer(t tracer.Context) func(*Conn) {
 	return func(conn *Conn) {
 		conn.Context = t
+	}
+}
+
+// WithTLSConnectionState sets a TLS connection state.
+func WithTLSConnectionState(s *tls.ConnectionState) func(*Conn) {
+	return func(conn *Conn) {
+		conn.tlsState = s
 	}
 }
 
@@ -98,6 +108,16 @@ func (conn *Conn) SetSpanContext(ctx tracer.Context) {
 // SpanContext returns the tracer span context of the connection.
 func (conn *Conn) SpanContext() tracer.Context {
 	return conn.Context
+}
+
+// IsTLSConnection return true if the connection is enabled TLS.
+func (conn *Conn) IsTLSConnection() bool {
+	return conn.tlsState != nil
+}
+
+// TLSConnectionState returns the TLS connection state.
+func (conn *Conn) TLSConnectionState() *tls.ConnectionState {
+	return conn.tlsState
 }
 
 // MessageReader returns a message reader.
