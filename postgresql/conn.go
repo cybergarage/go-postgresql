@@ -37,7 +37,8 @@ type Conn struct {
 	tracer.Context
 	PreparedStatementMap
 	PreparedPortalMap
-	tlsState *tls.ConnectionState
+	tlsState   *tls.ConnectionState
+	startupMsg *message.Startup
 }
 
 // NewConnWith returns a connection with a raw connection.
@@ -52,6 +53,7 @@ func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 		PreparedStatementMap: NewPreparedStatementMap(),
 		PreparedPortalMap:    NewPreparedPortalMap(),
 		tlsState:             nil,
+		startupMsg:           nil,
 	}
 	for _, opt := range opts {
 		opt(conn)
@@ -70,6 +72,13 @@ func WithConnDatabase(name string) func(*Conn) {
 func WithConnTracer(t tracer.Context) func(*Conn) {
 	return func(conn *Conn) {
 		conn.Context = t
+	}
+}
+
+// WithConnStartupMessage sets a startup message.
+func WithConnStartupMessage(msg *message.Startup) func(*Conn) {
+	return func(conn *Conn) {
+		conn.startupMsg = msg
 	}
 }
 
@@ -110,14 +119,24 @@ func (conn *Conn) SpanContext() tracer.Context {
 	return conn.Context
 }
 
+// SetStartupMessage sets a startup message.
+func (conn *Conn) SetStartupMessage(msg *message.Startup) {
+	conn.startupMsg = msg
+}
+
+// StartupMessage return the startup message.
+func (conn *Conn) StartupMessage() (*message.Startup, bool) {
+	return conn.startupMsg, conn.startupMsg != nil
+}
+
 // IsTLSConnection return true if the connection is enabled TLS.
 func (conn *Conn) IsTLSConnection() bool {
 	return conn.tlsState != nil
 }
 
 // TLSConnectionState returns the TLS connection state.
-func (conn *Conn) TLSConnectionState() *tls.ConnectionState {
-	return conn.tlsState
+func (conn *Conn) TLSConnectionState() (*tls.ConnectionState, bool) {
+	return conn.tlsState, conn.tlsState != nil
 }
 
 // MessageReader returns a message reader.
