@@ -14,10 +14,6 @@
 
 package auth
 
-import (
-	"errors"
-)
-
 // AuthManager represent an authenticator manager.
 type AuthManager struct {
 	authenticators []Authenticator
@@ -46,15 +42,11 @@ func (mgr *AuthManager) Authenticate(conn Conn) (bool, error) {
 	if len(mgr.authenticators) == 0 {
 		return true, nil
 	}
-	var authErr error
 	for _, authenticator := range mgr.authenticators {
 		ok, err := authenticator.Authenticate(conn)
-		if ok {
-			return true, nil
-		}
-		if err != nil {
-			authErr = errors.Join(authErr, err)
+		if !ok {
+			return false, err
 		}
 	}
-	return false, authErr
+	return true, nil
 }
