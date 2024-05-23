@@ -209,6 +209,10 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 		tlsConn := tls.Server(conn, tlsConfig)
+		if err := tlsConn.Handshake(); err != nil {
+			conn.ResponseError(err)
+			return err
+		}
 		tlsConnState := tlsConn.ConnectionState()
 		conn = NewConnWith(tlsConn, WithTLSConnectionState(&tlsConnState))
 	}
