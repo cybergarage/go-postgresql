@@ -42,5 +42,5 @@ func (authenticator *TLSAuthenticator) Authenticate(conn auth.Conn) (bool, error
 			return true, nil
 		}
 	}
-	return true, nil
+	return false, nil
 }
