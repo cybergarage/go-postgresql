@@ -18,15 +18,15 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
 )
 
-// CleartextPasswordAuthenticator represents an authenticator for the cleartext password.
-type CleartextPasswordAuthenticator struct {
+// ClearTextPasswordAuthenticator represents an authenticator for the cleartext password.
+type ClearTextPasswordAuthenticator struct {
 	username string
 	password string
 }
 
-// NewCleartextPasswordAuthenticator returns a new authenticator with the specified username and password.
-func NewCleartextPasswordAuthenticatorWith(username string, password string) *CleartextPasswordAuthenticator {
-	authenticator := &CleartextPasswordAuthenticator{
+// NewClearTextPasswordAuthenticatorWith returns a new authenticator with the specified username and password.
+func NewClearTextPasswordAuthenticatorWith(username string, password string) *ClearTextPasswordAuthenticator {
+	authenticator := &ClearTextPasswordAuthenticator{
 		username: username,
 		password: password,
 	}
@@ -34,7 +34,7 @@ func NewCleartextPasswordAuthenticatorWith(username string, password string) *Cl
 }
 
 // Authenticate authenticates the specified connection.
-func (authenticator *CleartextPasswordAuthenticator) Authenticate(conn Conn) (bool, error) {
+func (authenticator *ClearTextPasswordAuthenticator) Authenticate(conn Conn) (bool, error) {
 	startupMessage, ok := conn.StartupMessage()
 	if !ok {
 		return false, nil
