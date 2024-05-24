@@ -40,7 +40,7 @@ func RunServerTests(t *testing.T, server *Server) {
 		fn   ServerTestFunc
 	}{
 		// {"authenticator", RunPasswordAuthenticatorTest},
-		{"tls", RunTLSAuthenticatorTest},
+		{"tls", RunCertificateAuthenticatorTest},
 		// {"copy", TestServerCopy},
 	}
 
@@ -126,12 +126,12 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 	}
 }
 
-// RunTLSAuthenticatorTest tests the TLS session.
+// RunCertificateAuthenticatorTest tests the TLS session.
 // PostgreSQL: Documentation: 16: 34.19. SSL Support
 // https://www.postgresql.org/docs/current/libpq-ssl.html
 // PostgreSQL: Documentation: 16: 19.9. Secure TCP/IP Connections with SSL
 // https://www.postgresql.org/docs/current/ssl-tcp.html#SSL-CERTIFICATE-CREATION
-func RunTLSAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
+func RunCertificateAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	t.Helper()
 
 	const (
@@ -141,7 +141,7 @@ func RunTLSAuthenticatorTest(t *testing.T, server *Server, testDBName string) {
 	)
 
 	authenticators := []auth.Authenticator{
-		NewTLSAuthenticatorWith("localhost"),
+		auth.NewCertificateAuthenticatorWith(auth.WithCommonName("localhost")),
 	}
 
 	for _, authenticator := range authenticators {
