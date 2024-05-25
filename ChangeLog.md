@@ -7,6 +7,9 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.5.3 (2024-05-25)
+- Updated authenticator interface
+
 ## v1.5.2 (2024-05-18)
 - Updated 
   - TLS settings to allow binary certificates
