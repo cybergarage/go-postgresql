@@ -30,6 +30,7 @@ type ConnOption = func(*Conn)
 // Conn represents a connection of PostgreSQL binary protocol.
 type Conn struct {
 	net.Conn
+	isClosed  bool
 	msgReader *message.MessageReader
 	db        string
 	ts        time.Time
@@ -45,6 +46,7 @@ type Conn struct {
 func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
 		Conn:                 netConn,
+		isClosed:             false,
 		msgReader:            message.NewMessageReaderWith(netConn),
 		db:                   "",
 		ts:                   time.Now(),
@@ -87,6 +89,18 @@ func WithTLSConnectionState(s *tls.ConnectionState) func(*Conn) {
 	return func(conn *Conn) {
 		conn.tlsState = s
 	}
+}
+
+// Close closes the connection.
+func (conn *Conn) Close() error {
+	if conn.isClosed {
+		return nil
+	}
+	if err := conn.Conn.Close(); err != nil {
+		return err
+	}
+	conn.isClosed = true
+	return nil
 }
 
 // SetDatabase sets the database name.
