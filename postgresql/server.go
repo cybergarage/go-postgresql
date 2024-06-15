@@ -52,7 +52,12 @@ func (server *Server) SetTracer(t tracer.Tracer) {
 
 // Start starts the server.
 func (server *Server) Start() error {
-	err := server.open()
+	err := server.ConnManager.Start()
+	if err != nil {
+		return err
+	}
+
+	err = server.open()
 	if err != nil {
 		return err
 	}
@@ -67,6 +72,10 @@ func (server *Server) Start() error {
 
 // Stop stops the server.
 func (server *Server) Stop() error {
+	if err := server.ConnManager.Stop(); err != nil {
+		return err
+	}
+
 	err := server.close()
 	if err != nil {
 		return err
@@ -178,6 +187,9 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 	}
 
 	conn := NewConnWith(netConn)
+	defer func() {
+		conn.Close()
+	}()
 
 	// Checks the SSLRequest message.
 
@@ -240,8 +252,14 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 	if db, ok := startupMsg.Database(); ok {
 		dbname = db
 	}
-
 	conn.SetDatabase(dbname)
+
+	// Add the connection to the connection manager.
+
+	server.AddConn(conn)
+	defer func() {
+		server.RemoveConn(conn)
+	}()
 
 	for {
 		var reqErr error
