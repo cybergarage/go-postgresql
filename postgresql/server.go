@@ -27,6 +27,7 @@ import (
 // Server represents a PostgreSQL protocol server.
 type Server struct {
 	*Config
+	*ConnManager
 	tracer.Tracer
 	tcpListener net.Listener
 	Executor
@@ -36,6 +37,7 @@ type Server struct {
 func NewServer() *Server {
 	server := &Server{
 		Config:      NewDefaultConfig(),
+		ConnManager: NewConnManager(),
 		Tracer:      tracer.NullTracer,
 		tcpListener: nil,
 		Executor:    NewBaseExecutor(),
