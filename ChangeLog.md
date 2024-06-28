@@ -7,6 +7,9 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.5.4 (2024-06-28)
+- Add connection manager
+
 ## v1.5.3 (2024-05-25)
 - Updated authenticator interface
 
