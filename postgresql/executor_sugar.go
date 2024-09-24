@@ -15,7 +15,7 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
@@ -33,12 +33,12 @@ func NewBaseSugarExecutorWith(executor *BaseExecutor) *BaseSugarExecutor {
 }
 
 // Vacuum handles a VACUUM query.
-func (executor *BaseSugarExecutor) Vacuum(conn *Conn, stmt *query.Vacuum) (message.Responses, error) {
-	return message.NewCommandCompleteResponsesWith(("VACUUM"))
+func (executor *BaseSugarExecutor) Vacuum(conn *Conn, stmt *query.Vacuum) (protocol.Responses, error) {
+	return protocol.NewCommandCompleteResponsesWith(("VACUUM"))
 }
 
 // Truncate handles a TRUNCATE query.
-func (executor *BaseSugarExecutor) Truncate(conn *Conn, stmt *query.Truncate) (message.Responses, error) {
+func (executor *BaseSugarExecutor) Truncate(conn *Conn, stmt *query.Truncate) (protocol.Responses, error) {
 	for _, table := range stmt.Tables() {
 		stmt := sql.NewDeleteWith(table)
 		_, err := executor.QueryExecutor.Delete(conn, stmt)
@@ -46,5 +46,5 @@ func (executor *BaseSugarExecutor) Truncate(conn *Conn, stmt *query.Truncate) (m
 			return nil, err
 		}
 	}
-	return message.NewCommandCompleteResponsesWith(("TRUNCATE"))
+	return protocol.NewCommandCompleteResponsesWith(("TRUNCATE"))
 }

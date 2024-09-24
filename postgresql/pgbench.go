@@ -15,7 +15,7 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
 )
 
@@ -34,7 +34,7 @@ func IsPgbenchGetPartitionQuery(q string) bool {
 }
 
 // NewGetPartitionResponseForPgbench returns a new response for pgbenchGetPartitionQuery.
-func NewGetPartitionResponseForPgbench() (message.Responses, error) {
+func NewGetPartitionResponseForPgbench() (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.7. Message Formats
 	// https://www.postgresql.org/docs/16/protocol-message-formats.html
 	// pgbench - void GetTableInfo(PGconn *con, bool scale_given)
@@ -48,8 +48,8 @@ func NewGetPartitionResponseForPgbench() (message.Responses, error) {
 	// 00000060  00 00 01 30 43 00 00 00  0d 53 45 4c 45 43 54 20   ...0C... .SELECT
 	// 00000070  31 00 5a 00 00 00 05 49                            1.Z....I
 
-	rowDesc := message.NewRowDescription()
-	dataRow := message.NewDataRow()
+	rowDesc := protocol.NewRowDescription()
+	dataRow := protocol.NewDataRow()
 
 	resFieldNames := []string{
 		"n",
@@ -61,33 +61,33 @@ func NewGetPartitionResponseForPgbench() (message.Responses, error) {
 		switch n {
 		case 0:
 			dt, _ := system.GetDataType(system.Int4)
-			rowField := message.NewRowFieldWith(fieldName,
-				message.WithRowFieldNumber(int16(n+1)),
-				message.WithRowFieldDataType(dt),
+			rowField := protocol.NewRowFieldWith(fieldName,
+				protocol.WithRowFieldNumber(int16(n+1)),
+				protocol.WithRowFieldDataType(dt),
 			)
 			dataRow.AppendData(rowField, 2)
 		case 1:
 			dt, _ := system.GetDataType(system.Char)
-			rowField := message.NewRowFieldWith(fieldName,
-				message.WithRowFieldNumber(int16(n+1)),
-				message.WithRowFieldDataType(dt),
+			rowField := protocol.NewRowFieldWith(fieldName,
+				protocol.WithRowFieldNumber(int16(n+1)),
+				protocol.WithRowFieldDataType(dt),
 			)
 			dataRow.AppendData(rowField, nil)
 		case 2:
 			dt, _ := system.GetDataType(system.Int8)
-			rowField := message.NewRowFieldWith(fieldName,
-				message.WithRowFieldNumber(int16(n+1)),
-				message.WithRowFieldDataType(dt),
+			rowField := protocol.NewRowFieldWith(fieldName,
+				protocol.WithRowFieldNumber(int16(n+1)),
+				protocol.WithRowFieldDataType(dt),
 			)
 			dataRow.AppendData(rowField, 0)
 		}
 	}
 
-	res := message.NewResponses()
+	res := protocol.NewResponses()
 	res = res.Append(rowDesc)
 	res = res.Append(dataRow)
 
-	cmpRes, err := message.NewSelectCompleteWith(1)
+	cmpRes, err := protocol.NewSelectCompleteWith(1)
 	if err != nil {
 		return nil, err
 	}

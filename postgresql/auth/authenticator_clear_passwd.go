@@ -15,7 +15,7 @@
 package auth
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // ClearTextPasswordAuthenticator represents an authenticator for the cleartext password.
@@ -47,7 +47,7 @@ func (authenticator *ClearTextPasswordAuthenticator) Authenticate(conn Conn) (bo
 	if clientUsername != authenticator.username {
 		return false, nil
 	}
-	authMsg, err := message.NewAuthenticationCleartextPassword()
+	authMsg, err := protocol.NewAuthenticationCleartextPassword()
 	if err != nil {
 		return false, err
 	}
@@ -55,7 +55,7 @@ func (authenticator *ClearTextPasswordAuthenticator) Authenticate(conn Conn) (bo
 	if err != nil {
 		return false, err
 	}
-	msg, err := message.NewPasswordWithReader(conn.MessageReader())
+	msg, err := protocol.NewPasswordWithReader(conn.MessageReader())
 	if err != nil {
 		return false, err
 	}

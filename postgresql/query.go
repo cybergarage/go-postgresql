@@ -15,13 +15,13 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // PreparedStatement represents a prepared statement.
 type PreparedStatement struct {
-	*message.Parse
+	*protocol.Parse
 	ParsedStatement *query.Statement
 }
 
@@ -48,7 +48,7 @@ func (stmtMap PreparedStatementMap) PreparedStatement(name string) (*PreparedSta
 }
 
 // SetPreparedStatement sets a prepared statement.
-func (stmtMap PreparedStatementMap) SetPreparedStatement(msg *message.Parse) error {
+func (stmtMap PreparedStatementMap) SetPreparedStatement(msg *protocol.Parse) error {
 	parser := query.NewParser()
 	stmts, err := parser.ParseString(msg.Query)
 	if err != nil {
@@ -76,7 +76,7 @@ func (stmtMap PreparedStatementMap) RemovePreparedStatement(name string) error {
 }
 
 // PreparedPortal represents a prepared query statement.
-type PreparedPortal = message.Query
+type PreparedPortal = protocol.Query
 
 // PreparedPortalMap represents a prepared query statement map.
 type PreparedPortalMap map[string]PreparedPortal

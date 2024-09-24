@@ -17,7 +17,7 @@ package query
 import (
 	"fmt"
 
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -25,8 +25,8 @@ import (
 type Row = map[string]any
 
 // NewDataRowForSelectors returns a new DataRow from the specified row.
-func NewDataRowForSelectors(schema *query.Schema, rowDesc *message.RowDescription, selectors query.SelectorList, row Row) (*message.DataRow, error) {
-	dataRow := message.NewDataRow()
+func NewDataRowForSelectors(schema *query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, row Row) (*protocol.DataRow, error) {
+	dataRow := protocol.NewDataRow()
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
 		switch selector := selector.(type) {
@@ -62,7 +62,7 @@ func NewDataRowForSelectors(schema *query.Schema, rowDesc *message.RowDescriptio
 }
 
 // NewDataRowsForAggregateFunction returns a new DataRow list from the specified rows.
-func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *message.RowDescription, selectors query.SelectorList, rows []Row, groupBy string) ([]*message.DataRow, error) {
+func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
 	// Setups aggregate functions
 	aggrFns := []*query.Function{}
 	aggrExecutors := []*query.AggregateFunction{}
@@ -134,10 +134,10 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *message.RowD
 		}
 	}
 	// Add aggregate results
-	dataRows := []*message.DataRow{}
+	dataRows := []*protocol.DataRow{}
 	if 0 < len(groupKeys) { // ResultSet is not empty
 		for _, groupKey := range groupKeys {
-			dataRow := message.NewDataRow()
+			dataRow := protocol.NewDataRow()
 			for n, selector := range selectors {
 				field := rowDesc.Field(n)
 				name := selector.Name()
@@ -163,7 +163,7 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *message.RowD
 			dataRows = append(dataRows, dataRow)
 		}
 	} else { // ResultSet is empty
-		dataRow := message.NewDataRow()
+		dataRow := protocol.NewDataRow()
 		for n, selector := range selectors {
 			field := rowDesc.Field(n)
 			name := selector.Name()

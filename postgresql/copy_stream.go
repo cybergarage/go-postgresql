@@ -18,43 +18,43 @@ import (
 	"errors"
 	"io"
 
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // CopyStream represents a copy stream.
 type CopyStream struct {
-	*message.MessageReader
+	*protocol.MessageReader
 }
 
 // NewCopyStreamWithReader returns a new copy stream with the specified reader.
-func NewCopyStreamWithReader(reader *message.MessageReader) *CopyStream {
+func NewCopyStreamWithReader(reader *protocol.MessageReader) *CopyStream {
 	return &CopyStream{
 		MessageReader: reader,
 	}
 }
 
 // Next returns true if the next message is available.
-func (stream *CopyStream) Next() (*message.CopyData, error) {
+func (stream *CopyStream) Next() (*protocol.CopyData, error) {
 	t, err := stream.MessageReader.PeekType()
 	if err != nil {
 		return nil, err
 	}
 
-	skipCopyDone := func(reader *message.MessageReader) error {
-		_, err := message.NewCopyDoneWithReader(reader)
+	skipCopyDone := func(reader *protocol.MessageReader) error {
+		_, err := protocol.NewCopyDoneWithReader(reader)
 		return err
 	}
 
 	switch t { // nolint:exhaustive
-	case message.CopyDataMessage:
-		copyData, copyErr := message.NewCopyDataWithReader(stream.MessageReader)
+	case protocol.CopyDataMessage:
+		copyData, copyErr := protocol.NewCopyDataWithReader(stream.MessageReader)
 		if copyErr == nil {
 			return copyData, nil
 		}
 		if !errors.Is(copyErr, io.EOF) {
 			return nil, copyErr
 		}
-		ok, peekErr := stream.MessageReader.IsPeekType(message.CopyDoneMessage)
+		ok, peekErr := stream.MessageReader.IsPeekType(protocol.CopyDoneMessage)
 		if peekErr != nil {
 			return nil, peekErr
 		}
@@ -65,7 +65,7 @@ func (stream *CopyStream) Next() (*message.CopyData, error) {
 			return nil, skipErr
 		}
 		return nil, copyErr
-	case message.CopyDoneMessage:
+	case protocol.CopyDoneMessage:
 		err := skipCopyDone(stream.MessageReader)
 		if err != nil {
 			return nil, err

@@ -16,10 +16,10 @@ package server
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
-// Authenticate authenticates the connection with the startup message.
-func (server *Server) Authenticate(*postgresql.Conn, *message.Startup) (message.Response, error) {
-	return message.NewAuthenticationOk()
+// Authenticate authenticates the connection with the startup protocol.
+func (server *Server) Authenticate(*postgresql.Conn, *protocol.Startup) (protocol.Response, error) {
+	return protocol.NewAuthenticationOk()
 }

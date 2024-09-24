@@ -37,7 +37,7 @@ func (mgr *AuthManager) ClearAuthenticators() {
 	mgr.authenticators = make([]Authenticator, 0)
 }
 
-// Authenticate authenticates the connection with the startup message.
+// Authenticate authenticates the connection with the startup protocol.
 func (mgr *AuthManager) Authenticate(conn Conn) (bool, error) {
 	if len(mgr.authenticators) == 0 {
 		return true, nil
