@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // BaseStartupExecutor represents a base frontend message executor.
@@ -45,14 +45,14 @@ func NewBaseProtocolExecutor() *BaseStartupExecutor {
 }
 
 // ParameterStatuses returns the parameter statuses.
-func (executor *BaseStartupExecutor) ParameterStatuses(*Conn) (message.Responses, error) {
+func (executor *BaseStartupExecutor) ParameterStatuses(*Conn) (protocol.Responses, error) {
 	m := map[string]string{}
-	m[message.ClientEncoding] = message.EncodingUTF8
-	m[message.ServerEncoding] = message.EncodingUTF8
-	return message.NewParameterStatusesWith(m)
+	m[protocol.ClientEncoding] = protocol.EncodingUTF8
+	m[protocol.ServerEncoding] = protocol.EncodingUTF8
+	return protocol.NewParameterStatusesWith(m)
 }
 
 // BackendKeyData returns the backend key data.
-func (executor *BaseStartupExecutor) BackendKeyData(*Conn) (message.Response, error) {
-	return message.NewBackendKeyDataWith(executor.processID, executor.secretKey)
+func (executor *BaseStartupExecutor) BackendKeyData(*Conn) (protocol.Response, error) {
+	return protocol.NewBackendKeyDataWith(executor.processID, executor.secretKey)
 }

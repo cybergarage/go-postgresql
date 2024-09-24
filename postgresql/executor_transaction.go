@@ -15,7 +15,7 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
@@ -29,16 +29,16 @@ func NewBaseTransactionExecutor() *BaseTransactionExecutor {
 }
 
 // Begin handles a BEGIN query.
-func (executor *BaseTransactionExecutor) Begin(*Conn, *query.Begin) (message.Responses, error) {
+func (executor *BaseTransactionExecutor) Begin(*Conn, *query.Begin) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("BEGIN")
 }
 
 // Commit handles a COMMIT query.
-func (executor *BaseTransactionExecutor) Commit(*Conn, *query.Commit) (message.Responses, error) {
+func (executor *BaseTransactionExecutor) Commit(*Conn, *query.Commit) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("COMMIT")
 }
 
 // Rollback handles a ROLLBACK query.
-func (executor *BaseTransactionExecutor) Rollback(*Conn, *query.Rollback) (message.Responses, error) {
+func (executor *BaseTransactionExecutor) Rollback(*Conn, *query.Rollback) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("ROLLBACK")
 }

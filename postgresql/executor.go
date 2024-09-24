@@ -16,14 +16,14 @@ package postgresql
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql/auth"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // StartupAuthHandler represents a start-up authenticatation handler.
 type StartupAuthHandler interface {
-	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse message.
-	Authenticate(*Conn) (message.Response, error)
+	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse protocol.
+	Authenticate(*Conn) (protocol.Response, error)
 	// AddAuthenticator adds a new authenticator.
 	AddAuthenticator(auth.Authenticator)
 	// ClearAuthenticators clears all authenticators.
@@ -34,83 +34,83 @@ type StartupAuthHandler interface {
 type StartupHandler interface {
 	StartupAuthHandler
 	// ParameterStatuses returns the parameter statuses.
-	ParameterStatuses(*Conn) (message.Responses, error)
+	ParameterStatuses(*Conn) (protocol.Responses, error)
 	// BackendKeyData returns the backend key data.
-	BackendKeyData(*Conn) (message.Response, error)
+	BackendKeyData(*Conn) (protocol.Response, error)
 }
 
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
 type DDOExecutor interface {
 	// CreateDatabase handles a CREATE DATABASE query.
-	CreateDatabase(*Conn, *query.CreateDatabase) (message.Responses, error)
+	CreateDatabase(*Conn, *query.CreateDatabase) (protocol.Responses, error)
 	// CreateTable handles a CREATE TABLE query.
-	CreateTable(*Conn, *query.CreateTable) (message.Responses, error)
+	CreateTable(*Conn, *query.CreateTable) (protocol.Responses, error)
 	// AlterDatabase handles a ALTER DATABASE query.
-	AlterDatabase(*Conn, *query.AlterDatabase) (message.Responses, error)
+	AlterDatabase(*Conn, *query.AlterDatabase) (protocol.Responses, error)
 	// AlterTable handles a ALTER TABLE query.
-	AlterTable(*Conn, *query.AlterTable) (message.Responses, error)
+	AlterTable(*Conn, *query.AlterTable) (protocol.Responses, error)
 	// DropDatabase handles a DROP DATABASE query.
-	DropDatabase(*Conn, *query.DropDatabase) (message.Responses, error)
+	DropDatabase(*Conn, *query.DropDatabase) (protocol.Responses, error)
 	// DropIndex handles a DROP INDEX query.
-	DropTable(*Conn, *query.DropTable) (message.Responses, error)
+	DropTable(*Conn, *query.DropTable) (protocol.Responses, error)
 }
 
 // DMOExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExecutor interface {
 	// Insert handles a INSERT query.
-	Insert(*Conn, *query.Insert) (message.Responses, error)
+	Insert(*Conn, *query.Insert) (protocol.Responses, error)
 	// Select handles a SELECT query.
-	Select(*Conn, *query.Select) (message.Responses, error)
+	Select(*Conn, *query.Select) (protocol.Responses, error)
 	// Update handles a UPDATE query.
-	Update(*Conn, *query.Update) (message.Responses, error)
+	Update(*Conn, *query.Update) (protocol.Responses, error)
 	// Delete handles a DELETE query.
-	Delete(*Conn, *query.Delete) (message.Responses, error)
+	Delete(*Conn, *query.Delete) (protocol.Responses, error)
 }
 
 // DMOExtraExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExtraExecutor interface {
 	// Vacuum handles a VACUUM query.
-	Vacuum(*Conn, *query.Vacuum) (message.Responses, error)
+	Vacuum(*Conn, *query.Vacuum) (protocol.Responses, error)
 	// Truncate handles a TRUNCATE query.
-	Truncate(*Conn, *query.Truncate) (message.Responses, error)
+	Truncate(*Conn, *query.Truncate) (protocol.Responses, error)
 }
 
 // TCLExecutor defines a executor interface for TCL (Transaction Control Language).
 type TCLExecutor interface {
 	// Begin handles a BEGIN query.
-	Begin(*Conn, *query.Begin) (message.Responses, error)
+	Begin(*Conn, *query.Begin) (protocol.Responses, error)
 	// Commit handles a COMMIT query.
-	Commit(*Conn, *query.Commit) (message.Responses, error)
+	Commit(*Conn, *query.Commit) (protocol.Responses, error)
 	// Rollback handles a ROLLBACK query.
-	Rollback(*Conn, *query.Rollback) (message.Responses, error)
+	Rollback(*Conn, *query.Rollback) (protocol.Responses, error)
 }
 
 // ExtendedQueryExecutor defines a executor interface for extended query operations.
 type ExtendedQueryExecutor interface {
-	// Query handles a query message.
-	Query(*Conn, *message.Query) (message.Responses, error)
-	// Prepare handles a parse message.
-	Parse(*Conn, *message.Parse) (message.Responses, error)
-	// Bind handles a bind message.
-	Bind(*Conn, *message.Bind) (message.Responses, error)
-	// Describe handles a describe message.
-	Describe(*Conn, *message.Describe) (message.Responses, error)
-	// Execute handles a execute message.
-	Execute(*Conn, *message.Execute) (message.Responses, error)
-	// Close handles a close message.
-	Close(*Conn, *message.Close) (message.Responses, error)
-	// Sync handles a sync message.
-	Sync(*Conn, *message.Sync) (message.Responses, error)
-	// Flush handles a flush message.
-	Flush(*Conn, *message.Flush) (message.Responses, error)
+	// Query handles a query protocol.
+	Query(*Conn, *protocol.Query) (protocol.Responses, error)
+	// Prepare handles a parse protocol.
+	Parse(*Conn, *protocol.Parse) (protocol.Responses, error)
+	// Bind handles a bind protocol.
+	Bind(*Conn, *protocol.Bind) (protocol.Responses, error)
+	// Describe handles a describe protocol.
+	Describe(*Conn, *protocol.Describe) (protocol.Responses, error)
+	// Execute handles a execute protocol.
+	Execute(*Conn, *protocol.Execute) (protocol.Responses, error)
+	// Close handles a close protocol.
+	Close(*Conn, *protocol.Close) (protocol.Responses, error)
+	// Sync handles a sync protocol.
+	Sync(*Conn, *protocol.Sync) (protocol.Responses, error)
+	// Flush handles a flush protocol.
+	Flush(*Conn, *protocol.Flush) (protocol.Responses, error)
 }
 
 // BulkExecutor defines a executor interface for bulk operations.
 type BulkExecutor interface {
 	// Copy handles a COPY query.
-	Copy(*Conn, *query.Copy) (message.Responses, error)
-	// CopyData handles a COPY data message.
-	CopyData(*Conn, *query.Copy, *CopyStream) (message.Responses, error)
+	Copy(*Conn, *query.Copy) (protocol.Responses, error)
+	// CopyData handles a COPY data protocol.
+	CopyData(*Conn, *query.Copy, *CopyStream) (protocol.Responses, error)
 }
 
 // QueryExecutor represents a user query message executor.
@@ -122,7 +122,7 @@ type QueryExecutor interface {
 // SystemQueryExecutor represents a system query message executor.
 type SystemQueryExecutor interface {
 	// SystemSelect handles a SELECT query for system tables.
-	SystemSelect(*Conn, *query.Select) (message.Responses, error)
+	SystemSelect(*Conn, *query.Select) (protocol.Responses, error)
 }
 
 // QueryExtraExecutor represents a user query message executor.
@@ -132,7 +132,7 @@ type QueryExtraExecutor interface {
 
 // ErrorHandler represents a user error handler.
 type ErrorHandler interface {
-	ParserError(*Conn, string, error) (message.Responses, error)
+	ParserError(*Conn, string, error) (protocol.Responses, error)
 }
 
 // Executor represents a frontend message executor.

@@ -20,7 +20,7 @@ import (
 	"strconv"
 
 	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -148,10 +148,10 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	log.Debugf("%s/%s (%s) accepted", PackageName, Version, netConn.RemoteAddr().String())
 
-	handleStartupMessage := func(conn *Conn, startupMsg *message.Startup) error {
+	handleStartupMessage := func(conn *Conn, startupMsg *protocol.Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
-		// Handle the Start-up message and return an Authentication message or error message.
+		// Handle the Start-up message and return an Authentication message or error protocol.
 		res, err := server.Executor.Authenticate(conn)
 		if err != nil {
 			return err
@@ -160,7 +160,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return err
 		}
-		// Return ParameterStatus (S) message.
+		// Return ParameterStatus (S) protocol.
 		reses, err := server.Executor.ParameterStatuses(conn)
 		if err != nil {
 			return err
@@ -169,7 +169,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return err
 		}
-		// Return BackendKeyData (K) message.
+		// Return BackendKeyData (K) protocol.
 		res, err = server.Executor.BackendKeyData(conn)
 		if err != nil {
 			return err
@@ -178,8 +178,8 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return err
 		}
-		// Return ReadyForQuery (B) message.
-		err = conn.ReadyForMessage(message.TransactionIdle)
+		// Return ReadyForQuery (B) protocol.
+		err = conn.ReadyForMessage(protocol.TransactionIdle)
 		if err != nil {
 			return err
 		}
@@ -191,7 +191,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn.Close()
 	}()
 
-	// Checks the SSLRequest message.
+	// Checks the SSLRequest protocol.
 
 	startupMsgLength, err := conn.MessageReader().PeekInt32()
 	if err != nil {
@@ -202,7 +202,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 	// PostgreSQL: Documentation: 16: 55.2.10. SSL Session Encryption
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	if startupMsgLength == 8 {
-		_, err := message.NewSSLRequestWithReader(conn.MessageReader())
+		_, err := protocol.NewSSLRequestWithReader(conn.MessageReader())
 		if err != nil {
 			conn.ResponseError(err)
 			return err
@@ -213,12 +213,12 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 		if tlsConfig == nil {
-			err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLDisabled))
+			err = conn.ResponseMessage(protocol.NewSSLResponseWith(protocol.SSLDisabled))
 			if err != nil {
 				return err
 			}
 		}
-		err = conn.ResponseMessage(message.NewSSLResponseWith(message.SSLEnabled))
+		err = conn.ResponseMessage(protocol.NewSSLResponseWith(protocol.SSLEnabled))
 		if err != nil {
 			return err
 		}
@@ -231,9 +231,9 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn = NewConnWith(tlsConn, WithTLSConnectionState(&tlsConnState))
 	}
 
-	// Handle a Start-up message.
+	// Handle a Start-up protocol.
 
-	startupMsg, err := message.NewStartupWithReader(conn.MessageReader())
+	startupMsg, err := protocol.NewStartupWithReader(conn.MessageReader())
 	if err != nil {
 		conn.ResponseError(err)
 		return err
@@ -246,7 +246,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return err
 	}
 
-	// Handle the request messages after the Start-up message.
+	// Handle the request messages after the Start-up protocol.
 
 	dbname := ""
 	if db, ok := startupMsg.Database(); ok {
@@ -263,7 +263,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	for {
 		var reqErr error
-		var reqType message.Type
+		var reqType protocol.Type
 		reqType, reqErr = conn.MessageReader().PeekType()
 		if reqErr != nil {
 			conn.ResponseError(reqErr)
@@ -274,59 +274,59 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn.SetSpanContext(loopSpan)
 		conn.StartSpan(reqType.String())
 
-		var resMsgs message.Responses
+		var resMsgs protocol.Responses
 
 		switch reqType { // nolint:exhaustive
-		case message.ParseMessage:
-			var reqMsg *message.Parse
-			reqMsg, reqErr = message.NewParseWithReader(conn.MessageReader())
+		case protocol.ParseMessage:
+			var reqMsg *protocol.Parse
+			reqMsg, reqErr = protocol.NewParseWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Parse(conn, reqMsg)
 			}
-		case message.BindMessage:
-			var reqMsg *message.Bind
-			reqMsg, reqErr = message.NewBindWithReader(conn.MessageReader())
+		case protocol.BindMessage:
+			var reqMsg *protocol.Bind
+			reqMsg, reqErr = protocol.NewBindWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Bind(conn, reqMsg)
 			}
-		case message.DescribeMessage:
-			var reqMsg *message.Describe
-			reqMsg, reqErr = message.NewDescribeWithReader(conn.MessageReader())
+		case protocol.DescribeMessage:
+			var reqMsg *protocol.Describe
+			reqMsg, reqErr = protocol.NewDescribeWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Describe(conn, reqMsg)
 			}
-		case message.QueryMessage:
-			var reqMsg *message.Query
-			reqMsg, reqErr = message.NewQueryWithReader(conn.MessageReader())
+		case protocol.QueryMessage:
+			var reqMsg *protocol.Query
+			reqMsg, reqErr = protocol.NewQueryWithReader(conn.MessageReader())
 			if reqErr == nil {
 				resMsgs, reqErr = server.Executor.Query(conn, reqMsg)
 			}
-		case message.ExecuteMessage:
-			var reqMsg *message.Execute
-			reqMsg, err := message.NewExecuteWithReader(conn.MessageReader())
+		case protocol.ExecuteMessage:
+			var reqMsg *protocol.Execute
+			reqMsg, err := protocol.NewExecuteWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Execute(conn, reqMsg)
 			}
-		case message.CloseMessage:
-			var reqMsg *message.Close
-			reqMsg, err := message.NewCloseWithReader(conn.MessageReader())
+		case protocol.CloseMessage:
+			var reqMsg *protocol.Close
+			reqMsg, err := protocol.NewCloseWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Close(conn, reqMsg)
 			}
-		case message.SyncMessage:
-			var reqMsg *message.Sync
-			reqMsg, err := message.NewSyncWithReader(conn.MessageReader())
+		case protocol.SyncMessage:
+			var reqMsg *protocol.Sync
+			reqMsg, err := protocol.NewSyncWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Sync(conn, reqMsg)
 			}
-		case message.FlushMessage:
-			var reqMsg *message.Flush
-			reqMsg, err := message.NewFlushWithReader(conn.MessageReader())
+		case protocol.FlushMessage:
+			var reqMsg *protocol.Flush
+			reqMsg, err := protocol.NewFlushWithReader(conn.MessageReader())
 			if err == nil {
 				resMsgs, reqErr = server.Executor.Flush(conn, reqMsg)
 			}
-		case message.TerminateMessage:
-			_, reqErr = message.NewTerminateWithReader(conn.MessageReader())
+		case protocol.TerminateMessage:
+			_, reqErr = protocol.NewTerminateWithReader(conn.MessageReader())
 			if reqErr == nil {
 				conn.FinishSpan()
 				loopSpan.Span().Finish()
@@ -335,7 +335,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		default:
 			reqErr = conn.SkipMessage()
 			if reqErr == nil {
-				reqErr = message.NewErrMessageNotSuppoted(reqType)
+				reqErr = protocol.NewErrMessageNotSuppoted(reqType)
 				log.Warnf(reqErr.Error())
 			}
 		}
@@ -358,9 +358,9 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			}
 		}
 
-		// Return ReadyForQuery (B) message.
+		// Return ReadyForQuery (B) protocol.
 		conn.StartSpan("ready")
-		err := conn.ReadyForMessage(message.TransactionIdle)
+		err := conn.ReadyForMessage(protocol.TransactionIdle)
 		conn.FinishSpan()
 		if err != nil {
 			loopSpan.Span().Finish()

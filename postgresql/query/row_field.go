@@ -16,13 +16,13 @@ package query
 import (
 	"fmt"
 
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // NewRowFieldFrom returns a new RowField from the specified selector.
-func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*message.RowField, error) {
+func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*protocol.RowField, error) {
 	var columnName string
 	var dt *system.DataType
 	var err error
@@ -59,8 +59,8 @@ func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*m
 		}
 		columnName = selector.SelectorString()
 	}
-	return message.NewRowFieldWith(columnName,
-		message.WithRowFieldNumber(int16(idx+1)),
-		message.WithRowFieldDataType(dt),
+	return protocol.NewRowFieldWith(columnName,
+		protocol.WithRowFieldNumber(int16(idx+1)),
+		protocol.WithRowFieldDataType(dt),
 	), nil
 }

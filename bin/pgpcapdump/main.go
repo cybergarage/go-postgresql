@@ -39,7 +39,7 @@ import (
 	"os"
 
 	"github.com/cybergarage/go-postgresql/postgresql"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -85,8 +85,8 @@ func main() {
 		exit(err)
 	}
 
-	skipMessage := func(reader *message.MessageReader) error {
-		msg, err := message.NewMessageWithReader(reader)
+	skipMessage := func(reader *protocol.MessageReader) error {
+		msg, err := protocol.NewMessageWithReader(reader)
 		if err != nil {
 			return err
 		}
@@ -128,11 +128,11 @@ func main() {
 	fmt.Printf("reqWriter = %d %s\n", reqWriter.Len(), hex.EncodeToString(reqWriter.Bytes()[:128]))
 	fmt.Printf("resWriter = %d %s\n", resWriter.Len(), hex.EncodeToString(resWriter.Bytes()[:128]))
 
-	reqMsgReader := message.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(reqWriter.Bytes())))
+	reqMsgReader := protocol.NewMessageReaderWith(bufio.NewReader(bytes.NewReader(reqWriter.Bytes())))
 
-	// Handle a Start-up message.
+	// Handle a Start-up protocol.
 
-	_, err = message.NewStartupWithReader(reqMsgReader)
+	_, err = protocol.NewStartupWithReader(reqMsgReader)
 	if err != nil {
 		exit(err)
 	}
@@ -148,9 +148,9 @@ func main() {
 		outputf("%s (%s)", msgType.String(), hex.EncodeToString([]byte{byte(msgType)}))
 
 		switch msgType { // nolint:exhaustive
-		case message.QueryMessage:
+		case protocol.QueryMessage:
 			if *isQueryEnabled {
-				query, err := message.NewQueryWithReader(reqMsgReader)
+				query, err := protocol.NewQueryWithReader(reqMsgReader)
 				if err != nil {
 					continue
 					// exit(err)

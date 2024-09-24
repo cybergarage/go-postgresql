@@ -9,7 +9,7 @@ The go-postgresql offers a core server, [postgresql.Server](../postgresql/server
 ```
 import (
 	"github.com/cybergarage/go-postgresql/postgresql"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
@@ -37,7 +37,7 @@ func NewMyServer() *MyServer {
     return myserver
 }
 
-func (server *MyServer) Insert(conn *postgresql.Conn, q *query.Insert) (message.Responses, error) {
+func (server *MyServer) Insert(conn *postgresql.Conn, q *query.Insert) (protocol.Responses, error) {
     .....
 }
 

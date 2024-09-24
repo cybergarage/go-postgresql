@@ -15,7 +15,7 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
@@ -29,11 +29,11 @@ func NewBaseBulkExecutor() *BaseBulkExecutor {
 }
 
 // Copy handles a COPY query.
-func (executor *BaseBulkExecutor) Copy(*Conn, *query.Copy) (message.Responses, error) {
+func (executor *BaseBulkExecutor) Copy(*Conn, *query.Copy) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("COPY")
 }
 
-// Copy handles a COPY DATA message.
-func (executor *BaseBulkExecutor) CopyData(*Conn, *query.Copy, *CopyStream) (message.Responses, error) {
+// Copy handles a COPY DATA protocol.
+func (executor *BaseBulkExecutor) CopyData(*Conn, *query.Copy, *CopyStream) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("COPY DATA")
 }

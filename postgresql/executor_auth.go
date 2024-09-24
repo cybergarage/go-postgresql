@@ -16,7 +16,7 @@ package postgresql
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql/auth"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // BaseAuthExecutor represents a base authenticator.
@@ -32,14 +32,14 @@ func NewBaseAuthExecutor() *BaseAuthExecutor {
 	return executor
 }
 
-// Authenticate authenticates the connection with the startup message.
-func (executor *BaseAuthExecutor) Authenticate(conn *Conn) (message.Response, error) {
+// Authenticate authenticates the connection with the startup protocol.
+func (executor *BaseAuthExecutor) Authenticate(conn *Conn) (protocol.Response, error) {
 	ok, err := executor.AuthManager.Authenticate(conn)
 	if err != nil {
 		return nil, err
 	}
 	if ok {
-		return message.NewAuthenticationOk()
+		return protocol.NewAuthenticationOk()
 	}
-	return message.NewErrorResponse(), nil
+	return protocol.NewErrorResponse(), nil
 }

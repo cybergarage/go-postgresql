@@ -18,26 +18,26 @@ import (
 	"crypto/tls"
 	"net"
 
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // Conn represents a connection.
 type Conn interface {
 	net.Conn
 
-	// StartupMessage return the startup message.
-	StartupMessage() (*message.Startup, bool)
+	// StartupMessage return the startup protocol.
+	StartupMessage() (*protocol.Startup, bool)
 	// IsTLSConnection return true if the connection is enabled TLS.
 	IsTLSConnection() bool
 	// TLSConnectionState returns the TLS connection state.
 	TLSConnectionState() (*tls.ConnectionState, bool)
 
 	// MessageReader returns a message reader.
-	MessageReader() *message.MessageReader
-	// ResponseMessage returns a response message.
-	ResponseMessage(resMsg message.Response) error
+	MessageReader() *protocol.MessageReader
+	// ResponseMessage returns a response protocol.
+	ResponseMessage(resMsg protocol.Response) error
 	// ResponseMessages returns response messages.
-	ResponseMessages(resMsgs message.Responses) error
+	ResponseMessages(resMsgs protocol.Responses) error
 	// ResponseError returns a response error.
 	ResponseError(err error) error
 }

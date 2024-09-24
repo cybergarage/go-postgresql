@@ -19,7 +19,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/cybergarage/go-postgresql/postgresql/protocol/message"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-tracing/tracer"
 	"github.com/google/uuid"
 )
@@ -31,7 +31,7 @@ type ConnOption = func(*Conn)
 type Conn struct {
 	net.Conn
 	isClosed  bool
-	msgReader *message.MessageReader
+	msgReader *protocol.MessageReader
 	db        string
 	ts        time.Time
 	uuid      uuid.UUID
@@ -39,7 +39,7 @@ type Conn struct {
 	PreparedStatementMap
 	PreparedPortalMap
 	tlsState   *tls.ConnectionState
-	startupMsg *message.Startup
+	startupMsg *protocol.Startup
 }
 
 // NewConnWith returns a connection with a raw connection.
@@ -47,7 +47,7 @@ func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
 	conn := &Conn{
 		Conn:                 netConn,
 		isClosed:             false,
-		msgReader:            message.NewMessageReaderWith(netConn),
+		msgReader:            protocol.NewMessageReaderWith(netConn),
 		db:                   "",
 		ts:                   time.Now(),
 		uuid:                 uuid.New(),
@@ -77,8 +77,8 @@ func WithConnTracer(t tracer.Context) func(*Conn) {
 	}
 }
 
-// WithConnStartupMessage sets a startup message.
-func WithConnStartupMessage(msg *message.Startup) func(*Conn) {
+// WithConnStartupMessage sets a startup protocol.
+func WithConnStartupMessage(msg *protocol.Startup) func(*Conn) {
 	return func(conn *Conn) {
 		conn.startupMsg = msg
 	}
@@ -133,13 +133,13 @@ func (conn *Conn) SpanContext() tracer.Context {
 	return conn.Context
 }
 
-// SetStartupMessage sets a startup message.
-func (conn *Conn) SetStartupMessage(msg *message.Startup) {
+// SetStartupMessage sets a startup protocol.
+func (conn *Conn) SetStartupMessage(msg *protocol.Startup) {
 	conn.startupMsg = msg
 }
 
-// StartupMessage return the startup message.
-func (conn *Conn) StartupMessage() (*message.Startup, bool) {
+// StartupMessage return the startup protocol.
+func (conn *Conn) StartupMessage() (*protocol.Startup, bool) {
 	return conn.startupMsg, conn.startupMsg != nil
 }
 
@@ -154,12 +154,12 @@ func (conn *Conn) TLSConnectionState() (*tls.ConnectionState, bool) {
 }
 
 // MessageReader returns a message reader.
-func (conn *Conn) MessageReader() *message.MessageReader {
+func (conn *Conn) MessageReader() *protocol.MessageReader {
 	return conn.msgReader
 }
 
-// ResponseMessage sends a response message.
-func (conn *Conn) ResponseMessage(resMsg message.Response) error {
+// ResponseMessage sends a response protocol.
+func (conn *Conn) ResponseMessage(resMsg protocol.Response) error {
 	if resMsg == nil {
 		return nil
 	}
@@ -174,7 +174,7 @@ func (conn *Conn) ResponseMessage(resMsg message.Response) error {
 }
 
 // ResponseMessages sends response messages.
-func (conn *Conn) ResponseMessages(resMsgs message.Responses) error {
+func (conn *Conn) ResponseMessages(resMsgs protocol.Responses) error {
 	if len(resMsgs) == 0 {
 		return nil
 	}
@@ -192,7 +192,7 @@ func (conn *Conn) ResponseError(err error) error {
 	if err == nil {
 		return nil
 	}
-	errMsg, err := message.NewErrorResponseWith(err)
+	errMsg, err := protocol.NewErrorResponseWith(err)
 	if err != nil {
 		return err
 	}
@@ -204,9 +204,9 @@ func (conn *Conn) ResponseError(err error) error {
 	return err
 }
 
-// SkipMessage skips a message.
+// SkipMessage skips a protocol.
 func (conn *Conn) SkipMessage() error {
-	msg, err := message.NewMessageWithReader(conn.MessageReader())
+	msg, err := protocol.NewMessageWithReader(conn.MessageReader())
 	if err != nil {
 		return err
 	}
@@ -217,9 +217,9 @@ func (conn *Conn) SkipMessage() error {
 	return nil
 }
 
-// ReadyForMessage sends a ready for message.
-func (conn *Conn) ReadyForMessage(status message.TransactionStatus) error {
-	readyMsg, err := message.NewReadyForQueryWith(status)
+// ReadyForMessage sends a ready for protocol.
+func (conn *Conn) ReadyForMessage(status protocol.TransactionStatus) error {
+	readyMsg, err := protocol.NewReadyForQueryWith(status)
 	if err != nil {
 		return err
 	}
