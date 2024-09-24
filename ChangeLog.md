@@ -7,6 +7,9 @@
   - SELECT
     - Added tests for ORDER BY
 
+## v1.5.5 (2024-xx-xx)
+- Support scram-sha-256
+
 ## v1.5.4 (2024-06-28)
 - Add connection manager
 
