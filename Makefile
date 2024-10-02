@@ -50,6 +50,7 @@ BINARIES=\
 	${EXAMPLE_BINARIES}
 
 .PHONY: clean test
+.IGNORE: lint
 
 all: test
 
