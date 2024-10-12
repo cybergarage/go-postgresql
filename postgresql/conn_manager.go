@@ -23,20 +23,20 @@ import (
 
 // ConnManager represents a connection map.
 type ConnManager struct {
-	m     map[uuid.UUID]*Conn
+	m     map[uuid.UUID]Conn
 	mutex *sync.RWMutex
 }
 
 // NewConnManager returns a connection map.
 func NewConnManager() *ConnManager {
 	return &ConnManager{
-		m:     map[uuid.UUID]*Conn{},
+		m:     map[uuid.UUID]Conn{},
 		mutex: &sync.RWMutex{},
 	}
 }
 
 // AddConn adds the specified connection.
-func (mgr *ConnManager) AddConn(c *Conn) {
+func (mgr *ConnManager) AddConn(c Conn) {
 	mgr.mutex.Lock()
 	defer mgr.mutex.Unlock()
 	uuid := c.UUID()
@@ -44,10 +44,10 @@ func (mgr *ConnManager) AddConn(c *Conn) {
 }
 
 // Conns returns the included connections.
-func (mgr *ConnManager) Conns() []*Conn {
+func (mgr *ConnManager) Conns() []Conn {
 	mgr.mutex.RLock()
 	defer mgr.mutex.RUnlock()
-	conns := make([]*Conn, 0, len(mgr.m))
+	conns := make([]Conn, 0, len(mgr.m))
 	for _, conn := range mgr.m {
 		conns = append(conns, conn)
 	}
@@ -55,7 +55,7 @@ func (mgr *ConnManager) Conns() []*Conn {
 }
 
 // ConnByUUID returns the connection with the specified UUID.
-func (mgr *ConnManager) ConnByUUID(uuid uuid.UUID) (*Conn, bool) {
+func (mgr *ConnManager) ConnByUUID(uuid uuid.UUID) (Conn, bool) {
 	mgr.mutex.RLock()
 	defer mgr.mutex.RUnlock()
 	c, ok := mgr.m[uuid]
@@ -63,7 +63,7 @@ func (mgr *ConnManager) ConnByUUID(uuid uuid.UUID) (*Conn, bool) {
 }
 
 // RemoveConn deletes the specified connection from the map.
-func (mgr *ConnManager) RemoveConn(conn *Conn) error {
+func (mgr *ConnManager) RemoveConn(conn Conn) error {
 	mgr.mutex.Lock()
 	defer mgr.mutex.Unlock()
 	delete(mgr.m, conn.UUID())

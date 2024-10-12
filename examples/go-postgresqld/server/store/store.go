@@ -33,7 +33,7 @@ func NewMemStore() *MemStore {
 	return store
 }
 
-func (store *MemStore) GetDatabaseTable(conn *postgresql.Conn, dbName string, tblName string) (*Database, *Table, error) {
+func (store *MemStore) GetDatabaseTable(conn postgresql.Conn, dbName string, tblName string) (*Database, *Table, error) {
 	db, ok := store.GetDatabase(dbName)
 	if !ok {
 		return nil, nil, query.NewErrDatabaseNotExist(dbName)

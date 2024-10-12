@@ -33,12 +33,12 @@ func NewBaseSugarExecutorWith(executor *BaseExecutor) *BaseSugarExecutor {
 }
 
 // Vacuum handles a VACUUM query.
-func (executor *BaseSugarExecutor) Vacuum(conn *Conn, stmt *query.Vacuum) (protocol.Responses, error) {
+func (executor *BaseSugarExecutor) Vacuum(conn Conn, stmt *query.Vacuum) (protocol.Responses, error) {
 	return protocol.NewCommandCompleteResponsesWith(("VACUUM"))
 }
 
 // Truncate handles a TRUNCATE query.
-func (executor *BaseSugarExecutor) Truncate(conn *Conn, stmt *query.Truncate) (protocol.Responses, error) {
+func (executor *BaseSugarExecutor) Truncate(conn Conn, stmt *query.Truncate) (protocol.Responses, error) {
 	for _, table := range stmt.Tables() {
 		stmt := sql.NewDeleteWith(table)
 		_, err := executor.QueryExecutor.Delete(conn, stmt)

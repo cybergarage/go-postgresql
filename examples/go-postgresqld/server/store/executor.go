@@ -29,22 +29,22 @@ import (
 )
 
 // Begin handles a BEGIN query.
-func (store *MemStore) Begin(conn *postgresql.Conn, q *query.Begin) (protocol.Responses, error) {
+func (store *MemStore) Begin(conn postgresql.Conn, q *query.Begin) (protocol.Responses, error) {
 	return protocol.NewCommandCompleteResponsesWith(q.String())
 }
 
 // Commit handles a COMMIT query.
-func (store *MemStore) Commit(con *postgresql.Conn, q *query.Commit) (protocol.Responses, error) {
+func (store *MemStore) Commit(con postgresql.Conn, q *query.Commit) (protocol.Responses, error) {
 	return protocol.NewCommandCompleteResponsesWith(q.String())
 }
 
 // Rollback handles a ROLLBACK query.
-func (store *MemStore) Rollback(*postgresql.Conn, *query.Rollback) (protocol.Responses, error) {
+func (store *MemStore) Rollback(postgresql.Conn, *query.Rollback) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("ROLLBACK")
 }
 
 // CreateDatabase handles a CREATE DATABASE query.
-func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateDatabase) (protocol.Responses, error) {
+func (store *MemStore) CreateDatabase(conn postgresql.Conn, q *query.CreateDatabase) (protocol.Responses, error) {
 	dbName := q.DatabaseName()
 
 	_, ok := store.GetDatabase(dbName)
@@ -64,7 +64,7 @@ func (store *MemStore) CreateDatabase(conn *postgresql.Conn, q *query.CreateData
 }
 
 // CreateTable handles a CREATE TABLE query.
-func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) (protocol.Responses, error) {
+func (store *MemStore) CreateTable(conn postgresql.Conn, q *query.CreateTable) (protocol.Responses, error) {
 	dbName := conn.Database()
 
 	db, ok := store.GetDatabase(dbName)
@@ -91,12 +91,12 @@ func (store *MemStore) CreateTable(conn *postgresql.Conn, q *query.CreateTable) 
 }
 
 // AlterDatabase handles a ALTER DATABASE query.
-func (store *MemStore) AlterDatabase(conn *postgresql.Conn, q *query.AlterDatabase) (protocol.Responses, error) {
+func (store *MemStore) AlterDatabase(conn postgresql.Conn, q *query.AlterDatabase) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // AlterTable handles a ALTER TABLE query.
-func (store *MemStore) AlterTable(conn *postgresql.Conn, q *query.AlterTable) (protocol.Responses, error) {
+func (store *MemStore) AlterTable(conn postgresql.Conn, q *query.AlterTable) (protocol.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ func (store *MemStore) AlterTable(conn *postgresql.Conn, q *query.AlterTable) (p
 		}
 	}
 
-	if _, ok := q.RenameTable(); ok {
+	if _, ok := q.RenameTo(); ok {
 		return nil, query.NewErrNotImplemented(q.String())
 	}
 
@@ -145,7 +145,7 @@ func (store *MemStore) AlterTable(conn *postgresql.Conn, q *query.AlterTable) (p
 }
 
 // DropDatabase handles a DROP DATABASE query.
-func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase) (protocol.Responses, error) {
+func (store *MemStore) DropDatabase(conn postgresql.Conn, q *query.DropDatabase) (protocol.Responses, error) {
 	dbName := q.DatabaseName()
 
 	db, ok := store.GetDatabase(dbName)
@@ -165,7 +165,7 @@ func (store *MemStore) DropDatabase(conn *postgresql.Conn, q *query.DropDatabase
 }
 
 // DropIndex handles a DROP INDEX query.
-func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (protocol.Responses, error) {
+func (store *MemStore) DropTable(conn postgresql.Conn, q *query.DropTable) (protocol.Responses, error) {
 	for _, dropTbl := range q.Tables() {
 		db, tbl, err := store.GetDatabaseTable(conn, conn.Database(), dropTbl.TableName())
 		if err != nil {
@@ -184,7 +184,7 @@ func (store *MemStore) DropTable(conn *postgresql.Conn, q *query.DropTable) (pro
 }
 
 // Insert handles a INSERT query.
-func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (protocol.Responses, error) {
+func (store *MemStore) Insert(conn postgresql.Conn, q *query.Insert) (protocol.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
@@ -205,7 +205,7 @@ func (store *MemStore) Insert(conn *postgresql.Conn, q *query.Insert) (protocol.
 }
 
 // Select handles a SELECT query.
-func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (protocol.Responses, error) {
+func (store *MemStore) Select(conn postgresql.Conn, q *query.Select) (protocol.Responses, error) {
 	from := q.Tables()
 	if len(from) != 1 {
 		return nil, query.NewErrMultipleTableNotSupported(from.String())
@@ -290,7 +290,7 @@ func (store *MemStore) Select(conn *postgresql.Conn, q *query.Select) (protocol.
 }
 
 // Update handles a UPDATE query.
-func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (protocol.Responses, error) {
+func (store *MemStore) Update(conn postgresql.Conn, q *query.Update) (protocol.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
@@ -310,7 +310,7 @@ func (store *MemStore) Update(conn *postgresql.Conn, q *query.Update) (protocol.
 }
 
 // Delete handles a DELETE query.
-func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (protocol.Responses, error) {
+func (store *MemStore) Delete(conn postgresql.Conn, q *query.Delete) (protocol.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
@@ -325,13 +325,13 @@ func (store *MemStore) Delete(conn *postgresql.Conn, q *query.Delete) (protocol.
 }
 
 // SystemSelect handles a SELECT query for system tables.
-func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (protocol.Responses, error) {
+func (store *MemStore) SystemSelect(conn postgresql.Conn, q *query.Select) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 8.0: System Catalogs
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
 	// https://www.postgresql.org/docs/current/client-interfaces.html
 
-	selectInformationSchemaColumns := func(conn *postgresql.Conn, q *query.Select) (protocol.Responses, error) {
+	selectInformationSchemaColumns := func(conn postgresql.Conn, q *query.Select) (protocol.Responses, error) {
 		return nil, query.NewErrNotImplemented("SELECT")
 	}
 
@@ -350,7 +350,7 @@ func (store *MemStore) SystemSelect(conn *postgresql.Conn, q *query.Select) (pro
 }
 
 // Copy handles a COPY query.
-func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (protocol.Responses, error) {
+func (store *MemStore) Copy(conn postgresql.Conn, q *query.Copy) (protocol.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
@@ -360,7 +360,7 @@ func (store *MemStore) Copy(conn *postgresql.Conn, q *query.Copy) (protocol.Resp
 }
 
 // Copy handles a COPY DATA protocol.
-func (store *MemStore) CopyData(conn *postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (protocol.Responses, error) {
+func (store *MemStore) CopyData(conn postgresql.Conn, q *query.Copy, stream *postgresql.CopyStream) (protocol.Responses, error) {
 	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		log.Error(err)

@@ -23,7 +23,7 @@ import (
 )
 
 // ParserError handles a parser error.
-func (store *MemStore) ParserError(conn *postgresql.Conn, q string, err error) (protocol.Responses, error) {
+func (store *MemStore) ParserError(conn postgresql.Conn, q string, err error) (protocol.Responses, error) {
 	switch {
 	case postgresql.IsPgbenchGetPartitionQuery(q):
 		return postgresql.NewGetPartitionResponseForPgbench()

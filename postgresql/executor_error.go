@@ -30,7 +30,7 @@ func NewBaseErrorHandler() *BaseErrorHandler {
 }
 
 // ParserError handles a parser error.
-func (executor *BaseErrorHandler) ParserError(conn *Conn, q string, err error) (protocol.Responses, error) {
+func (executor *BaseErrorHandler) ParserError(conn Conn, q string, err error) (protocol.Responses, error) {
 	resErr := fmt.Errorf("parser error : %w", err)
 	res, err := protocol.NewErrorResponseWith(resErr)
 	if err != nil {

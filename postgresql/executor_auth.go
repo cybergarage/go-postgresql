@@ -33,7 +33,7 @@ func NewBaseAuthExecutor() *BaseAuthExecutor {
 }
 
 // Authenticate authenticates the connection with the startup protocol.
-func (executor *BaseAuthExecutor) Authenticate(conn *Conn) (protocol.Response, error) {
+func (executor *BaseAuthExecutor) Authenticate(conn Conn) (protocol.Response, error) {
 	ok, err := executor.AuthManager.Authenticate(conn)
 	if err != nil {
 		return nil, err

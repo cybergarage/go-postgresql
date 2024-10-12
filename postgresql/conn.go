@@ -20,212 +20,77 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-tracing/tracer"
 	"github.com/google/uuid"
 )
 
-// ConnOption represents a connection option.
-type ConnOption = func(*Conn)
+// ConnID represents a connection ID.
+type ConnID = sql.ConnID
 
-// Conn represents a connection of PostgreSQL binary protocol.
-type Conn struct {
-	net.Conn
-	isClosed  bool
-	msgReader *protocol.MessageReader
-	db        string
-	ts        time.Time
-	uuid      uuid.UUID
+type PreparedConn interface {
+	// PreparedStatement returns a prepared statement.
+	PreparedStatement(name string) (*PreparedStatement, error)
+	// SetPreparedStatement sets a prepared statement.
+	SetPreparedStatement(msg *protocol.Parse) error
+	// RemovePreparedStatement removes a prepared statement.
+	RemovePreparedStatement(name string) error
+	// PreparedPortal returns a prepared query statement.
+	PreparedPortal(name string) (*PreparedPortal, error)
+	// SetPreparedPortal sets a prepared query statement.
+	SetPreparedPortal(name string, query *PreparedPortal) error
+	// RemovePreparedPortal removes a prepared query statement.
+	RemovePreparedPortal(name string) error
+}
+
+type MessageConn interface {
+	// SetStartupMessage sets a startup protocol.
+	SetStartupMessage(msg *protocol.Startup)
+	// StartupMessage return the startup protocol.
+	StartupMessage() (*protocol.Startup, bool)
+	// MessageReader returns a message reader.
+	MessageReader() *protocol.MessageReader
+	// ResponseMessage sends a response protocol.
+	ResponseMessage(resMsg protocol.Response) error
+	// ResponseMessages sends response messages.
+	ResponseMessages(resMsgs protocol.Responses) error
+	// ResponseError sends an error response.
+	ResponseError(err error) error
+	// SkipMessage skips a protocol.
+	SkipMessage() error
+	// ReadyForMessage sends a ready for protocol.
+	ReadyForMessage(status protocol.TransactionStatus) error
+}
+
+type TLSConn interface {
+	// IsTLSConnection return true if the connection is enabled TLS.
+	IsTLSConnection() bool
+	// TLSConnectionState returns the TLS connection state.
+	TLSConnectionState() (*tls.ConnectionState, bool)
+}
+
+// Conn represents a connection.
+type Conn interface {
+	PreparedConn
+	MessageConn
+	TLSConn
 	tracer.Context
-	PreparedStatementMap
-	PreparedPortalMap
-	tlsState   *tls.ConnectionState
-	startupMsg *protocol.Startup
-}
-
-// NewConnWith returns a connection with a raw connection.
-func NewConnWith(netConn net.Conn, opts ...ConnOption) *Conn {
-	conn := &Conn{
-		Conn:                 netConn,
-		isClosed:             false,
-		msgReader:            protocol.NewMessageReaderWith(netConn),
-		db:                   "",
-		ts:                   time.Now(),
-		uuid:                 uuid.New(),
-		Context:              nil,
-		PreparedStatementMap: NewPreparedStatementMap(),
-		PreparedPortalMap:    NewPreparedPortalMap(),
-		tlsState:             nil,
-		startupMsg:           nil,
-	}
-	for _, opt := range opts {
-		opt(conn)
-	}
-	return conn
-}
-
-// WithConnDatabase sets a database name.
-func WithConnDatabase(name string) func(*Conn) {
-	return func(conn *Conn) {
-		conn.db = name
-	}
-}
-
-// WithConnTracer sets a tracer context.
-func WithConnTracer(t tracer.Context) func(*Conn) {
-	return func(conn *Conn) {
-		conn.Context = t
-	}
-}
-
-// WithConnStartupMessage sets a startup protocol.
-func WithConnStartupMessage(msg *protocol.Startup) func(*Conn) {
-	return func(conn *Conn) {
-		conn.startupMsg = msg
-	}
-}
-
-// WithTLSConnectionState sets a TLS connection state.
-func WithTLSConnectionState(s *tls.ConnectionState) func(*Conn) {
-	return func(conn *Conn) {
-		conn.tlsState = s
-	}
-}
-
-// Close closes the connection.
-func (conn *Conn) Close() error {
-	if conn.isClosed {
-		return nil
-	}
-	if err := conn.Conn.Close(); err != nil {
-		return err
-	}
-	conn.isClosed = true
-	return nil
-}
-
-// SetDatabase sets the database name.
-func (conn *Conn) SetDatabase(db string) {
-	conn.db = db
-}
-
-// Database returns the database name.
-func (conn *Conn) Database() string {
-	return conn.db
-}
-
-// Timestamp returns the creation time of the connection.
-func (conn *Conn) Timestamp() time.Time {
-	return conn.ts
-}
-
-// UUID returns the UUID of the connection.
-func (conn *Conn) UUID() uuid.UUID {
-	return conn.uuid
-}
-
-// SetSpanContext sets the tracer span context of the connection.
-func (conn *Conn) SetSpanContext(ctx tracer.Context) {
-	conn.Context = ctx
-}
-
-// SpanContext returns the tracer span context of the connection.
-func (conn *Conn) SpanContext() tracer.Context {
-	return conn.Context
-}
-
-// SetStartupMessage sets a startup protocol.
-func (conn *Conn) SetStartupMessage(msg *protocol.Startup) {
-	conn.startupMsg = msg
-}
-
-// StartupMessage return the startup protocol.
-func (conn *Conn) StartupMessage() (*protocol.Startup, bool) {
-	return conn.startupMsg, conn.startupMsg != nil
-}
-
-// IsTLSConnection return true if the connection is enabled TLS.
-func (conn *Conn) IsTLSConnection() bool {
-	return conn.tlsState != nil
-}
-
-// TLSConnectionState returns the TLS connection state.
-func (conn *Conn) TLSConnectionState() (*tls.ConnectionState, bool) {
-	return conn.tlsState, conn.tlsState != nil
-}
-
-// MessageReader returns a message reader.
-func (conn *Conn) MessageReader() *protocol.MessageReader {
-	return conn.msgReader
-}
-
-// ResponseMessage sends a response protocol.
-func (conn *Conn) ResponseMessage(resMsg protocol.Response) error {
-	if resMsg == nil {
-		return nil
-	}
-	resBytes, err := resMsg.Bytes()
-	if err != nil {
-		return err
-	}
-	if _, err := conn.Conn.Write(resBytes); err != nil {
-		return err
-	}
-	return nil
-}
-
-// ResponseMessages sends response messages.
-func (conn *Conn) ResponseMessages(resMsgs protocol.Responses) error {
-	if len(resMsgs) == 0 {
-		return nil
-	}
-	for _, resMsg := range resMsgs {
-		err := conn.ResponseMessage(resMsg)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// ResponseError sends an error response.
-func (conn *Conn) ResponseError(err error) error {
-	if err == nil {
-		return nil
-	}
-	errMsg, err := protocol.NewErrorResponseWith(err)
-	if err != nil {
-		return err
-	}
-	errBytes, err := errMsg.Bytes()
-	if err != nil {
-		return err
-	}
-	_, err = conn.Conn.Write(errBytes)
-	return err
-}
-
-// SkipMessage skips a protocol.
-func (conn *Conn) SkipMessage() error {
-	msg, err := protocol.NewMessageWithReader(conn.MessageReader())
-	if err != nil {
-		return err
-	}
-	_, err = msg.ReadMessageData()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// ReadyForMessage sends a ready for protocol.
-func (conn *Conn) ReadyForMessage(status protocol.TransactionStatus) error {
-	readyMsg, err := protocol.NewReadyForQueryWith(status)
-	if err != nil {
-		return err
-	}
-	err = conn.ResponseMessage(readyMsg)
-	if err != nil {
-		return err
-	}
-	return nil
+	// RemoteAddr returns the remote address.
+	RemoteAddr() net.Addr
+	// Close closes the connection.
+	Close() error
+	// SetDatabase sets a database name.
+	SetDatabase(db string)
+	// Database returns the database name.
+	Database() string
+	// Timestamp returns the timestamp.
+	Timestamp() time.Time
+	// UUID returns the UUID.
+	UUID() uuid.UUID
+	// ID returns the ID.
+	ID() ConnID
+	// SetSpanContext sets a span context.
+	SetSpanContext(ctx tracer.Context)
+	// SpanContext returns a span context.
+	SpanContext() tracer.Context
 }
