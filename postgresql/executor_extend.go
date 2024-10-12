@@ -220,7 +220,7 @@ func (executor *BaseExtendedQueryExecutor) Flush(conn Conn, msg *protocol.Flush)
 }
 
 // Query handles a query protocol.
-func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) { //nolint:gocyclo
+func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
 	q := msg.Query
 	log.Debugf("%s %s", conn.RemoteAddr(), q)
 
@@ -266,7 +266,9 @@ func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query)
 		}
 
 		var res protocol.Responses
-		switch stmt.Object().StatementType() { //nolint:forcetypeassert
+
+		// nolint: forcetypeassert
+		switch stmt.Object().StatementType() {
 		case sql.BeginStatement:
 			stmt := stmt.Object().(query.Begin)
 			res, err = executor.TCLExecutor.Begin(conn, stmt)
