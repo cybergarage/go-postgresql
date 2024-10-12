@@ -70,7 +70,7 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (
 
 // Describe handles a describe protocol.
 func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
-	newSystemSelectQuery := func(stmt *query.Select) (*sql.Select, error) {
+	newSystemSelectQuery := func(stmt query.Select) (*sql.Select, error) {
 		tables := stmt.From().Tables()
 		if len(tables) != 1 {
 			return nil, query.NewErrMultipleTableNotSupported(stmt.From().String())
@@ -91,7 +91,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 		), nil
 	}
 
-	selectObjectIds := func(stmt *query.Select) ([]int32, error) {
+	selectObjectIds := func(stmt query.Select) ([]int32, error) {
 		objIDFromResponses := func(responses protocol.Responses, colName string) (int32, bool) {
 			for r, res := range responses {
 				if r == 0 {
@@ -151,7 +151,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 		}
 		objIDs := []int32{}
 		switch stmt := prepStmt.ParsedStatement.Object().(type) {
-		case *query.Select:
+		case query.Select:
 			objIDs, err = selectObjectIds(stmt)
 			if err != nil {
 				return nil, err
@@ -240,7 +240,7 @@ func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query)
 		return res, nil
 	}
 
-	handleCopyQuery := func(conn Conn, stmt *query.Copy) (protocol.Responses, error) {
+	handleCopyQuery := func(conn Conn, stmt query.Copy) (protocol.Responses, error) {
 		res, err := executor.BulkExecutor.Copy(conn, stmt)
 		if err != nil || res.HasErrorResponse() {
 			return res, err
@@ -266,42 +266,58 @@ func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query)
 		}
 
 		var res protocol.Responses
-		switch stmt := stmt.Object().(type) {
-		case *query.Begin:
+		switch stmt.Object().StatementType() { //nolint:forcetypeassert
+		case sql.BeginStatement:
+			stmt := stmt.Object().(query.Begin)
 			res, err = executor.TCLExecutor.Begin(conn, stmt)
-		case *query.Commit:
+		case sql.CommitStatement:
+			stmt := stmt.Object().(query.Commit)
 			res, err = executor.TCLExecutor.Commit(conn, stmt)
-		case *query.Rollback:
+		case sql.RollbackStatement:
+			stmt := stmt.Object().(query.Rollback)
 			res, err = executor.TCLExecutor.Rollback(conn, stmt)
-		case *query.CreateDatabase:
+		case sql.CreateDatabaseStatement:
+			stmt := stmt.Object().(query.CreateDatabase)
 			res, err = executor.QueryExecutor.CreateDatabase(conn, stmt)
-		case *query.CreateTable:
+		case sql.CreateTableStatement:
+			stmt := stmt.Object().(query.CreateTable)
 			res, err = executor.QueryExecutor.CreateTable(conn, stmt)
-		case *query.AlterDatabase:
+		case sql.AlterDatabaseStatement:
+			stmt := stmt.Object().(query.AlterDatabase)
 			res, err = executor.QueryExecutor.AlterDatabase(conn, stmt)
-		case *query.AlterTable:
+		case sql.AlterTableStatement:
+			stmt := stmt.Object().(query.AlterTable)
 			res, err = executor.QueryExecutor.AlterTable(conn, stmt)
-		case *query.DropDatabase:
+		case sql.DropDatabaseStatement:
+			stmt := stmt.Object().(query.DropDatabase)
 			res, err = executor.QueryExecutor.DropDatabase(conn, stmt)
-		case *query.DropTable:
+		case sql.DropTableStatement:
+			stmt := stmt.Object().(query.DropTable)
 			res, err = executor.QueryExecutor.DropTable(conn, stmt)
-		case *query.Insert:
+		case sql.InsertStatement:
+			stmt := stmt.Object().(query.Insert)
 			res, err = executor.QueryExecutor.Insert(conn, stmt)
-		case *query.Select:
+		case sql.SelectStatement:
+			stmt := stmt.Object().(query.Select)
 			if stmt.From().HasSchemaTable(system.SystemSchemaNames...) {
 				res, err = executor.SystemQueryExecutor.SystemSelect(conn, stmt)
 			} else {
 				res, err = executor.QueryExecutor.Select(conn, stmt)
 			}
-		case *query.Update:
+		case sql.UpdateStatement:
+			stmt := stmt.Object().(query.Update)
 			res, err = executor.QueryExecutor.Update(conn, stmt)
-		case *query.Delete:
+		case sql.DeleteStatement:
+			stmt := stmt.Object().(query.Delete)
 			res, err = executor.QueryExecutor.Delete(conn, stmt)
-		case *query.Truncate:
+		case sql.TruncateStatement:
+			stmt := stmt.Object().(query.Truncate)
 			res, err = executor.QueryExtraExecutor.Truncate(conn, stmt)
-		case *query.Vacuum:
+		case sql.VacuumStatement:
+			stmt := stmt.Object().(query.Vacuum)
 			res, err = executor.QueryExtraExecutor.Vacuum(conn, stmt)
-		case *query.Copy:
+		case sql.CopyStatement:
+			stmt := stmt.Object().(query.Copy)
 			res, err = handleCopyQuery(conn, stmt)
 		}
 

@@ -42,47 +42,47 @@ type StartupHandler interface {
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
 type DDOExecutor interface {
 	// CreateDatabase handles a CREATE DATABASE query.
-	CreateDatabase(Conn, *query.CreateDatabase) (protocol.Responses, error)
+	CreateDatabase(Conn, query.CreateDatabase) (protocol.Responses, error)
 	// CreateTable handles a CREATE TABLE query.
-	CreateTable(Conn, *query.CreateTable) (protocol.Responses, error)
+	CreateTable(Conn, query.CreateTable) (protocol.Responses, error)
 	// AlterDatabase handles a ALTER DATABASE query.
-	AlterDatabase(Conn, *query.AlterDatabase) (protocol.Responses, error)
+	AlterDatabase(Conn, query.AlterDatabase) (protocol.Responses, error)
 	// AlterTable handles a ALTER TABLE query.
-	AlterTable(Conn, *query.AlterTable) (protocol.Responses, error)
+	AlterTable(Conn, query.AlterTable) (protocol.Responses, error)
 	// DropDatabase handles a DROP DATABASE query.
-	DropDatabase(Conn, *query.DropDatabase) (protocol.Responses, error)
+	DropDatabase(Conn, query.DropDatabase) (protocol.Responses, error)
 	// DropIndex handles a DROP INDEX query.
-	DropTable(Conn, *query.DropTable) (protocol.Responses, error)
+	DropTable(Conn, query.DropTable) (protocol.Responses, error)
 }
 
 // DMOExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExecutor interface {
 	// Insert handles a INSERT query.
-	Insert(Conn, *query.Insert) (protocol.Responses, error)
+	Insert(Conn, query.Insert) (protocol.Responses, error)
 	// Select handles a SELECT query.
-	Select(Conn, *query.Select) (protocol.Responses, error)
+	Select(Conn, query.Select) (protocol.Responses, error)
 	// Update handles a UPDATE query.
-	Update(Conn, *query.Update) (protocol.Responses, error)
+	Update(Conn, query.Update) (protocol.Responses, error)
 	// Delete handles a DELETE query.
-	Delete(Conn, *query.Delete) (protocol.Responses, error)
+	Delete(Conn, query.Delete) (protocol.Responses, error)
 }
 
 // DMOExtraExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExtraExecutor interface {
 	// Vacuum handles a VACUUM query.
-	Vacuum(Conn, *query.Vacuum) (protocol.Responses, error)
+	Vacuum(Conn, query.Vacuum) (protocol.Responses, error)
 	// Truncate handles a TRUNCATE query.
-	Truncate(Conn, *query.Truncate) (protocol.Responses, error)
+	Truncate(Conn, query.Truncate) (protocol.Responses, error)
 }
 
 // TCLExecutor defines a executor interface for TCL (Transaction Control Language).
 type TCLExecutor interface {
 	// Begin handles a BEGIN query.
-	Begin(Conn, *query.Begin) (protocol.Responses, error)
+	Begin(Conn, query.Begin) (protocol.Responses, error)
 	// Commit handles a COMMIT query.
-	Commit(Conn, *query.Commit) (protocol.Responses, error)
+	Commit(Conn, query.Commit) (protocol.Responses, error)
 	// Rollback handles a ROLLBACK query.
-	Rollback(Conn, *query.Rollback) (protocol.Responses, error)
+	Rollback(Conn, query.Rollback) (protocol.Responses, error)
 }
 
 // ExtendedQueryExecutor defines a executor interface for extended query operations.
@@ -108,9 +108,9 @@ type ExtendedQueryExecutor interface {
 // BulkExecutor defines a executor interface for bulk operations.
 type BulkExecutor interface {
 	// Copy handles a COPY query.
-	Copy(Conn, *query.Copy) (protocol.Responses, error)
+	Copy(Conn, query.Copy) (protocol.Responses, error)
 	// CopyData handles a COPY data protocol.
-	CopyData(Conn, *query.Copy, *CopyStream) (protocol.Responses, error)
+	CopyData(Conn, query.Copy, *CopyStream) (protocol.Responses, error)
 }
 
 // QueryExecutor represents a user query message executor.
@@ -122,7 +122,7 @@ type QueryExecutor interface {
 // SystemQueryExecutor represents a system query message executor.
 type SystemQueryExecutor interface {
 	// SystemSelect handles a SELECT query for system tables.
-	SystemSelect(Conn, *query.Select) (protocol.Responses, error)
+	SystemSelect(Conn, query.Select) (protocol.Responses, error)
 }
 
 // QueryExtraExecutor represents a user query message executor.
