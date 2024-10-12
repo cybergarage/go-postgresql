@@ -45,7 +45,7 @@ func NewBaseProtocolExecutor() *BaseStartupExecutor {
 }
 
 // ParameterStatuses returns the parameter statuses.
-func (executor *BaseStartupExecutor) ParameterStatuses(*Conn) (protocol.Responses, error) {
+func (executor *BaseStartupExecutor) ParameterStatuses(Conn) (protocol.Responses, error) {
 	m := map[string]string{}
 	m[protocol.ClientEncoding] = protocol.EncodingUTF8
 	m[protocol.ServerEncoding] = protocol.EncodingUTF8
@@ -53,6 +53,6 @@ func (executor *BaseStartupExecutor) ParameterStatuses(*Conn) (protocol.Response
 }
 
 // BackendKeyData returns the backend key data.
-func (executor *BaseStartupExecutor) BackendKeyData(*Conn) (protocol.Response, error) {
+func (executor *BaseStartupExecutor) BackendKeyData(Conn) (protocol.Response, error) {
 	return protocol.NewBackendKeyDataWith(executor.processID, executor.secretKey)
 }

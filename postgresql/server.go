@@ -148,7 +148,7 @@ func (server *Server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	log.Debugf("%s/%s (%s) accepted", PackageName, Version, netConn.RemoteAddr().String())
 
-	handleStartupMessage := func(conn *Conn, startupMsg *protocol.Startup) error {
+	handleStartupMessage := func(conn Conn, startupMsg *protocol.Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error protocol.

@@ -76,7 +76,7 @@ func NewCopyQueryFrom(schema *query.Schema, copyColumns sql.ColumnList, copyData
 }
 
 // NewCopyCompleteResponsesFrom returns a new copy complete response from the specified query.
-func NewCopyCompleteResponsesFrom(q *query.Copy, stream *CopyStream, conn *Conn, schema *sql.Schema, queryExecutor QueryExecutor) (protocol.Responses, error) {
+func NewCopyCompleteResponsesFrom(q *query.Copy, stream *CopyStream, conn Conn, schema *sql.Schema, queryExecutor QueryExecutor) (protocol.Responses, error) {
 	copyData := func(schema *query.Schema, colums sql.ColumnList, copyData *protocol.CopyData) error {
 		q, err := NewCopyQueryFrom(schema, colums, copyData)
 		if err != nil {
