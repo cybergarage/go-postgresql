@@ -16,13 +16,9 @@ package postgresql
 
 import (
 	"crypto/tls"
-	"net"
-	"time"
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-sqlparser/sql"
-	"github.com/cybergarage/go-tracing/tracer"
-	"github.com/google/uuid"
 )
 
 // ConnID represents a connection ID.
@@ -71,26 +67,8 @@ type TLSConn interface {
 
 // Conn represents a connection.
 type Conn interface {
+	sql.Conn
 	PreparedConn
 	MessageConn
 	TLSConn
-	tracer.Context
-	// RemoteAddr returns the remote address.
-	RemoteAddr() net.Addr
-	// Close closes the connection.
-	Close() error
-	// SetDatabase sets a database name.
-	SetDatabase(db string)
-	// Database returns the database name.
-	Database() string
-	// Timestamp returns the timestamp.
-	Timestamp() time.Time
-	// UUID returns the UUID.
-	UUID() uuid.UUID
-	// ID returns the ID.
-	ID() ConnID
-	// SetSpanContext sets a span context.
-	SetSpanContext(ctx tracer.Context)
-	// SpanContext returns a span context.
-	SpanContext() tracer.Context
 }
