@@ -29,11 +29,11 @@ func NewBaseBulkExecutor() *BaseBulkExecutor {
 }
 
 // Copy handles a COPY query.
-func (executor *BaseBulkExecutor) Copy(Conn, *query.Copy) (protocol.Responses, error) {
+func (executor *BaseBulkExecutor) Copy(Conn, query.Copy) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("COPY")
 }
 
 // Copy handles a COPY DATA protocol.
-func (executor *BaseBulkExecutor) CopyData(Conn, *query.Copy, *CopyStream) (protocol.Responses, error) {
+func (executor *BaseBulkExecutor) CopyData(Conn, query.Copy, *CopyStream) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("COPY DATA")
 }

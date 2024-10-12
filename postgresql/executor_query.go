@@ -29,51 +29,51 @@ func NewBaseQueryExecutor() *BaseQueryExecutor {
 }
 
 // CreateDatabase handles a CREATE DATABASE query.
-func (executor *BaseQueryExecutor) CreateDatabase(Conn, *query.CreateDatabase) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) CreateDatabase(Conn, query.CreateDatabase) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("CREATE DATABASE")
 }
 
 // CreateTable handles a CREATE TABLE query.
-func (executor *BaseQueryExecutor) CreateTable(Conn, *query.CreateTable) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) CreateTable(Conn, query.CreateTable) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("CREATE TABLE")
 }
 
 // AlterDatabase handles a ALTER DATABASE query.
-func (executor *BaseQueryExecutor) AlterDatabase(Conn, *query.AlterDatabase) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) AlterDatabase(Conn, query.AlterDatabase) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // AlterTable handles a ALTER TABLE query.
-func (executor *BaseQueryExecutor) AlterTable(Conn, *query.AlterTable) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) AlterTable(Conn, query.AlterTable) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("ALTER TABLE")
 }
 
 // DropDatabase handles a DROP DATABASE query.
-func (executor *BaseQueryExecutor) DropDatabase(Conn, *query.DropDatabase) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) DropDatabase(Conn, query.DropDatabase) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("DROP DATABASE")
 }
 
 // DropIndex handles a DROP INDEX query.
-func (executor *BaseQueryExecutor) DropTable(Conn, *query.DropTable) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) DropTable(Conn, query.DropTable) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("DROP TABLE")
 }
 
 // Insert handles a INSERT query.
-func (executor *BaseQueryExecutor) Insert(Conn, *query.Insert) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) Insert(Conn, query.Insert) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("INSERT")
 }
 
 // Select handles a SELECT query.
-func (executor *BaseQueryExecutor) Select(Conn, *query.Select) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) Select(Conn, query.Select) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("SELECT")
 }
 
 // Update handles a UPDATE query.
-func (executor *BaseQueryExecutor) Update(Conn, *query.Update) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) Update(Conn, query.Update) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("UPDATE")
 }
 
 // Delete handles a DELETE query.
-func (executor *BaseQueryExecutor) Delete(Conn, *query.Delete) (protocol.Responses, error) {
+func (executor *BaseQueryExecutor) Delete(Conn, query.Delete) (protocol.Responses, error) {
 	return nil, query.NewErrNotImplemented("DELETE")
 }

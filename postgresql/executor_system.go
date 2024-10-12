@@ -29,7 +29,7 @@ func NewBaseSystemQueryExecutor() *BaseSystemQueryExecutor {
 }
 
 // SystemSelect handles a SELECT query for system tables.
-func (executor *BaseSystemQueryExecutor) SystemSelect(Conn, *query.Select) (protocol.Responses, error) {
+func (executor *BaseSystemQueryExecutor) SystemSelect(Conn, query.Select) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 8.0: System Catalogs
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
