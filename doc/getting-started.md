@@ -37,7 +37,7 @@ func NewMyServer() *MyServer {
     return myserver
 }
 
-func (server *MyServer) Insert(conn postgresql.Conn, q *query.Insert) (protocol.Responses, error) {
+func (server *MyServer) Insert(conn postgresql.Conn, q query.Insert) (protocol.Responses, error) {
     .....
 }
 
