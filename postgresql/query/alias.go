@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	// Aliases for types defined in github.com/cybergarage/go-postgresql/postgresql/query.
 	EQ  = query.EQ
 	NEQ = query.NEQ
 	LT  = query.LT
@@ -31,7 +30,6 @@ const (
 )
 
 type (
-	// Aliases for types defined in github.com/cybergarage/go-postgresql/postgresql/query.
 	BindParam      = query.BindParam
 	CreateDatabase = query.CreateDatabase
 	CreateTable    = query.CreateTable
