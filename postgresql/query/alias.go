@@ -48,12 +48,12 @@ type (
 	Rollback       = sql.Rollback
 	Vacuum         = sql.Vacuum
 	Truncate       = sql.Truncate
+	Schema         = sql.Schema
 	Column         = query.Column
 	ColumnList     = query.ColumnList
 	Table          = query.Table
 	TableList      = query.TableList
 	Condition      = query.Condition
-	Schema         = query.Schema
 	Selector       = query.Selector
 	SelectorList   = query.SelectorList
 	Expr           = query.Expr
