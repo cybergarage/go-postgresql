@@ -47,7 +47,7 @@ func (store *MemStore) Rollback(postgresql.Conn, query.Rollback) (protocol.Respo
 func (store *MemStore) CreateDatabase(conn postgresql.Conn, q query.CreateDatabase) (protocol.Responses, error) {
 	dbName := q.DatabaseName()
 
-	_, ok := store.GetDatabase(dbName)
+	_, ok := store.LookupDatabase(dbName)
 	if ok {
 		if q.IfNotExists() {
 			return protocol.NewCommandCompleteResponsesWith(q.String())
@@ -67,7 +67,7 @@ func (store *MemStore) CreateDatabase(conn postgresql.Conn, q query.CreateDataba
 func (store *MemStore) CreateTable(conn postgresql.Conn, q query.CreateTable) (protocol.Responses, error) {
 	dbName := conn.Database()
 
-	db, ok := store.GetDatabase(dbName)
+	db, ok := store.LookupDatabase(dbName)
 	if !ok {
 		return nil, query.NewErrDatabaseExist(dbName)
 	}
@@ -97,7 +97,7 @@ func (store *MemStore) AlterDatabase(conn postgresql.Conn, q query.AlterDatabase
 
 // AlterTable handles a ALTER TABLE query.
 func (store *MemStore) AlterTable(conn postgresql.Conn, q query.AlterTable) (protocol.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func (store *MemStore) AlterTable(conn postgresql.Conn, q query.AlterTable) (pro
 func (store *MemStore) DropDatabase(conn postgresql.Conn, q query.DropDatabase) (protocol.Responses, error) {
 	dbName := q.DatabaseName()
 
-	db, ok := store.GetDatabase(dbName)
+	db, ok := store.LookupDatabase(dbName)
 	if !ok {
 		if q.IfExists() {
 			return protocol.NewCommandCompleteResponsesWith(q.String())
@@ -167,7 +167,7 @@ func (store *MemStore) DropDatabase(conn postgresql.Conn, q query.DropDatabase) 
 // DropIndex handles a DROP INDEX query.
 func (store *MemStore) DropTable(conn postgresql.Conn, q query.DropTable) (protocol.Responses, error) {
 	for _, dropTbl := range q.Tables() {
-		db, tbl, err := store.GetDatabaseTable(conn, conn.Database(), dropTbl.TableName())
+		db, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), dropTbl.TableName())
 		if err != nil {
 			if q.IfExists() {
 				continue
@@ -185,7 +185,7 @@ func (store *MemStore) DropTable(conn postgresql.Conn, q query.DropTable) (proto
 
 // Insert handles a INSERT query.
 func (store *MemStore) Insert(conn postgresql.Conn, q query.Insert) (protocol.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +207,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 	}
 	tblName := from[0].TableName()
 
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), tblName)
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), tblName)
 	if err != nil {
 		return nil, err
 	}
@@ -286,7 +286,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 
 // Update handles a UPDATE query.
 func (store *MemStore) Update(conn postgresql.Conn, q query.Update) (protocol.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -301,7 +301,7 @@ func (store *MemStore) Update(conn postgresql.Conn, q query.Update) (protocol.Re
 
 // Delete handles a DELETE query.
 func (store *MemStore) Delete(conn postgresql.Conn, q query.Delete) (protocol.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -341,7 +341,7 @@ func (store *MemStore) SystemSelect(conn postgresql.Conn, q query.Select) (proto
 
 // Copy handles a COPY query.
 func (store *MemStore) Copy(conn postgresql.Conn, q query.Copy) (protocol.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		return nil, err
 	}
@@ -351,7 +351,7 @@ func (store *MemStore) Copy(conn postgresql.Conn, q query.Copy) (protocol.Respon
 
 // Copy handles a COPY DATA protocol.
 func (store *MemStore) CopyData(conn postgresql.Conn, q query.Copy, stream *postgresql.CopyStream) (protocol.Responses, error) {
-	_, tbl, err := store.GetDatabaseTable(conn, conn.Database(), q.TableName())
+	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {
 		log.Error(err)
 		return nil, err

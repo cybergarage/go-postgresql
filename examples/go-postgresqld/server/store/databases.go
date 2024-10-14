@@ -36,15 +36,15 @@ func (dbs Databases) DropDatabase(db *Database) error {
 	return nil
 }
 
-// GetDatabase returns a database with the specified name.
-func (dbs Databases) GetDatabase(name string) (*Database, bool) {
+// LookupDatabase returns a database with the specified name.
+func (dbs Databases) LookupDatabase(name string) (*Database, bool) {
 	ks, ok := dbs[name]
 	return ks, ok
 }
 
 // GetTableWithDatabase returns a specified table in a specified database.
 func (dbs *Databases) GetTableWithDatabase(dbName string, tableName string) (*Table, bool) {
-	db, ok := dbs.GetDatabase(dbName)
+	db, ok := dbs.LookupDatabase(dbName)
 	if !ok {
 		return nil, false
 	}
