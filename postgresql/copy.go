@@ -71,8 +71,7 @@ func NewCopyQueryFrom(schema *query.Schema, copyColumns sql.ColumnList, copyData
 			sql.WithColumnLiteral(sql.NewLiteralWith(copyColumnData)),
 		)
 	}
-
-	return sql.NewInsertWith(schema.SchemaTable(), columns), nil
+	return sql.NewInsertWith(sql.NewTableWith(schema.Name()), columns), nil
 }
 
 // NewCopyCompleteResponsesFrom returns a new copy complete response from the specified query.
