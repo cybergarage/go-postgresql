@@ -73,7 +73,7 @@ func (store *MemStore) CreateTable(conn postgresql.Conn, q query.CreateTable) (p
 	}
 
 	tblName := q.TableName()
-	_, ok = db.GetTable(tblName)
+	_, ok = db.LookupTable(tblName)
 	if ok {
 		if q.IfNotExists() {
 			return protocol.NewCommandCompleteResponsesWith(q.String())

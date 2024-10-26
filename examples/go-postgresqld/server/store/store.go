@@ -39,7 +39,7 @@ func (store *MemStore) LookupDatabaseTable(conn postgresql.Conn, dbName string, 
 		return nil, nil, query.NewErrDatabaseNotExist(dbName)
 	}
 
-	tbl, ok := db.GetTable(tblName)
+	tbl, ok := db.LookupTable(tblName)
 	if !ok {
 		return nil, nil, query.NewErrTableNotExist(tblName)
 	}

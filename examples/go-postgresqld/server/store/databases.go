@@ -48,5 +48,5 @@ func (dbs *Databases) GetTableWithDatabase(dbName string, tableName string) (*Ta
 	if !ok {
 		return nil, false
 	}
-	return db.GetTable(tableName)
+	return db.LookupTable(tableName)
 }

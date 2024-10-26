@@ -60,8 +60,8 @@ func (db *Database) DropTable(table *Table) error {
 	return nil
 }
 
-// GetTable returns a table with the specified name.
-func (db *Database) GetTable(name string) (*Table, bool) {
+// LookupTable returns a table with the specified name.
+func (db *Database) LookupTable(name string) (*Table, bool) {
 	table, ok := db.tables[name]
 	return table, ok
 }
