@@ -10,6 +10,9 @@
 ## v1.6.0 (2024-xx-xx)
 - Support scram-sha-256
 
+## v1.5.7 (2024-10-xx)
+- Add error package
+
 ## v1.5.6 (2024-10-13)
 - Update internal executor interface
 
