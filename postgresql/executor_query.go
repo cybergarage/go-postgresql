@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
@@ -30,50 +31,50 @@ func NewBaseQueryExecutor() *BaseQueryExecutor {
 
 // CreateDatabase handles a CREATE DATABASE query.
 func (executor *BaseQueryExecutor) CreateDatabase(Conn, query.CreateDatabase) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("CREATE DATABASE")
+	return nil, errors.NewErrNotImplemented("CREATE DATABASE")
 }
 
 // CreateTable handles a CREATE TABLE query.
 func (executor *BaseQueryExecutor) CreateTable(Conn, query.CreateTable) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("CREATE TABLE")
+	return nil, errors.NewErrNotImplemented("CREATE TABLE")
 }
 
 // AlterDatabase handles a ALTER DATABASE query.
 func (executor *BaseQueryExecutor) AlterDatabase(Conn, query.AlterDatabase) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("ALTER DATABASE")
+	return nil, errors.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // AlterTable handles a ALTER TABLE query.
 func (executor *BaseQueryExecutor) AlterTable(Conn, query.AlterTable) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("ALTER TABLE")
+	return nil, errors.NewErrNotImplemented("ALTER TABLE")
 }
 
 // DropDatabase handles a DROP DATABASE query.
 func (executor *BaseQueryExecutor) DropDatabase(Conn, query.DropDatabase) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("DROP DATABASE")
+	return nil, errors.NewErrNotImplemented("DROP DATABASE")
 }
 
 // DropIndex handles a DROP INDEX query.
 func (executor *BaseQueryExecutor) DropTable(Conn, query.DropTable) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("DROP TABLE")
+	return nil, errors.NewErrNotImplemented("DROP TABLE")
 }
 
 // Insert handles a INSERT query.
 func (executor *BaseQueryExecutor) Insert(Conn, query.Insert) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("INSERT")
+	return nil, errors.NewErrNotImplemented("INSERT")
 }
 
 // Select handles a SELECT query.
 func (executor *BaseQueryExecutor) Select(Conn, query.Select) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("SELECT")
+	return nil, errors.NewErrNotImplemented("SELECT")
 }
 
 // Update handles a UPDATE query.
 func (executor *BaseQueryExecutor) Update(Conn, query.Update) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("UPDATE")
+	return nil, errors.NewErrNotImplemented("UPDATE")
 }
 
 // Delete handles a DELETE query.
 func (executor *BaseQueryExecutor) Delete(Conn, query.Delete) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("DELETE")
+	return nil, errors.NewErrNotImplemented("DELETE")
 }

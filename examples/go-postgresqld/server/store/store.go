@@ -16,7 +16,7 @@ package store
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql"
-	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 )
 
 type MemStore struct {
@@ -36,12 +36,12 @@ func NewMemStore() *MemStore {
 func (store *MemStore) LookupDatabaseTable(conn postgresql.Conn, dbName string, tblName string) (*Database, *Table, error) {
 	db, ok := store.LookupDatabase(dbName)
 	if !ok {
-		return nil, nil, query.NewErrDatabaseNotExist(dbName)
+		return nil, nil, errors.NewErrDatabaseNotExist(dbName)
 	}
 
 	tbl, ok := db.LookupTable(tblName)
 	if !ok {
-		return nil, nil, query.NewErrTableNotExist(tblName)
+		return nil, nil, errors.NewErrTableNotExist(tblName)
 	}
 
 	return db, tbl, nil

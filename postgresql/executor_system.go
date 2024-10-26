@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
@@ -34,5 +35,5 @@ func (executor *BaseSystemQueryExecutor) SystemSelect(Conn, query.Select) (proto
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
 	// https://www.postgresql.org/docs/current/client-interfaces.html
-	return nil, query.NewErrNotImplemented("SELECT")
+	return nil, errors.NewErrNotImplemented("SELECT")
 }

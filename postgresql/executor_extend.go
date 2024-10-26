@@ -15,10 +15,11 @@
 package postgresql
 
 import (
-	"errors"
+	stderrors "errors"
 	"strings"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
@@ -73,7 +74,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 	newSystemSelectQuery := func(stmt query.Select) (*sql.Select, error) {
 		tables := stmt.From().Tables()
 		if len(tables) != 1 {
-			return nil, query.NewErrMultipleTableNotSupported(stmt.From().String())
+			return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())
 		}
 		table := tables[0]
 		return sql.NewSelectWith(
@@ -230,7 +231,7 @@ func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query)
 	conn.FinishSpan()
 	if err != nil {
 		// Is it a empty query for ping?
-		if errors.Is(err, sqlparser.ErrEmptyQuery) {
+		if stderrors.Is(err, sqlparser.ErrEmptyQuery) {
 			return protocol.NewEmptyCompleteResponses()
 		}
 		res, err := executor.ErrorHandler.ParserError(conn, q, err)

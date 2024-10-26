@@ -15,11 +15,12 @@
 package postgresql
 
 import (
-	"errors"
+	stderrors "errors"
 	"fmt"
 	"io"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
@@ -57,7 +58,7 @@ func NewCopyQueryFrom(schema *query.Schema, copyColumns sql.ColumnList, copyData
 	// more or fewer columns than are expected.
 	copyColumData := copyData.Data
 	if len(copyColumData) != len(copyColumns) {
-		return nil, query.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
+		return nil, errors.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
 	}
 
 	columns := make(sql.ColumnList, len(copyColumns))
@@ -107,7 +108,7 @@ func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, s
 		cpData, err = stream.Next()
 	}
 
-	if !errors.Is(err, io.EOF) {
+	if !stderrors.Is(err, io.EOF) {
 		log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err.Error())
 		return nil, err
 	}

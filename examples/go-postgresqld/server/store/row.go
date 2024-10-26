@@ -17,6 +17,7 @@ package store
 import (
 	"reflect"
 
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-safecast/safecast"
 )
@@ -177,7 +178,7 @@ func (row Row) IsEqual(other Row) bool {
 func (row Row) ValueByName(name string) (any, error) {
 	v, ok := row[name]
 	if !ok {
-		return nil, query.NewErrNotExist(name)
+		return nil, errors.NewErrNotExist(name)
 	}
 	return v, nil
 }

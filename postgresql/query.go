@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
@@ -42,7 +43,7 @@ func NewPreparedStatementMap() PreparedStatementMap {
 func (stmtMap PreparedStatementMap) PreparedStatement(name string) (*PreparedStatement, error) {
 	q, oK := stmtMap[name]
 	if !oK {
-		return nil, query.NewErrPreparedStatementNotExist(name)
+		return nil, errors.NewErrPreparedStatementNotExist(name)
 	}
 	return q, nil
 }
@@ -55,7 +56,7 @@ func (stmtMap PreparedStatementMap) SetPreparedStatement(msg *protocol.Parse) er
 		return err
 	}
 	if 1 < len(stmts) {
-		return query.NewErrMultiplePreparedStatementNotSupported(msg.Query)
+		return errors.NewErrMultiplePreparedStatementNotSupported(msg.Query)
 	}
 	stmt := &PreparedStatement{
 		Parse:           msg,
@@ -69,7 +70,7 @@ func (stmtMap PreparedStatementMap) SetPreparedStatement(msg *protocol.Parse) er
 func (stmtMap PreparedStatementMap) RemovePreparedStatement(name string) error {
 	_, oK := stmtMap[name]
 	if !oK {
-		return query.NewErrPreparedStatementNotExist(name)
+		return errors.NewErrPreparedStatementNotExist(name)
 	}
 	delete(stmtMap, name)
 	return nil
@@ -90,7 +91,7 @@ func NewPreparedPortalMap() PreparedPortalMap {
 func (portalMap PreparedPortalMap) PreparedPortal(name string) (*PreparedPortal, error) {
 	q, oK := portalMap[name]
 	if !oK {
-		return nil, query.NewErrPreparedPortalNotExist(name)
+		return nil, errors.NewErrPreparedPortalNotExist(name)
 	}
 	return &q, nil
 }
@@ -105,7 +106,7 @@ func (portalMap PreparedPortalMap) SetPreparedPortal(name string, query *Prepare
 func (portalMap PreparedPortalMap) RemovePreparedPortal(name string) error {
 	_, oK := portalMap[name]
 	if !oK {
-		return query.NewErrPreparedPortalNotExist(name)
+		return errors.NewErrPreparedPortalNotExist(name)
 	}
 	delete(portalMap, name)
 	return nil

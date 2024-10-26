@@ -22,6 +22,7 @@ package store
 import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
@@ -40,7 +41,7 @@ func (store *MemStore) Commit(con postgresql.Conn, q query.Commit) (protocol.Res
 
 // Rollback handles a ROLLBACK query.
 func (store *MemStore) Rollback(postgresql.Conn, query.Rollback) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("ROLLBACK")
+	return nil, errors.NewErrNotImplemented("ROLLBACK")
 }
 
 // CreateDatabase handles a CREATE DATABASE query.
@@ -52,7 +53,7 @@ func (store *MemStore) CreateDatabase(conn postgresql.Conn, q query.CreateDataba
 		if q.IfNotExists() {
 			return protocol.NewCommandCompleteResponsesWith(q.String())
 		}
-		return nil, query.NewErrDatabaseExist(dbName)
+		return nil, errors.NewErrDatabaseExist(dbName)
 	}
 
 	err := store.AddDatabase(NewDatabaseWithName(dbName))
@@ -69,7 +70,7 @@ func (store *MemStore) CreateTable(conn postgresql.Conn, q query.CreateTable) (p
 
 	db, ok := store.LookupDatabase(dbName)
 	if !ok {
-		return nil, query.NewErrDatabaseExist(dbName)
+		return nil, errors.NewErrDatabaseExist(dbName)
 	}
 
 	tblName := q.TableName()
@@ -78,7 +79,7 @@ func (store *MemStore) CreateTable(conn postgresql.Conn, q query.CreateTable) (p
 		if q.IfNotExists() {
 			return protocol.NewCommandCompleteResponsesWith(q.String())
 		}
-		return nil, query.NewErrTableNotExist(tblName)
+		return nil, errors.NewErrTableNotExist(tblName)
 	}
 
 	tbl := NewTableWith(tblName, q.Schema())
@@ -92,7 +93,7 @@ func (store *MemStore) CreateTable(conn postgresql.Conn, q query.CreateTable) (p
 
 // AlterDatabase handles a ALTER DATABASE query.
 func (store *MemStore) AlterDatabase(conn postgresql.Conn, q query.AlterDatabase) (protocol.Responses, error) {
-	return nil, query.NewErrNotImplemented("ALTER DATABASE")
+	return nil, errors.NewErrNotImplemented("ALTER DATABASE")
 }
 
 // AlterTable handles a ALTER TABLE query.
@@ -134,11 +135,11 @@ func (store *MemStore) AlterTable(conn postgresql.Conn, q query.AlterTable) (pro
 	}
 
 	if _, ok := q.RenameTo(); ok {
-		return nil, query.NewErrNotImplemented(q.String())
+		return nil, errors.NewErrNotImplemented(q.String())
 	}
 
 	if _, _, ok := q.RenameColumns(); ok {
-		return nil, query.NewErrNotImplemented(q.String())
+		return nil, errors.NewErrNotImplemented(q.String())
 	}
 
 	return protocol.NewCommandCompleteResponsesWith(q.String())
@@ -153,7 +154,7 @@ func (store *MemStore) DropDatabase(conn postgresql.Conn, q query.DropDatabase) 
 		if q.IfExists() {
 			return protocol.NewCommandCompleteResponsesWith(q.String())
 		}
-		return nil, query.NewErrDatabaseNotExist(dbName)
+		return nil, errors.NewErrDatabaseNotExist(dbName)
 	}
 
 	err := store.Databases.DropDatabase(db)
@@ -203,7 +204,7 @@ func (store *MemStore) Insert(conn postgresql.Conn, q query.Insert) (protocol.Re
 func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Responses, error) {
 	from := q.From()
 	if len(from) != 1 {
-		return nil, query.NewErrMultipleTableNotSupported(from.String())
+		return nil, errors.NewErrMultipleTableNotSupported(from.String())
 	}
 	tblName := from[0].TableName()
 
@@ -322,12 +323,12 @@ func (store *MemStore) SystemSelect(conn postgresql.Conn, q query.Select) (proto
 	// https://www.postgresql.org/docs/current/client-interfaces.html
 
 	selectInformationSchemaColumns := func(conn postgresql.Conn, q query.Select) (protocol.Responses, error) {
-		return nil, query.NewErrNotImplemented("SELECT")
+		return nil, errors.NewErrNotImplemented("SELECT")
 	}
 
 	from := q.From()
 	if len(from) != 1 {
-		return nil, query.NewErrMultipleTableNotSupported(from.String())
+		return nil, errors.NewErrMultipleTableNotSupported(from.String())
 	}
 
 	tbl := from[0]
@@ -336,7 +337,7 @@ func (store *MemStore) SystemSelect(conn postgresql.Conn, q query.Select) (proto
 		return selectInformationSchemaColumns(conn, q)
 	}
 
-	return nil, query.NewErrNotSupported(tbl.Name())
+	return nil, errors.NewErrNotSupported(tbl.Name())
 }
 
 // Copy handles a COPY query.

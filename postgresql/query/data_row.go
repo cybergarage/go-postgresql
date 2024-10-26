@@ -17,6 +17,7 @@ package query
 import (
 	"fmt"
 
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
@@ -90,7 +91,7 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *protocol.Row
 			if 0 < len(groupBy) {
 				v, ok := row[groupBy]
 				if !ok {
-					return nil, NewErrGroupByColumnValueNotExist(groupBy)
+					return nil, errors.NewErrGroupByColumnValueNotFound(groupBy)
 				}
 				groupKey = v
 			}
@@ -104,7 +105,7 @@ func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *protocol.Row
 				}
 				v, ok := row[arg.Name()]
 				if !ok {
-					return nil, NewErrColumnValueNotExist(arg.Name())
+					return nil, errors.NewErrColumnValueNotExist(arg.Name())
 				}
 				args = append(args, v)
 			}

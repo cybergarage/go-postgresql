@@ -1,4 +1,4 @@
-// Copyright (C) 2019 The go-postgresql Authors. All rights reserved.
+// Copyright (C) 2024 The go-postgresql Authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package query
+package errors
 
 import (
 	"errors"
@@ -28,7 +28,7 @@ var ErrNotSupported = errors.New("not supported")
 // ErrNotExist is returned when the specified object is not exist.
 var ErrNotExist = errors.New("not exist")
 
-// ErrExist is returned when the specified object is exist.
+// ErrExists is returned when the specified object is already exists.
 var ErrExist = errors.New("exist")
 
 // ErrNotEqual is returned when the specified object is not equal.
@@ -36,6 +36,9 @@ var ErrNotEqual = errors.New("not equal")
 
 // ErrInvalid is returned when the specified object is invalid.
 var ErrInvalid = errors.New("invalid")
+
+// ErrNotFound is returned when the specified object is not found.
+var ErrNotFound = errors.New("not found")
 
 // NewErrNotImplemented returns a new ErrNotImplemented error.
 func NewErrNotImplemented(msg string) error {
@@ -97,9 +100,9 @@ func NewErrColumnValueNotExist(v any) error {
 	return fmt.Errorf("column (%v) value is %w", v, ErrNotExist)
 }
 
-// NewErrGroupByColumnValueNotExist returns a new group by column not exist error.
-func NewErrGroupByColumnValueNotExist(v any) error {
-	return fmt.Errorf("group by column (%v) value is %w", v, ErrNotExist)
+// NewErrGroupByColumnValueNotFound returns a new group by column not found error.
+func NewErrGroupByColumnValueNotFound(v any) error {
+	return fmt.Errorf("group by column (%v) value is %w", v, ErrNotFound)
 }
 
 // NewErrColumnsNotEqual returns a new columns not equal error.
