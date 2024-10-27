@@ -29,7 +29,7 @@ func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*p
 	switch selector := selector.(type) {
 	case *query.Column:
 		columnName = selector.Name()
-		schemaColumn, err := schema.ColumnByName(columnName)
+		schemaColumn, err := schema.LookupColumn(columnName)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*p
 				return nil, fmt.Errorf("multiple arguments (%v)", args)
 			}
 			columnName = args[0].Name()
-			schemaColumn, err := schema.ColumnByName(columnName)
+			schemaColumn, err := schema.LookupColumn(columnName)
 			if err != nil {
 				return nil, err
 			}

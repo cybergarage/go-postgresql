@@ -34,7 +34,7 @@ func NewCopyInResponsesFrom(q query.Copy, schema *sql.Schema) (protocol.Response
 	copyColums := q.Columns()
 	if 0 < len(copyColums) {
 		for _, copyColumn := range q.Columns() {
-			_, err := schema.ColumnByName(copyColumn.Name())
+			_, err := schema.LookupColumn(copyColumn.Name())
 			if err != nil {
 				return nil, err
 			}

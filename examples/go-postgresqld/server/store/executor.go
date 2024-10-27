@@ -115,7 +115,7 @@ func (store *MemStore) AlterTable(conn postgresql.Conn, q query.AlterTable) (pro
 	if index, ok := q.AddIndex(); ok {
 		indexColums := sql.NewColumns()
 		for _, indexColumn := range index.Columns() {
-			schemaColum, err := schema.ColumnByName(indexColumn.Name())
+			schemaColum, err := schema.LookupColumn(indexColumn.Name())
 			if err != nil {
 				return nil, err
 			}
