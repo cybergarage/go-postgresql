@@ -29,8 +29,8 @@ type DataType struct {
 // DataType represents a PostgreSQL data type.
 var dataTypes = map[OID]*DataType{}
 
-// GetDataType returns a data type for the specified OID.
-func GetDataType(oid OID) (*DataType, error) {
+// NewDataTypeFrom returns a data type for the specified OID.
+func NewDataTypeFrom(oid OID) (*DataType, error) {
 	dt, ok := dataTypes[oid]
 	if !ok {
 		return nil, newDataTypeNotFound(oid)

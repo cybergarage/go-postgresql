@@ -60,21 +60,21 @@ func NewGetPartitionResponseForPgbench() (protocol.Responses, error) {
 	for n, fieldName := range resFieldNames {
 		switch n {
 		case 0:
-			dt, _ := system.GetDataType(system.Int4)
+			dt, _ := system.NewDataTypeFrom(system.Int4)
 			rowField := protocol.NewRowFieldWith(fieldName,
 				protocol.WithRowFieldNumber(int16(n+1)),
 				protocol.WithRowFieldDataType(dt),
 			)
 			dataRow.AppendData(rowField, 2)
 		case 1:
-			dt, _ := system.GetDataType(system.Char)
+			dt, _ := system.NewDataTypeFrom(system.Char)
 			rowField := protocol.NewRowFieldWith(fieldName,
 				protocol.WithRowFieldNumber(int16(n+1)),
 				protocol.WithRowFieldDataType(dt),
 			)
 			dataRow.AppendData(rowField, nil)
 		case 2:
-			dt, _ := system.GetDataType(system.Int8)
+			dt, _ := system.NewDataTypeFrom(system.Int8)
 			rowField := protocol.NewRowFieldWith(fieldName,
 				protocol.WithRowFieldNumber(int16(n+1)),
 				protocol.WithRowFieldDataType(dt),

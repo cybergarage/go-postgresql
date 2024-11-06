@@ -30,7 +30,7 @@ type OID = system.ObjectID
 
 // NewDataTypeFrom returns a data type from the specified query data type.
 func NewDataTypeFrom(t query.DataType) (*DataType, error) {
-	return system.GetDataType(dataTypeOIDFrom(t))
+	return system.NewDataTypeFrom(dataTypeOIDFrom(t))
 }
 
 // dataTypeOIDFrom returns a data type from the specified query data type.
