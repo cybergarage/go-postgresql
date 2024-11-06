@@ -21,7 +21,7 @@ import (
 
 // Server represents a test server.
 type Server struct {
-	*postgresql.Server
+	postgresql.Server
 	Store
 }
 
@@ -31,11 +31,11 @@ func NewServerWithStore(store Store) *Server {
 		Server: postgresql.NewServer(),
 		Store:  store,
 	}
-	server.SetQueryExecutor(server)
-	server.SetBulkExecutor(server)
-	server.SetErrorHandler(server)
-	server.SetTransactionExecutor(server)
-	server.SetSystemQueryExecutor(server)
+	server.SetQueryExecutor(store)
+	server.SetBulkExecutor(store)
+	server.SetErrorHandler(store)
+	server.SetTransactionExecutor(store)
+	server.SetSystemQueryExecutor(store)
 	return server
 }
 

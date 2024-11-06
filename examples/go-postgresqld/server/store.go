@@ -24,4 +24,5 @@ type Store interface {
 	postgresql.TCLExecutor
 	postgresql.BulkExecutor
 	postgresql.ErrorHandler
+	postgresql.SystemQueryExecutor
 }
