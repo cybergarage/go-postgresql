@@ -21,20 +21,30 @@ import (
 
 // BaseAuthExecutor represents a base authenticator.
 type BaseAuthExecutor struct {
-	*auth.AuthManager
+	authMgr auth.AuthManager
 }
 
 // NewBaseAuthExecutor returns a base authenticator.
 func NewBaseAuthExecutor() *BaseAuthExecutor {
 	executor := &BaseAuthExecutor{
-		AuthManager: auth.NewAuthManager(),
+		authMgr: auth.NewAuthManager(),
 	}
 	return executor
 }
 
+// AddAuthenticator adds a new authenticator.
+func (executor *BaseAuthExecutor) AddAuthenticator(authenticator auth.Authenticator) {
+	executor.authMgr.AddAuthenticator(authenticator)
+}
+
+// ClearAuthenticators clears all authenticators.
+func (executor *BaseAuthExecutor) ClearAuthenticators() {
+	executor.authMgr.ClearAuthenticators()
+}
+
 // Authenticate authenticates the connection with the startup protocol.
 func (executor *BaseAuthExecutor) Authenticate(conn Conn) (protocol.Response, error) {
-	ok, err := executor.AuthManager.Authenticate(conn)
+	ok, err := executor.authMgr.Authenticate(conn)
 	if err != nil {
 		return nil, err
 	}

@@ -145,6 +145,10 @@ type Executor interface { // nolint: interfacebloat
 	SystemQueryExecutor
 	BulkExecutor
 	ErrorHandler
+}
+
+// ExecutorHandler represents a frontend message executor handler.
+type ExecutorHandler interface {
 	// SetStartupHandler sets a user startup handler.
 	SetStartupHandler(StartupHandler)
 	// SetQueryExecutor sets a user query executor.
