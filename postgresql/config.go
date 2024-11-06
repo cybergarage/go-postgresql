@@ -14,44 +14,45 @@
 
 package postgresql
 
-const (
-	defaultAddr = ""
-	defaultPort = DefaultPort
+import (
+	"crypto/tls"
 )
 
-// Config stores server configuration parammeters.
-type Config struct {
-	addr string
-	port int
-	*TLSConf
+// TLSConfig represents a TLS configuration.
+type TLSConfig interface {
+	// SetTLSEnabled sets a TLS enabled flag.
+	SetTLSEnabled(enabled bool)
+	// IsEnabled returns true if the TLS is enabled.
+	IsTLSEnabled() bool
+	// SetClientAuthType sets a client authentication type.
+	SetClientAuthType(authType tls.ClientAuthType)
+	// SetServerKeyFile sets a SSL server key file.
+	SetServerKeyFile(file string) error
+	// SetServerCertFile sets a SSL server certificate file.
+	SetServerCertFile(file string) error
+	// SetRootCertFile sets a SSL root certificates.
+	SetRootCertFiles(files ...string) error
+	// SetServerKey sets a SSL server key.
+	SetServerKey(key []byte)
+	// SetServerCert sets a SSL server certificate.
+	SetServerCert(cert []byte)
+	// SetRootCerts sets a SSL root certificates.
+	SetRootCerts(certs ...[]byte)
+	// SetTLSConfig sets a TLS configuration.
+	SetTLSConfig(tlsConfig *tls.Config)
+	// TLSConfig returns a TLS configuration from the configuration.
+	TLSConfig() (*tls.Config, error)
 }
 
-// NewDefaultConfig returns a default configuration instance.
-func NewDefaultConfig() *Config {
-	config := &Config{
-		addr:    defaultAddr,
-		port:    defaultPort,
-		TLSConf: NewTLSConf(),
-	}
-	return config
-}
-
-// SetAddress sets a listen address to the configuration.
-func (config *Config) SetAddress(addr string) {
-	config.addr = addr
-}
-
-// SetPort sets a listen port to the configuration.
-func (config *Config) SetPort(port int) {
-	config.port = port
-}
-
-// Address returns a listen address from the configuration.
-func (config *Config) Address() string {
-	return config.addr
-}
-
-// Port returns a listen port from the configuration.
-func (config *Config) Port() int {
-	return config.port
+// Config represents a server configuration.
+type Config interface {
+	TLSConfig
+	// SetAddress sets a listen address to the configuration.
+	SetAddress(addr string)
+	// SetPort sets a listen port to the configuration.
+	SetPort(port int)
+	// Address returns a listen address from the configuration.
+	Address() string
+	// Port returns a listen port from the configuration.
+	Port() int
 }
