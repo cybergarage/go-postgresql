@@ -49,7 +49,7 @@ BIN_BINARIES=\
 BINARIES=\
 	${EXAMPLE_BINARIES}
 
-.PHONY: clean test
+.PHONY: clean test version
 .IGNORE: lint
 
 all: test
