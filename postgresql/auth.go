@@ -15,16 +15,13 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-tracing/tracer"
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 )
 
-// Server represents a PostgreSQL protocol server.
-type Server interface {
-	tracer.Tracer
-	Config
-	AuthManager
-	UserExecutorHandler
-	Start() error
-	Stop() error
-	Restart() error
+// AuthManager represent an authenticator manager.
+type AuthManager interface {
+	// AddAuthenticator adds a new authenticator.
+	AddAuthenticator(authenticator auth.Authenticator)
+	// ClearAuthenticators clears all authenticators.
+	ClearAuthenticators()
 }

@@ -15,19 +15,15 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 // StartupAuthHandler represents a start-up authenticatation handler.
 type StartupAuthHandler interface {
+	AuthManager
 	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse protocol.
 	Authenticate(Conn) (protocol.Response, error)
-	// AddAuthenticator adds a new authenticator.
-	AddAuthenticator(auth.Authenticator)
-	// ClearAuthenticators clears all authenticators.
-	ClearAuthenticators()
 }
 
 // StartupAuthHandler represents a start-up message handler.
@@ -135,9 +131,13 @@ type ErrorHandler interface {
 	ParserError(Conn, string, error) (protocol.Responses, error)
 }
 
-// Executor represents a frontend message executor.
-type Executor interface { // nolint: interfacebloat
+// SystemExecutor represents a system executor.
+type SystemExecutor interface {
 	StartupHandler
+}
+
+// UserExecutor represents a user executor.
+type UserExecutor interface {
 	QueryExecutor
 	QueryExtraExecutor
 	TCLExecutor
@@ -147,10 +147,20 @@ type Executor interface { // nolint: interfacebloat
 	ErrorHandler
 }
 
-// ExecutorHandler represents a frontend message executor handler.
-type ExecutorHandler interface {
+// Executor represents a frontend message executor.
+type Executor interface {
+	SystemExecutor
+	UserExecutor
+}
+
+// SystemExecutorHandler represents a system executor handler.
+type SystemExecutorHandler interface {
 	// SetStartupHandler sets a user startup handler.
 	SetStartupHandler(StartupHandler)
+}
+
+// UserExecutorHandler represents a frontend message executor handler.
+type UserExecutorHandler interface {
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
 	// SetQueryExecutor sets a user query executor.
