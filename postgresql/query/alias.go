@@ -15,7 +15,6 @@
 package query
 
 import (
-	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -32,23 +31,23 @@ const (
 
 type (
 	BindParam      = query.BindParam
-	CreateDatabase = sql.CreateDatabase
-	CreateTable    = sql.CreateTable
-	AlterDatabase  = sql.AlterDatabase
-	AlterTable     = sql.AlterTable
-	DropDatabase   = sql.DropDatabase
-	DropTable      = sql.DropTable
-	Select         = sql.Select
-	Insert         = sql.Insert
-	Update         = sql.Update
-	Delete         = sql.Delete
-	Copy           = sql.Copy
-	Begin          = sql.Begin
-	Commit         = sql.Commit
-	Rollback       = sql.Rollback
-	Vacuum         = sql.Vacuum
-	Truncate       = sql.Truncate
-	Schema         = sql.Schema
+	CreateDatabase = query.CreateDatabase
+	CreateTable    = query.CreateTable
+	AlterDatabase  = query.AlterDatabase
+	AlterTable     = query.AlterTable
+	DropDatabase   = query.DropDatabase
+	DropTable      = query.DropTable
+	Select         = query.Select
+	Insert         = query.Insert
+	Update         = query.Update
+	Delete         = query.Delete
+	Copy           = query.Copy
+	Begin          = query.Begin
+	Commit         = query.Commit
+	Rollback       = query.Rollback
+	Vacuum         = query.Vacuum
+	Truncate       = query.Truncate
+	Schema         = query.Schema
 	Column         = query.Column
 	ColumnList     = query.ColumnList
 	Table          = query.Table
