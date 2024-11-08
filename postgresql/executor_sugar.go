@@ -40,7 +40,7 @@ func (executor *BaseSugarExecutor) Vacuum(conn Conn, stmt query.Vacuum) (protoco
 // Truncate handles a TRUNCATE query.
 func (executor *BaseSugarExecutor) Truncate(conn Conn, stmt query.Truncate) (protocol.Responses, error) {
 	for _, table := range stmt.Tables() {
-		stmt := sql.NewDeleteWith(table)
+		stmt := sql.NewDeleteWith(table, sql.NewCondition())
 		_, err := executor.QueryExecutor.Delete(conn, stmt)
 		if err != nil {
 			return nil, err
