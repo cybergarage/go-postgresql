@@ -27,7 +27,7 @@ import (
 )
 
 // NewCopyInResponsesFrom returns a new copy in response from the specified query.
-func NewCopyInResponsesFrom(q query.Copy, schema *sql.Schema) (protocol.Responses, error) {
+func NewCopyInResponsesFrom(q query.Copy, schema sql.Schema) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: COPY
 	// https://www.postgresql.org/docs/16/sql-copy.html
 
@@ -53,7 +53,7 @@ func NewCopyInResponsesFrom(q query.Copy, schema *sql.Schema) (protocol.Response
 }
 
 // NewCopyQueryFrom returns a new copy query from the specified query.
-func NewCopyQueryFrom(schema *query.Schema, copyColumns sql.ColumnList, copyData *protocol.CopyData) (query.Insert, error) {
+func NewCopyQueryFrom(schema query.Schema, copyColumns sql.ColumnList, copyData *protocol.CopyData) (query.Insert, error) {
 	// COPY FROM will raise an error if any line of the input file contains
 	// more or fewer columns than are expected.
 	copyColumData := copyData.Data
@@ -72,12 +72,12 @@ func NewCopyQueryFrom(schema *query.Schema, copyColumns sql.ColumnList, copyData
 			sql.WithColumnLiteral(sql.NewLiteralWith(copyColumnData)),
 		)
 	}
-	return sql.NewInsertWith(sql.NewTableWith(schema.Name()), columns), nil
+	return sql.NewInsertWith(sql.NewTableWith(schema.TableName()), columns), nil
 }
 
 // NewCopyCompleteResponsesFrom returns a new copy complete response from the specified query.
-func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, schema *sql.Schema, queryExecutor QueryExecutor) (protocol.Responses, error) {
-	copyData := func(schema *query.Schema, colums sql.ColumnList, copyData *protocol.CopyData) error {
+func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, schema sql.Schema, queryExecutor QueryExecutor) (protocol.Responses, error) {
+	copyData := func(schema query.Schema, colums sql.ColumnList, copyData *protocol.CopyData) error {
 		q, err := NewCopyQueryFrom(schema, colums, copyData)
 		if err != nil {
 			return err

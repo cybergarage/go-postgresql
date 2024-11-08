@@ -24,12 +24,12 @@ import (
 type Table struct {
 	sync.Mutex
 	Name string
-	*query.Schema
+	query.Schema
 	Rows []Row
 }
 
 // NewTable returns a new table.
-func NewTableWith(name string, schema *query.Schema) *Table {
+func NewTableWith(name string, schema query.Schema) *Table {
 	tbl := &Table{
 		Name:   name,
 		Schema: schema,
@@ -103,9 +103,4 @@ func (tbl *Table) Delete(cond *query.Condition) (int, error) {
 	}
 
 	return len(rows), nil
-}
-
-// String returns the string representation.
-func (tbl *Table) String() string {
-	return tbl.Schema.String()
 }

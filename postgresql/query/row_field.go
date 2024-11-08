@@ -22,7 +22,7 @@ import (
 )
 
 // NewRowFieldFrom returns a new RowField from the specified selector.
-func NewRowFieldFrom(schema *query.Schema, selector query.Selector, idx int) (*protocol.RowField, error) {
+func NewRowFieldFrom(schema query.Schema, selector query.Selector, idx int) (*protocol.RowField, error) {
 	var columnName string
 	var dt *system.DataType
 	var err error

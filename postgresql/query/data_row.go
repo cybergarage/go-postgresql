@@ -26,7 +26,7 @@ import (
 type Row = map[string]any
 
 // NewDataRowForSelectors returns a new DataRow from the specified row.
-func NewDataRowForSelectors(schema *query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, row Row) (*protocol.DataRow, error) {
+func NewDataRowForSelectors(schema query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, row Row) (*protocol.DataRow, error) {
 	dataRow := protocol.NewDataRow()
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
@@ -63,7 +63,7 @@ func NewDataRowForSelectors(schema *query.Schema, rowDesc *protocol.RowDescripti
 }
 
 // NewDataRowsForAggregateFunction returns a new DataRow list from the specified rows.
-func NewDataRowsForAggregateFunction(schema *query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
+func NewDataRowsForAggregateFunction(schema query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
 	// Setups aggregate functions
 	aggrFns := []*query.Function{}
 	aggrExecutors := []*query.AggregateFunction{}

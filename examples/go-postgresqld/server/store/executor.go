@@ -332,12 +332,12 @@ func (store *MemStore) SystemSelect(conn postgresql.Conn, q query.Select) (proto
 	}
 
 	tbl := from[0]
-	switch tbl.Name() {
+	switch tbl.TableName() {
 	case system.InformationSchemaColumns:
 		return selectInformationSchemaColumns(conn, q)
 	}
 
-	return nil, errors.NewErrNotSupported(tbl.Name())
+	return nil, errors.NewErrNotSupported(tbl.TableName())
 }
 
 // Copy handles a COPY query.
