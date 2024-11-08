@@ -43,7 +43,7 @@ func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 			if !column.HasLiteral() {
 				continue
 			}
-			v, ok := column.Value().(*query.BindParam)
+			v, ok := column.Value().(query.BindParam)
 			if !ok {
 				continue
 			}
