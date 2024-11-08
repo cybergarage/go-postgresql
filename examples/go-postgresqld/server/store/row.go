@@ -40,7 +40,7 @@ func NewRowWith(cols []*query.Column) Row {
 }
 
 // IsMatched returns true if the row is matched with the specified condition.
-func (row Row) IsMatched(cond *query.Condition) bool {
+func (row Row) IsMatched(cond query.Condition) bool {
 	if cond.IsEmpty() {
 		return true
 	}

@@ -39,7 +39,7 @@ func NewTableWith(name string, schema query.Schema) *Table {
 }
 
 // Select returns rows matched to the specified condition.
-func (tbl *Table) Select(cond *query.Condition) ([]Row, error) {
+func (tbl *Table) Select(cond query.Condition) ([]Row, error) {
 	tbl.Lock()
 	defer tbl.Unlock()
 
@@ -67,7 +67,7 @@ func (tbl *Table) Insert(cols []*query.Column) error {
 }
 
 // Update updates rows matched to the specified condition.
-func (tbl *Table) Update(cols []*query.Column, cond *query.Condition) (int, error) {
+func (tbl *Table) Update(cols []*query.Column, cond query.Condition) (int, error) {
 	rows, err := tbl.Select(cond)
 	if err != nil {
 		return 0, err
@@ -84,7 +84,7 @@ func (tbl *Table) Update(cols []*query.Column, cond *query.Condition) (int, erro
 }
 
 // Delete deletes rows matched to the specified condition.
-func (tbl *Table) Delete(cond *query.Condition) (int, error) {
+func (tbl *Table) Delete(cond query.Condition) (int, error) {
 	rows, err := tbl.Select(cond)
 	if err != nil {
 		return 0, err
