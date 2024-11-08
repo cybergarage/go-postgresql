@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"github.com/cybergarage/go-logger/log"
+	pgnet "github.com/cybergarage/go-postgresql/postgresql/net"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -27,7 +28,7 @@ import (
 // server represents a PostgreSQL protocol server.
 type server struct {
 	Config
-	*ConnManager
+	*pgnet.ConnManager
 	tracer.Tracer
 	tcpListener net.Listener
 	*BaseExecutor
@@ -37,7 +38,7 @@ type server struct {
 func NewServer() Server {
 	server := &server{
 		Config:       NewDefaultConfig(),
-		ConnManager:  NewConnManager(),
+		ConnManager:  pgnet.NewConnManager(),
 		Tracer:       tracer.NullTracer,
 		tcpListener:  nil,
 		BaseExecutor: NewBaseExecutor(),
