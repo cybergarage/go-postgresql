@@ -18,11 +18,11 @@ import (
 	"crypto/tls"
 
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
-	"github.com/cybergarage/go-sqlparser/sql"
+	sqlnet "github.com/cybergarage/go-sqlparser/sql/net"
 )
 
 // ConnID represents a connection ID.
-type ConnID = sql.ConnID
+type ConnID = sqlnet.ConnID
 
 type PreparedConn interface {
 	// PreparedStatement returns a prepared statement.
@@ -67,7 +67,7 @@ type TLSConn interface {
 
 // Conn represents a connection.
 type Conn interface {
-	sql.Conn
+	sqlnet.Conn
 	PreparedConn
 	MessageConn
 	TLSConn
