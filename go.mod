@@ -1,11 +1,13 @@
 module github.com/cybergarage/go-postgresql
 
-go 1.22
+go 1.22.0
+
+toolchain go1.23.1
 
 require (
 	github.com/cybergarage/go-logger v1.3.4
-	github.com/cybergarage/go-safecast v1.2.3
-	github.com/cybergarage/go-sqlparser v1.3.4
+	github.com/cybergarage/go-safecast v1.2.5
+	github.com/cybergarage/go-sqlparser v1.3.7-0.20241108101216-df1b5c32f9f2
 	github.com/cybergarage/go-sqltest v1.4.2
 	github.com/cybergarage/go-tracing v1.1.3
 	github.com/google/gopacket v1.1.19
@@ -14,13 +16,13 @@ require (
 )
 
 require (
-	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
+	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	golang.org/x/crypto v0.23.0 // indirect
-	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
+	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 )
