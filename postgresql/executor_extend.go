@@ -71,7 +71,7 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (
 
 // Describe handles a describe protocol.
 func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
-	newSystemSelectQuery := func(stmt query.Select) (*sql.Select, error) {
+	newSystemSelectQuery := func(stmt query.Select) (sql.Select, error) {
 		tables := stmt.From().Tables()
 		if len(tables) != 1 {
 			return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())

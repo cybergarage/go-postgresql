@@ -57,12 +57,12 @@ func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 	}
 
 	switch stmt := stmt.obj.(type) {
-	case *query.Insert:
+	case query.Insert:
 		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
 			return err
 		}
-	case *query.Update:
+	case query.Update:
 		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
 			return err
