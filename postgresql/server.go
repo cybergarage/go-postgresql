@@ -24,6 +24,7 @@ type Server interface {
 	Config
 	AuthManager
 	UserExecutorHandler
+	SetTracer(tracer.Tracer)
 	Start() error
 	Stop() error
 	Restart() error
