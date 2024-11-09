@@ -58,7 +58,7 @@ func (tbl *Table) Select(cond query.Condition) ([]Row, error) {
 }
 
 // Insert inserts a new row.
-func (tbl *Table) Insert(cols []*query.Column) error {
+func (tbl *Table) Insert(cols []query.Column) error {
 	row := NewRowWith(cols)
 	tbl.Lock()
 	tbl.Rows = append(tbl.Rows, row)
@@ -67,7 +67,7 @@ func (tbl *Table) Insert(cols []*query.Column) error {
 }
 
 // Update updates rows matched to the specified condition.
-func (tbl *Table) Update(cols []*query.Column, cond query.Condition) (int, error) {
+func (tbl *Table) Update(cols []query.Column, cond query.Condition) (int, error) {
 	rows, err := tbl.Select(cond)
 	if err != nil {
 		return 0, err

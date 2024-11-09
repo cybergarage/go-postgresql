@@ -38,7 +38,7 @@ func (stmt *Statement) Object() query.Statement {
 
 // Bind binds the statement with the specified parameters.
 func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
-	updateBindColumns := func(columns []*query.Column, params protocol.BindParams) error {
+	updateBindColumns := func(columns []query.Column, params protocol.BindParams) error {
 		for _, column := range columns {
 			if !column.HasLiteral() {
 				continue

@@ -31,7 +31,7 @@ func NewDataRowForSelectors(schema query.Schema, rowDesc *protocol.RowDescriptio
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
 		switch selector := selector.(type) {
-		case *query.Column:
+		case query.Column:
 			name := selector.Name()
 			v, ok := row[name]
 			if !ok {
@@ -143,7 +143,7 @@ func NewDataRowsForAggregateFunction(schema query.Schema, rowDesc *protocol.RowD
 				field := rowDesc.Field(n)
 				name := selector.Name()
 				switch selector.(type) {
-				case *query.Column:
+				case query.Column:
 					if name != groupBy {
 						return nil, fmt.Errorf("invalid column (%s)", name)
 					}

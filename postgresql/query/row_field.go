@@ -27,7 +27,7 @@ func NewRowFieldFrom(schema query.Schema, selector query.Selector, idx int) (*pr
 	var dt *system.DataType
 	var err error
 	switch selector := selector.(type) {
-	case *query.Column:
+	case query.Column:
 		columnName = selector.Name()
 		schemaColumn, err := schema.LookupColumn(columnName)
 		if err != nil {

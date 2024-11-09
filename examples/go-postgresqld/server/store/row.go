@@ -31,7 +31,7 @@ func NewRow() Row {
 }
 
 // NewRowWith returns a new row with the specified columns.
-func NewRowWith(cols []*query.Column) Row {
+func NewRowWith(cols []query.Column) Row {
 	row := NewRow()
 	for _, col := range cols {
 		row[col.Name()] = col.Value()
@@ -142,7 +142,7 @@ func (row Row) IsMatched(cond query.Condition) bool {
 }
 
 // Update updates the row with the specified columns.
-func (row Row) Update(colums []*query.Column) {
+func (row Row) Update(colums []query.Column) {
 	for _, col := range colums {
 		colName := col.Name()
 		if exe := col.Executor(); exe != nil {
