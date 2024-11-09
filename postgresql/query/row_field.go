@@ -37,8 +37,8 @@ func NewRowFieldFrom(schema query.Schema, selector query.Selector, idx int) (*pr
 		if err != nil {
 			return nil, err
 		}
-	case *query.Function:
-		if !selector.IsSelectAll() {
+	case query.Function:
+		if !selector.IsAsterisk() {
 			args := selector.Arguments()
 			if len(args) != 1 {
 				return nil, fmt.Errorf("multiple arguments (%v)", args)
@@ -57,7 +57,7 @@ func NewRowFieldFrom(schema query.Schema, selector query.Selector, idx int) (*pr
 		if err != nil {
 			return nil, err
 		}
-		columnName = selector.SelectorString()
+		columnName = selector.String()
 	}
 	return protocol.NewRowFieldWith(columnName,
 		protocol.WithRowFieldNumber(int16(idx+1)),

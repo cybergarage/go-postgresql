@@ -22,7 +22,7 @@ import (
 // https://www.postgresql.org/docs/16/functions-aggregate.html
 
 // GetFunctionDataType returns the data type of the specified function.
-func GetFunctionDataType(fn *query.Function, dt *DataType) (*DataType, error) {
+func GetFunctionDataType(fn query.Function, dt *DataType) (*DataType, error) {
 	switch fn.Name() {
 	case query.MaxFunctionName:
 		return dt, nil

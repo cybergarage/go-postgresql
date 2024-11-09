@@ -39,7 +39,7 @@ func NewDataRowForSelectors(schema query.Schema, rowDesc *protocol.RowDescriptio
 				continue
 			}
 			dataRow.AppendData(field, v)
-		case *query.Function:
+		case query.Function:
 			executor, err := selector.Executor()
 			if err != nil {
 				return nil, err
@@ -65,10 +65,10 @@ func NewDataRowForSelectors(schema query.Schema, rowDesc *protocol.RowDescriptio
 // NewDataRowsForAggregateFunction returns a new DataRow list from the specified rows.
 func NewDataRowsForAggregateFunction(schema query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
 	// Setups aggregate functions
-	aggrFns := []*query.Function{}
+	aggrFns := []query.Function{}
 	aggrExecutors := []*query.AggregateFunction{}
 	for _, selector := range selectors {
-		fn, ok := selector.(*query.Function)
+		fn, ok := selector.(query.Function)
 		if !ok {
 			continue
 		}
@@ -148,7 +148,7 @@ func NewDataRowsForAggregateFunction(schema query.Schema, rowDesc *protocol.RowD
 						return nil, fmt.Errorf("invalid column (%s)", name)
 					}
 					dataRow.AppendData(field, groupKey)
-				case *query.Function:
+				case query.Function:
 					aggResultSet, ok := aggrResultSets[name]
 					if !ok {
 						return nil, fmt.Errorf("invalid aggregate function (%s)", name)
@@ -169,7 +169,7 @@ func NewDataRowsForAggregateFunction(schema query.Schema, rowDesc *protocol.RowD
 			field := rowDesc.Field(n)
 			name := selector.Name()
 			switch selector.(type) {
-			case *query.Function:
+			case query.Function:
 				switch name {
 				case query.CountFunctionName:
 					dataRow.AppendData(field, 0)

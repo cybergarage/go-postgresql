@@ -226,7 +226,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 	// Row description response
 
 	selectors := q.Selectors()
-	if selectors.IsSelectAll() {
+	if selectors.IsAsterisk() {
 		selectors = tbl.Selectors()
 	}
 
