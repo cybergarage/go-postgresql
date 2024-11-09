@@ -261,7 +261,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 			}
 		}
 	} else {
-		groupBy := q.GroupBy().Column()
+		groupBy := q.GroupBy().ColumnName()
 		queryRows := []query.Row{}
 		for _, row := range rows {
 			queryRows = append(queryRows, row)

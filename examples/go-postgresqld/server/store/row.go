@@ -152,7 +152,7 @@ func (row Row) Update(colums []query.Column) {
 			}
 			row[colName] = v
 		} else {
-			if col.HasLiteral() {
+			if col.HasValue() {
 				row[colName] = col.Value()
 			}
 		}

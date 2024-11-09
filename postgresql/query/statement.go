@@ -40,7 +40,7 @@ func (stmt *Statement) Object() query.Statement {
 func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 	updateBindColumns := func(columns []query.Column, params protocol.BindParams) error {
 		for _, column := range columns {
-			if !column.HasLiteral() {
+			if !column.HasValue() {
 				continue
 			}
 			v, ok := column.Value().(query.BindParam)
@@ -57,12 +57,12 @@ func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 	}
 
 	switch stmt := stmt.obj.(type) {
-	case query.Insert:
+	case query.Update:
 		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
 			return err
 		}
-	case query.Update:
+	case query.Insert:
 		err := updateBindColumns(stmt.Columns(), bindParams)
 		if err != nil {
 			return err
