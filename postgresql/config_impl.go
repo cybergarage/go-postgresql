@@ -23,15 +23,15 @@ const (
 type config struct {
 	addr string
 	port int
-	*tlsConf
+	*tlsConfig
 }
 
 // NewDefaultConfig returns a default configuration instance.
 func NewDefaultConfig() Config {
 	config := &config{
-		addr:    defaultAddr,
-		port:    defaultPort,
-		tlsConf: NewTLSConf(),
+		addr:      defaultAddr,
+		port:      defaultPort,
+		tlsConfig: NewTLSConf(),
 	}
 	return config
 }

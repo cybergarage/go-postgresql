@@ -14,36 +14,6 @@
 
 package postgresql
 
-import (
-	"crypto/tls"
-)
-
-// TLSConfig represents a TLS configuration.
-type TLSConfig interface {
-	// SetTLSEnabled sets a TLS enabled flag.
-	SetTLSEnabled(enabled bool)
-	// IsEnabled returns true if the TLS is enabled.
-	IsTLSEnabled() bool
-	// SetClientAuthType sets a client authentication type.
-	SetClientAuthType(authType tls.ClientAuthType)
-	// SetServerKeyFile sets a SSL server key file.
-	SetServerKeyFile(file string) error
-	// SetServerCertFile sets a SSL server certificate file.
-	SetServerCertFile(file string) error
-	// SetRootCertFile sets a SSL root certificates.
-	SetRootCertFiles(files ...string) error
-	// SetServerKey sets a SSL server key.
-	SetServerKey(key []byte)
-	// SetServerCert sets a SSL server certificate.
-	SetServerCert(cert []byte)
-	// SetRootCerts sets a SSL root certificates.
-	SetRootCerts(certs ...[]byte)
-	// SetTLSConfig sets a TLS configuration.
-	SetTLSConfig(tlsConfig *tls.Config)
-	// TLSConfig returns a TLS configuration from the configuration.
-	TLSConfig() (*tls.Config, error)
-}
-
 // Config represents a server configuration.
 type Config interface {
 	TLSConfig
