@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"context"
 	"crypto/tls"
 	"net"
 	"time"
@@ -30,13 +31,13 @@ type connOption = func(*conn)
 // conn represents a connection of PostgreSQL binary protocol.
 type conn struct {
 	net.Conn
-	isClosed  bool
-	msgReader *protocol.MessageReader
-	db        string
-	ts        time.Time
-	uuid      uuid.UUID
-	id        ConnID
-	tracer.Context
+	isClosed      bool
+	msgReader     *protocol.MessageReader
+	db            string
+	ts            time.Time
+	uuid          uuid.UUID
+	id            ConnID
+	tracerContext tracer.Context
 	PreparedStatementMap
 	PreparedPortalMap
 	tlsState   *tls.ConnectionState
@@ -53,7 +54,7 @@ func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
 		ts:                   time.Now(),
 		uuid:                 uuid.New(),
 		id:                   0,
-		Context:              nil,
+		tracerContext:        nil,
 		PreparedStatementMap: NewPreparedStatementMap(),
 		PreparedPortalMap:    NewPreparedPortalMap(),
 		tlsState:             nil,
@@ -75,7 +76,7 @@ func WithconnDatabase(name string) func(*conn) {
 // WithconnTracer sets a tracer context.
 func WithconnTracer(t tracer.Context) func(*conn) {
 	return func(conn *conn) {
-		conn.Context = t
+		conn.tracerContext = t
 	}
 }
 
@@ -130,14 +131,34 @@ func (conn *conn) ID() ConnID {
 	return conn.id
 }
 
+// Context returns the context of the connection.
+func (conn *conn) Context() context.Context {
+	return context.Background()
+}
+
 // SetSpanContext sets the tracer span context of the connection.
 func (conn *conn) SetSpanContext(ctx tracer.Context) {
-	conn.Context = ctx
+	conn.tracerContext = ctx
 }
 
 // SpanContext returns the tracer span context of the connection.
 func (conn *conn) SpanContext() tracer.Context {
-	return conn.Context
+	return conn.tracerContext
+}
+
+// Span returns the current top tracer span on the tracer span stack.
+func (conn *conn) Span() tracer.Span {
+	return conn.tracerContext.Span()
+}
+
+// StartSpan starts a new child tracer span and pushes it onto the tracer span stack.
+func (conn *conn) StartSpan(name string) bool {
+	return conn.tracerContext.StartSpan(name)
+}
+
+// FinishSpan ends the current top tracer span and pops it from the tracer span stack.
+func (conn *conn) FinishSpan() bool {
+	return conn.tracerContext.FinishSpan()
 }
 
 // SetStartupMessage sets a startup protocol.
