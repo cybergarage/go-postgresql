@@ -29,7 +29,7 @@ type BaseExecutor struct {
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	executor := &BaseExecutor{
-		ProtocolStartupHander: NewBaseProtocolExecutor(),
+		ProtocolStartupHander: NewBaseStartupExecutor(),
 		QueryExecutor:         NewBaseQueryExecutor(),
 		QueryExtraExecutor:    nil,
 		ProtocolQueryHandler:  nil,

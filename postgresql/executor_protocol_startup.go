@@ -31,8 +31,8 @@ type BaseStartupExecutor struct {
 	secretKey int32
 }
 
-// NewBaseProtocolExecutor returns a base frontend message executor.
-func NewBaseProtocolExecutor() *BaseStartupExecutor {
+// NewBaseStartupExecutor returns a base frontend message executor.
+func NewBaseStartupExecutor() *BaseStartupExecutor {
 	r, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
 	if err != nil {
 		log.Error(err)
