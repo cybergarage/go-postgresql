@@ -39,7 +39,7 @@ func NewBaseExecutor() *BaseExecutor {
 		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
 	}
 	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
-	executor.ProtocolQueryHandler = NewBaseExtendedQueryExecutorWith(executor)
+	executor.ProtocolQueryHandler = NewBaseProtocolQueryExecutorWith(executor)
 	return executor
 }
 

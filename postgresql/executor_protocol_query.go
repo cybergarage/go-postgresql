@@ -28,22 +28,22 @@ import (
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
-// BaseExtendedQueryExecutor represents a base extended query message executor.
-type BaseExtendedQueryExecutor struct {
+// BaseProtocolQueryExecutor represents a base extended query message executor.
+type BaseProtocolQueryExecutor struct {
 	*BaseExecutor
 	*PreparedManager
 }
 
-// NewBaseExtendedQueryExecutorWith returns a base extended query message executor.
-func NewBaseExtendedQueryExecutorWith(executor *BaseExecutor) *BaseExtendedQueryExecutor {
-	return &BaseExtendedQueryExecutor{
+// NewBaseProtocolQueryExecutorWith returns a base extended query message executor.
+func NewBaseProtocolQueryExecutorWith(executor *BaseExecutor) *BaseProtocolQueryExecutor {
+	return &BaseProtocolQueryExecutor{
 		BaseExecutor:    executor,
 		PreparedManager: NewPreparedManager(),
 	}
 }
 
 // Prepare handles a parse protocol.
-func (executor *BaseExtendedQueryExecutor) Parse(conn Conn, msg *protocol.Parse) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Parse(conn Conn, msg *protocol.Parse) (protocol.Responses, error) {
 	err := executor.SetPreparedStatement(conn, msg)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn Conn, msg *protocol.Parse)
 }
 
 // Bind handles a bind protocol.
-func (executor *BaseExtendedQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, error) {
 	prepStmt, err := executor.PreparedStatement(conn, msg.StatementName)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (
 }
 
 // Describe handles a describe protocol.
-func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
 	newSystemSelectQuery := func(stmt query.Select) (sql.Select, error) {
 		tables := stmt.From().Tables()
 		if len(tables) != 1 {
@@ -179,7 +179,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 }
 
 // Execute handles a execute protocol.
-func (executor *BaseExtendedQueryExecutor) Execute(conn Conn, msg *protocol.Execute) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Execute(conn Conn, msg *protocol.Execute) (protocol.Responses, error) {
 	q, err := executor.PreparedPortal(conn, msg.PortalName)
 	if err != nil {
 		return nil, err
@@ -189,7 +189,7 @@ func (executor *BaseExtendedQueryExecutor) Execute(conn Conn, msg *protocol.Exec
 }
 
 // Close handles a close protocol.
-func (executor *BaseExtendedQueryExecutor) Close(conn Conn, msg *protocol.Close) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Close(conn Conn, msg *protocol.Close) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// The Close message closes an existing prepared statement or portal and releases resources.
@@ -206,7 +206,7 @@ func (executor *BaseExtendedQueryExecutor) Close(conn Conn, msg *protocol.Close)
 }
 
 // Sync handles a sync protocol.
-func (executor *BaseExtendedQueryExecutor) Sync(conn Conn, msg *protocol.Sync) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Sync(conn Conn, msg *protocol.Sync) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// At completion of each series of extended-query messages, the frontend should issue a Sync protocol.
@@ -214,7 +214,7 @@ func (executor *BaseExtendedQueryExecutor) Sync(conn Conn, msg *protocol.Sync) (
 }
 
 // Flush handles a flush protocol.
-func (executor *BaseExtendedQueryExecutor) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// The Flush message does not cause any specific output to be generated,
@@ -223,7 +223,7 @@ func (executor *BaseExtendedQueryExecutor) Flush(conn Conn, msg *protocol.Flush)
 }
 
 // Query handles a query protocol.
-func (executor *BaseExtendedQueryExecutor) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
+func (executor *BaseProtocolQueryExecutor) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
 	q := msg.Query
 	log.Debugf("%s %s", conn.RemoteAddr(), q)
 
