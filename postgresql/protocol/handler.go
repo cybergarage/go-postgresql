@@ -14,8 +14,8 @@
 
 package protocol
 
-// StartupMessageHandler represents a start-up message handler.
-type StartupMessageHandler interface {
+// StartupHandler represents a start-up message handler.
+type StartupHandler interface {
 	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse
 	Authenticate(Conn) (Response, error)
 	// ParameterStatuses returns the parameter statuses.
@@ -48,9 +48,14 @@ type ExtendedQueryHandler interface {
 	Flush(Conn, *Flush) (Responses, error)
 }
 
-// MessageHandler represents a message handler.
-type MessageHandler interface {
-	StartupMessageHandler
+// QueryHandler represents a query handler.
+type QueryHandler interface {
 	SimpleQueryHandler
 	ExtendedQueryHandler
+}
+
+// MessageHandler represents a message handler.
+type MessageHandler interface {
+	StartupHandler
+	QueryHandler
 }
