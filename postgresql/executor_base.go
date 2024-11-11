@@ -20,7 +20,7 @@ type BaseExecutor struct {
 	QueryExecutor
 	QueryExtraExecutor
 	TCLExecutor
-	ExtendedQueryExecutor
+	ProtocolQueryHandler
 	BulkExecutor
 	ErrorHandler
 	SystemQueryExecutor
@@ -32,14 +32,14 @@ func NewBaseExecutor() *BaseExecutor {
 		ProtocolStartupHander: NewBaseProtocolExecutor(),
 		QueryExecutor:         NewBaseQueryExecutor(),
 		QueryExtraExecutor:    nil,
-		ExtendedQueryExecutor: nil,
+		ProtocolQueryHandler:  nil,
 		TCLExecutor:           NewBaseTransactionExecutor(),
 		BulkExecutor:          NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
 	}
 	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
-	executor.ExtendedQueryExecutor = NewBaseExtendedQueryExecutorWith(executor)
+	executor.ProtocolQueryHandler = NewBaseExtendedQueryExecutorWith(executor)
 	return executor
 }
 
@@ -59,8 +59,8 @@ func (executor *BaseExecutor) SetTransactionExecutor(te TCLExecutor) {
 }
 
 // SetExtendedQueryExecutor sets a user extended query executor.
-func (executor *BaseExecutor) SetExtendedQueryExecutor(eqe ExtendedQueryExecutor) {
-	executor.ExtendedQueryExecutor = eqe
+func (executor *BaseExecutor) SetExtendedQueryExecutor(eqe ProtocolQueryHandler) {
+	executor.ProtocolQueryHandler = eqe
 }
 
 // SetBulkExecutor sets a user bulk executor.

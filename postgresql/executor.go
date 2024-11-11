@@ -25,6 +25,11 @@ type ProtocolStartupHander interface {
 	protocol.StartupHandler
 }
 
+// ProtocolQueryHandler represents a query message handler.
+type ProtocolQueryHandler interface {
+	protocol.QueryHandler
+}
+
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).
 type DDOExecutor interface {
 	// CreateDatabase handles a CREATE DATABASE query.
@@ -71,26 +76,6 @@ type TCLExecutor interface {
 	Rollback(Conn, query.Rollback) (protocol.Responses, error)
 }
 
-// ExtendedQueryExecutor defines a executor interface for extended query operations.
-type ExtendedQueryExecutor interface {
-	// Query handles a query protocol.
-	Query(Conn, *protocol.Query) (protocol.Responses, error)
-	// Prepare handles a parse protocol.
-	Parse(Conn, *protocol.Parse) (protocol.Responses, error)
-	// Bind handles a bind protocol.
-	Bind(Conn, *protocol.Bind) (protocol.Responses, error)
-	// Describe handles a describe protocol.
-	Describe(Conn, *protocol.Describe) (protocol.Responses, error)
-	// Execute handles a execute protocol.
-	Execute(Conn, *protocol.Execute) (protocol.Responses, error)
-	// Close handles a close protocol.
-	Close(Conn, *protocol.Close) (protocol.Responses, error)
-	// Sync handles a sync protocol.
-	Sync(Conn, *protocol.Sync) (protocol.Responses, error)
-	// Flush handles a flush protocol.
-	Flush(Conn, *protocol.Flush) (protocol.Responses, error)
-}
-
 // BulkExecutor defines a executor interface for bulk operations.
 type BulkExecutor interface {
 	// Copy handles a COPY query.
@@ -126,7 +111,6 @@ type UserExecutor interface {
 	QueryExecutor
 	QueryExtraExecutor
 	TCLExecutor
-	ExtendedQueryExecutor
 	SystemQueryExecutor
 	BulkExecutor
 	ErrorHandler
