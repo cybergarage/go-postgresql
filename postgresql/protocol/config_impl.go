@@ -12,26 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package postgresql
+package protocol
 
 const (
 	defaultAddr = ""
-	defaultPort = DefaultPort
+	defaultPort = 5432
 )
 
 // config stores server configuration parammeters.
 type config struct {
-	addr string
-	port int
+	productName    string
+	productVersion string
+	addr           string
+	port           int
 	*tlsConfig
 }
 
 // NewDefaultConfig returns a default configuration instance.
 func NewDefaultConfig() Config {
 	config := &config{
-		addr:      defaultAddr,
-		port:      defaultPort,
-		tlsConfig: NewTLSConf(),
+		productName:    "",
+		productVersion: "",
+		addr:           defaultAddr,
+		port:           defaultPort,
+		tlsConfig:      NewTLSConfig(),
 	}
 	return config
 }
@@ -54,4 +58,24 @@ func (config *config) Address() string {
 // Port returns a listen port from the configuration.
 func (config *config) Port() int {
 	return config.port
+}
+
+// SetProuctName sets a product name to the configuration.
+func (config *config) SetProductName(v string) {
+	config.productName = v
+}
+
+// SetProductVersion sets a product version to the configuration.
+func (config *config) SetProductVersion(v string) {
+	config.productVersion = v
+}
+
+// ProductName returns the product name from the configuration.
+func (config *config) ProductName() string {
+	return config.productName
+}
+
+// ProductVersion returns the product version from the configuration.
+func (config *config) ProductVersion() string {
+	return config.productVersion
 }

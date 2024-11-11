@@ -1,4 +1,4 @@
-// Copyright (C) 2020 The go-postgresql Authors. All rights reserved.
+// Copyright (C) 2019 The go-postgresql Authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,31 +15,13 @@
 package postgresql
 
 import (
-	"crypto/tls"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 // TLSConfig represents a TLS configuration.
-type TLSConfig interface {
-	// SetTLSEnabled sets a TLS enabled flag.
-	SetTLSEnabled(enabled bool)
-	// IsEnabled returns true if the TLS is enabled.
-	IsTLSEnabled() bool
-	// SetClientAuthType sets a client authentication type.
-	SetClientAuthType(authType tls.ClientAuthType)
-	// SetServerKeyFile sets a SSL server key file.
-	SetServerKeyFile(file string) error
-	// SetServerCertFile sets a SSL server certificate file.
-	SetServerCertFile(file string) error
-	// SetRootCertFile sets a SSL root certificates.
-	SetRootCertFiles(files ...string) error
-	// SetServerKey sets a SSL server key.
-	SetServerKey(key []byte)
-	// SetServerCert sets a SSL server certificate.
-	SetServerCert(cert []byte)
-	// SetRootCerts sets a SSL root certificates.
-	SetRootCerts(certs ...[]byte)
-	// SetTLSConfig sets a TLS configuration.
-	SetTLSConfig(tlsConfig *tls.Config)
-	// TLSConfig returns a TLS configuration from the configuration.
-	TLSConfig() (*tls.Config, error)
+type TLSConfig = protocol.TLSConfig
+
+// NewTLSConfig creates a new TLS configuration.
+func NewTLSConfig() TLSConfig {
+	return protocol.NewTLSConfig()
 }

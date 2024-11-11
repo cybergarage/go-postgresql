@@ -27,7 +27,7 @@ const (
 )
 
 func TestCerts(t *testing.T) {
-	conf := postgresql.NewTLSConf()
+	conf := postgresql.NewTLSConfig()
 	conf.SetServerCertFile(certFile)
 	conf.SetServerKeyFile(keyFile)
 	conf.SetRootCertFiles(caCertFile)
