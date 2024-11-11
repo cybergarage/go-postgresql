@@ -38,27 +38,23 @@ type conn struct {
 	uuid          uuid.UUID
 	id            ConnID
 	tracerContext tracer.Context
-	PreparedStatementMap
-	PreparedPortalMap
-	tlsState   *tls.ConnectionState
-	startupMsg *protocol.Startup
+	tlsState      *tls.ConnectionState
+	startupMsg    *protocol.Startup
 }
 
 // NewConnWith returns a connection with a raw connection.
 func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
 	conn := &conn{
-		Conn:                 netconn,
-		isClosed:             false,
-		msgReader:            protocol.NewMessageReaderWith(netconn),
-		db:                   "",
-		ts:                   time.Now(),
-		uuid:                 uuid.New(),
-		id:                   0,
-		tracerContext:        nil,
-		PreparedStatementMap: NewPreparedStatementMap(),
-		PreparedPortalMap:    NewPreparedPortalMap(),
-		tlsState:             nil,
-		startupMsg:           nil,
+		Conn:          netconn,
+		isClosed:      false,
+		msgReader:     protocol.NewMessageReaderWith(netconn),
+		db:            "",
+		ts:            time.Now(),
+		uuid:          uuid.New(),
+		id:            0,
+		tracerContext: nil,
+		tlsState:      nil,
+		startupMsg:    nil,
 	}
 	for _, opt := range opts {
 		opt(conn)

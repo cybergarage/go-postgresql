@@ -24,21 +24,6 @@ import (
 // ConnID represents a connection ID.
 type ConnID = net.ConnID
 
-type PreparedConn interface {
-	// PreparedStatement returns a prepared statement.
-	PreparedStatement(name string) (*PreparedStatement, error)
-	// SetPreparedStatement sets a prepared statement.
-	SetPreparedStatement(msg *protocol.Parse) error
-	// RemovePreparedStatement removes a prepared statement.
-	RemovePreparedStatement(name string) error
-	// PreparedPortal returns a prepared query statement.
-	PreparedPortal(name string) (*PreparedPortal, error)
-	// SetPreparedPortal sets a prepared query statement.
-	SetPreparedPortal(name string, query *PreparedPortal) error
-	// RemovePreparedPortal removes a prepared query statement.
-	RemovePreparedPortal(name string) error
-}
-
 type MessageConn interface {
 	// SetStartupMessage sets a startup protocol.
 	SetStartupMessage(msg *protocol.Startup)
@@ -68,7 +53,6 @@ type TLSConn interface {
 // Conn represents a connection.
 type Conn interface {
 	net.Conn
-	PreparedConn
 	MessageConn
 	TLSConn
 }
