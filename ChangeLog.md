@@ -7,8 +7,15 @@
   - SELECT
     - Added tests for ORDER BY
 
-## v1.6.0 (2024-xx-xx)
+## v1.6.x (2024-xx-xx)
 - Support scram-sha-256
+
+## v1.6.0 (2024-11-xx)
+- Update protocol server
+- Update go-sqlparser package
+
+## v1.5.8 (2024-11-11)
+- Update go-sqlparser package
 
 ## v1.5.7 (2024-10-27)
 - Add error package
