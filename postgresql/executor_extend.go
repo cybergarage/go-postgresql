@@ -44,7 +44,7 @@ func NewBaseExtendedQueryExecutorWith(executor *BaseExecutor) *BaseExtendedQuery
 
 // Prepare handles a parse protocol.
 func (executor *BaseExtendedQueryExecutor) Parse(conn Conn, msg *protocol.Parse) (protocol.Responses, error) {
-	err := conn.SetPreparedStatement(msg)
+	err := executor.SetPreparedStatement(conn, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (executor *BaseExtendedQueryExecutor) Parse(conn Conn, msg *protocol.Parse)
 
 // Bind handles a bind protocol.
 func (executor *BaseExtendedQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, error) {
-	prepStmt, err := conn.PreparedStatement(msg.StatementName)
+	prepStmt, err := executor.PreparedStatement(conn, msg.StatementName)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (executor *BaseExtendedQueryExecutor) Bind(conn Conn, msg *protocol.Bind) (
 		return nil, err
 	}
 
-	err = conn.SetPreparedPortal(msg.PortalName, q)
+	err = executor.SetPreparedPortal(conn, msg.PortalName, q)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 
 	switch msg.Type {
 	case protocol.PreparedStatement:
-		prepStmt, err := conn.PreparedStatement(msg.Name)
+		prepStmt, err := executor.PreparedStatement(conn, msg.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -168,7 +168,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 			paramDesc,
 			protocol.NewNoData()), nil
 	case protocol.PreparedPortal:
-		_, err := conn.PreparedPortal(msg.Name)
+		_, err := executor.PreparedPortal(conn, msg.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -180,7 +180,7 @@ func (executor *BaseExtendedQueryExecutor) Describe(conn Conn, msg *protocol.Des
 
 // Execute handles a execute protocol.
 func (executor *BaseExtendedQueryExecutor) Execute(conn Conn, msg *protocol.Execute) (protocol.Responses, error) {
-	q, err := conn.PreparedPortal(msg.PortalName)
+	q, err := executor.PreparedPortal(conn, msg.PortalName)
 	if err != nil {
 		return nil, err
 	}
@@ -197,9 +197,9 @@ func (executor *BaseExtendedQueryExecutor) Close(conn Conn, msg *protocol.Close)
 
 	switch msg.Type {
 	case protocol.PreparedStatement:
-		_ = conn.RemovePreparedStatement(msg.Name)
+		_ = executor.RemovePreparedStatement(conn, msg.Name)
 	case protocol.PreparedPortal:
-		_ = conn.RemovePreparedPortal(msg.Name)
+		_ = executor.RemovePreparedPortal(conn, msg.Name)
 	}
 
 	return protocol.NewResponsesWith(protocol.NewCloseComplete()), nil
