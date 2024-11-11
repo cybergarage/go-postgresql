@@ -31,12 +31,14 @@ import (
 // BaseExtendedQueryExecutor represents a base extended query message executor.
 type BaseExtendedQueryExecutor struct {
 	*BaseExecutor
+	*PreparedManager
 }
 
 // NewBaseExtendedQueryExecutorWith returns a base extended query message executor.
 func NewBaseExtendedQueryExecutorWith(executor *BaseExecutor) *BaseExtendedQueryExecutor {
 	return &BaseExtendedQueryExecutor{
-		BaseExecutor: executor,
+		BaseExecutor:    executor,
+		PreparedManager: NewPreparedManager(),
 	}
 }
 
