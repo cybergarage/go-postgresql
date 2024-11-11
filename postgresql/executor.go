@@ -19,10 +19,10 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// StartupHander represents a start-up message handler.
-type StartupHander interface {
+// ProtocolStartupHander represents a start-up message handler.
+type ProtocolStartupHander interface {
 	AuthManager
-	protocol.StartupMessageHandler
+	protocol.StartupHandler
 }
 
 // DDOExecutor defines a executor interface for DDO (Data Definition Operations).

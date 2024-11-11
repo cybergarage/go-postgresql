@@ -16,7 +16,7 @@ package postgresql
 
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
-	StartupHander
+	ProtocolStartupHander
 	QueryExecutor
 	QueryExtraExecutor
 	TCLExecutor
@@ -29,7 +29,7 @@ type BaseExecutor struct {
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	executor := &BaseExecutor{
-		StartupHander:         NewBaseProtocolExecutor(),
+		ProtocolStartupHander: NewBaseProtocolExecutor(),
 		QueryExecutor:         NewBaseQueryExecutor(),
 		QueryExtraExecutor:    nil,
 		ExtendedQueryExecutor: nil,
