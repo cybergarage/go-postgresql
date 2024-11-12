@@ -24,20 +24,20 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
-// protocolStartupExecutor  a new protocol startup executor.
-type protocolStartupExecutor struct {
+// protocolStartupHandler  a new protocol startup executor.
+type protocolStartupHandler struct {
 	*authExecutor
 	processID int32
 	secretKey int32
 }
 
-// newProtocolStartupExecutor returns a new protocol startup executor.
-func newProtocolStartupExecutor() *protocolStartupExecutor {
+// newProtocolStartupHandler returns a new protocol startup executor.
+func newProtocolStartupHandler() *protocolStartupHandler {
 	r, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
 	if err != nil {
 		log.Error(err)
 	}
-	return &protocolStartupExecutor{
+	return &protocolStartupHandler{
 		authExecutor: newAuthExecutor(),
 		processID:    int32(os.Getpid()),
 		secretKey:    int32(r.Int64()),
@@ -45,7 +45,7 @@ func newProtocolStartupExecutor() *protocolStartupExecutor {
 }
 
 // ParameterStatuses returns the parameter statuses.
-func (executor *protocolStartupExecutor) ParameterStatuses(Conn) (protocol.Responses, error) {
+func (executor *protocolStartupHandler) ParameterStatuses(Conn) (protocol.Responses, error) {
 	m := map[string]string{}
 	m[protocol.ClientEncoding] = protocol.EncodingUTF8
 	m[protocol.ServerEncoding] = protocol.EncodingUTF8
@@ -53,6 +53,6 @@ func (executor *protocolStartupExecutor) ParameterStatuses(Conn) (protocol.Respo
 }
 
 // BackendKeyData returns the backend key data.
-func (executor *protocolStartupExecutor) BackendKeyData(Conn) (protocol.Response, error) {
+func (executor *protocolStartupHandler) BackendKeyData(Conn) (protocol.Response, error) {
 	return protocol.NewBackendKeyDataWith(executor.processID, executor.secretKey)
 }
