@@ -17,10 +17,10 @@ package postgresql
 // BaseExecutor represents a base frontend message executor.
 type BaseExecutor struct {
 	ProtocolStartupHander
+	ProtocolQueryHandler
 	QueryExecutor
 	QueryExtraExecutor
 	TCLExecutor
-	ProtocolQueryHandler
 	BulkExecutor
 	ErrorHandler
 	SystemQueryExecutor
@@ -29,17 +29,17 @@ type BaseExecutor struct {
 // NewBaseExecutor returns a base frontend message executor.
 func NewBaseExecutor() *BaseExecutor {
 	executor := &BaseExecutor{
-		ProtocolStartupHander: NewBaseStartupExecutor(),
+		ProtocolStartupHander: newProtocolStartupExecutor(),
+		ProtocolQueryHandler:  nil,
 		QueryExecutor:         NewBaseQueryExecutor(),
 		QueryExtraExecutor:    nil,
-		ProtocolQueryHandler:  nil,
 		TCLExecutor:           NewBaseTransactionExecutor(),
 		BulkExecutor:          NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
 	}
-	executor.QueryExtraExecutor = NewBaseSugarExecutorWith(executor)
-	executor.ProtocolQueryHandler = NewBaseProtocolQueryExecutorWith(executor)
+	executor.QueryExtraExecutor = newDMOExtraExecutorWith(executor)
+	executor.ProtocolQueryHandler = newProtocolQueryExecutorWith(executor)
 	return executor
 }
 
