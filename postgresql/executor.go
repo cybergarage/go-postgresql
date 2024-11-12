@@ -66,8 +66,8 @@ type DMOExtraExecutor interface {
 	Truncate(Conn, query.Truncate) (protocol.Responses, error)
 }
 
-// TCLExecutor defines a executor interface for TCL (Transaction Control Language).
-type TCLExecutor interface {
+// TCOExecutor defines a executor interface for TCL (Transaction Control Operations).
+type TCOExecutor interface {
 	// Begin handles a BEGIN query.
 	Begin(Conn, query.Begin) (protocol.Responses, error)
 	// Commit handles a COMMIT query.
@@ -110,7 +110,7 @@ type ErrorHandler interface {
 type UserExecutor interface {
 	QueryExecutor
 	QueryExtraExecutor
-	TCLExecutor
+	TCOExecutor
 	SystemQueryExecutor
 	BulkExecutor
 	ErrorHandler
@@ -123,7 +123,7 @@ type UserExecutorHandler interface {
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExtraExecutor(QueryExtraExecutor)
 	// SetTransactionExecutor sets a user transaction executor.
-	SetTransactionExecutor(TCLExecutor)
+	SetTransactionExecutor(TCOExecutor)
 	// SetSystemQueryExecutor sets a system query executor.
 	SetSystemQueryExecutor(SystemQueryExecutor)
 	// SetBulkExecutor sets a user bulk executor.
