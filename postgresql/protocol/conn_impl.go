@@ -75,7 +75,7 @@ func WithconnTracer(t tracer.Context) func(*conn) {
 	}
 }
 
-// WithconnStartupMessage sets a startup
+// WithconnStartupMessage sets a startup.
 func WithconnStartupMessage(msg *Startup) func(*conn) {
 	return func(conn *conn) {
 		conn.startupMsg = msg
@@ -156,12 +156,12 @@ func (conn *conn) FinishSpan() bool {
 	return conn.tracerContext.FinishSpan()
 }
 
-// SetStartupMessage sets a startup
+// SetStartupMessage sets a startup.
 func (conn *conn) SetStartupMessage(msg *Startup) {
 	conn.startupMsg = msg
 }
 
-// StartupMessage return the startup
+// StartupMessage return the startup.
 func (conn *conn) StartupMessage() (*Startup, bool) {
 	return conn.startupMsg, conn.startupMsg != nil
 }
@@ -181,7 +181,7 @@ func (conn *conn) MessageReader() *MessageReader {
 	return conn.msgReader
 }
 
-// ResponseMessage sends a response
+// ResponseMessage sends a response.
 func (conn *conn) ResponseMessage(resMsg Response) error {
 	if resMsg == nil {
 		return nil
@@ -227,7 +227,7 @@ func (conn *conn) ResponseError(err error) error {
 	return err
 }
 
-// SkipMessage skips a
+// SkipMessage skips a.
 func (conn *conn) SkipMessage() error {
 	msg, err := NewMessageWithReader(conn.MessageReader())
 	if err != nil {
@@ -240,7 +240,7 @@ func (conn *conn) SkipMessage() error {
 	return nil
 }
 
-// ReadyForMessage sends a ready for
+// ReadyForMessage sends a ready for.
 func (conn *conn) ReadyForMessage(status TransactionStatus) error {
 	readyMsg, err := NewReadyForQueryWith(status)
 	if err != nil {
