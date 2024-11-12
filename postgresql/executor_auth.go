@@ -19,31 +19,31 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
-// BaseAuthExecutor represents a base authenticator.
-type BaseAuthExecutor struct {
+// authExecutor represents a base authenticator.
+type authExecutor struct {
 	authMgr auth.AuthManager
 }
 
-// NewBaseAuthExecutor returns a base authenticator.
-func NewBaseAuthExecutor() *BaseAuthExecutor {
-	executor := &BaseAuthExecutor{
+// newAuthExecutor returns a base authenticator.
+func newAuthExecutor() *authExecutor {
+	executor := &authExecutor{
 		authMgr: auth.NewAuthManager(),
 	}
 	return executor
 }
 
 // AddAuthenticator adds a new authenticator.
-func (executor *BaseAuthExecutor) AddAuthenticator(authenticator auth.Authenticator) {
+func (executor *authExecutor) AddAuthenticator(authenticator auth.Authenticator) {
 	executor.authMgr.AddAuthenticator(authenticator)
 }
 
 // ClearAuthenticators clears all authenticators.
-func (executor *BaseAuthExecutor) ClearAuthenticators() {
+func (executor *authExecutor) ClearAuthenticators() {
 	executor.authMgr.ClearAuthenticators()
 }
 
 // Authenticate authenticates the connection with the startup protocol.
-func (executor *BaseAuthExecutor) Authenticate(conn Conn) (protocol.Response, error) {
+func (executor *authExecutor) Authenticate(conn Conn) (protocol.Response, error) {
 	ok, err := executor.authMgr.Authenticate(conn)
 	if err != nil {
 		return nil, err
