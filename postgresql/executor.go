@@ -86,6 +86,7 @@ type BulkExecutor interface {
 
 // QueryExecutor represents a user query message executor.
 type QueryExecutor interface {
+	TCOExecutor
 	DDOExecutor
 	DMOExecutor
 }
@@ -110,7 +111,6 @@ type ErrorHandler interface {
 type UserExecutor interface {
 	QueryExecutor
 	QueryExtraExecutor
-	TCOExecutor
 	SystemQueryExecutor
 	BulkExecutor
 	ErrorHandler
@@ -122,8 +122,6 @@ type UserExecutorHandler interface {
 	SetQueryExecutor(QueryExecutor)
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExtraExecutor(QueryExtraExecutor)
-	// SetTransactionExecutor sets a user transaction executor.
-	SetTransactionExecutor(TCOExecutor)
 	// SetSystemQueryExecutor sets a system query executor.
 	SetSystemQueryExecutor(SystemQueryExecutor)
 	// SetBulkExecutor sets a user bulk executor.

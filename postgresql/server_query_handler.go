@@ -274,13 +274,13 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 		switch stmt.Object().StatementType() {
 		case sql.BeginStatement:
 			stmt := stmt.Object().(query.Begin)
-			res, err = executor.TCOExecutor.Begin(conn, stmt)
+			res, err = executor.QueryExecutor.Begin(conn, stmt)
 		case sql.CommitStatement:
 			stmt := stmt.Object().(query.Commit)
-			res, err = executor.TCOExecutor.Commit(conn, stmt)
+			res, err = executor.QueryExecutor.Commit(conn, stmt)
 		case sql.RollbackStatement:
 			stmt := stmt.Object().(query.Rollback)
-			res, err = executor.TCOExecutor.Rollback(conn, stmt)
+			res, err = executor.QueryExecutor.Rollback(conn, stmt)
 		case sql.CreateDatabaseStatement:
 			stmt := stmt.Object().(query.CreateDatabase)
 			res, err = executor.QueryExecutor.CreateDatabase(conn, stmt)

@@ -29,6 +29,21 @@ func NewBaseQueryExecutor() *BaseQueryExecutor {
 	return &BaseQueryExecutor{}
 }
 
+// Begin handles a BEGIN query.
+func (executor *BaseQueryExecutor) Begin(Conn, query.Begin) (protocol.Responses, error) {
+	return nil, errors.NewErrNotImplemented("BEGIN")
+}
+
+// Commit handles a COMMIT query.
+func (executor *BaseQueryExecutor) Commit(Conn, query.Commit) (protocol.Responses, error) {
+	return nil, errors.NewErrNotImplemented("COMMIT")
+}
+
+// Rollback handles a ROLLBACK query.
+func (executor *BaseQueryExecutor) Rollback(Conn, query.Rollback) (protocol.Responses, error) {
+	return nil, errors.NewErrNotImplemented("ROLLBACK")
+}
+
 // CreateDatabase handles a CREATE DATABASE query.
 func (executor *BaseQueryExecutor) CreateDatabase(Conn, query.CreateDatabase) (protocol.Responses, error) {
 	return nil, errors.NewErrNotImplemented("CREATE DATABASE")
