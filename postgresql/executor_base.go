@@ -39,7 +39,7 @@ func NewBaseExecutor() *BaseExecutor {
 		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
 	}
 	executor.QueryExtraExecutor = newDMOExtraExecutorWith(executor)
-	executor.ProtocolQueryHandler = newProtocolQueryExecutorWith(executor)
+	executor.ProtocolQueryHandler = newProtocolQueryHandlerWith(executor)
 	return executor
 }
 
