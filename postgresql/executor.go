@@ -107,8 +107,8 @@ type ErrorHandler interface {
 	ParserError(Conn, string, error) (protocol.Responses, error)
 }
 
-// UserExecutor represents a user executor.
-type UserExecutor interface {
+// Executor represents a user query executor.
+type Executor interface {
 	QueryExecutor
 	QueryExtraExecutor
 	SystemQueryExecutor
@@ -116,8 +116,8 @@ type UserExecutor interface {
 	ErrorHandler
 }
 
-// UserExecutorHandler represents a frontend message executor handler.
-type UserExecutorHandler interface {
+// ExecutorHandler represents a user query executor handler.
+type ExecutorHandler interface {
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
 	// SetQueryExecutor sets a user query executor.

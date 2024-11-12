@@ -23,7 +23,7 @@ type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
-	UserExecutorHandler
+	ExecutorHandler
 	SetTracer(tracer.Tracer)
 	Start() error
 	Stop() error
