@@ -20,28 +20,28 @@ import (
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
-// BaseSugarExecutor represents a base sugar query executor.
-type BaseSugarExecutor struct {
-	*BaseExecutor
+// dmoExtraExecutor represents a DMOExtraExecutor instance.
+type dmoExtraExecutor struct {
+	DMOExecutor
 }
 
-// NewBaseSugarExecutor returns a base sugar query executor.
-func NewBaseSugarExecutorWith(executor *BaseExecutor) *BaseSugarExecutor {
-	return &BaseSugarExecutor{
-		BaseExecutor: executor,
+// newDMOExtraExecutorWith returns a new DMOExtraExecutor instance.
+func newDMOExtraExecutorWith(executor DMOExecutor) *dmoExtraExecutor {
+	return &dmoExtraExecutor{
+		DMOExecutor: executor,
 	}
 }
 
 // Vacuum handles a VACUUM query.
-func (executor *BaseSugarExecutor) Vacuum(conn Conn, stmt query.Vacuum) (protocol.Responses, error) {
+func (executor *dmoExtraExecutor) Vacuum(conn Conn, stmt query.Vacuum) (protocol.Responses, error) {
 	return protocol.NewCommandCompleteResponsesWith(("VACUUM"))
 }
 
 // Truncate handles a TRUNCATE query.
-func (executor *BaseSugarExecutor) Truncate(conn Conn, stmt query.Truncate) (protocol.Responses, error) {
+func (executor *dmoExtraExecutor) Truncate(conn Conn, stmt query.Truncate) (protocol.Responses, error) {
 	for _, table := range stmt.Tables() {
 		stmt := sql.NewDeleteWith(table, sql.NewCondition())
-		_, err := executor.QueryExecutor.Delete(conn, stmt)
+		_, err := executor.DMOExecutor.Delete(conn, stmt)
 		if err != nil {
 			return nil, err
 		}
