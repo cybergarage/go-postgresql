@@ -36,10 +36,11 @@ type server struct {
 // NewServer returns a new server instance.
 func NewServer() Server {
 	server := &server{
-		Config:      NewDefaultConfig(),
-		ConnManager: pgnet.NewConnManager(),
-		Tracer:      tracer.NullTracer,
-		tcpListener: nil,
+		Config:         NewDefaultConfig(),
+		ConnManager:    pgnet.NewConnManager(),
+		Tracer:         tracer.NullTracer,
+		tcpListener:    nil,
+		MessageHandler: nil,
 	}
 	return server
 }
