@@ -58,8 +58,8 @@ type DMOExecutor interface {
 	Delete(Conn, query.Delete) (protocol.Responses, error)
 }
 
-// DMOExtraExecutor defines a executor interface for DMO (Data Manipulation Operations).
-type DMOExtraExecutor interface {
+// DMOExExecutor defines a executor interface for extended DMO (Data Manipulation Operations).
+type DMOExExecutor interface {
 	// Vacuum handles a VACUUM query.
 	Vacuum(Conn, query.Vacuum) (protocol.Responses, error)
 	// Truncate handles a TRUNCATE query.
@@ -76,8 +76,8 @@ type TCOExecutor interface {
 	Rollback(Conn, query.Rollback) (protocol.Responses, error)
 }
 
-// BulkExecutor defines a executor interface for bulk operations.
-type BulkExecutor interface {
+// BulkQueryExecutor defines a executor interface for bulk operations.
+type BulkQueryExecutor interface {
 	// Copy handles a COPY query.
 	Copy(Conn, query.Copy) (protocol.Responses, error)
 	// CopyData handles a COPY data protocol.
@@ -97,21 +97,12 @@ type SystemQueryExecutor interface {
 	SystemSelect(Conn, query.Select) (protocol.Responses, error)
 }
 
-// QueryExtraExecutor represents a user query message executor.
-type QueryExtraExecutor interface {
-	DMOExtraExecutor
+// ExQueryExecutor represents a user extended query message executor.
+type ExQueryExecutor interface {
+	DMOExExecutor
 }
 
 // ErrorHandler represents a user error handler.
 type ErrorHandler interface {
 	ParserError(Conn, string, error) (protocol.Responses, error)
-}
-
-// Executor represents a user query executor.
-type Executor interface {
-	QueryExecutor
-	QueryExtraExecutor
-	SystemQueryExecutor
-	BulkExecutor
-	ErrorHandler
 }

@@ -22,7 +22,7 @@ import (
 type Store interface {
 	postgresql.QueryExecutor
 	postgresql.TCOExecutor
-	postgresql.BulkExecutor
+	postgresql.BulkQueryExecutor
 	postgresql.ErrorHandler
 	postgresql.SystemQueryExecutor
 }

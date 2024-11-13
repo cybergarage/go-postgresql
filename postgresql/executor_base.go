@@ -19,8 +19,8 @@ type BaseExecutor struct {
 	ProtocolStartupHander
 	ProtocolQueryHandler
 	QueryExecutor
-	QueryExtraExecutor
-	BulkExecutor
+	ExQueryExecutor
+	BulkQueryExecutor
 	ErrorHandler
 	SystemQueryExecutor
 }
@@ -31,12 +31,12 @@ func NewBaseExecutor() *BaseExecutor {
 		ProtocolStartupHander: newProtocolStartupHandler(),
 		ProtocolQueryHandler:  nil,
 		QueryExecutor:         NewBaseQueryExecutor(),
-		QueryExtraExecutor:    nil,
-		BulkExecutor:          NewBaseBulkExecutor(),
+		ExQueryExecutor:       nil,
+		BulkQueryExecutor:     NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
 	}
-	executor.QueryExtraExecutor = newDMOExtraExecutorWith(executor)
+	executor.ExQueryExecutor = newDMOExtraExecutorWith(executor)
 	executor.ProtocolQueryHandler = newProtocolQueryHandlerWith(executor)
 	return executor
 }
@@ -46,19 +46,14 @@ func (executor *BaseExecutor) SetQueryExecutor(qe QueryExecutor) {
 	executor.QueryExecutor = qe
 }
 
-// SetQueryExtraExecutor sets a user query extra executor.
-func (executor *BaseExecutor) SetQueryExtraExecutor(qe QueryExtraExecutor) {
-	executor.QueryExtraExecutor = qe
+// SetExQueryExecutor sets a user query extra executor.
+func (executor *BaseExecutor) SetExQueryExecutor(qe ExQueryExecutor) {
+	executor.ExQueryExecutor = qe
 }
 
-// SetExtendedQueryExecutor sets a user extended query executor.
-func (executor *BaseExecutor) SetExtendedQueryExecutor(eqe ProtocolQueryHandler) {
-	executor.ProtocolQueryHandler = eqe
-}
-
-// SetBulkExecutor sets a user bulk executor.
-func (executor *BaseExecutor) SetBulkExecutor(be BulkExecutor) {
-	executor.BulkExecutor = be
+// SetBulkQueryExecutor sets a user bulk executor.
+func (executor *BaseExecutor) SetBulkQueryExecutor(be BulkQueryExecutor) {
+	executor.BulkQueryExecutor = be
 }
 
 // SetErrorHandler sets a user error handler.

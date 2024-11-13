@@ -244,7 +244,7 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 	}
 
 	handleCopyQuery := func(conn Conn, stmt query.Copy) (protocol.Responses, error) {
-		res, err := executor.BulkExecutor.Copy(conn, stmt)
+		res, err := executor.BulkQueryExecutor.Copy(conn, stmt)
 		if err != nil || res.HasErrorResponse() {
 			return res, err
 		}
@@ -258,7 +258,7 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 			return nil, err
 		}
 
-		return executor.BulkExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader()))
+		return executor.BulkQueryExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader()))
 	}
 
 	for _, stmt := range stmts {
@@ -317,10 +317,10 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 			res, err = executor.QueryExecutor.Delete(conn, stmt)
 		case sql.TruncateStatement:
 			stmt := stmt.Object().(query.Truncate)
-			res, err = executor.QueryExtraExecutor.Truncate(conn, stmt)
+			res, err = executor.ExQueryExecutor.Truncate(conn, stmt)
 		case sql.VacuumStatement:
 			stmt := stmt.Object().(query.Vacuum)
-			res, err = executor.QueryExtraExecutor.Vacuum(conn, stmt)
+			res, err = executor.ExQueryExecutor.Vacuum(conn, stmt)
 		case sql.CopyStatement:
 			stmt := stmt.Object().(query.Copy)
 			res, err = handleCopyQuery(conn, stmt)

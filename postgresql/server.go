@@ -15,19 +15,36 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
-// ExecutorManager represents an executor manager.
-type ExecutorManager interface {
+// SQLExecutor represents a frontend message executor.
+type SQLExecutor interface {
+	sql.Executor
+	// SystemSelect handles a SELECT query for system tables.
+	SystemSelect(sql.Conn, sql.Select) (sql.ResultSet, error)
+}
+
+// MessageExecutor represents a message executor.
+type MessageExecutor interface {
+	QueryExecutor
+	ExQueryExecutor
+	SystemQueryExecutor
+	BulkQueryExecutor
+	ErrorHandler
+}
+
+// MessageExecutorManager represents a message executor manager.
+type MessageExecutorManager interface {
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
-	// SetQueryExtraExecutor sets a user query executor.
-	SetQueryExtraExecutor(QueryExtraExecutor)
+	// SetExQueryExecutor sets a user query executor.
+	SetExQueryExecutor(ExQueryExecutor)
 	// SetSystemQueryExecutor sets a system query executor.
 	SetSystemQueryExecutor(SystemQueryExecutor)
-	// SetBulkExecutor sets a user bulk executor.
-	SetBulkExecutor(BulkExecutor)
+	// SetBulkQueryExecutor sets a user bulk executor.
+	SetBulkQueryExecutor(BulkQueryExecutor)
 	// SetErrorHandler sets a user error handler.
 	SetErrorHandler(ErrorHandler)
 }
@@ -37,7 +54,7 @@ type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
-	ExecutorManager
+	MessageExecutorManager
 	SetTracer(tracer.Tracer)
 	Start() error
 	Stop() error

@@ -32,7 +32,7 @@ func NewServerWithStore(store Store) *Server {
 		Store:  store,
 	}
 	server.SetQueryExecutor(store)
-	server.SetBulkExecutor(store)
+	server.SetBulkQueryExecutor(store)
 	server.SetErrorHandler(store)
 	server.SetSystemQueryExecutor(store)
 	return server
