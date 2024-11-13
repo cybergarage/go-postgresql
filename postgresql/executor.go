@@ -91,10 +91,15 @@ type QueryExecutor interface {
 	DMOExecutor
 }
 
+// SystemDMOExecutor represents a system DMO message executor.
+type SystemDMOExecutor interface {
+	// Select handles a SELECT query.
+	SystemSelect(Conn, query.Select) (protocol.Responses, error)
+}
+
 // SystemQueryExecutor represents a system query message executor.
 type SystemQueryExecutor interface {
-	// SystemSelect handles a SELECT query for system tables.
-	SystemSelect(Conn, query.Select) (protocol.Responses, error)
+	SystemDMOExecutor
 }
 
 // ExQueryExecutor represents a user extended query message executor.
