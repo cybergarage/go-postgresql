@@ -115,17 +115,3 @@ type Executor interface {
 	BulkExecutor
 	ErrorHandler
 }
-
-// ExecutorHandler represents a user query executor handler.
-type ExecutorHandler interface {
-	// SetQueryExecutor sets a user query executor.
-	SetQueryExecutor(QueryExecutor)
-	// SetQueryExecutor sets a user query executor.
-	SetQueryExtraExecutor(QueryExtraExecutor)
-	// SetSystemQueryExecutor sets a system query executor.
-	SetSystemQueryExecutor(SystemQueryExecutor)
-	// SetBulkExecutor sets a user bulk executor.
-	SetBulkExecutor(BulkExecutor)
-	// SetErrorHandler sets a user error handler.
-	SetErrorHandler(ErrorHandler)
-}

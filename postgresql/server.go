@@ -18,12 +18,26 @@ import (
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
+// ExecutorManager represents an executor manager.
+type ExecutorManager interface {
+	// SetQueryExecutor sets a user query executor.
+	SetQueryExecutor(QueryExecutor)
+	// SetQueryExtraExecutor sets a user query executor.
+	SetQueryExtraExecutor(QueryExtraExecutor)
+	// SetSystemQueryExecutor sets a system query executor.
+	SetSystemQueryExecutor(SystemQueryExecutor)
+	// SetBulkExecutor sets a user bulk executor.
+	SetBulkExecutor(BulkExecutor)
+	// SetErrorHandler sets a user error handler.
+	SetErrorHandler(ErrorHandler)
+}
+
 // Server represents a PostgreSQL protocol server.
 type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
-	ExecutorHandler
+	ExecutorManager
 	SetTracer(tracer.Tracer)
 	Start() error
 	Stop() error
