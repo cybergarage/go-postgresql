@@ -18,12 +18,7 @@ import (
 	"github.com/cybergarage/go-sqlparser/sql"
 )
 
-// QueryExecutor represents a user query message executor.
-type QueryExecutor interface {
-	sql.QueryExecutor
-}
-
-// Executor represents a frontend message executor.
-type Executor interface {
+// SQLExecutor represents a SQL executor.
+type SQLExecutor interface {
 	sql.Executor
 }

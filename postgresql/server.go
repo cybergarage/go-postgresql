@@ -15,16 +15,12 @@
 package postgresql
 
 import (
-	"github.com/cybergarage/go-sqlparser/sql"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
-// SQLExecutor represents a frontend message executor.
-type SQLExecutor interface {
-	sql.Executor
-	// SystemSelect handles a SELECT query for system tables.
-	SystemSelect(sql.Conn, sql.Select) (sql.ResultSet, error)
-}
+// SQLExecutor represents a SQL executor.
+type SQLExecutor = query.SQLExecutor
 
 // MessageExecutor represents a message executor.
 type MessageExecutor interface {
