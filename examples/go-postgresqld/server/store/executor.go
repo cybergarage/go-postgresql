@@ -223,7 +223,8 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 
 	// Responses
 
-	schema := sqlResultSet.NewSchemaFrom(db, tbl.Schema)
+	schema := tbl.Schema
+	rsSchema := sqlResultSet.NewSchemaFrom(db, schema)
 	res := protocol.NewResponses()
 
 	// Row description response
@@ -235,7 +236,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 
 	rowDesc := protocol.NewRowDescription()
 	for n, selector := range selectors {
-		field, err := query.NewRowFieldFrom(schema, selector, n)
+		field, err := query.NewRowFieldFrom(rsSchema, selector, n)
 		if err != nil {
 			return nil, err
 		}
@@ -253,7 +254,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 			if 0 < offset && rowNo < offset {
 				continue
 			}
-			dataRow, err := query.NewDataRowForSelectors(schema, rowDesc, selectors, row)
+			dataRow, err := query.NewDataRowForSelectors(rsSchema, rowDesc, selectors, row)
 			if err != nil {
 				return nil, err
 			}
