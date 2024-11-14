@@ -53,7 +53,7 @@ func NewCopyInResponsesFrom(q query.Copy, schema sql.Schema) (protocol.Responses
 }
 
 // NewCopyQueryFrom returns a new copy query from the specified query.
-func NewCopyQueryFrom(schema query.Schema, copyColumns sql.ColumnList, copyData *protocol.CopyData) (query.Insert, error) {
+func NewCopyQueryFrom(schema query.Schema, copyColumns sql.Columns, copyData *protocol.CopyData) (query.Insert, error) {
 	// COPY FROM will raise an error if any line of the input file contains
 	// more or fewer columns than are expected.
 	copyColumData := copyData.Data
@@ -61,7 +61,7 @@ func NewCopyQueryFrom(schema query.Schema, copyColumns sql.ColumnList, copyData 
 		return nil, errors.NewErrColumnsNotEqual(len(copyColumData), len(copyColumns))
 	}
 
-	columns := make(sql.ColumnList, len(copyColumns))
+	columns := make(sql.Columns, len(copyColumns))
 	for idx, copyColumn := range copyColumns {
 		copyColumnData := copyColumData[idx]
 		if len(copyColumnData) == 0 {
@@ -77,7 +77,7 @@ func NewCopyQueryFrom(schema query.Schema, copyColumns sql.ColumnList, copyData 
 
 // NewCopyCompleteResponsesFrom returns a new copy complete response from the specified query.
 func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, schema sql.Schema, queryExecutor QueryExecutor) (protocol.Responses, error) {
-	copyData := func(schema query.Schema, colums sql.ColumnList, copyData *protocol.CopyData) error {
+	copyData := func(schema query.Schema, colums sql.Columns, copyData *protocol.CopyData) error {
 		q, err := NewCopyQueryFrom(schema, colums, copyData)
 		if err != nil {
 			return err

@@ -49,12 +49,12 @@ type (
 	Truncate       = query.Truncate
 	Schema         = query.Schema
 	Column         = query.Column
-	ColumnList     = query.ColumnList
+	ColumnList     = query.Columns
 	Table          = query.Table
 	TableList      = query.TableList
 	Condition      = query.Condition
 	Selector       = query.Selector
-	SelectorList   = query.SelectorList
+	SelectorList   = query.Selectors
 	Expr           = query.Expr
 	CmpExpr        = query.CmpExpr
 	AndExpr        = query.AndExpr
