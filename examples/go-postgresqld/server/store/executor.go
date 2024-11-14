@@ -26,7 +26,8 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
-	sql "github.com/cybergarage/go-sqlparser/sql/query"
+	sqlQuery "github.com/cybergarage/go-sqlparser/sql/query"
+	sqlResultSet "github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
 )
 
 // Begin handles a BEGIN query.
@@ -113,7 +114,7 @@ func (store *MemStore) AlterTable(conn postgresql.Conn, q query.AlterTable) (pro
 	}
 
 	if index, ok := q.AddIndex(); ok {
-		indexColums := sql.NewColumns()
+		indexColums := sqlQuery.NewColumns()
 		for _, indexColumn := range index.Columns() {
 			schemaColum, err := schema.LookupColumn(indexColumn.Name())
 			if err != nil {
@@ -121,7 +122,7 @@ func (store *MemStore) AlterTable(conn postgresql.Conn, q query.AlterTable) (pro
 			}
 			indexColums = append(indexColums, schemaColum)
 		}
-		err := schema.AddIndex(sql.NewIndexWith(index.Name(), index.Type(), indexColums))
+		err := schema.AddIndex(sqlQuery.NewIndexWith(index.Name(), index.Type(), indexColums))
 		if err != nil {
 			return nil, err
 		}
@@ -202,13 +203,15 @@ func (store *MemStore) Insert(conn postgresql.Conn, q query.Insert) (protocol.Re
 
 // Select handles a SELECT query.
 func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Responses, error) {
+	// Select
+
 	from := q.From()
 	if len(from) != 1 {
 		return nil, errors.NewErrMultipleTableNotSupported(from.String())
 	}
 	tblName := from[0].TableName()
 
-	_, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), tblName)
+	db, tbl, err := store.LookupDatabaseTable(conn, conn.Database(), tblName)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +223,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 
 	// Responses
 
-	schema := tbl.Schema
+	schema := sqlResultSet.NewSchemaFrom(db, tbl.Schema)
 	res := protocol.NewResponses()
 
 	// Row description response
