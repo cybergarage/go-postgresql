@@ -19,6 +19,7 @@ import (
 
 	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -26,7 +27,7 @@ import (
 type Row = map[string]any
 
 // NewDataRowForSelectors returns a new DataRow from the specified row.
-func NewDataRowForSelectors(schema query.Schema, rowDesc *protocol.RowDescription, selectors query.SelectorList, row Row) (*protocol.DataRow, error) {
+func NewDataRowForSelectors(schema sql.ResultSetSchema, rowDesc *protocol.RowDescription, selectors query.SelectorList, row Row) (*protocol.DataRow, error) {
 	dataRow := protocol.NewDataRow()
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
