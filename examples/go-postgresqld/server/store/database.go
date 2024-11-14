@@ -39,6 +39,11 @@ func (db *Database) Name() string {
 	return db.name
 }
 
+// DatabaseName returns the database name.
+func (db *Database) DatabaseName() string {
+	return db.name
+}
+
 // AddTable adds a specified table into the database.
 func (db *Database) AddTable(table *Table) error {
 	tableName := table.Name
