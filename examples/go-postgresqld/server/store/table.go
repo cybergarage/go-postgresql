@@ -43,7 +43,7 @@ func (tbl *Table) Select(cond query.Condition) ([]Row, error) {
 	tbl.Lock()
 	defer tbl.Unlock()
 
-	if cond.IsEmpty() {
+	if !cond.HasConditions() {
 		return tbl.Rows, nil
 	}
 
