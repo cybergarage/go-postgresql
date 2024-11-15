@@ -41,7 +41,7 @@ func NewRowWith(cols []query.Column) Row {
 
 // IsMatched returns true if the row is matched with the specified condition.
 func (row Row) IsMatched(cond query.Condition) bool {
-	if cond.IsEmpty() {
+	if !cond.HasConditions() {
 		return true
 	}
 
