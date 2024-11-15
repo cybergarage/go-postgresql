@@ -19,15 +19,15 @@ import (
 
 	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
-	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/query"
+	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
 )
 
 // Row represents a row of a result set.
 type Row = map[string]any
 
 // NewDataRowForSelectors returns a new DataRow from the specified row.
-func NewDataRowForSelectors(schema sql.ResultSetSchema, rowDesc *protocol.RowDescription, selectors query.Selectors, row Row) (*protocol.DataRow, error) {
+func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, row Row) (*protocol.DataRow, error) {
 	dataRow := protocol.NewDataRow()
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
@@ -64,7 +64,7 @@ func NewDataRowForSelectors(schema sql.ResultSetSchema, rowDesc *protocol.RowDes
 }
 
 // NewDataRowsForAggregateFunction returns a new DataRow list from the specified rows.
-func NewDataRowsForAggregateFunction(schema query.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
+func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
 	// Setups aggregate functions
 	aggrFns := []query.Function{}
 	aggrExecutors := []*query.AggregateFunction{}

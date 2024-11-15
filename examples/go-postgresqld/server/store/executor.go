@@ -270,7 +270,7 @@ func (store *MemStore) Select(conn postgresql.Conn, q query.Select) (protocol.Re
 		for _, row := range rows {
 			queryRows = append(queryRows, row)
 		}
-		dataRows, err := query.NewDataRowsForAggregateFunction(schema, rowDesc, selectors, queryRows, groupBy)
+		dataRows, err := query.NewDataRowsForAggregateFunction(rsSchema, rowDesc, selectors, queryRows, groupBy)
 		if err != nil {
 			return nil, err
 		}
