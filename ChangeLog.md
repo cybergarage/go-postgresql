@@ -14,6 +14,9 @@
 - Update protocol server
 - Update go-sqlparser package
 
+## v1.5.9 (2024-11-16)
+- Update go-sqlparser package
+
 ## v1.5.8 (2024-11-11)
 - Update go-sqlparser package
 
