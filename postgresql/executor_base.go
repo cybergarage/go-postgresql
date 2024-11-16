@@ -23,7 +23,6 @@ type BaseExecutor struct {
 	BulkQueryExecutor
 	ErrorHandler
 	SystemQueryExecutor
-	sqlExecutor SQLExecutor
 }
 
 // NewBaseExecutor returns a base frontend message executor.
@@ -36,16 +35,16 @@ func NewBaseExecutor() *BaseExecutor {
 		BulkQueryExecutor:     NewBaseBulkExecutor(),
 		ErrorHandler:          NewBaseErrorHandler(),
 		SystemQueryExecutor:   NewBaseSystemQueryExecutor(),
-		sqlExecutor:           nil,
 	}
-	executor.ExQueryExecutor = newDMOExtraExecutorWith(executor)
+	executor.ExQueryExecutor = newExtraQueryExecutorWith(executor)
 	executor.ProtocolQueryHandler = newProtocolQueryHandlerWith(executor)
 	return executor
 }
 
 // SetSQLExecutor sets a SQL executor.
 func (executor *BaseExecutor) SetSQLExecutor(se SQLExecutor) {
-	executor.sqlExecutor = se
+	executor.QueryExecutor.SetSQLExecutor(se)
+	executor.SystemQueryExecutor.SetSQLExecutor(se)
 }
 
 // SetQueryExecutor sets a user query executor.

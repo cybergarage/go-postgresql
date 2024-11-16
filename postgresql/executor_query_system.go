@@ -22,11 +22,19 @@ import (
 
 // BaseSystemQueryExecutor represents a base query message executor.
 type BaseSystemQueryExecutor struct {
+	sqlExecutor SQLExecutor
 }
 
 // NewBaseSystemQueryExecutor returns a base frontend message executor.
 func NewBaseSystemQueryExecutor() *BaseSystemQueryExecutor {
-	return &BaseSystemQueryExecutor{}
+	return &BaseSystemQueryExecutor{
+		sqlExecutor: nil,
+	}
+}
+
+// SetSQLExecutor sets a SQL executor.
+func (executor *BaseSystemQueryExecutor) SetSQLExecutor(se SQLExecutor) {
+	executor.sqlExecutor = se
 }
 
 // SystemSelect handles a SELECT query for system tables.

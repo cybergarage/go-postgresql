@@ -84,30 +84,8 @@ type BulkQueryExecutor interface {
 	CopyData(Conn, query.Copy, *CopyStream) (protocol.Responses, error)
 }
 
-// QueryExecutor represents a user query message executor.
-type QueryExecutor interface {
-	TCOExecutor
-	DDOExecutor
-	DMOExecutor
-}
-
 // SystemDMOExecutor represents a system DMO message executor.
 type SystemDMOExecutor interface {
 	// Select handles a SELECT query.
 	SystemSelect(Conn, query.Select) (protocol.Responses, error)
-}
-
-// SystemQueryExecutor represents a system query message executor.
-type SystemQueryExecutor interface {
-	SystemDMOExecutor
-}
-
-// ExQueryExecutor represents a user extended query message executor.
-type ExQueryExecutor interface {
-	DMOExExecutor
-}
-
-// ErrorHandler represents a user error handler.
-type ErrorHandler interface {
-	ParserError(Conn, string, error) (protocol.Responses, error)
 }

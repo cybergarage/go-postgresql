@@ -25,8 +25,8 @@ type dmoExtraExecutor struct {
 	DMOExecutor
 }
 
-// newDMOExtraExecutorWith returns a new DMOExtraExecutor instance.
-func newDMOExtraExecutorWith(executor DMOExecutor) *dmoExtraExecutor {
+// newExtraQueryExecutorWith returns a new DMOExtraExecutor instance.
+func newExtraQueryExecutorWith(executor DMOExecutor) *dmoExtraExecutor {
 	return &dmoExtraExecutor{
 		DMOExecutor: executor,
 	}

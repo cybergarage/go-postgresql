@@ -15,12 +15,39 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
 // SQLExecutor represents a SQL executor.
 type SQLExecutor = query.SQLExecutor
+
+// QueryExecutor represents a user query message executor.
+type QueryExecutor interface {
+	TCOExecutor
+	DDOExecutor
+	DMOExecutor
+	// SetSQLExecutor sets a SQL executor.
+	SetSQLExecutor(SQLExecutor)
+}
+
+// SystemQueryExecutor represents a system query message executor.
+type SystemQueryExecutor interface {
+	SystemDMOExecutor
+	// SetSQLExecutor sets a SQL executor.
+	SetSQLExecutor(SQLExecutor)
+}
+
+// ExQueryExecutor represents a user extended query message executor.
+type ExQueryExecutor interface {
+	DMOExExecutor
+}
+
+// ErrorHandler represents a user error handler.
+type ErrorHandler interface {
+	ParserError(Conn, string, error) (protocol.Responses, error)
+}
 
 // ProtocolExecutor represents a protocol message executor.
 type ProtocolExecutor interface {
