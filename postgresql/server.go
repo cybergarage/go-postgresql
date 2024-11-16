@@ -22,8 +22,8 @@ import (
 // SQLExecutor represents a SQL executor.
 type SQLExecutor = query.SQLExecutor
 
-// ProtocolMessageExecutor represents a protocol message executor.
-type ProtocolMessageExecutor interface {
+// ProtocolExecutor represents a protocol message executor.
+type ProtocolExecutor interface {
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
 	// SetExQueryExecutor sets a user query executor.
@@ -41,9 +41,15 @@ type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
-	ProtocolMessageExecutor
+	ProtocolExecutor
+	// SetSQLExecutor sets a SQL executor.
+	SetSQLExecutor(SQLExecutor)
+	// SetMessageHandler sets a message handler.
 	SetTracer(tracer.Tracer)
+	// Start starts the server.
 	Start() error
+	// Stop stops the server.
 	Stop() error
+	// Restart restarts the server.
 	Restart() error
 }
