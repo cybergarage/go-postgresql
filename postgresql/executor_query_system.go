@@ -38,10 +38,20 @@ func (executor *BaseSystemQueryExecutor) SetSQLExecutor(se SQLExecutor) {
 }
 
 // SystemSelect handles a SELECT query for system tables.
-func (executor *BaseSystemQueryExecutor) SystemSelect(Conn, query.Select) (protocol.Responses, error) {
+func (executor *BaseSystemQueryExecutor) SystemSelect(conn Conn, stmt query.Select) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 8.0: System Catalogs
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
 	// https://www.postgresql.org/docs/current/client-interfaces.html
-	return nil, errors.NewErrNotImplemented("SELECT")
+
+	if executor.sqlExecutor != nil {
+		return nil, errors.NewErrNotImplemented("SELECT")
+	}
+
+	rs, err := executor.sqlExecutor.SystemSelect(conn, stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	return query.NewResponseFromResultSet(stmt, rs)
 }
