@@ -69,7 +69,7 @@ func (server *server) Start() error {
 	go server.serve()
 
 	addr := net.JoinHostPort(server.Address(), strconv.Itoa(server.Port()))
-	log.Infof("%s/%s (%s) started", server.PackageName(), server.ProductVersion(), addr)
+	log.Infof("%s/%s (%s) started", server.ProductName(), server.ProductVersion(), addr)
 
 	return nil
 }
@@ -86,7 +86,7 @@ func (server *server) Stop() error {
 	}
 
 	addr := net.JoinHostPort(server.Address(), strconv.Itoa(server.Port()))
-	log.Infof("%s/%s (%s) terminated", server.PackageName(), server.ProductVersion(), addr)
+	log.Infof("%s/%s (%s) terminated", server.ProductName(), server.ProductVersion(), addr)
 
 	return nil
 }
@@ -140,7 +140,7 @@ func (server *server) serve() error {
 func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintidx
 	defer netConn.Close()
 
-	log.Debugf("%s/%s (%s) accepted", server.PackageName(), server.ProductVersion(), netConn.RemoteAddr().String())
+	log.Debugf("%s/%s (%s) accepted", server.ProductName(), server.ProductVersion(), netConn.RemoteAddr().String())
 
 	handleStartupMessage := func(conn Conn, startupMsg *Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
