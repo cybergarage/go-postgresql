@@ -51,6 +51,23 @@ type ErrorHandler interface {
 
 // ProtocolExecutor represents a protocol message executor.
 type ProtocolExecutor interface {
+	QueryExecutor
+	QueryExecutor
+	ExQueryExecutor
+	SystemQueryExecutor
+	ErrorHandler
+}
+
+// Server represents a PostgreSQL protocol server.
+type Server interface {
+	tracer.Tracer
+	Config
+	AuthManager
+	ProtocolExecutor
+	// SetTracer sets a tracing tracer.
+	SetTracer(tracer.Tracer)
+	// SetSQLExecutor sets a SQL executor.
+	SetSQLExecutor(SQLExecutor)
 	// SetQueryExecutor sets a user query executor.
 	SetQueryExecutor(QueryExecutor)
 	// SetExQueryExecutor sets a user query executor.
@@ -61,22 +78,6 @@ type ProtocolExecutor interface {
 	SetBulkQueryExecutor(BulkQueryExecutor)
 	// SetErrorHandler sets a user error handler.
 	SetErrorHandler(ErrorHandler)
-}
-
-// Server represents a PostgreSQL protocol server.
-type Server interface {
-	tracer.Tracer
-	Config
-	AuthManager
-	QueryExecutor
-	ExQueryExecutor
-	SystemQueryExecutor
-	ErrorHandler
-	ProtocolExecutor
-	// SetSQLExecutor sets a SQL executor.
-	SetSQLExecutor(SQLExecutor)
-	// SetMessageHandler sets a message handler.
-	SetTracer(tracer.Tracer)
 	// Start starts the server.
 	Start() error
 	// Stop stops the server.
