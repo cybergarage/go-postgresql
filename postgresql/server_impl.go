@@ -32,6 +32,8 @@ func NewServer() Server {
 		Server:       protocol.NewServer(),
 		BaseExecutor: NewBaseExecutor(),
 	}
+	server.Server.SetProductName(PackageName)
+	server.Server.SetProductVersion(Version)
 	server.Server.SetMessageHandler(server)
 	return server
 }
