@@ -32,16 +32,16 @@ type QueryExecutor interface {
 	SetSQLExecutor(SQLExecutor)
 }
 
+// ExQueryExecutor represents a user extended query message executor.
+type ExQueryExecutor interface {
+	DMOExExecutor
+}
+
 // SystemQueryExecutor represents a system query message executor.
 type SystemQueryExecutor interface {
 	SystemDMOExecutor
 	// SetSQLExecutor sets a SQL executor.
 	SetSQLExecutor(SQLExecutor)
-}
-
-// ExQueryExecutor represents a user extended query message executor.
-type ExQueryExecutor interface {
-	DMOExExecutor
 }
 
 // ErrorHandler represents a user error handler.
@@ -68,6 +68,10 @@ type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
+	QueryExecutor
+	ExQueryExecutor
+	SystemQueryExecutor
+	ErrorHandler
 	ProtocolExecutor
 	// SetSQLExecutor sets a SQL executor.
 	SetSQLExecutor(SQLExecutor)
