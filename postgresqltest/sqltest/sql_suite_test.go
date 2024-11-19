@@ -22,8 +22,8 @@ import (
 	"github.com/cybergarage/go-sqltest/sqltest"
 )
 
-// TestSQLTest tests the SQL test.
-func TestSQLTest(t *testing.T) {
+// TestSQLTestSuite runs already passed scenario test files.
+func TestSQLTestSuite(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
 	server := server.NewServer()
