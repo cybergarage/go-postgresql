@@ -35,6 +35,11 @@ func NewServer() Server {
 	server.Server.SetProductName(PackageName)
 	server.Server.SetProductVersion(Version)
 	server.Server.SetMessageHandler(server)
+	server.SetQueryExecutor(server)
+	server.SetBulkQueryExecutor(server)
+	server.SetErrorHandler(server)
+	server.SetSystemQueryExecutor(server)
+
 	return server
 }
 
