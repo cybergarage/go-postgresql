@@ -20,9 +20,6 @@ import (
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
-// SQLExecutor represents a SQL executor.
-type SQLExecutor = query.SQLExecutor
-
 // QueryExecutor represents a user query message executor.
 type QueryExecutor interface {
 	TCOExecutor
@@ -43,6 +40,23 @@ type SystemQueryExecutor interface {
 // ErrorHandler represents a user error handler.
 type ErrorHandler interface {
 	ParserError(Conn, string, error) (protocol.Responses, error)
+}
+
+// SQLExecutor represents a SQL executor.
+type SQLExecutor = query.SQLExecutor
+
+// SQLQueryExecutor represents a SQL query executor.
+type SQLQueryExecutor interface {
+	QueryExecutor
+	// SetSQLExecutor sets a SQL executor.
+	SetSQLExecutor(SQLExecutor)
+}
+
+// SQLSystemQueryExecutor represents a SQL system query executor.
+type SQLSystemQueryExecutor interface {
+	SystemQueryExecutor
+	// SetSQLExecutor sets a SQL executor.
+	SetSQLExecutor(SQLExecutor)
 }
 
 // Server represents a PostgreSQL protocol server.

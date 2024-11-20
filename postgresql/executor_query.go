@@ -20,26 +20,33 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// BaseQueryExecutor represents a base query message executor.
-type BaseQueryExecutor struct {
+// baseQueryExecutor represents a base query message executor.
+type baseQueryExecutor struct {
 	sqlExecutor SQLExecutor
 }
 
-// NewBaseQueryExecutor returns a base frontend message executor.
-func NewBaseQueryExecutor() *BaseQueryExecutor {
-	return &BaseQueryExecutor{
+// NewQueryExecutor returns a base query message executor.
+func NewueryExecutor() QueryExecutor {
+	return &baseQueryExecutor{
+		sqlExecutor: nil,
+	}
+}
+
+// NewSQLQueryExecutor returns a base frontend message executor.
+func NewSQLQueryExecutor() SQLQueryExecutor {
+	return &baseQueryExecutor{
 		sqlExecutor: nil,
 	}
 }
 
 // SetSQLExecutor sets a SQL executor.
-func (executor *BaseQueryExecutor) SetSQLExecutor(se SQLExecutor) {
+func (executor *baseQueryExecutor) SetSQLExecutor(se SQLExecutor) {
 	executor.sqlExecutor = se
 }
 
 // Begin handles a BEGIN query.
-func (executor *BaseQueryExecutor) Begin(conn Conn, stmt query.Begin) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Begin(conn Conn, stmt query.Begin) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("BEGIN")
 	}
 
@@ -51,8 +58,8 @@ func (executor *BaseQueryExecutor) Begin(conn Conn, stmt query.Begin) (protocol.
 }
 
 // Commit handles a COMMIT query.
-func (executor *BaseQueryExecutor) Commit(conn Conn, stmt query.Commit) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Commit(conn Conn, stmt query.Commit) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("COMMIT")
 	}
 
@@ -64,8 +71,8 @@ func (executor *BaseQueryExecutor) Commit(conn Conn, stmt query.Commit) (protoco
 }
 
 // Rollback handles a ROLLBACK query.
-func (executor *BaseQueryExecutor) Rollback(conn Conn, stmt query.Rollback) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Rollback(conn Conn, stmt query.Rollback) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("ROLLBACK")
 	}
 
@@ -77,8 +84,8 @@ func (executor *BaseQueryExecutor) Rollback(conn Conn, stmt query.Rollback) (pro
 }
 
 // CreateDatabase handles a CREATE DATABASE query.
-func (executor *BaseQueryExecutor) CreateDatabase(conn Conn, stmt query.CreateDatabase) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) CreateDatabase(conn Conn, stmt query.CreateDatabase) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("CREATE DATABASE")
 	}
 
@@ -90,8 +97,8 @@ func (executor *BaseQueryExecutor) CreateDatabase(conn Conn, stmt query.CreateDa
 }
 
 // CreateTable handles a CREATE TABLE query.
-func (executor *BaseQueryExecutor) CreateTable(conn Conn, stmt query.CreateTable) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) CreateTable(conn Conn, stmt query.CreateTable) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("CREATE TABLE")
 	}
 
@@ -103,8 +110,8 @@ func (executor *BaseQueryExecutor) CreateTable(conn Conn, stmt query.CreateTable
 }
 
 // AlterDatabase handles a ALTER DATABASE query.
-func (executor *BaseQueryExecutor) AlterDatabase(conn Conn, stmt query.AlterDatabase) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) AlterDatabase(conn Conn, stmt query.AlterDatabase) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("ALTER DATABASE")
 	}
 
@@ -116,8 +123,8 @@ func (executor *BaseQueryExecutor) AlterDatabase(conn Conn, stmt query.AlterData
 }
 
 // AlterTable handles a ALTER TABLE query.
-func (executor *BaseQueryExecutor) AlterTable(conn Conn, stmt query.AlterTable) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) AlterTable(conn Conn, stmt query.AlterTable) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("ALTER TABLE")
 	}
 
@@ -129,8 +136,8 @@ func (executor *BaseQueryExecutor) AlterTable(conn Conn, stmt query.AlterTable) 
 }
 
 // DropDatabase handles a DROP DATABASE query.
-func (executor *BaseQueryExecutor) DropDatabase(conn Conn, stmt query.DropDatabase) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) DropDatabase(conn Conn, stmt query.DropDatabase) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("DROP DATABASE")
 	}
 
@@ -142,8 +149,8 @@ func (executor *BaseQueryExecutor) DropDatabase(conn Conn, stmt query.DropDataba
 }
 
 // DropIndex handles a DROP INDEX query.
-func (executor *BaseQueryExecutor) DropTable(conn Conn, stmt query.DropTable) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) DropTable(conn Conn, stmt query.DropTable) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("DROP TABLE")
 	}
 
@@ -155,8 +162,8 @@ func (executor *BaseQueryExecutor) DropTable(conn Conn, stmt query.DropTable) (p
 }
 
 // Insert handles a INSERT query.
-func (executor *BaseQueryExecutor) Insert(conn Conn, stmt query.Insert) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Insert(conn Conn, stmt query.Insert) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("INSERT")
 	}
 	err := executor.sqlExecutor.Insert(conn, stmt)
@@ -167,8 +174,8 @@ func (executor *BaseQueryExecutor) Insert(conn Conn, stmt query.Insert) (protoco
 }
 
 // Select handles a SELECT query.
-func (executor *BaseQueryExecutor) Select(conn Conn, stmt query.Select) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Select(conn Conn, stmt query.Select) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("SELECT")
 	}
 
@@ -181,8 +188,8 @@ func (executor *BaseQueryExecutor) Select(conn Conn, stmt query.Select) (protoco
 }
 
 // Update handles a UPDATE query.
-func (executor *BaseQueryExecutor) Update(conn Conn, stmt query.Update) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Update(conn Conn, stmt query.Update) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("UPDATE")
 	}
 
@@ -195,8 +202,8 @@ func (executor *BaseQueryExecutor) Update(conn Conn, stmt query.Update) (protoco
 }
 
 // Delete handles a DELETE query.
-func (executor *BaseQueryExecutor) Delete(conn Conn, stmt query.Delete) (protocol.Responses, error) {
-	if executor.sqlExecutor != nil {
+func (executor *baseQueryExecutor) Delete(conn Conn, stmt query.Delete) (protocol.Responses, error) {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("DELETE")
 	}
 

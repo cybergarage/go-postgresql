@@ -40,11 +40,11 @@ func NewServer() Server {
 		protocolStartupHandler: newProtocolStartupHandler(),
 		protocolQueryHandler:   newProtocolQueryHandler(),
 		sqlExecutor:            nil,
-		queryExecutor:          NewBaseQueryExecutor(),
+		queryExecutor:          NewSQLQueryExecutor(),
 		exQueryExecutor:        nil,
 		bulkQueryExecutor:      NewBaseBulkExecutor(),
 		errorHandler:           NewBaseErrorHandler(),
-		systemQueryExecutor:    NewBaseSystemQueryExecutor(),
+		systemQueryExecutor:    NewSystemQueryExecutor(),
 	}
 	server.exQueryExecutor = newExtraQueryExecutorWith(server.queryExecutor)
 
@@ -63,6 +63,16 @@ func NewServer() Server {
 // SetSQLExecutor sets a SQL server.
 func (server *server) SetSQLExecutor(se SQLExecutor) {
 	server.sqlExecutor = se
+	if server.queryExecutor != nil {
+		if executor, ok := server.queryExecutor.(SQLQueryExecutor); ok {
+			executor.SetSQLExecutor(se)
+		}
+	}
+	if server.systemQueryExecutor != nil {
+		if executor, ok := server.systemQueryExecutor.(SQLSystemQueryExecutor); ok {
+			executor.SetSQLExecutor(se)
+		}
+	}
 }
 
 // SetQueryExecutor sets a user query server.

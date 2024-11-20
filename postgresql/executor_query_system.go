@@ -20,31 +20,38 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// BaseSystemQueryExecutor represents a base query message executor.
-type BaseSystemQueryExecutor struct {
+// baseSystemQueryExecutor represents a base system query executor.
+type baseSystemQueryExecutor struct {
 	sqlExecutor SQLExecutor
 }
 
-// NewBaseSystemQueryExecutor returns a base frontend message executor.
-func NewBaseSystemQueryExecutor() *BaseSystemQueryExecutor {
-	return &BaseSystemQueryExecutor{
+// NewSystemQueryExecutor returns a base system query executor.
+func NewSystemQueryExecutor() SystemQueryExecutor {
+	return &baseSystemQueryExecutor{
+		sqlExecutor: nil,
+	}
+}
+
+// NewSQLSystemQueryExecutor returns a base system query executor.
+func NewSQLSystemQueryExecutor() SQLSystemQueryExecutor {
+	return &baseSystemQueryExecutor{
 		sqlExecutor: nil,
 	}
 }
 
 // SetSQLExecutor sets a SQL executor.
-func (executor *BaseSystemQueryExecutor) SetSQLExecutor(se SQLExecutor) {
+func (executor *baseSystemQueryExecutor) SetSQLExecutor(se SQLExecutor) {
 	executor.sqlExecutor = se
 }
 
 // SystemSelect handles a SELECT query for system tables.
-func (executor *BaseSystemQueryExecutor) SystemSelect(conn Conn, stmt query.Select) (protocol.Responses, error) {
+func (executor *baseSystemQueryExecutor) SystemSelect(conn Conn, stmt query.Select) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 8.0: System Catalogs
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
 	// https://www.postgresql.org/docs/current/client-interfaces.html
 
-	if executor.sqlExecutor != nil {
+	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("SELECT")
 	}
 
