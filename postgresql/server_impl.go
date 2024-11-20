@@ -44,7 +44,7 @@ func NewServer() Server {
 		exQueryExecutor:        nil,
 		bulkQueryExecutor:      NewNullBulkExecutor(),
 		errorHandler:           NewNullErrorHandler(),
-		systemQueryExecutor:    NewSystemQueryExecutor(),
+		systemQueryExecutor:    NewDefaultSystemQueryExecutor(),
 	}
 	server.exQueryExecutor = newExtraQueryExecutorWith(server.queryExecutor)
 

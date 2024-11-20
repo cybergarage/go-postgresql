@@ -20,32 +20,32 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
-// baseSystemQueryExecutor represents a base system query executor.
-type baseSystemQueryExecutor struct {
+// defaultSystemQueryExecutor represents a base system query executor.
+type defaultSystemQueryExecutor struct {
 	sqlExecutor SQLExecutor
 }
 
-// NewSystemQueryExecutor returns a base system query executor.
-func NewSystemQueryExecutor() SystemQueryExecutor {
-	return &baseSystemQueryExecutor{
+// NewDefaultSystemQueryExecutor returns a base system query executor.
+func NewDefaultSystemQueryExecutor() SystemQueryExecutor {
+	return &defaultSystemQueryExecutor{
 		sqlExecutor: nil,
 	}
 }
 
 // NewSQLSystemQueryExecutor returns a base system query executor.
 func NewSQLSystemQueryExecutor() SQLSystemQueryExecutor {
-	return &baseSystemQueryExecutor{
+	return &defaultSystemQueryExecutor{
 		sqlExecutor: nil,
 	}
 }
 
 // SetSQLExecutor sets a SQL executor.
-func (executor *baseSystemQueryExecutor) SetSQLExecutor(se SQLExecutor) {
+func (executor *defaultSystemQueryExecutor) SetSQLExecutor(se SQLExecutor) {
 	executor.sqlExecutor = se
 }
 
 // SystemSelect handles a SELECT query for system tables.
-func (executor *baseSystemQueryExecutor) SystemSelect(conn Conn, stmt query.Select) (protocol.Responses, error) {
+func (executor *defaultSystemQueryExecutor) SystemSelect(conn Conn, stmt query.Select) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 8.0: System Catalogs
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
