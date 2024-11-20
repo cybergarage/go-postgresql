@@ -42,7 +42,7 @@ func NewServer() Server {
 		sqlExecutor:            nil,
 		queryExecutor:          NewSQLQueryExecutor(),
 		exQueryExecutor:        nil,
-		bulkQueryExecutor:      NewBaseBulkExecutor(),
+		bulkQueryExecutor:      NewNullBulkExecutor(),
 		errorHandler:           NewBaseErrorHandler(),
 		systemQueryExecutor:    NewSystemQueryExecutor(),
 	}
