@@ -28,8 +28,6 @@ type QueryExecutor interface {
 	TCOExecutor
 	DDOExecutor
 	DMOExecutor
-	// SetSQLExecutor sets a SQL executor.
-	SetSQLExecutor(SQLExecutor)
 }
 
 // ExQueryExecutor represents a user extended query message executor.
@@ -40,8 +38,6 @@ type ExQueryExecutor interface {
 // SystemQueryExecutor represents a system query message executor.
 type SystemQueryExecutor interface {
 	SystemDMOExecutor
-	// SetSQLExecutor sets a SQL executor.
-	SetSQLExecutor(SQLExecutor)
 }
 
 // ErrorHandler represents a user error handler.
@@ -49,21 +45,11 @@ type ErrorHandler interface {
 	ParserError(Conn, string, error) (protocol.Responses, error)
 }
 
-// ProtocolExecutor represents a protocol message executor.
-type ProtocolExecutor interface {
-	QueryExecutor
-	QueryExecutor
-	ExQueryExecutor
-	SystemQueryExecutor
-	ErrorHandler
-}
-
 // Server represents a PostgreSQL protocol server.
 type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
-	ProtocolExecutor
 	// SetTracer sets a tracing tracer.
 	SetTracer(tracer.Tracer)
 	// SetSQLExecutor sets a SQL executor.

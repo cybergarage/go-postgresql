@@ -21,14 +21,12 @@ import (
 
 type MemStore struct {
 	Databases
-	*postgresql.BaseExecutor
 }
 
 // NewMemStore returns an in-memory storeinstance.
 func NewMemStore() *MemStore {
 	store := &MemStore{
-		Databases:    NewDatabases(),
-		BaseExecutor: postgresql.NewBaseExecutor(),
+		Databases: NewDatabases(),
 	}
 	return store
 }

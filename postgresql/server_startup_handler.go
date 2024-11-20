@@ -45,7 +45,7 @@ func newProtocolStartupHandler() *protocolStartupHandler {
 }
 
 // ParameterStatuses returns the parameter statuses.
-func (executor *protocolStartupHandler) ParameterStatuses(Conn) (protocol.Responses, error) {
+func (server *server) ParameterStatuses(Conn) (protocol.Responses, error) {
 	m := map[string]string{}
 	m[protocol.ClientEncoding] = protocol.EncodingUTF8
 	m[protocol.ServerEncoding] = protocol.EncodingUTF8
@@ -53,6 +53,6 @@ func (executor *protocolStartupHandler) ParameterStatuses(Conn) (protocol.Respon
 }
 
 // BackendKeyData returns the backend key data.
-func (executor *protocolStartupHandler) BackendKeyData(Conn) (protocol.Response, error) {
-	return protocol.NewBackendKeyDataWith(executor.processID, executor.secretKey)
+func (server *server) BackendKeyData(Conn) (protocol.Response, error) {
+	return protocol.NewBackendKeyDataWith(server.processID, server.secretKey)
 }

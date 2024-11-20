@@ -28,23 +28,21 @@ import (
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
-// protocolQueryHandler represents a protocol query executor.
+// protocolQueryHandler represents a protocol query server.
 type protocolQueryHandler struct {
-	*BaseExecutor
 	*PreparedManager
 }
 
-// newProtocolQueryHandlerWith returns a new protocol query executor.
-func newProtocolQueryHandlerWith(executor *BaseExecutor) *protocolQueryHandler {
+// newProtocolQueryHandlerWith returns a new protocol query server.
+func newProtocolQueryHandler() *protocolQueryHandler {
 	return &protocolQueryHandler{
-		BaseExecutor:    executor,
 		PreparedManager: NewPreparedManager(),
 	}
 }
 
 // Prepare handles a parse protocol.
-func (executor *protocolQueryHandler) Parse(conn Conn, msg *protocol.Parse) (protocol.Responses, error) {
-	err := executor.SetPreparedStatement(conn, msg)
+func (server *server) Parse(conn Conn, msg *protocol.Parse) (protocol.Responses, error) {
+	err := server.SetPreparedStatement(conn, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +50,8 @@ func (executor *protocolQueryHandler) Parse(conn Conn, msg *protocol.Parse) (pro
 }
 
 // Bind handles a bind protocol.
-func (executor *protocolQueryHandler) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, error) {
-	prepStmt, err := executor.PreparedStatement(conn, msg.StatementName)
+func (server *server) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, error) {
+	prepStmt, err := server.PreparedStatement(conn, msg.StatementName)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +61,7 @@ func (executor *protocolQueryHandler) Bind(conn Conn, msg *protocol.Bind) (proto
 		return nil, err
 	}
 
-	err = executor.SetPreparedPortal(conn, msg.PortalName, q)
+	err = server.SetPreparedPortal(conn, msg.PortalName, q)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +70,7 @@ func (executor *protocolQueryHandler) Bind(conn Conn, msg *protocol.Bind) (proto
 }
 
 // Describe handles a describe protocol.
-func (executor *protocolQueryHandler) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
+func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
 	newSystemSelectQuery := func(stmt query.Select) (sql.Select, error) {
 		tables := stmt.From().Tables()
 		if len(tables) != 1 {
@@ -128,7 +126,7 @@ func (executor *protocolQueryHandler) Describe(conn Conn, msg *protocol.Describe
 		if err != nil {
 			return nil, err
 		}
-		res, err := executor.SystemQueryExecutor.SystemSelect(conn, query)
+		res, err := server.systemQueryExecutor.SystemSelect(conn, query)
 		if err != nil {
 			return nil, err
 		}
@@ -148,7 +146,7 @@ func (executor *protocolQueryHandler) Describe(conn Conn, msg *protocol.Describe
 
 	switch msg.Type {
 	case protocol.PreparedStatement:
-		prepStmt, err := executor.PreparedStatement(conn, msg.Name)
+		prepStmt, err := server.PreparedStatement(conn, msg.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -168,7 +166,7 @@ func (executor *protocolQueryHandler) Describe(conn Conn, msg *protocol.Describe
 			paramDesc,
 			protocol.NewNoData()), nil
 	case protocol.PreparedPortal:
-		_, err := executor.PreparedPortal(conn, msg.Name)
+		_, err := server.PreparedPortal(conn, msg.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -179,17 +177,17 @@ func (executor *protocolQueryHandler) Describe(conn Conn, msg *protocol.Describe
 }
 
 // Execute handles a execute protocol.
-func (executor *protocolQueryHandler) Execute(conn Conn, msg *protocol.Execute) (protocol.Responses, error) {
-	q, err := executor.PreparedPortal(conn, msg.PortalName)
+func (server *server) Execute(conn Conn, msg *protocol.Execute) (protocol.Responses, error) {
+	q, err := server.PreparedPortal(conn, msg.PortalName)
 	if err != nil {
 		return nil, err
 	}
 
-	return executor.Query(conn, q)
+	return server.Query(conn, q)
 }
 
 // Close handles a close protocol.
-func (executor *protocolQueryHandler) Close(conn Conn, msg *protocol.Close) (protocol.Responses, error) {
+func (server *server) Close(conn Conn, msg *protocol.Close) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// The Close message closes an existing prepared statement or portal and releases resources.
@@ -197,16 +195,16 @@ func (executor *protocolQueryHandler) Close(conn Conn, msg *protocol.Close) (pro
 
 	switch msg.Type {
 	case protocol.PreparedStatement:
-		_ = executor.RemovePreparedStatement(conn, msg.Name)
+		_ = server.RemovePreparedStatement(conn, msg.Name)
 	case protocol.PreparedPortal:
-		_ = executor.RemovePreparedPortal(conn, msg.Name)
+		_ = server.RemovePreparedPortal(conn, msg.Name)
 	}
 
 	return protocol.NewResponsesWith(protocol.NewCloseComplete()), nil
 }
 
 // Sync handles a sync protocol.
-func (executor *protocolQueryHandler) Sync(conn Conn, msg *protocol.Sync) (protocol.Responses, error) {
+func (server *server) Sync(conn Conn, msg *protocol.Sync) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// At completion of each series of extended-query messages, the frontend should issue a Sync protocol.
@@ -214,7 +212,7 @@ func (executor *protocolQueryHandler) Sync(conn Conn, msg *protocol.Sync) (proto
 }
 
 // Flush handles a flush protocol.
-func (executor *protocolQueryHandler) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses, error) {
+func (server *server) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: 55.2. Message Flow
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// The Flush message does not cause any specific output to be generated,
@@ -223,7 +221,7 @@ func (executor *protocolQueryHandler) Flush(conn Conn, msg *protocol.Flush) (pro
 }
 
 // Query handles a query protocol.
-func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
+func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
 	q := msg.Query
 	log.Debugf("%s %s", conn.RemoteAddr(), q)
 
@@ -236,7 +234,7 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 		if stderrors.Is(err, sqlparser.ErrEmptyQuery) {
 			return protocol.NewEmptyCompleteResponses()
 		}
-		res, err := executor.ErrorHandler.ParserError(conn, q, err)
+		res, err := server.errorHandler.ParserError(conn, q, err)
 		if err != nil {
 			return nil, err
 		}
@@ -244,7 +242,7 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 	}
 
 	handleCopyQuery := func(conn Conn, stmt query.Copy) (protocol.Responses, error) {
-		res, err := executor.BulkQueryExecutor.Copy(conn, stmt)
+		res, err := server.bulkQueryExecutor.Copy(conn, stmt)
 		if err != nil || res.HasErrorResponse() {
 			return res, err
 		}
@@ -258,7 +256,7 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 			return nil, err
 		}
 
-		return executor.BulkQueryExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader()))
+		return server.bulkQueryExecutor.CopyData(conn, stmt, NewCopyStreamWithReader(conn.MessageReader()))
 	}
 
 	for _, stmt := range stmts {
@@ -274,53 +272,53 @@ func (executor *protocolQueryHandler) Query(conn Conn, msg *protocol.Query) (pro
 		switch stmt.Object().StatementType() {
 		case sql.BeginStatement:
 			stmt := stmt.Object().(query.Begin)
-			res, err = executor.QueryExecutor.Begin(conn, stmt)
+			res, err = server.queryExecutor.Begin(conn, stmt)
 		case sql.CommitStatement:
 			stmt := stmt.Object().(query.Commit)
-			res, err = executor.QueryExecutor.Commit(conn, stmt)
+			res, err = server.queryExecutor.Commit(conn, stmt)
 		case sql.RollbackStatement:
 			stmt := stmt.Object().(query.Rollback)
-			res, err = executor.QueryExecutor.Rollback(conn, stmt)
+			res, err = server.queryExecutor.Rollback(conn, stmt)
 		case sql.CreateDatabaseStatement:
 			stmt := stmt.Object().(query.CreateDatabase)
-			res, err = executor.QueryExecutor.CreateDatabase(conn, stmt)
+			res, err = server.queryExecutor.CreateDatabase(conn, stmt)
 		case sql.CreateTableStatement:
 			stmt := stmt.Object().(query.CreateTable)
-			res, err = executor.QueryExecutor.CreateTable(conn, stmt)
+			res, err = server.queryExecutor.CreateTable(conn, stmt)
 		case sql.AlterDatabaseStatement:
 			stmt := stmt.Object().(query.AlterDatabase)
-			res, err = executor.QueryExecutor.AlterDatabase(conn, stmt)
+			res, err = server.queryExecutor.AlterDatabase(conn, stmt)
 		case sql.AlterTableStatement:
 			stmt := stmt.Object().(query.AlterTable)
-			res, err = executor.QueryExecutor.AlterTable(conn, stmt)
+			res, err = server.queryExecutor.AlterTable(conn, stmt)
 		case sql.DropDatabaseStatement:
 			stmt := stmt.Object().(query.DropDatabase)
-			res, err = executor.QueryExecutor.DropDatabase(conn, stmt)
+			res, err = server.queryExecutor.DropDatabase(conn, stmt)
 		case sql.DropTableStatement:
 			stmt := stmt.Object().(query.DropTable)
-			res, err = executor.QueryExecutor.DropTable(conn, stmt)
+			res, err = server.queryExecutor.DropTable(conn, stmt)
 		case sql.InsertStatement:
 			stmt := stmt.Object().(query.Insert)
-			res, err = executor.QueryExecutor.Insert(conn, stmt)
+			res, err = server.queryExecutor.Insert(conn, stmt)
 		case sql.SelectStatement:
 			stmt := stmt.Object().(query.Select)
 			if stmt.From().HasSchemaTable(system.SystemSchemaNames...) {
-				res, err = executor.SystemQueryExecutor.SystemSelect(conn, stmt)
+				res, err = server.systemQueryExecutor.SystemSelect(conn, stmt)
 			} else {
-				res, err = executor.QueryExecutor.Select(conn, stmt)
+				res, err = server.queryExecutor.Select(conn, stmt)
 			}
 		case sql.UpdateStatement:
 			stmt := stmt.Object().(query.Update)
-			res, err = executor.QueryExecutor.Update(conn, stmt)
+			res, err = server.queryExecutor.Update(conn, stmt)
 		case sql.DeleteStatement:
 			stmt := stmt.Object().(query.Delete)
-			res, err = executor.QueryExecutor.Delete(conn, stmt)
+			res, err = server.queryExecutor.Delete(conn, stmt)
 		case sql.TruncateStatement:
 			stmt := stmt.Object().(query.Truncate)
-			res, err = executor.ExQueryExecutor.Truncate(conn, stmt)
+			res, err = server.exQueryExecutor.Truncate(conn, stmt)
 		case sql.VacuumStatement:
 			stmt := stmt.Object().(query.Vacuum)
-			res, err = executor.ExQueryExecutor.Vacuum(conn, stmt)
+			res, err = server.exQueryExecutor.Vacuum(conn, stmt)
 		case sql.CopyStatement:
 			stmt := stmt.Object().(query.Copy)
 			res, err = handleCopyQuery(conn, stmt)

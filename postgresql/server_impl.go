@@ -23,24 +23,71 @@ import (
 // server represents a PostgreSQL protocol server.
 type server struct {
 	protocol.Server
-	*BaseExecutor
+	*protocolStartupHandler
+	*protocolQueryHandler
+	sqlExecutor         SQLExecutor
+	queryExecutor       QueryExecutor
+	systemQueryExecutor SystemQueryExecutor
+	exQueryExecutor     ExQueryExecutor
+	bulkQueryExecutor   BulkQueryExecutor
+	errorHandler        ErrorHandler
 }
 
 // NewServer returns a new server instance.
 func NewServer() Server {
 	server := &server{
-		Server:       protocol.NewServer(),
-		BaseExecutor: NewBaseExecutor(),
+		Server:                 protocol.NewServer(),
+		protocolStartupHandler: newProtocolStartupHandler(),
+		protocolQueryHandler:   newProtocolQueryHandler(),
+		sqlExecutor:            nil,
+		queryExecutor:          NewBaseQueryExecutor(),
+		exQueryExecutor:        nil,
+		bulkQueryExecutor:      NewBaseBulkExecutor(),
+		errorHandler:           NewBaseErrorHandler(),
+		systemQueryExecutor:    NewBaseSystemQueryExecutor(),
 	}
+	server.exQueryExecutor = newExtraQueryExecutorWith(server.queryExecutor)
+
 	server.Server.SetProductName(PackageName)
 	server.Server.SetProductVersion(Version)
 	server.Server.SetMessageHandler(server)
-	server.SetQueryExecutor(server)
-	server.SetBulkQueryExecutor(server)
-	server.SetErrorHandler(server)
-	server.SetSystemQueryExecutor(server)
+
+	server.SetQueryExecutor(server.queryExecutor)
+	server.SetSystemQueryExecutor(server.systemQueryExecutor)
+	server.SetBulkQueryExecutor(server.bulkQueryExecutor)
+	server.SetErrorHandler(server.errorHandler)
 
 	return server
+}
+
+// SetSQLExecutor sets a SQL server.
+func (server *server) SetSQLExecutor(se SQLExecutor) {
+	server.sqlExecutor = se
+}
+
+// SetQueryExecutor sets a user query server.
+func (server *server) SetQueryExecutor(qe QueryExecutor) {
+	server.queryExecutor = qe
+}
+
+// SetExQueryExecutor sets a user query extra server.
+func (server *server) SetExQueryExecutor(qe ExQueryExecutor) {
+	server.exQueryExecutor = qe
+}
+
+// SetBulkQueryExecutor sets a user bulk server.
+func (server *server) SetBulkQueryExecutor(be BulkQueryExecutor) {
+	server.bulkQueryExecutor = be
+}
+
+// SetErrorHandler sets a user error handler.
+func (server *server) SetErrorHandler(eh ErrorHandler) {
+	server.errorHandler = eh
+}
+
+// SetSystemQueryExecutor sets a system query server.
+func (server *server) SetSystemQueryExecutor(sq SystemQueryExecutor) {
+	server.systemQueryExecutor = sq
 }
 
 // Start starts the server.
