@@ -46,7 +46,7 @@ func NewServer() Server {
 		errorHandler:           NewNullErrorHandler(),
 		systemQueryExecutor:    NewDefaultSystemQueryExecutor(),
 	}
-	server.exQueryExecutor = newExtraQueryExecutorWith(server.queryExecutor)
+	server.exQueryExecutor = NewDefaultExtraQueryExecutorWith(server.queryExecutor)
 
 	server.Server.SetProductName(PackageName)
 	server.Server.SetProductVersion(Version)
