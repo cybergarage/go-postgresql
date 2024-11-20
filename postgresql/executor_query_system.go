@@ -25,15 +25,15 @@ type defaultSystemQueryExecutor struct {
 	sqlExecutor SQLExecutor
 }
 
-// NewDefaultSystemQueryExecutor returns a base system query executor.
-func NewDefaultSystemQueryExecutor() SystemQueryExecutor {
+// NewNullSystemQueryExecutor returns a new null SystemQueryExecutor.
+func NewNullSystemQueryExecutor() SystemQueryExecutor {
 	return &defaultSystemQueryExecutor{
 		sqlExecutor: nil,
 	}
 }
 
-// NewSQLSystemQueryExecutor returns a base system query executor.
-func NewSQLSystemQueryExecutor() SQLSystemQueryExecutor {
+// NewDefaultSQLSystemQueryExecutor returns a default SystemQueryExecutor based on SQLExecutor.
+func NewDefaultSQLSystemQueryExecutor() SQLSystemQueryExecutor {
 	return &defaultSystemQueryExecutor{
 		sqlExecutor: nil,
 	}
