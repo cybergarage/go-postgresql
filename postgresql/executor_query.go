@@ -25,15 +25,15 @@ type baseQueryExecutor struct {
 	sqlExecutor SQLExecutor
 }
 
-// NewQueryExecutor returns a base query message executor.
-func NewueryExecutor() QueryExecutor {
+// NewNullQueryExecutor returns a new null QueryExecutor.
+func NewNullQueryExecutor() QueryExecutor {
 	return &baseQueryExecutor{
 		sqlExecutor: nil,
 	}
 }
 
-// NewSQLQueryExecutor returns a base frontend message executor.
-func NewSQLQueryExecutor() SQLQueryExecutor {
+// NewDefaultSQLQueryExecutor returns a default QueryExecutor based on SQLExecutor.
+func NewDefaultSQLQueryExecutor() SQLQueryExecutor {
 	return &baseQueryExecutor{
 		sqlExecutor: nil,
 	}

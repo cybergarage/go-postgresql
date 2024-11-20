@@ -40,7 +40,7 @@ func NewServer() Server {
 		protocolStartupHandler: newProtocolStartupHandler(),
 		protocolQueryHandler:   newProtocolQueryHandler(),
 		sqlExecutor:            nil,
-		queryExecutor:          NewSQLQueryExecutor(),
+		queryExecutor:          NewDefaultSQLQueryExecutor(),
 		exQueryExecutor:        nil,
 		bulkQueryExecutor:      NewNullBulkExecutor(),
 		errorHandler:           NewNullErrorHandler(),
