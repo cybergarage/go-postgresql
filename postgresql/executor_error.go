@@ -20,17 +20,17 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
-// BaseErrorHandler represents a base error handler.
-type BaseErrorHandler struct {
+// nullErrorHandler represents a base error handler.
+type nullErrorHandler struct {
 }
 
-// NewBaseErrorHandler returns a new BaseErrorHandler.
-func NewBaseErrorHandler() *BaseErrorHandler {
-	return &BaseErrorHandler{}
+// NewNullErrorHandler returns a new null ErrorHandler.
+func NewNullErrorHandler() ErrorHandler {
+	return &nullErrorHandler{}
 }
 
 // ParserError handles a parser error.
-func (executor *BaseErrorHandler) ParserError(conn Conn, q string, err error) (protocol.Responses, error) {
+func (executor *nullErrorHandler) ParserError(conn Conn, q string, err error) (protocol.Responses, error) {
 	resErr := fmt.Errorf("parser error : %w", err)
 	res, err := protocol.NewErrorResponseWith(resErr)
 	if err != nil {
