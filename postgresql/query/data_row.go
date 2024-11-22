@@ -32,14 +32,6 @@ func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescri
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
 		switch selector := selector.(type) {
-		case query.Column:
-			name := selector.Name()
-			v, ok := row[name]
-			if !ok {
-				dataRow.AppendData(field, nil)
-				continue
-			}
-			dataRow.AppendData(field, v)
 		case query.Function:
 			executor, err := selector.Executor()
 			if err != nil {
@@ -56,6 +48,14 @@ func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescri
 			v, err := executor.Execute(args...)
 			if err != nil {
 				return nil, err
+			}
+			dataRow.AppendData(field, v)
+		default:
+			name := selector.Name()
+			v, ok := row[name]
+			if !ok {
+				dataRow.AppendData(field, nil)
+				continue
 			}
 			dataRow.AppendData(field, v)
 		}
@@ -144,11 +144,6 @@ func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.
 				field := rowDesc.Field(n)
 				name := selector.Name()
 				switch selector.(type) {
-				case query.Column:
-					if name != groupBy {
-						return nil, fmt.Errorf("invalid column (%s)", name)
-					}
-					dataRow.AppendData(field, groupKey)
 				case query.Function:
 					aggResultSet, ok := aggrResultSets[name]
 					if !ok {
@@ -160,6 +155,11 @@ func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.
 					} else {
 						dataRow.AppendData(field, nil)
 					}
+				default:
+					if name != groupBy {
+						return nil, fmt.Errorf("invalid column (%s)", name)
+					}
+					dataRow.AppendData(field, groupKey)
 				}
 			}
 			dataRows = append(dataRows, dataRow)
