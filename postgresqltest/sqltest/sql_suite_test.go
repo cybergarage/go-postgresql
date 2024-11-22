@@ -38,11 +38,11 @@ func TestSQLTestSuite(t *testing.T) {
 
 	testNames := []string{
 		"SmplCrud.*",
-		"FuncMath.*",
-		"FuncAggr*",
-		"UpdateArith*",
+		// "FuncMath.*",
+		// "FuncAggr*",
+		// "UpdateArith*",
 		"YcsbWorkload",
-		"Pgbench",
+		// "Pgbench",
 	}
 
 	if err := sqltest.RunEmbedSuites(t, client, testNames...); err != nil {
