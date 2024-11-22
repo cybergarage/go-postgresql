@@ -60,6 +60,7 @@ type (
 	AndExpr        = query.AndExpr
 	OrExpr         = query.OrExpr
 	SelectOption   = query.SelectOption
+	Use            = query.Use
 )
 
 // Function represents a function.
