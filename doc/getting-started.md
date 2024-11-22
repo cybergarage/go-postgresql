@@ -4,7 +4,7 @@ This section describes how to implement your PostgreSQL-compatible server using 
 
 ## Introduction
 
-Although go-mysql provides the following overrideable interfaces for handling MySQL protocol messages, developers generally only need to implement a go-sqlparser-based QueryExecutor and a MySQL-compatible server All that is required is to build a MySQL-compatible server.
+Although go-postgresql provides the following overrideable interfaces for handling postgresql protocol messages, developers generally only need to implement a go-sqlparser-based QueryExecutor and a PostgreSQL-compatible server All that is required is to build a postgresql-compatible server.
 
 ![](img/executor.png)
 
