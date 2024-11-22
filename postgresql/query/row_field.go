@@ -28,16 +28,6 @@ func NewRowFieldFrom(schema sql.ResultSetSchema, selector query.Selector, idx in
 	var dt *system.DataType
 	var err error
 	switch selector := selector.(type) {
-	case query.Column:
-		columnName = selector.Name()
-		schemaColumn, err := schema.LookupColumn(columnName)
-		if err != nil {
-			return nil, err
-		}
-		dt, err = NewDataTypeFrom(schemaColumn.DataType())
-		if err != nil {
-			return nil, err
-		}
 	case query.Function:
 		if !selector.IsAsterisk() {
 			args := selector.Arguments()
@@ -59,6 +49,16 @@ func NewRowFieldFrom(schema sql.ResultSetSchema, selector query.Selector, idx in
 			return nil, err
 		}
 		columnName = selector.String()
+	default:
+		columnName = selector.Name()
+		schemaColumn, err := schema.LookupColumn(columnName)
+		if err != nil {
+			return nil, err
+		}
+		dt, err = NewDataTypeFrom(schemaColumn.DataType())
+		if err != nil {
+			return nil, err
+		}
 	}
 	return protocol.NewRowFieldWith(columnName,
 		protocol.WithRowFieldNumber(int16(idx+1)),
