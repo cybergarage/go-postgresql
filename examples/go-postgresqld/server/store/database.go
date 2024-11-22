@@ -1,4 +1,4 @@
-// Copyright (C) 2019 The go-postgresql Authors. All rights reserved.
+// Copyright (C) 2024 The go-mysql Authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,21 +34,15 @@ func NewDatabase() *Database {
 	return NewDatabaseWithName("")
 }
 
-// Name returns the table name.
+// Name returns the database name.
 func (db *Database) Name() string {
 	return db.name
 }
 
-// DatabaseName returns the database name.
-func (db *Database) DatabaseName() string {
-	return db.name
-}
-
 // AddTable adds a specified table into the database.
-func (db *Database) AddTable(table *Table) error {
+func (db *Database) AddTable(table *Table) {
 	tableName := table.Name
 	db.tables[tableName] = table
-	return nil
 }
 
 // AddTables adds a specified tables into the database.
@@ -59,10 +53,11 @@ func (db *Database) AddTables(tables []*Table) {
 }
 
 // DropTable remove the specified table.
-func (db *Database) DropTable(table *Table) error {
-	name := table.Name
+func (db *Database) DropTable(table *Table) bool {
+	name := table.TableName()
 	delete(db.tables, name)
-	return nil
+	_, ok := db.tables[name]
+	return !ok
 }
 
 // LookupTable returns a table with the specified name.

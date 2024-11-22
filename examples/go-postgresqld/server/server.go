@@ -22,23 +22,19 @@ import (
 // Server represents a test server.
 type Server struct {
 	postgresql.Server
-	Store
-}
-
-// NewServerWithStore returns a test server instance with the specified store.
-func NewServerWithStore(store Store) *Server {
-	server := &Server{
-		Server: postgresql.NewServer(),
-		Store:  store,
-	}
-	server.SetQueryExecutor(store)
-	server.SetBulkQueryExecutor(store)
-	server.SetErrorHandler(store)
-	server.SetSystemQueryExecutor(store)
-	return server
+	*store.MemStore
 }
 
 // NewServer returns a test server instance.
 func NewServer() *Server {
-	return NewServerWithStore(store.NewMemStore())
+	server := &Server{
+		Server:   postgresql.NewServer(),
+		MemStore: store.NewMemStore(),
+	}
+
+	server.SetSQLExecutor(server)
+	server.SetErrorHandler(server)
+	server.SetBulkQueryExecutor(server)
+
+	return server
 }

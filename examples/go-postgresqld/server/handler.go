@@ -15,14 +15,25 @@
 package server
 
 import (
+	"fmt"
+
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
-// Store should support only DMOExecutor methods.
-type Store interface {
-	postgresql.QueryExecutor
-	postgresql.TCOExecutor
-	postgresql.BulkQueryExecutor
-	postgresql.ErrorHandler
-	postgresql.SystemQueryExecutor
+// ParserError handles a parser error.
+func (server *Server) ParserError(conn postgresql.Conn, q string, err error) (protocol.Responses, error) {
+	switch {
+	case postgresql.IsPgbenchGetPartitionQuery(q):
+		return postgresql.NewGetPartitionResponseForPgbench()
+	}
+
+	resErr := fmt.Errorf("parser error : %w", err)
+	log.Warnf(err.Error())
+	res, err := protocol.NewErrorResponseWith(resErr)
+	if err != nil {
+		return nil, err
+	}
+	return protocol.NewResponsesWith(res), nil
 }
