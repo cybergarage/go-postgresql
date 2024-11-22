@@ -100,6 +100,36 @@ func (server *server) SetSystemQueryExecutor(sq SystemQueryExecutor) {
 	server.systemQueryExecutor = sq
 }
 
+// SQLExecutor returns a SQL executor.
+func (server *server) SQLExecutor() SQLExecutor {
+	return server.sqlExecutor
+}
+
+// QueryExecutor returns a user query executor.
+func (server *server) QueryExecutor() QueryExecutor {
+	return server.queryExecutor
+}
+
+// ExQueryExecutor returns a user extended query executor.
+func (server *server) ExQueryExecutor() ExQueryExecutor {
+	return server.exQueryExecutor
+}
+
+// SystemQueryExecutor returns a system query executor.
+func (server *server) SystemQueryExecutor() SystemQueryExecutor {
+	return server.systemQueryExecutor
+}
+
+// BulkQueryExecutor returns a user bulk executor.
+func (server *server) BulkQueryExecutor() BulkQueryExecutor {
+	return server.bulkQueryExecutor
+}
+
+// ErrorHandler returns a user error handler.
+func (server *server) ErrorHandler() ErrorHandler {
+	return server.errorHandler
+}
+
 // Start starts the server.
 func (server *server) Start() error {
 	type starter interface {

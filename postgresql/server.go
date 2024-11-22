@@ -64,6 +64,7 @@ type Server interface {
 	tracer.Tracer
 	Config
 	AuthManager
+
 	// SetTracer sets a tracing tracer.
 	SetTracer(tracer.Tracer)
 	// SetSQLExecutor sets a SQL executor.
@@ -78,6 +79,20 @@ type Server interface {
 	SetBulkQueryExecutor(BulkQueryExecutor)
 	// SetErrorHandler sets a user error handler.
 	SetErrorHandler(ErrorHandler)
+
+	// SQLExecutor returns a SQL executor.
+	SQLExecutor() SQLExecutor
+	// QueryExecutor returns a user query executor.
+	QueryExecutor() QueryExecutor
+	// ExQueryExecutor returns a user extended query executor.
+	ExQueryExecutor() ExQueryExecutor
+	// SystemQueryExecutor returns a system query executor.
+	SystemQueryExecutor() SystemQueryExecutor
+	// BulkQueryExecutor returns a user bulk executor.
+	BulkQueryExecutor() BulkQueryExecutor
+	// ErrorHandler returns a user error handler.
+	ErrorHandler() ErrorHandler
+
 	// Start starts the server.
 	Start() error
 	// Stop stops the server.
