@@ -17,9 +17,9 @@ package store
 import (
 	"reflect"
 
-	"github.com/cybergarage/go-mysql/mysql/errors"
-	"github.com/cybergarage/go-mysql/mysql/query"
 	"github.com/cybergarage/go-safecast/safecast"
+	"github.com/cybergarage/go-sqlparser/sql/errors"
+	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Row represents a row of a table.

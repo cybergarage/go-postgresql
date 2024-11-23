@@ -5,9 +5,10 @@ go 1.22.0
 toolchain go1.23.1
 
 require (
-	github.com/cybergarage/go-logger v1.3.4
+	github.com/cybergarage/go-logger v1.3.8
+	github.com/cybergarage/go-mysql v1.1.0
 	github.com/cybergarage/go-safecast v1.2.5
-	github.com/cybergarage/go-sqlparser v1.4.1-0.20241122030516-b65cd0d3f4f9
+	github.com/cybergarage/go-sqlparser v1.4.1
 	github.com/cybergarage/go-sqltest v1.4.2
 	github.com/cybergarage/go-tracing v1.1.3
 	github.com/google/gopacket v1.1.19
@@ -16,8 +17,9 @@ require (
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/lib/pq v1.10.9 // indirect
