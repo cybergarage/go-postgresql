@@ -31,10 +31,18 @@ func NewRow() Row {
 }
 
 // NewRowWith returns a new row with the specified columns.
-func NewRowWith(cols []query.Column) Row {
+func NewRowWith(table *Table, cols query.Columns) Row {
 	row := NewRow()
-	for _, col := range cols {
-		row[col.Name()] = col.Value()
+	for _, schemaCols := range table.Schema.Columns() {
+		var colValue any
+		colName := schemaCols.Name()
+		col, err := cols.LookupColumn(colName)
+		if err == nil {
+			colValue = col.Value()
+		} else {
+			colValue = nil
+		}
+		row[colName] = colValue
 	}
 	return row
 }

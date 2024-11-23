@@ -178,10 +178,10 @@ func (store *MemStore) Insert(conn net.Conn, stmt query.Insert) error {
 		return errors.NewErrTableNotExist(tableName)
 	}
 
-	row := NewRowWith(stmt.Columns())
+	row := NewRowWith(table, stmt.Columns())
 	table.Lock()
-	table.Rows = append(table.Rows, row)
 	defer table.Unlock()
+	table.Rows = append(table.Rows, row)
 
 	return nil
 }
