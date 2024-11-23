@@ -324,11 +324,3 @@ func (store *MemStore) SystemSelect(conn net.Conn, stmt query.Select) (sql.Resul
 	log.Debugf("%v", stmt)
 	return nil, errors.NewErrNotImplemented("SystemSelect")
 }
-
-/*
-// ParserError should handle a parser error.
-func (store *MemStore) ParserError(conn net.Conn, q string, err error) error {
-	log.Debugf("%v", err)
-	return err
-}
-*/
