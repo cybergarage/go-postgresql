@@ -6,7 +6,6 @@ toolchain go1.23.1
 
 require (
 	github.com/cybergarage/go-logger v1.3.8
-	github.com/cybergarage/go-mysql v1.1.0
 	github.com/cybergarage/go-safecast v1.2.5
 	github.com/cybergarage/go-sqlparser v1.4.1
 	github.com/cybergarage/go-sqltest v1.4.2
