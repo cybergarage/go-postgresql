@@ -256,7 +256,11 @@ func (store *MemStore) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, 
 	for _, selector := range selectors {
 		if fn, ok := selector.(query.Function); ok {
 			for _, arg := range fn.Arguments() {
-				selectorNames = append(selectorNames, arg.Name())
+				if arg.IsAsterisk() {
+					selectorNames = append(selectorNames, tbl.Selectors().SelectorNames()...)
+				} else {
+					selectorNames = append(selectorNames, arg.Name())
+				}
 			}
 		} else {
 			selectorNames = append(selectorNames, selector.Name())
