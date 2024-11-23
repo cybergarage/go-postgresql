@@ -1,31 +1,26 @@
 # Getting Started
 
-This section describes how to implement your PostgreSQL-compatible server using the go-postgresql, and see  [Examples](doc/examples.md) about the sample implementation.
+This section describes how to implement your postgresql-compatible server using `go-postgresql`. See [Examples](examples.md) for sample implementations.
 
 ## Introduction
 
-Although go-postgresql provides the following overrideable interfaces for handling postgresql protocol messages, developers generally only need to implement a go-sqlparser-based QueryExecutor and a PostgreSQL-compatible server All that is required is to build a postgresql-compatible server.
+Although `go-postgresql` provides various overrideable interfaces for handling postgresql protocol messages, developers typically only need to implement a `go-sqlparser`-based `SQLExecutor` to build your postgresql-compatible server.
 
 ![](img/executor.png)
 
+The message executors are implemented by default and generally does not need to be overridden. If authentication is required, an AuthHandler should be implemented. Error handlers are provided for parsing SQL queries (e.g. recovering from parsing errors), but are not detailed in this chapter as they do not normally need to be implemented.
 
-The SystemQueryExecutor is implemented by default as required and generally does not need to be overridden and implemented. The AuthHandler need to be implemented when authentication is required, and error handlers are provided for the purpose of parsing SQL queries, e.g. to recover from the parsing process, but do not usually need to be implemented.
+## STEP 1: Inheriting the Server
 
-Of course, it is possible for developers to replace or override the MessageExecutors that handle protocol messages in go-postgresql, but this is generally not necessary.
+The `go-postgresql` library provides a core server, [`postgresql.Server`](../postgresql/server.go), which is responsible for handling postgresql protocol messages. To implement your postgresql-compatible server, you should inherit the core postgresql server in your own instance, as shown below:
 
-## STEP1: Inheriting Server
-
-The go-postgresql offers a core server, [postgresql.Server](../postgresql/server.go), and so inherit the core server in your instance as the following.
-
-```
+```go
 import (
 	"github.com/cybergarage/go-postgresql/postgresql"
-	"github.com/cybergarage/go-postgresql/postgresql/protocol"
-	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 type MyServer struct {
-	*postgresql.Server
+	postgresql.Server
 }
 
 func NewMyServer() *MyServer {
@@ -35,35 +30,60 @@ func NewMyServer() *MyServer {
 }
 ```
 
-## STEP2: Preparing Query Handler
+The inherited server instance handles postgresql protocol messages. While the default message executors are implemented in the server instance, you will need to provide a custom SQL executor in the next step to handle SQL queries.
 
-To handle queries to the your server, prepare a query handler according to [postgresql.QueryExecutor](../postgresql/executor.go) interface.
+## STEP 2: Preparing the Query Handler
 
+The inherited server instance processes postgresql protocol messages and comes with default message executors, but it does not include an SQL executor. 
+
+The SQL executor is defined in the [`go-sqlparser`](https://github.com/cybergarage/go-sqlparser) library as the [`sql.Executor`](https://github.com/cybergarage/go-sqlparser/blob/master/sql/executor.go) interface. It has no dependencies on `go-postgresql` and is also compatible with [`go-mysql`](https://github.com/cybergarage/go-mysql). The `Executor` interface is defined as follows:
+
+```go
+type Executor interface {
+	Begin(Conn, Begin) error
+	Commit(Conn, Commit) error
+	Rollback(Conn, Rollback) error	
+	CreateDatabase(Conn, CreateDatabase) error
+	CreateTable(Conn, CreateTable) error
+	AlterDatabase(Conn, AlterDatabase) error
+	AlterTable(Conn, AlterTable) error
+	DropDatabase(Conn, DropDatabase) error
+	DropTable(Conn, DropTable) error
+	Insert(Conn, Insert) error
+	Select(Conn, Select) (ResultSet, error)
+	Update(Conn, Update) (ResultSet, error)
+	Delete(Conn, Delete) (ResultSet, error)	
+	SystemSelect(Conn, Select) (ResultSet, error)
+	Use(Conn, Use) error
+}
 ```
+
+To handle SQL queries on your server, implement a query handler that conforms to the [`sql.Executor`](https://github.com/cybergarage/go-sqlparser/blob/master/sql/executor.go) interface. Then, set the SQL executor on the server instance using [`postgresql.Server::SetSQLExecutor`](../postgresql/server.go) as shown below:
+
+```go
 func NewMyServer() *MyServer {
-	myserver := &MyServer{
+	myServer := &MyServer{
 		Server: postgresql.NewServer(),
 	}
-    myserver.SetQueryExecutor(myserver)
-    return myserver
+	myServer.SetSQLExecutor(myServer)
+	return myServer
 }
 
-func (server *MyServer) Insert(conn postgresql.Conn, q query.Insert) (protocol.Responses, error) {
-    .....
+func (server *MyServer) Select(conn Conn, stmt Select) (ResultSet, error) {
+	// Implement query logic here
+	return nil, nil
 }
-
-....
+...
 ```
 
-The go-postgresql offers the stub query executor, [postgresql.BaseExecutor](../postgresql/executor_base.go) which returns a success status for any query requests.
-To inheriting the stub executor, you can start to implement only minimum query handle functions such as INSERT and SELECT.
+While it is possible to replace all the default message executors with your own implementations, this guide focuses on implementing only the SQL executor.
 
-## STEP3: Starting Server 
+## STEP 3: Starting the Server
 
-After implementing the query handler, start your server using  [postgresql.Server::Start()](../postgresql/server.go).
+After implementing the query handler, start your server using [`postgresql.Server::Start()`](../postgresql/server.go):
 
-```
-server := NewServer()
+```go
+server := NewMyServer()
 
 err := server.Start()
 if err != nil {
@@ -72,5 +92,11 @@ if err != nil {
 }
 defer server.Stop()
 
-.... 
+// Additional logic here
 ```
+
+To stop the server, use [`postgresql.Server::Stop()`](../postgresql/server.go).
+
+## Next Steps
+
+This guide provides a basic overview of how to implement your postgresql-compatible server using `go-postgresql`. For more detailed examples, see [Examples](examples.md).
