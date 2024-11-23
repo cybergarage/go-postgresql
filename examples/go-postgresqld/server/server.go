@@ -22,14 +22,14 @@ import (
 // Server represents a test server.
 type Server struct {
 	postgresql.Server
-	*store.MemStore
+	*store.Store
 }
 
 // NewServer returns a test server instance.
 func NewServer() *Server {
 	server := &Server{
-		Server:   postgresql.NewServer(),
-		MemStore: store.NewStore(),
+		Server: postgresql.NewServer(),
+		Store:  store.NewStore(),
 	}
 
 	server.SetSQLExecutor(server)
