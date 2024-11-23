@@ -15,7 +15,7 @@
 package store
 
 import (
-	"github.com/cybergarage/go-mysql/mysql/errors"
+	"github.com/cybergarage/go-sqlparser/sql/errors"
 )
 
 // Databases represents a collection of databases.

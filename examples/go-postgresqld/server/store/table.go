@@ -17,7 +17,7 @@ package store
 import (
 	"sync"
 
-	"github.com/cybergarage/go-mysql/mysql/query"
+	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // Table represents a destination or source database of query.
