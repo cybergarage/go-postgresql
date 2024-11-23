@@ -29,7 +29,7 @@ type Server struct {
 func NewServer() *Server {
 	server := &Server{
 		Server:   postgresql.NewServer(),
-		MemStore: store.NewMemStore(),
+		MemStore: store.NewStore(),
 	}
 
 	server.SetSQLExecutor(server)

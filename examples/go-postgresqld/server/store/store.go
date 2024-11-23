@@ -29,8 +29,8 @@ type MemStore struct {
 	Databases
 }
 
-// NewMemStore returns an in-memory storeinstance.
-func NewMemStore() *MemStore {
+// NewStore returns a new store instance.
+func NewStore() *MemStore {
 	store := &MemStore{
 		Databases: NewDatabases(),
 	}
