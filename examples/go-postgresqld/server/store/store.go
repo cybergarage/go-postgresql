@@ -245,18 +245,30 @@ func (store *MemStore) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, 
 		return nil, err
 	}
 
-	// Row description response
+	// Selector column names
 
 	selectors := stmt.Selectors()
 	if selectors.IsAsterisk() {
 		selectors = tbl.Selectors()
 	}
 
+	selectorNames := []string{}
+	for _, selector := range selectors {
+		if fn, ok := selector.(query.Function); ok {
+			for _, arg := range fn.Arguments() {
+				selectorNames = append(selectorNames, arg.Name())
+			}
+		} else {
+			selectorNames = append(selectorNames, selector.Name())
+		}
+	}
+
+	// Row description response
+
 	schema := tbl.Schema
 	rsSchemaColums := []sql.ResultSetColumn{}
-	for _, selector := range selectors {
-		colName := selector.Name()
-		shemaColumn, err := schema.LookupColumn(colName)
+	for _, selectorName := range selectorNames {
+		shemaColumn, err := schema.LookupColumn(selectorName)
 		if err != nil {
 			return nil, err
 		}
@@ -278,9 +290,8 @@ func (store *MemStore) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, 
 	rsRows := []sql.ResultSetRow{}
 	for _, row := range rows {
 		rowValues := []any{}
-		for _, selector := range selectors {
-			colName := selector.Name()
-			value, err := row.ValueByName(colName)
+		for _, selectorName := range selectorNames {
+			value, err := row.ValueByName(selectorName)
 			if err != nil {
 				return nil, err
 			}
