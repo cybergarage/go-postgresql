@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresqltest/client"
+	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresqltest/server"
 )
 
@@ -35,7 +35,7 @@ func TestYCSB(t *testing.T) {
 
 	// Setup client
 
-	client := client.NewDefaultClient()
+	client := postgresql.NewDefaultClient()
 	client.SetDatabase(ycsbDatabaseName)
 	err = client.CreateDatabase(ycsbDatabaseName)
 	if err != nil {

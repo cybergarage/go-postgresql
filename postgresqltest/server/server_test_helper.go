@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-postgresql/postgresql/auth"
-	"github.com/cybergarage/go-postgresql/postgresqltest/client"
 	pgx "github.com/jackc/pgx/v5"
 )
 
@@ -49,7 +49,7 @@ func RunServerTests(t *testing.T, server *Server) {
 		t.Run(testFunc.name, func(t *testing.T) {
 			// Create a test database
 
-			client := client.NewDefaultClient()
+			client := postgresql.NewDefaultClient()
 
 			client.SetDatabase("postgres")
 			err := client.Open()
@@ -102,7 +102,7 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 	for _, authenticator := range authenticators {
 		server.AddAuthenticator(authenticator)
 
-		client := client.NewDefaultClient()
+		client := postgresql.NewDefaultClient()
 		client.SetUser(username)
 		client.SetPassword(password)
 		client.SetDatabase(testDBName)
@@ -147,7 +147,7 @@ func RunCertificateAuthenticatorTest(t *testing.T, server *Server, testDBName st
 	for _, authenticator := range authenticators {
 		server.AddAuthenticator(authenticator)
 
-		client := client.NewDefaultClient()
+		client := postgresql.NewDefaultClient()
 		client.SetClientKeyFile(clientKey)
 		client.SetClientCertFile(clientCert)
 		client.SetRootCertFile(rootCert)
@@ -178,7 +178,7 @@ func RunServerCopyTest(t *testing.T, server *Server, testDBName string) {
 
 	// Run tests
 
-	client := client.NewPgxClient()
+	client := postgresql.NewPgxClient()
 	client.SetDatabase(testDBName)
 	err := client.Open()
 	if err != nil {
