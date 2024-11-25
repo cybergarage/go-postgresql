@@ -15,6 +15,7 @@
 package store
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/cybergarage/go-safecast/safecast"
@@ -186,7 +187,7 @@ func (row Row) IsEqual(other Row) bool {
 func (row Row) ValueByName(name string) (any, error) {
 	v, ok := row[name]
 	if !ok {
-		return nil, errors.NewErrNotExis(name)
+		return nil, fmt.Errorf("row (%s) %w", name, errors.ErrNotExist)
 	}
 	return v, nil
 }
