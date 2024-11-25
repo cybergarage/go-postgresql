@@ -20,6 +20,7 @@ print<<HEADER;
 
 package system
 
+// DataType represents a PostgreSQL data type.
 type DataType struct {
 	name string
 	oid  OID
