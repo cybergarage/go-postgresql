@@ -22,3 +22,10 @@ Since the go-postgresql handles all startup and system commands automatically, d
 
 - [Examples](doc/examples.md)
   - [go-postgresqld](examples/go-postgresqld)
+	- [go-sqlserver](https://github.com/cybergarage/go-sqlserver)
+	- [PuzzleDB](https://github.com/cybergarage/puzzledb-go)
+
+## References
+
+- [PostgreSQL](https://www.postgresql.org/)
+  - [PostgreSQL: Documentation: Frontend/Backend Protocol](https://www.postgresql.org/docs/current/protocol.html)
