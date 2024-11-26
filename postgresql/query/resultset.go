@@ -58,7 +58,11 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 			if 0 < offset && rowNo <= offset {
 				continue
 			}
-			rowObj := rs.Row().Object()
+			rsRow, err := rs.Row()
+			if err != nil {
+				return nil, err
+			}
+			rowObj := rsRow.Object()
 			dataRow, err := NewDataRowForSelectors(schema, rowDesc, selectors, rowObj)
 			if err != nil {
 				return nil, err
@@ -73,7 +77,11 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 		groupBy := stmt.GroupBy().ColumnName()
 		queryRows := []Row{}
 		for rs.Next() {
-			rowObj := rs.Row().Object()
+			rsRow, err := rs.Row()
+			if err != nil {
+				return nil, err
+			}
+			rowObj := rsRow.Object()
 			queryRows = append(queryRows, rowObj)
 		}
 		dataRows, err := NewDataRowsForAggregateFunction(schema, rowDesc, selectors, queryRows, groupBy)
