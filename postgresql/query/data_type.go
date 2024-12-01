@@ -15,6 +15,9 @@
 package query
 
 import (
+	"fmt"
+
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
@@ -25,55 +28,59 @@ import (
 // DataType represents a data type.
 type DataType = system.DataType
 
-// OID represents a object identifier.
-type OID = system.ObjectID
+// ObjectID represents a object identifier.
+type ObjectID = system.ObjectID
 
 // NewDataTypeFrom returns a data type from the specified query data type.
 func NewDataTypeFrom(t query.DataType) (*DataType, error) {
-	return system.NewDataTypeFrom(dataTypeOIDFrom(t))
+	objectID, err := NewObjectIDFrom(t)
+	if err != nil {
+		return nil, err
+	}
+	return system.NewDataTypeFrom(objectID)
 }
 
-// dataTypeOIDFrom returns a data type from the specified query data type.
-func dataTypeOIDFrom(t query.DataType) OID {
+// NewObjectIDFrom returns a data type from the specified query data type.
+func NewObjectIDFrom(t query.DataType) (ObjectID, error) {
 	switch t {
 	case query.BigIntData:
-		return system.Int8
+		return system.Int8, nil
 	case query.BinaryData:
-		return system.Bytea
+		return system.Bytea, nil
 	case query.BitData:
-		return system.Bit
+		return system.Bit, nil
 	case query.BlobData:
-		return system.Bytea
+		return system.Bytea, nil
 	case query.BooleanData:
-		return system.Bool
+		return system.Bool, nil
 	case query.CharData:
-		return system.Char
+		return system.Char, nil
 	case query.CharacterData:
-		return system.Varchar
+		return system.Varchar, nil
 	// case query.ClobData:
 	// 	return
 	case query.DateData:
-		return system.Date
+		return system.Date, nil
 	// case query.DecimalData:
 	// 	return
 	case query.DoubleData:
-		return system.Float8
+		return system.Float8, nil
 	case query.FloatData:
-		return system.Float4
+		return system.Float4, nil
 	case query.IntData:
-		return system.Int4
+		return system.Int4, nil
 	case query.IntegerData:
-		return system.Int4
+		return system.Int4, nil
 	case query.LongBlobData:
-		return system.Bytea
+		return system.Bytea, nil
 	case query.LongTextData:
-		return system.Text
+		return system.Text, nil
 	case query.MediumBlobData:
-		return system.Bytea
+		return system.Bytea, nil
 	// case query.MediumIntData:
 	// 	return
 	case query.MediumTextData:
-		return system.Text
+		return system.Text, nil
 	// case query.NumericData:
 	// 	return
 	// case query.RealData:
@@ -81,27 +88,29 @@ func dataTypeOIDFrom(t query.DataType) OID {
 	// case query.SetData:
 	// 	return
 	case query.SmallIntData:
-		return system.Int2
+		return system.Int2, nil
 	case query.TextData:
-		return system.Text
+		return system.Text, nil
 	case query.TimeData:
-		return system.Time
+		return system.Time, nil
 	case query.TimeStampData:
-		return system.Timestamp
+		return system.Timestamp, nil
+	case query.DateTimeData:
+		return system.Timestamp, nil
 	case query.TinyBlobData:
-		return system.Bytea
+		return system.Bytea, nil
 	// case query.TinyIntData:
 	// 	return
 	case query.TinyTextData:
-		return system.Text
+		return system.Text, nil
 	case query.VarBinaryData:
-		return system.Bytea
+		return system.Bytea, nil
 	case query.VarCharData:
-		return system.Varchar
+		return system.Varchar, nil
 	case query.VarCharacterData:
-		return system.Varchar
+		return system.Varchar, nil
 		// case query.YearData:
 		// 	return
 	}
-	return 0
+	return 0, fmt.Errorf("data type (%s) %w", t, errors.ErrNotSupported)
 }
