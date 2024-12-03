@@ -61,6 +61,8 @@ type (
 	OrExpr         = query.OrExpr
 	SelectOption   = query.SelectOption
 	Use            = query.Use
+	CreateIndex    = query.CreateIndex
+	DropIndex      = query.DropIndex
 )
 
 // Function represents a function.
