@@ -9,6 +9,10 @@
 ## v1.6.x (2024-xx-xx)
 - Support for SCRAM-SHA-256.
 
+## v1.6.1 (2024-12-XX)
+- **New Features**:
+  - Supported converting `CREATE INDEX` and `DROP INDEX` commands to `ALTER TABLE`.
+
 ## v1.6.0 (2024-11-24)
 - Introduced protocol server.
 - Updated the `go-sqlparser` package.
