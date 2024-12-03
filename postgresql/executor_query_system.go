@@ -32,8 +32,8 @@ func NewNullSystemQueryExecutor() SystemQueryExecutor {
 	}
 }
 
-// NewDefaultSQLSystemQueryExecutor returns a default SystemQueryExecutor based on SQLExecutor.
-func NewDefaultSQLSystemQueryExecutor() SQLSystemQueryExecutor {
+// NewDefaultSystemQueryExecutor returns a default SystemQueryExecutor based on SQLExecutor.
+func NewDefaultSystemQueryExecutor() SystemQueryExecutor {
 	return &defaultSystemQueryExecutor{
 		sqlExecutor: nil,
 	}
