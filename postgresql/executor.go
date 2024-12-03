@@ -46,6 +46,14 @@ type DDOExecutor interface {
 	DropTable(Conn, query.DropTable) (protocol.Responses, error)
 }
 
+// DDOExExecutor defines a executor interface for extended DDO (Data Definition Operations).
+type DDOExExecutor interface {
+	// CreateIndex handles a CREATE INDEX query.
+	CreateIndex(Conn, query.CreateIndex) (protocol.Responses, error)
+	// DropIndex handles a DROP INDEX query.
+	DropIndex(Conn, query.DropIndex) (protocol.Responses, error)
+}
+
 // DMOExecutor defines a executor interface for DMO (Data Manipulation Operations).
 type DMOExecutor interface {
 	// Insert handles a INSERT query.
@@ -60,10 +68,6 @@ type DMOExecutor interface {
 
 // DMOExExecutor defines a executor interface for extended DMO (Data Manipulation Operations).
 type DMOExExecutor interface {
-	// CreateIndex handles a CREATE INDEX query.
-	CreateIndex(Conn, query.CreateIndex) (protocol.Responses, error)
-	// DropIndex handles a DROP INDEX query.
-	DropIndex(Conn, query.DropIndex) (protocol.Responses, error)
 	// Vacuum handles a VACUUM query.
 	Vacuum(Conn, query.Vacuum) (protocol.Responses, error)
 	// Truncate handles a TRUNCATE query.
