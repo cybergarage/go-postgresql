@@ -22,14 +22,34 @@ import (
 
 // dmoExtraExecutor represents a DMOExtraExecutor instance.
 type dmoExtraExecutor struct {
+	DDOExecutor
 	DMOExecutor
 }
 
 // NewDefaultExtraQueryExecutorWith returns a defaultDMOExtraExecutor instance with the given DMOExecutor.
-func NewDefaultExtraQueryExecutorWith(executor DMOExecutor) *dmoExtraExecutor {
+func NewDefaultExtraQueryExecutorWith(ddo DDOExecutor, dmo DMOExecutor) *dmoExtraExecutor {
 	return &dmoExtraExecutor{
-		DMOExecutor: executor,
+		DDOExecutor: ddo,
+		DMOExecutor: dmo,
 	}
+}
+
+// CreateIndex handles a CREATE INDEX query.
+func (executor *dmoExtraExecutor) CreateIndex(conn Conn, stmt query.CreateIndex) (protocol.Responses, error) {
+	alterStmt, err := sql.NewAlterTableFrom(stmt)
+	if err != nil {
+		return nil, err
+	}
+	return executor.DDOExecutor.AlterTable(conn, alterStmt)
+}
+
+// DropIndex handles a DROP INDEX query.
+func (executor *dmoExtraExecutor) DropIndex(conn Conn, stmt query.DropIndex) (protocol.Responses, error) {
+	alterStmt, err := sql.NewAlterTableFrom(stmt)
+	if err != nil {
+		return nil, err
+	}
+	return executor.DDOExecutor.AlterTable(conn, alterStmt)
 }
 
 // Vacuum handles a VACUUM query.
