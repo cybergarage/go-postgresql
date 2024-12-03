@@ -20,48 +20,46 @@ import (
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
 )
 
-// dmoExtraExecutor represents a DMOExtraExecutor instance.
-type dmoExtraExecutor struct {
-	DDOExecutor
-	DMOExecutor
+// defaultExQueryExecutor represents a DMOExtraExecutor instance.
+type defaultExQueryExecutor struct {
+	QueryExecutor
 }
 
-// NewDefaultExtraQueryExecutorWith returns a defaultDMOExtraExecutor instance with the given DMOExecutor.
-func NewDefaultExtraQueryExecutorWith(ddo DDOExecutor, dmo DMOExecutor) *dmoExtraExecutor {
-	return &dmoExtraExecutor{
-		DDOExecutor: ddo,
-		DMOExecutor: dmo,
+// NewDefaultExQueryExecutorWith returns a defaultDMOExtraExecutor instance with the given DMOExecutor.
+func NewDefaultExQueryExecutorWith(executor QueryExecutor) *defaultExQueryExecutor {
+	return &defaultExQueryExecutor{
+		QueryExecutor: executor,
 	}
 }
 
 // CreateIndex handles a CREATE INDEX query.
-func (executor *dmoExtraExecutor) CreateIndex(conn Conn, stmt query.CreateIndex) (protocol.Responses, error) {
+func (executor *defaultExQueryExecutor) CreateIndex(conn Conn, stmt query.CreateIndex) (protocol.Responses, error) {
 	alterStmt, err := sql.NewAlterTableFrom(stmt)
 	if err != nil {
 		return nil, err
 	}
-	return executor.DDOExecutor.AlterTable(conn, alterStmt)
+	return executor.QueryExecutor.AlterTable(conn, alterStmt)
 }
 
 // DropIndex handles a DROP INDEX query.
-func (executor *dmoExtraExecutor) DropIndex(conn Conn, stmt query.DropIndex) (protocol.Responses, error) {
+func (executor *defaultExQueryExecutor) DropIndex(conn Conn, stmt query.DropIndex) (protocol.Responses, error) {
 	alterStmt, err := sql.NewAlterTableFrom(stmt)
 	if err != nil {
 		return nil, err
 	}
-	return executor.DDOExecutor.AlterTable(conn, alterStmt)
+	return executor.QueryExecutor.AlterTable(conn, alterStmt)
 }
 
 // Vacuum handles a VACUUM query.
-func (executor *dmoExtraExecutor) Vacuum(conn Conn, stmt query.Vacuum) (protocol.Responses, error) {
+func (executor *defaultExQueryExecutor) Vacuum(conn Conn, stmt query.Vacuum) (protocol.Responses, error) {
 	return protocol.NewCommandCompleteResponsesWith(("VACUUM"))
 }
 
 // Truncate handles a TRUNCATE query.
-func (executor *dmoExtraExecutor) Truncate(conn Conn, stmt query.Truncate) (protocol.Responses, error) {
+func (executor *defaultExQueryExecutor) Truncate(conn Conn, stmt query.Truncate) (protocol.Responses, error) {
 	for _, table := range stmt.Tables() {
 		stmt := sql.NewDeleteWith(table, sql.NewCondition())
-		_, err := executor.DMOExecutor.Delete(conn, stmt)
+		_, err := executor.QueryExecutor.Delete(conn, stmt)
 		if err != nil {
 			return nil, err
 		}
