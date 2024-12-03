@@ -29,6 +29,7 @@ type QueryExecutor interface {
 
 // ExQueryExecutor represents a user extended query message executor.
 type ExQueryExecutor interface {
+	DDOExExecutor
 	DMOExExecutor
 }
 
@@ -45,17 +46,8 @@ type ErrorHandler interface {
 // SQLExecutor represents a SQL executor.
 type SQLExecutor = query.SQLExecutor
 
-// SQLQueryExecutor represents a SQL query executor.
-type SQLQueryExecutor interface {
-	QueryExecutor
-	// SetSQLExecutor sets a SQL executor.
-	SetSQLExecutor(SQLExecutor)
-}
-
-// SQLSystemQueryExecutor represents a SQL system query executor.
-type SQLSystemQueryExecutor interface {
-	SystemQueryExecutor
-	// SetSQLExecutor sets a SQL executor.
+// SQLExecutorSetter represents a SQL executor setter.
+type SQLExecutorSetter interface {
 	SetSQLExecutor(SQLExecutor)
 }
 

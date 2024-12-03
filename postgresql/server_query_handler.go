@@ -285,6 +285,9 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 		case sql.CreateTableStatement:
 			stmt := stmt.Object().(query.CreateTable)
 			res, err = server.queryExecutor.CreateTable(conn, stmt)
+		case sql.CreateIndexStatement:
+			stmt := stmt.Object().(query.CreateIndex)
+			res, err = server.exQueryExecutor.CreateIndex(conn, stmt)
 		case sql.AlterDatabaseStatement:
 			stmt := stmt.Object().(query.AlterDatabase)
 			res, err = server.queryExecutor.AlterDatabase(conn, stmt)
@@ -297,6 +300,9 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 		case sql.DropTableStatement:
 			stmt := stmt.Object().(query.DropTable)
 			res, err = server.queryExecutor.DropTable(conn, stmt)
+		case sql.DropIndexStatement:
+			stmt := stmt.Object().(query.DropIndex)
+			res, err = server.exQueryExecutor.DropIndex(conn, stmt)
 		case sql.InsertStatement:
 			stmt := stmt.Object().(query.Insert)
 			res, err = server.queryExecutor.Insert(conn, stmt)
