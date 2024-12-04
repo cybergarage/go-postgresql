@@ -38,6 +38,7 @@ func TestSQLTestSuite(t *testing.T) {
 
 	testNames := []string{
 		"SmplCrud.*",
+		"SmplIndex*",
 		"FuncMath.*",
 		// "FuncAggr*",
 		"UpdateArith*",
