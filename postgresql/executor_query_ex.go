@@ -32,6 +32,13 @@ func NewDefaultExQueryExecutorWith(executor QueryExecutor) *defaultExQueryExecut
 	}
 }
 
+// SetSQLExecutor sets a SQL executor.
+func (executor *defaultExQueryExecutor) SetSQLExecutor(se SQLExecutor) {
+	if setter, ok := executor.QueryExecutor.(SQLExecutorSetter); ok {
+		setter.SetSQLExecutor(se)
+	}
+}
+
 // CreateIndex handles a CREATE INDEX query.
 func (executor *defaultExQueryExecutor) CreateIndex(conn Conn, stmt query.CreateIndex) (protocol.Responses, error) {
 	alterStmt, err := sql.NewAlterTableFrom(stmt)
