@@ -138,8 +138,19 @@ func (store *Store) CreateTable(conn net.Conn, stmt query.CreateTable) error {
 
 // AlterTable should handle a ALTER table statement.
 func (store *Store) AlterTable(conn net.Conn, stmt query.AlterTable) error {
-	// log.Debugf("%v", stmt)
-	return errors.ErrNotImplemented
+	log.Debugf("%v", stmt)
+
+	dbName := conn.Database()
+	db, ok := store.LookupDatabase(dbName)
+	if !ok {
+		return errors.NewErrDatabaseNotExist(dbName)
+	}
+	tableName := stmt.TableName()
+	tbl, ok := db.LookupTable(tableName)
+	if !ok {
+		return errors.NewErrTableExist(tableName)
+	}
+	return tbl.Schema.Alter(stmt)
 }
 
 // DropTable should handle a DROP table statement.
