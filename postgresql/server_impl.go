@@ -77,6 +77,9 @@ func (server *server) SetSQLExecutor(sqlExeutor SQLExecutor) {
 		if executor == nil {
 			continue
 		}
+		if _, ok := executor.(Server); ok {
+			continue
+		}
 		if setter, ok := executor.(SQLExecutorSetter); ok {
 			setter.SetSQLExecutor(sqlExeutor)
 		}
