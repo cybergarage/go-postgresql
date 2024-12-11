@@ -9,7 +9,7 @@
 ## v1.6.x (2024-xx-xx)
 - Support for SCRAM-SHA-256.
 
-## v1.6.1 (2024-12-XX)
+## v1.6.1 (2024-12-11)
 - New Features:
   - Supported converting `CREATE INDEX` and `DROP INDEX` commands to `ALTER TABLE`.
 - Added:
