@@ -18,7 +18,6 @@ import (
 	stderrors "errors"
 	"strings"
 
-	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
@@ -223,7 +222,6 @@ func (server *server) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses,
 // Query handles a query protocol.
 func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
 	q := msg.Query
-	log.Debugf("%s %s", conn.RemoteAddr(), q)
 
 	conn.StartSpan("parse")
 	parser := query.NewParser()
