@@ -15,5 +15,5 @@
 package postgresql
 
 const (
-	Version = "v1.6.1"
+	Version = "v1.6.2"
 )
