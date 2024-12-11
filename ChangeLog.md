@@ -10,35 +10,45 @@
 - Support for SCRAM-SHA-256.
 
 ## v1.6.1 (2024-12-XX)
-- **New Features**:
+- New Features:
   - Supported converting `CREATE INDEX` and `DROP INDEX` commands to `ALTER TABLE`.
+- Added:
+  - Enabled secondary index tests of `go-sqltest` package.
 
 ## v1.6.0 (2024-11-24)
 - Introduced protocol server.
-- Updated the `go-sqlparser` package.
-- Updated the example to share a common SQL executor with `go-mysql`.
+- Updated go-sqlparser` package.
+- Updated examples to share a common SQL executor with `go-mysql`.
 
 ## v1.5.9 (2024-11-16)
-- Updated the `go-sqlparser` package.
+- Updated:
+  - `go-sqlparser` package.
 
 ## v1.5.8 (2024-11-11)
-- Updated the `go-sqlparser` package.
+- Updated
+  - `go-sqlparser` package.
 
 ## v1.5.7 (2024-10-27)
-- Added an error package.
-- Updated the `go-sqlparser` package.
+- Added:
+  - error package.
+- Updated 
+  - `go-sqlparser` package.
 
 ## v1.5.6 (2024-10-13)
-- Updated the internal executor interface.
+- Improved:
+  - internal executor interface.
 
 ## v1.5.5 (2024-10-02)
-- Updated the protocol package.
+- Improved:
+  - protocol package.
 
 ## v1.5.4 (2024-06-28)
-- Added a connection manager.
+- Added:
+  - Connection manager.
 
 ## v1.5.3 (2024-05-25)
-- Updated the authenticator interface.
+- Updated:
+  - Authenticator interface.
 
 ## v1.5.2 (2024-05-18)
 - Updated:
@@ -49,10 +59,12 @@
   - TLS settings to add enable/disable options.
 
 ## v1.5.0 (2024-05-12)
-- Added support for TLS settings in the configuration.
+- Added:
+  - Support for TLS settings in the configuration.
 
 ## v1.4.1 (2024-03-20)
-- Fixed lint warnings.
+- Fixed:
+  - lint warnings.
 
 ## v1.4.0 (2023-12-03)
 - Added an authenticator interface:
