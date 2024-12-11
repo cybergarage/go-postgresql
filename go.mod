@@ -2,8 +2,6 @@ module github.com/cybergarage/go-postgresql
 
 go 1.22.0
 
-toolchain go1.23.1
-
 require (
 	github.com/cybergarage/go-logger v1.3.8
 	github.com/cybergarage/go-safecast v1.2.5
