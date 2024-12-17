@@ -17,6 +17,7 @@ package postgresql
 import (
 	"errors"
 
+	"github.com/cybergarage/go-authenticator/auth"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
@@ -31,6 +32,7 @@ type server struct {
 	exQueryExecutor     ExQueryExecutor
 	bulkQueryExecutor   BulkQueryExecutor
 	errorHandler        ErrorHandler
+	authManager         auth.Manager
 }
 
 // NewServer returns a new server instance.
@@ -45,6 +47,7 @@ func NewServer() Server {
 		bulkQueryExecutor:      NewNullBulkExecutor(),
 		errorHandler:           NewNullErrorHandler(),
 		systemQueryExecutor:    NewNullSystemQueryExecutor(),
+		authManager:            auth.NewManager(),
 	}
 
 	server.exQueryExecutor = NewDefaultExQueryExecutorWith(
