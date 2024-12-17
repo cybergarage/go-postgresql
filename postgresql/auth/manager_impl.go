@@ -20,7 +20,8 @@ import (
 
 // manager represent an authenticator manager.
 type manager struct {
-	certAuthenticator *CertificateAuthenticator
+	certAuthenticator *CertAuthenticator
+	credAuthenticator *ClearTextPasswordAuthenticator
 	authenticators    []Authenticator
 	auth.Manager
 }
@@ -29,6 +30,7 @@ type manager struct {
 func NewAuthManager() AuthManager {
 	manager := &manager{
 		certAuthenticator: NewCertificateAuthenticator(),
+		credAuthenticator: NewClearTextPasswordAuthenticator("", ""),
 		Manager:           auth.NewManager(),
 		authenticators:    make([]Authenticator, 0),
 	}
@@ -43,6 +45,16 @@ func (mgr *manager) AddAuthenticator(authenticator Authenticator) {
 // ClearAuthenticators clears all authenticators.
 func (mgr *manager) ClearAuthenticators() {
 	mgr.authenticators = make([]Authenticator, 0)
+}
+
+// SetCredentialStore sets the credential store.
+func (mgr *manager) SetCredentialStore(store auth.CredentialStore) {
+	mgr.credAuthenticator.CredentialStore = store
+}
+
+// SetCertificateAuthenticator sets the certificate authenticator.
+func (mgr *manager) SetCertificateAuthenticator(auth auth.CertificateAuthenticator) {
+	mgr.certAuthenticator.Authenticator = auth
 }
 
 // Authenticate authenticates the connection with the startup protocol.
