@@ -23,7 +23,7 @@ type CertificateAuthenticator struct {
 type CertificateAuthenticatorOption = func(*CertificateAuthenticator)
 
 // NewCertificateAuthenticator returns a new certificate authenticator.
-func NewCertificateAuthenticatorWith(opts ...CertificateAuthenticatorOption) *CertificateAuthenticator {
+func NewCertificateAuthenticator(opts ...CertificateAuthenticatorOption) *CertificateAuthenticator {
 	authenticator := &CertificateAuthenticator{
 		commonName: "",
 	}

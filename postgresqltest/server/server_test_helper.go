@@ -141,7 +141,7 @@ func RunCertificateAuthenticatorTest(t *testing.T, server *Server, testDBName st
 	)
 
 	authenticators := []auth.Authenticator{
-		auth.NewCertificateAuthenticatorWith(auth.WithCommonName("localhost")),
+		auth.NewCertificateAuthenticator(auth.WithCommonName("localhost")),
 	}
 
 	for _, authenticator := range authenticators {

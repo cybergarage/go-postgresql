@@ -20,15 +20,17 @@ import (
 
 // manager represent an authenticator manager.
 type manager struct {
-	authenticators []Authenticator
+	certAuthenticator *CertificateAuthenticator
+	authenticators    []Authenticator
 	auth.Manager
 }
 
 // NewAuthManager returns a new authenticator manager.
 func NewAuthManager() AuthManager {
 	manager := &manager{
-		Manager:        auth.NewManager(),
-		authenticators: make([]Authenticator, 0),
+		certAuthenticator: NewCertificateAuthenticator(),
+		Manager:           auth.NewManager(),
+		authenticators:    make([]Authenticator, 0),
 	}
 	return manager
 }
