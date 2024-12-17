@@ -16,6 +16,7 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
+	github.com/cybergarage/go-authenticator v0.0.0-20241216163658-fdfffb82e6b0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
