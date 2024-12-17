@@ -14,18 +14,24 @@
 
 package auth
 
-// CertificateAuthenticator represents an authenticator for TLS certificates.
-type CertificateAuthenticator struct {
-	commonName string
+import (
+	"github.com/cybergarage/go-authenticator/auth"
+)
+
+// CertAuthenticator represents an authenticator for TLS certificates.
+type CertAuthenticator struct {
+	Authenticator auth.CertificateAuthenticator
+	commonName    string
 }
 
-// CertificateAuthenticatorOption represents an authenticator option.
-type CertificateAuthenticatorOption = func(*CertificateAuthenticator)
+// CertAuthenticatorOption represents an authenticator option.
+type CertAuthenticatorOption = func(*CertAuthenticator)
 
 // NewCertificateAuthenticator returns a new certificate authenticator.
-func NewCertificateAuthenticator(opts ...CertificateAuthenticatorOption) *CertificateAuthenticator {
-	authenticator := &CertificateAuthenticator{
-		commonName: "",
+func NewCertificateAuthenticator(opts ...CertAuthenticatorOption) *CertAuthenticator {
+	authenticator := &CertAuthenticator{
+		Authenticator: nil,
+		commonName:    "",
 	}
 	for _, opt := range opts {
 		opt(authenticator)
@@ -35,14 +41,21 @@ func NewCertificateAuthenticator(opts ...CertificateAuthenticatorOption) *Certif
 }
 
 // WithCommonName returns an authenticator option to set the common name.
-func WithCommonName(name string) func(*CertificateAuthenticator) {
-	return func(conn *CertificateAuthenticator) {
+func WithCommonName(name string) func(*CertAuthenticator) {
+	return func(conn *CertAuthenticator) {
 		conn.commonName = name
 	}
 }
 
 // Authenticate authenticates the specified connection.
-func (authenticator *CertificateAuthenticator) Authenticate(conn Conn) (bool, error) {
+func (authenticator *CertAuthenticator) Authenticate(conn Conn) (bool, error) {
+	if authenticator.Authenticator != nil {
+		state, ok := conn.TLSConnectionState()
+		if ok {
+			return authenticator.Authenticator.VerifyCertificate(nil, state)
+		}
+	}
+
 	conState, ok := conn.TLSConnectionState()
 	if !ok {
 		return false, nil

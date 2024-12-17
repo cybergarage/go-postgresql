@@ -14,12 +14,20 @@
 
 package auth
 
+import (
+	"github.com/cybergarage/go-authenticator/auth"
+)
+
 // AuthManager represent an authenticator manager.
 type AuthManager interface {
 	// AddAuthenticator adds a new authenticator.
 	AddAuthenticator(authenticator Authenticator)
 	// ClearAuthenticators clears all authenticators.
 	ClearAuthenticators()
+	// SetCredentialStore sets the credential store.
+	SetCredentialStore(store auth.CredentialStore)
+	// SetCertificateAuthenticator sets the certificate authenticator.
+	SetCertificateAuthenticator(auth auth.CertificateAuthenticator)
 	// Authenticate authenticates the connection with the startup protocol.
 	Authenticate(conn Conn) (bool, error)
 }
