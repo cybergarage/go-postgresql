@@ -37,7 +37,7 @@ type conn struct {
 	uuid          uuid.UUID
 	id            ConnID
 	tracerContext tracer.Context
-	tlsState      *tls.ConnectionState
+	tlsConn       *tls.Conn
 	startupMsg    *Startup
 }
 
@@ -52,7 +52,7 @@ func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
 		uuid:          uuid.New(),
 		id:            0,
 		tracerContext: nil,
-		tlsState:      nil,
+		tlsConn:       nil,
 		startupMsg:    nil,
 	}
 	for _, opt := range opts {
@@ -61,31 +61,31 @@ func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
 	return conn
 }
 
-// WithconnDatabase sets a database name.
-func WithconnDatabase(name string) func(*conn) {
+// WithConnDatabase sets a database name.
+func WithConnDatabase(name string) func(*conn) {
 	return func(conn *conn) {
 		conn.db = name
 	}
 }
 
-// WithconnTracer sets a tracer context.
-func WithconnTracer(t tracer.Context) func(*conn) {
+// WithConnTracer sets a tracer context.
+func WithConnTracer(t tracer.Context) func(*conn) {
 	return func(conn *conn) {
 		conn.tracerContext = t
 	}
 }
 
-// WithconnStartupMessage sets a startup.
-func WithconnStartupMessage(msg *Startup) func(*conn) {
+// WithConnStartupMessage sets a startup.
+func WithConnStartupMessage(msg *Startup) func(*conn) {
 	return func(conn *conn) {
 		conn.startupMsg = msg
 	}
 }
 
-// WithTLSConnectionState sets a TLS connection state.
-func WithTLSConnectionState(s *tls.ConnectionState) func(*conn) {
+// WithConnTLSConn sets a TLS connection.
+func WithConnTLSConn(s *tls.Conn) func(*conn) {
 	return func(conn *conn) {
-		conn.tlsState = s
+		conn.tlsConn = s
 	}
 }
 
@@ -168,12 +168,12 @@ func (conn *conn) StartupMessage() (*Startup, bool) {
 
 // IsTLSConnection return true if the connection is enabled TLS.
 func (conn *conn) IsTLSConnection() bool {
-	return conn.tlsState != nil
+	return conn.tlsConn != nil
 }
 
 // TLSConnectionState returns the TLS connection state.
-func (conn *conn) TLSConnectionState() (*tls.ConnectionState, bool) {
-	return conn.tlsState, conn.tlsState != nil
+func (conn *conn) TLSConn() *tls.Conn {
+	return conn.tlsConn
 }
 
 // MessageReader returns a message reader.

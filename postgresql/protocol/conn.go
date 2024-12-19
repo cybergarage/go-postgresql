@@ -47,8 +47,8 @@ type MessageConn interface {
 type TLSConn interface {
 	// IsTLSConnection return true if the connection is enabled TLS.
 	IsTLSConnection() bool
-	// TLSConnectionState returns the TLS connection state.
-	TLSConnectionState() (*tls.ConnectionState, bool)
+	// TLSConn returns a TLS connection.
+	TLSConn() *tls.Conn
 }
 
 // Conn represents a connection.

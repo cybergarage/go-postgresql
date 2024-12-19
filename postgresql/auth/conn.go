@@ -26,9 +26,8 @@ type Conn interface {
 	StartupMessage() (*protocol.Startup, bool)
 	// IsTLSConnection return true if the connection is enabled TLS.
 	IsTLSConnection() bool
-	// TLSConnectionState returns the TLS connection state.
-	TLSConnectionState() (*tls.ConnectionState, bool)
-
+	// TLSConn returns a TLS connection.
+	TLSConn() *tls.Conn
 	// MessageReader returns a message reader.
 	MessageReader() *protocol.MessageReader
 	// ResponseMessage returns a response protocol.
