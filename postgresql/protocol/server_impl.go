@@ -221,8 +221,7 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			conn.ResponseError(err)
 			return err
 		}
-		tlsConnState := tlsConn.ConnectionState()
-		conn = NewConnWith(tlsConn, WithTLSConnectionState(&tlsConnState))
+		conn = NewConnWith(tlsConn, WithConnTLSConn(tlsConn))
 	}
 
 	// Handle a Start-up

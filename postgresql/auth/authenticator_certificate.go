@@ -49,23 +49,11 @@ func WithCommonName(name string) func(*CertAuthenticator) {
 
 // Authenticate authenticates the specified connection.
 func (authenticator *CertAuthenticator) Authenticate(conn Conn) (bool, error) {
-	if authenticator.Authenticator != nil {
-		state, ok := conn.TLSConnectionState()
-		if ok {
-			return authenticator.Authenticator.VerifyCertificate(nil, state)
-		}
+	if authenticator.Authenticator == nil {
+		return true, nil
 	}
-
-	conState, ok := conn.TLSConnectionState()
-	if !ok {
+	if !conn.IsTLSConnection() {
 		return false, nil
 	}
-	for _, cert := range conState.PeerCertificates {
-		if 0 < len(authenticator.commonName) {
-			if cert.Subject.CommonName == authenticator.commonName {
-				return true, nil
-			}
-		}
-	}
-	return false, nil
+	return authenticator.Authenticator.VerifyCertificate(conn.TLSConn())
 }
