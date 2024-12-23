@@ -14,9 +14,14 @@
 
 package protocol
 
+import (
+	"github.com/cybergarage/go-authenticator/auth"
+)
+
 // Config represents a server configuration.
 type Config interface {
-	TLSConfig
+	auth.CertConfig
+
 	// SetProuctName sets a product name to the configuration.
 	SetProductName(v string)
 	// SetProductVersion sets a product version to the configuration.

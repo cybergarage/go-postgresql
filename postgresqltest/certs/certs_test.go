@@ -17,7 +17,7 @@ package certs
 import (
 	"testing"
 
-	"github.com/cybergarage/go-postgresql/postgresql"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 )
 
 const (
@@ -27,7 +27,7 @@ const (
 )
 
 func TestCerts(t *testing.T) {
-	conf := postgresql.NewTLSConfig()
+	conf := protocol.NewDefaultConfig()
 	conf.SetServerCertFile(certFile)
 	conf.SetServerKeyFile(keyFile)
 	conf.SetRootCertFiles(caCertFile)
