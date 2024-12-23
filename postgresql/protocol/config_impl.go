@@ -14,6 +14,10 @@
 
 package protocol
 
+import (
+	"github.com/cybergarage/go-authenticator/auth"
+)
+
 const (
 	defaultAddr = ""
 	defaultPort = 5432
@@ -25,7 +29,7 @@ type config struct {
 	productVersion string
 	addr           string
 	port           int
-	*tlsConfig
+	auth.CertConfig
 }
 
 // NewDefaultConfig returns a default configuration instance.
@@ -35,7 +39,7 @@ func NewDefaultConfig() Config {
 		productVersion: "",
 		addr:           defaultAddr,
 		port:           defaultPort,
-		tlsConfig:      NewTLSConfig(),
+		CertConfig:     auth.NewCertConfig(),
 	}
 	return config
 }

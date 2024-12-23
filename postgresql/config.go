@@ -14,9 +14,14 @@
 
 package postgresql
 
+import (
+	"github.com/cybergarage/go-authenticator/auth"
+)
+
 // Config represents a server configuration.
 type Config interface {
-	TLSConfig
+	auth.CertConfig
+
 	// SetAddress sets a listen address to the configuration.
 	SetAddress(addr string)
 	// SetPort sets a listen port to the configuration.
