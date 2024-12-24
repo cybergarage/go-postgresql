@@ -18,42 +18,19 @@ import (
 	"github.com/cybergarage/go-authenticator/auth"
 )
 
-// CertAuthenticator represents an authenticator for TLS certificates.
-type CertAuthenticator struct {
-	Authenticator auth.CertificateAuthenticator
-	commonName    string
-}
+// CertificateAuthenticator is the interface for authenticating a client using TLS certificates.
+type CertificateAuthenticator = auth.CertificateAuthenticator
 
-// CertAuthenticatorOption represents an authenticator option.
-type CertAuthenticatorOption = func(*CertAuthenticator)
+// CertificateAuthenticatorOption represents an authenticator option.
+type CertificateAuthenticatorOption = auth.CertificateAuthenticatorOption
+
+// WithCertificateAuthenticatorCommonName sets the common name.
+func WithCommonNameRegexp(regexps ...string) CertificateAuthenticatorOption {
+	return auth.WithCommonNameRegexp(regexps...)
+}
 
 // NewCertificateAuthenticator returns a new certificate authenticator.
-func NewCertificateAuthenticator(opts ...CertAuthenticatorOption) *CertAuthenticator {
-	authenticator := &CertAuthenticator{
-		Authenticator: nil,
-		commonName:    "",
-	}
-	for _, opt := range opts {
-		opt(authenticator)
-	}
-
-	return authenticator
-}
-
-// WithCommonName returns an authenticator option to set the common name.
-func WithCommonName(name string) func(*CertAuthenticator) {
-	return func(conn *CertAuthenticator) {
-		conn.commonName = name
-	}
-}
-
-// Authenticate authenticates the specified connection.
-func (authenticator *CertAuthenticator) Authenticate(conn Conn) (bool, error) {
-	if authenticator.Authenticator == nil {
-		return true, nil
-	}
-	if !conn.IsTLSConnection() {
-		return false, nil
-	}
-	return authenticator.Authenticator.VerifyCertificate(conn.TLSConn())
+func NewCertificateAuthenticator(opts ...CertificateAuthenticatorOption) CertificateAuthenticator {
+	ca, _ := auth.NewCertificateAuthenticator(opts...)
+	return ca
 }

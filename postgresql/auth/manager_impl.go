@@ -20,7 +20,7 @@ import (
 
 // manager represent an authenticator manager.
 type manager struct {
-	certAuthenticator *CertAuthenticator
+	certAuthenticator CertificateAuthenticator
 	credAuthenticator *ClearTextPasswordAuthenticator
 	authenticators    []Authenticator
 	auth.Manager
@@ -54,7 +54,7 @@ func (mgr *manager) SetCredentialStore(store auth.CredentialStore) {
 
 // SetCertificateAuthenticator sets the certificate authenticator.
 func (mgr *manager) SetCertificateAuthenticator(auth auth.CertificateAuthenticator) {
-	mgr.certAuthenticator.Authenticator = auth
+	mgr.certAuthenticator = auth
 }
 
 // Authenticate authenticates the connection with the startup protocol.

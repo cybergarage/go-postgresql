@@ -140,35 +140,27 @@ func RunCertificateAuthenticatorTest(t *testing.T, server *Server, testDBName st
 		rootCert   = "../certs/root_cert.pem"
 	)
 
-	authenticators := []auth.Authenticator{
-		auth.NewCertificateAuthenticator(auth.WithCommonName("localhost")),
+	auth.NewCertificateAuthenticator(auth.WithCommonNameRegexp("localhost"))
+
+	client := postgresql.NewDefaultClient()
+	client.SetClientKeyFile(clientKey)
+	client.SetClientCertFile(clientCert)
+	client.SetRootCertFile(rootCert)
+
+	err := client.Open()
+	if err != nil {
+		t.Error(err)
+		return
 	}
 
-	for _, authenticator := range authenticators {
-		server.AddAuthenticator(authenticator)
+	err = client.Ping()
+	if err != nil {
+		t.Error(err)
+	}
 
-		client := postgresql.NewDefaultClient()
-		client.SetClientKeyFile(clientKey)
-		client.SetClientCertFile(clientCert)
-		client.SetRootCertFile(rootCert)
-
-		err := client.Open()
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		err = client.Ping()
-		if err != nil {
-			t.Error(err)
-		}
-
-		err = client.Close()
-		if err != nil {
-			t.Error(err)
-		}
-
-		server.ClearAuthenticators()
+	err = client.Close()
+	if err != nil {
+		t.Error(err)
 	}
 }
 
