@@ -15,12 +15,12 @@
 package protocol
 
 import (
-	"github.com/cybergarage/go-authenticator/auth"
+	"github.com/cybergarage/go-authenticator/auth/tls"
 )
 
 // Config represents a server configuration.
 type Config interface {
-	auth.CertConfig
+	tls.CertConfig
 
 	// SetProuctName sets a product name to the configuration.
 	SetProductName(v string)
