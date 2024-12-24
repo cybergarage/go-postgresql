@@ -21,13 +21,13 @@ import (
 
 // authExecutor represents a base authenticator.
 type authExecutor struct {
-	authMgr auth.AuthManager
+	authMgr auth.Manager
 }
 
 // newAuthExecutor returns a base authenticator.
 func newAuthExecutor() *authExecutor {
 	executor := &authExecutor{
-		authMgr: auth.NewAuthManager(),
+		authMgr: auth.NewManager(),
 	}
 	return executor
 }
