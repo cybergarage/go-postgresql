@@ -26,8 +26,8 @@ type manager struct {
 	auth.Manager
 }
 
-// NewAuthManager returns a new authenticator manager.
-func NewAuthManager() AuthManager {
+// NewManager returns a new authenticator manager.
+func NewManager() Manager {
 	manager := &manager{
 		certAuthenticator: NewCertificateAuthenticator(),
 		credAuthenticator: NewClearTextPasswordAuthenticator("", ""),

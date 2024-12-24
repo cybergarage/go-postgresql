@@ -18,8 +18,8 @@ import (
 	"github.com/cybergarage/go-authenticator/auth"
 )
 
-// AuthManager represent an authenticator manager.
-type AuthManager interface {
+// Manager represent an authenticator manager.
+type Manager interface {
 	// AddAuthenticator adds a new authenticator.
 	AddAuthenticator(authenticator Authenticator)
 	// ClearAuthenticators clears all authenticators.
