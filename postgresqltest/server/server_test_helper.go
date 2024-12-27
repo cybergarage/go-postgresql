@@ -95,34 +95,24 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 		password = "testpassword"
 	)
 
-	authenticators := []auth.Authenticator{
-		auth.NewClearTextPasswordAuthenticator(username, password),
+	client := postgresql.NewDefaultClient()
+	client.SetUser(username)
+	client.SetPassword(password)
+	client.SetDatabase(testDBName)
+	err := client.Open()
+	if err != nil {
+		t.Error(err)
+		return
 	}
 
-	for _, authenticator := range authenticators {
-		server.AddAuthenticator(authenticator)
+	err = client.Ping()
+	if err != nil {
+		t.Error(err)
+	}
 
-		client := postgresql.NewDefaultClient()
-		client.SetUser(username)
-		client.SetPassword(password)
-		client.SetDatabase(testDBName)
-		err := client.Open()
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		err = client.Ping()
-		if err != nil {
-			t.Error(err)
-		}
-
-		err = client.Close()
-		if err != nil {
-			t.Error(err)
-		}
-
-		server.ClearAuthenticators()
+	err = client.Close()
+	if err != nil {
+		t.Error(err)
 	}
 }
 

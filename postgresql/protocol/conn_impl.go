@@ -38,7 +38,6 @@ type conn struct {
 	id            ConnID
 	tracerContext tracer.Context
 	tlsConn       *tls.Conn
-	startupMsg    *Startup
 }
 
 // NewConnWith returns a connection with a raw connection.
@@ -53,7 +52,6 @@ func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
 		id:            0,
 		tracerContext: nil,
 		tlsConn:       nil,
-		startupMsg:    nil,
 	}
 	for _, opt := range opts {
 		opt(conn)
@@ -72,13 +70,6 @@ func WithConnDatabase(name string) func(*conn) {
 func WithConnTracer(t tracer.Context) func(*conn) {
 	return func(conn *conn) {
 		conn.tracerContext = t
-	}
-}
-
-// WithConnStartupMessage sets a startup.
-func WithConnStartupMessage(msg *Startup) func(*conn) {
-	return func(conn *conn) {
-		conn.startupMsg = msg
 	}
 }
 
@@ -154,16 +145,6 @@ func (conn *conn) StartSpan(name string) bool {
 // FinishSpan ends the current top tracer span and pops it from the tracer span stack.
 func (conn *conn) FinishSpan() bool {
 	return conn.tracerContext.FinishSpan()
-}
-
-// SetStartupMessage sets a startup.
-func (conn *conn) SetStartupMessage(msg *Startup) {
-	conn.startupMsg = msg
-}
-
-// StartupMessage return the startup.
-func (conn *conn) StartupMessage() (*Startup, bool) {
-	return conn.startupMsg, conn.startupMsg != nil
 }
 
 // IsTLSConnection return true if the connection is enabled TLS.

@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	pgnet "github.com/cybergarage/go-postgresql/postgresql/net"
 	"github.com/cybergarage/go-tracing/tracer"
 )
@@ -31,6 +32,7 @@ type server struct {
 	tracer.Tracer
 	tcpListener net.Listener
 	MessageHandler
+	auth.Manager
 }
 
 // NewServer returns a new server instance.
@@ -41,6 +43,7 @@ func NewServer() Server {
 		Tracer:         tracer.NullTracer,
 		tcpListener:    nil,
 		MessageHandler: nil,
+		Manager:        auth.NewManager(),
 	}
 	return server
 }
@@ -142,11 +145,46 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 	log.Debugf("%s/%s (%s) accepted", server.ProductName(), server.ProductVersion(), netConn.RemoteAddr().String())
 
+	authenticateStartup := func(conn Conn, startupMsg *Startup) (Response, error) {
+		authenticate := func(conn Conn, startupMsg *Startup) (bool, error) {
+			clientUsername, ok := startupMsg.User()
+			if !ok {
+				return false, nil
+			}
+			authMsg, err := NewAuthenticationCleartextPassword()
+			if err != nil {
+				return false, err
+			}
+			err = conn.ResponseMessage(authMsg)
+			if err != nil {
+				return false, err
+			}
+			msg, err := NewPasswordWithReader(conn.MessageReader())
+			if err != nil {
+				return false, err
+			}
+			q := auth.NewQuery(
+				auth.WithQueryUsername(clientUsername),
+				auth.WithQueryPassword(msg.Password),
+			)
+			return server.VerifyCredential(conn, q)
+		}
+
+		ok, err := authenticate(conn, startupMsg)
+		if err != nil {
+			return nil, err
+		}
+		if ok {
+			return NewAuthenticationOk()
+		}
+		return NewErrorResponse(), nil
+	}
+
 	handleStartupMessage := func(conn Conn, startupMsg *Startup) error {
 		// PostgreSQL: Documentation: 16: 55.2. Message Flow
 		// https://www.postgresql.org/docs/16/protocol-flow.html
 		// Handle the Start-up message and return an Authentication message or error
-		res, err := server.MessageHandler.Authenticate(conn)
+		res, err := authenticateStartup(conn, startupMsg)
 		if err != nil {
 			return err
 		}
@@ -231,7 +269,6 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn.ResponseError(err)
 		return err
 	}
-	conn.SetStartupMessage(startupMsg)
 
 	err = handleStartupMessage(conn, startupMsg)
 	if err != nil {

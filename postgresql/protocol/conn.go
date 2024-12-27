@@ -25,10 +25,6 @@ type ConnID = net.ConnID
 
 // MessageConn represents a message connection.
 type MessageConn interface {
-	// SetStartupMessage sets a startup
-	SetStartupMessage(msg *Startup)
-	// StartupMessage return the startup
-	StartupMessage() (*Startup, bool)
 	// MessageReader returns a message reader.
 	MessageReader() *MessageReader
 	// ResponseMessage sends a response

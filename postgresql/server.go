@@ -15,6 +15,7 @@
 package postgresql
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-tracing/tracer"
@@ -55,7 +56,7 @@ type SQLExecutorSetter interface {
 type Server interface {
 	tracer.Tracer
 	Config
-	AuthManager
+	auth.Manager
 
 	// SetTracer sets a tracing tracer.
 	SetTracer(tracer.Tracer)

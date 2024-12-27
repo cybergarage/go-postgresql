@@ -26,7 +26,6 @@ import (
 
 // protocolStartupHandler  a new protocol startup executor.
 type protocolStartupHandler struct {
-	*authExecutor
 	processID int32
 	secretKey int32
 }
@@ -38,9 +37,8 @@ func newProtocolStartupHandler() *protocolStartupHandler {
 		log.Error(err)
 	}
 	return &protocolStartupHandler{
-		authExecutor: newAuthExecutor(),
-		processID:    int32(os.Getpid()),
-		secretKey:    int32(r.Int64()),
+		processID: int32(os.Getpid()),
+		secretKey: int32(r.Int64()),
 	}
 }
 

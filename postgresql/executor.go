@@ -21,7 +21,6 @@ import (
 
 // ProtocolStartupHander represents a start-up message handler.
 type ProtocolStartupHander interface {
-	AuthManager
 	protocol.StartupHandler
 }
 
