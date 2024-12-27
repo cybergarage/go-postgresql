@@ -18,11 +18,13 @@ import (
 	"crypto/tls"
 
 	"github.com/cybergarage/go-postgresql/examples/go-postgresqld/server"
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 )
 
 // Server represents a test server.
 type Server struct {
 	*server.Server
+	credStore map[string]auth.Credential
 }
 
 const (
@@ -33,14 +35,27 @@ const (
 
 // NewServer returns a test server instance.
 func NewServer() *Server {
-	server := server.NewServer()
+	server := &Server{
+		Server:    server.NewServer(),
+		credStore: make(map[string]auth.Credential),
+	}
 
 	server.SetServerKeyFile(serverKey)
 	server.SetServerCertFile(serverCert)
 	server.SetRootCertFiles(rootCert)
 	server.SetClientAuthType(tls.RequireAndVerifyClientCert)
 
-	return &Server{
-		Server: server,
-	}
+	return server
+}
+
+// SetCredential sets a credential.
+func (server *Server) SetCredential(cred auth.Credential) {
+	server.credStore[cred.Username()] = cred
+}
+
+// LookupCredential looks up a credential.
+func (server *Server) LookupCredential(q auth.Query) (auth.Credential, bool, error) {
+	user := q.Username()
+	cred, ok := server.credStore[user]
+	return cred, ok, nil
 }
