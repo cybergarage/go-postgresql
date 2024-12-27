@@ -95,6 +95,15 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 		password = "testpassword"
 	)
 
+	cred := auth.NewCredential(
+		auth.WithCredentialUsername(username),
+		auth.WithCredentialPassword(password),
+	)
+	server.SetCredential(cred)
+	defer func() {
+		server.SetCredentialStore(nil)
+	}()
+
 	client := postgresql.NewDefaultClient()
 	client.SetUser(username)
 	client.SetPassword(password)
