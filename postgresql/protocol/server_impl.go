@@ -259,6 +259,11 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			conn.ResponseError(err)
 			return err
 		}
+		ok, err := server.Manager.VerifyCertificate(tlsConn)
+		if !ok {
+			conn.ResponseError(err)
+			return err
+		}
 		conn = NewConnWith(tlsConn, WithConnTLSConn(tlsConn))
 	}
 
