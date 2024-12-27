@@ -16,8 +16,6 @@ package protocol
 
 // StartupHandler represents a start-up message handler.
 type StartupHandler interface {
-	// Authenticate handles the Start-up message and returns an Authentication or ErrorResponse
-	Authenticate(Conn) (Response, error)
 	// ParameterStatuses returns the parameter statuses.
 	ParameterStatuses(Conn) (Responses, error)
 	// BackendKeyData returns the backend key data.

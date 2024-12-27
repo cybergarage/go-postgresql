@@ -15,6 +15,7 @@
 package protocol
 
 import (
+	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -22,6 +23,7 @@ import (
 type Server interface {
 	tracer.Tracer
 	Config
+	auth.Manager
 	SetMessageHandler(MessageHandler)
 	// SetTracer sets a tracing tracer.
 	SetTracer(tracer.Tracer)
