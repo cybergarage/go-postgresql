@@ -54,7 +54,6 @@ type SQLExecutorSetter interface {
 
 // Server represents a PostgreSQL protocol server.
 type Server interface {
-	tracer.Tracer
 	Config
 	auth.Manager
 
