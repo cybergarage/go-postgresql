@@ -35,10 +35,12 @@ TEST_PKG=${MODULE_ROOT}/${TEST_SRC_ROOT}
 EXAMPLES_ROOT=examples
 EXAMPLES_SRC_ROOT=${EXAMPLES_ROOT}
 EXAMPLES_DEAMON_BIN=go-postgresqld
-EXAMPLES_DOCKER_TAG=cybergarage/${EXAMPLES_DEAMON_BIN}:${PKG_VER}
 EXAMPLES_PKG_ROOT=${GIT_ROOT}/${PRODUCT_NAME}/${EXAMPLES_ROOT}
 EXAMPLE_BINARIES=\
 	${EXAMPLES_PKG_ROOT}/${EXAMPLES_DEAMON_BIN}
+
+EXAMPLES_DOCKER_TAG=cybergarage/${EXAMPLES_DEAMON_BIN}:${PKG_VER}
+EXAMPLES_DOCKER_TAG_LATEST=cybergarage/${EXAMPLES_DEAMON_BIN}:latest
 
 BIN_ROOT=bin
 BIN_PKG_ROOT=${GIT_ROOT}/${PRODUCT_NAME}/${BIN_ROOT}
@@ -86,8 +88,13 @@ install:
 run: install
 	${GOBIN}/${EXAMPLES_DEAMON_BIN} --debug
 
-image: test
-	docker image build -t ${EXAMPLES_DOCKER_TAG} .
+image:
+	docker image build -t${EXAMPLES_DOCKER_TAG} .
+	docker push ${EXAMPLES_DOCKER_TAG}
+
+image-push: image
+	docker image build -t${EXAMPLES_DOCKER_TAG_LATEST}
+	docker push ${EXAMPLES_DOCKER_TAG_LATEST}
 
 rund: image
 	docker container run -it --rm -p 5432:5432 ${EXAMPLES_DOCKER_TAG}
