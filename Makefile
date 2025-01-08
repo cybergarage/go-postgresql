@@ -88,7 +88,7 @@ install:
 run: install
 	${GOBIN}/${EXAMPLES_DEAMON_BIN} --debug
 
-image:
+image: test
 	docker image build -t${EXAMPLES_DOCKER_TAG} .
 	docker push ${EXAMPLES_DOCKER_TAG}
 
