@@ -1,13 +1,16 @@
 # Changelog
 
-## v1.6.0 (2024-xx-xx)
+## v1.6.0 (2025-xx-xx)
 - Improved:
   - Support for more data types.
   - SELECT:
     - Added tests for ORDER BY.
 
-## v1.6.x (2024-xx-xx)
+## v1.6.x (2025-xx-xx)
 - Support for SCRAM-SHA-256.
+
+## v1.6.3 (2025-01-xx)
+- Updated `go-authenticator` package to v1.0.3
 
 ## v1.6.2 (2024-12-28)
 - New Features:
