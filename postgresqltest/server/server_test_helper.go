@@ -100,6 +100,7 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 		auth.WithCredentialPassword(password),
 	)
 	server.SetCredential(cred)
+	server.SetCredentialStore(server)
 	defer func() {
 		server.SetCredentialStore(nil)
 	}()
