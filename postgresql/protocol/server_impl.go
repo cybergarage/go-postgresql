@@ -163,10 +163,13 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			if err != nil {
 				return false, err
 			}
-			q := auth.NewQuery(
+			q, err := auth.NewQuery(
 				auth.WithQueryUsername(clientUsername),
 				auth.WithQueryPassword(msg.Password),
 			)
+			if err != nil {
+				return false, err
+			}
 			return server.VerifyCredential(conn, q)
 		}
 
