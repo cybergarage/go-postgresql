@@ -21,9 +21,9 @@ Since the go-postgresql handles all startup and system commands automatically, d
 ## Examples
 
 - [Examples](doc/examples.md)
-  - [go-postgresqld](examples/go-postgresqld)
-	- [go-sqlserver](https://github.com/cybergarage/go-sqlserver)
-	- [PuzzleDB](https://github.com/cybergarage/puzzledb-go)
+	- [go-postgresqld](examples/go-postgresqld) [![Docker Image Version](https://img.shields.io/docker/v/cybergarage/go-postgresqld)](https://hub.docker.com/repository/docker/cybergarage/go-postgresqld/)
+	- [go-sqlserver](https://github.com/cybergarage/go-sqlserver) [![Docker Image Version](https://img.shields.io/docker/v/cybergarage/go-sqlserver)](https://hub.docker.com/repository/docker/cybergarage/go-sqlserver/)
+	- [PuzzleDB](https://github.com/cybergarage/puzzledb-go) [![Docker Image Version](https://img.shields.io/docker/v/cybergarage/puzzledb)](https://hub.docker.com/repository/docker/cybergarage/puzzledb/)
 
 ## References
 
