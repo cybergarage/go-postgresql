@@ -1,6 +1,6 @@
 module github.com/cybergarage/go-postgresql
 
-go 1.23.0
+go 1.23
 
 require (
 	github.com/cybergarage/go-authenticator v1.0.3
