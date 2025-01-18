@@ -89,12 +89,11 @@ run: install
 	${GOBIN}/${EXAMPLES_DEAMON_BIN} --debug
 
 image: test
-	docker image build -t${EXAMPLES_DOCKER_TAG} .
-	docker push ${EXAMPLES_DOCKER_TAG}
+	docker image build -t${EXAMPLES_DOCKER_TAG} -t${EXAMPLES_DOCKER_TAG_LATEST} .
+	docker push ${EXAMPLES_DOCKER_TAG_LATEST}
 
 image-push: image
-	docker image build -t${EXAMPLES_DOCKER_TAG_LATEST}
-	docker push ${EXAMPLES_DOCKER_TAG_LATEST}
+	docker push ${EXAMPLES_DOCKER_TAG}
 
 rund: image
 	docker container run -it --rm -p 5432:5432 ${EXAMPLES_DOCKER_TAG}
