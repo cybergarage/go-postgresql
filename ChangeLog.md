@@ -9,8 +9,8 @@
 ## v1.6.x (2025-xx-xx)
 - Support for SCRAM-SHA-256.
 
-## v1.6.3 (2025-01-xx)
-- Updated `go-authenticator` package to v1.0.3
+## v1.6.3 (2025-01-18)
+- Updated authenticator interface
 
 ## v1.6.2 (2024-12-28)
 - New Features:
