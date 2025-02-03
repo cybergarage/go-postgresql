@@ -21,6 +21,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/stmt"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-safecast/safecast"
 	sqlparser "github.com/cybergarage/go-sqlparser/sql/parser"
@@ -29,13 +30,13 @@ import (
 
 // protocolQueryHandler represents a protocol query server.
 type protocolQueryHandler struct {
-	*PreparedManager
+	*stmt.PreparedManager
 }
 
 // newProtocolQueryHandlerWith returns a new protocol query server.
 func newProtocolQueryHandler() *protocolQueryHandler {
 	return &protocolQueryHandler{
-		PreparedManager: NewPreparedManager(),
+		PreparedManager: stmt.NewPreparedManager(),
 	}
 }
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package postgresql
+package stmt
 
 import (
 	"github.com/cybergarage/go-postgresql/postgresql/errors"
