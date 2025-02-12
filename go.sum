@@ -10,6 +10,8 @@ github.com/cybergarage/go-safecast v1.2.5 h1:ZDiKmdsE15RTKETRXKAKbYTDIhAzNONwJEf
 github.com/cybergarage/go-safecast v1.2.5/go.mod h1:fw2lE/5DIOjmyPj5kx0aYZSAL2bSFoh/Zith5TWVTz8=
 github.com/cybergarage/go-sasl v1.2.5 h1:p/n77BpKwRSSZr0+4ANytDcQxAfZmI/izIxJ2+kQas0=
 github.com/cybergarage/go-sasl v1.2.5/go.mod h1:tgAGdhINFMElVjU/C2Ly6LkPDblUFpfQ8l8/0QoANVI=
+github.com/cybergarage/go-sqlparser v1.4.2-0.20250212093351-db918bb4200f h1:ul5dki0ugAf4DkwMlVWAYX2w6LL7R3OygrlkIzM7iBo=
+github.com/cybergarage/go-sqlparser v1.4.2-0.20250212093351-db918bb4200f/go.mod h1:v8E4svUnzNc+uUBBP9w+eiKuzFatfrl1zxlRkDCZfwY=
 github.com/cybergarage/go-sqlparser v1.4.2 h1:VPNEim2v9A4ZNT55u7TMRokoL46b9aVahosXbiMERiM=
 github.com/cybergarage/go-sqlparser v1.4.2/go.mod h1:+of/1SNcwb0ElxSiuQgHisWD1nGWnn/i/WlLdwhF5Kg=
 github.com/cybergarage/go-sqltest v1.4.3 h1:nWzlz0yVlqbdnBT6kYStN9P+70tcwTJeelWX1YXCxBM=
