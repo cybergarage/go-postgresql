@@ -6,7 +6,7 @@ require (
 	github.com/cybergarage/go-authenticator v1.0.4
 	github.com/cybergarage/go-logger v1.3.8
 	github.com/cybergarage/go-safecast v1.2.5
-	github.com/cybergarage/go-sqlparser v1.4.2-0.20250212093351-db918bb4200f
+	github.com/cybergarage/go-sqlparser v1.5.0
 	github.com/cybergarage/go-sqltest v1.4.3
 	github.com/cybergarage/go-tracing v1.1.4
 	github.com/google/gopacket v1.1.19
@@ -23,7 +23,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/exp v0.0.0-20241210194714-1829a127f884 // indirect
+	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 )
