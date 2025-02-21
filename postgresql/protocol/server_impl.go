@@ -374,7 +374,7 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			reqErr = conn.SkipMessage()
 			if reqErr == nil {
 				reqErr = NewErrMessageNotSuppoted(reqType)
-				log.Warnf(reqErr.Error())
+				log.Warn(reqErr.Error())
 			}
 		}
 
