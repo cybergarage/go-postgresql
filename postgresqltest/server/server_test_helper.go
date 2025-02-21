@@ -15,7 +15,6 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -214,7 +213,7 @@ func RunServerCopyTest(t *testing.T, server *Server, testDBName string) {
 	}
 
 	copyCount, err := conn.CopyFrom(
-		context.Background(),
+		t.Context(),
 		pgx.Identifier{"cptest"},
 		[]string{"ctext", "cint", "cfloat"},
 		pgx.CopyFromRows(copyRows),
