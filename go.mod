@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/cybergarage/go-authenticator v1.0.4
-	github.com/cybergarage/go-logger v1.3.8
+	github.com/cybergarage/go-logger v1.3.9
 	github.com/cybergarage/go-safecast v1.2.5
 	github.com/cybergarage/go-sqlparser v1.5.0
 	github.com/cybergarage/go-sqltest v1.4.3

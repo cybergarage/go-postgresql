@@ -6,6 +6,8 @@ github.com/cybergarage/go-authenticator v1.0.4 h1:sxv18cyh9geewmmbFytFjqDQIZxqZb
 github.com/cybergarage/go-authenticator v1.0.4/go.mod h1:mcJk22zUiOtQ7oJFMrVaDiYc/gIhelLem7wsSQ9CQMo=
 github.com/cybergarage/go-logger v1.3.8 h1:Law2nkLjH5tJDNISMVUjT7F46x4DaZuBUyWULMs30zY=
 github.com/cybergarage/go-logger v1.3.8/go.mod h1:a7B/AZjPoA1W8EU/458vdCv6YWtRJI7Q9rofUcZjiho=
+github.com/cybergarage/go-logger v1.3.9 h1:X6P9HJYJc5TSn+CrOwcub3VspvVrlt/WMT++f8G+XjA=
+github.com/cybergarage/go-logger v1.3.9/go.mod h1:SU5vzAFJOTs89JXk+Jn89RaNmcR07parcJgnW4e8aDw=
 github.com/cybergarage/go-safecast v1.2.5 h1:ZDiKmdsE15RTKETRXKAKbYTDIhAzNONwJEfCaxmhkvU=
 github.com/cybergarage/go-safecast v1.2.5/go.mod h1:fw2lE/5DIOjmyPj5kx0aYZSAL2bSFoh/Zith5TWVTz8=
 github.com/cybergarage/go-sasl v1.2.5 h1:p/n77BpKwRSSZr0+4ANytDcQxAfZmI/izIxJ2+kQas0=
