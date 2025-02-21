@@ -26,6 +26,7 @@ import (
 	"github.com/cybergarage/go-safecast/safecast"
 	sqlparser "github.com/cybergarage/go-sqlparser/sql/parser"
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
+	sql_system "github.com/cybergarage/go-sqlparser/sql/system"
 )
 
 // protocolQueryHandler represents a protocol query server.
@@ -77,19 +78,11 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 			return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())
 		}
 		table := tables[0]
-		return sql.NewSelectWith(
-			sql.NewSelectorsWith(
-				sql.NewColumnWithName(system.InformationSchemaColumnsColumnName),
-				sql.NewColumnWithName(system.InformationSchemaColumnsDataType),
-			),
-			sql.NewTablesWith(sql.NewTableWith(system.InformationSchemaColumns)),
-			sql.NewConditionWith(
-				sql.NewEQWith(
-					sql.NewColumnWithOptions(sql.WithColumnName(system.InformationSchemaColumnsTableName)),
-					sql.NewLiteralWith(table.TableName()),
-				),
-			),
-		), nil
+		sysStmt, err := sql_system.NewSchemaColumnsStatement(
+			sql_system.WithSchemaColumnsStatementDatabaseName(conn.Database()),
+			sql_system.WithSchemaColumnsStatementTableNames([]string{table.TableName()}),
+		)
+		return sysStmt.Statement(), err
 	}
 
 	selectObjectIds := func(stmt query.Select) ([]int32, error) {
