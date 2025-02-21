@@ -20,7 +20,7 @@ import (
 
 // ConnManager represents a connection map.
 type ConnManager struct {
-	*net.ConnManager
+	net.ConnManager
 }
 
 // NewConnManager returns a connection map.
