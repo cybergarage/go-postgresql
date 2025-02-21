@@ -23,6 +23,7 @@ import (
 	"github.com/cybergarage/go-sqlparser/sql/net"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
+	"github.com/cybergarage/go-sqlparser/sql/system"
 )
 
 // Store represents a data store.
@@ -333,6 +334,29 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 // SystemSelect should handle a system SELECT statement.
 func (store *Store) SystemSelect(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
-	log.Debugf("%v", stmt)
-	return nil, errors.NewErrNotImplemented("SystemSelect")
+	q := stmt.String()
+	log.Debugf("%v", q)
+
+	switch {
+	case system.IsSchemaColumsQuery(stmt):
+		sysStmt, err := system.NewSchemaColumnsStatement(
+			system.WithSchemaColumnsStatementSelect(stmt),
+		)
+		if err != nil {
+			return nil, err
+		}
+		dbName := sysStmt.DatabaseName()
+		tblNames := sysStmt.TableNames()
+		schemas := []query.Schema{}
+		for _, tblName := range tblNames {
+			_, tbl, err := store.LookupDatabaseTable(conn, dbName, tblName)
+			if err != nil {
+				return nil, err
+			}
+			schemas = append(schemas, tbl.Schema)
+		}
+		return system.NewSchemaColumnsResultSetFromSchemas(schemas)
+	}
+
+	return nil, errors.NewErrNotImplemented(fmt.Sprintf("SystemSelect: %s", stmt.String()))
 }
