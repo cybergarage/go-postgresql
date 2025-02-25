@@ -70,72 +70,72 @@ func (server *server) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, e
 	return protocol.NewResponsesWith(protocol.NewBindComplete()), nil
 }
 
-// Describe handles a describe protocol.
-func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
-	newSystemSelectQuery := func(stmt query.Select) (sql.Select, error) {
-		tables := stmt.From().Tables()
-		if len(tables) != 1 {
-			return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())
-		}
-		table := tables[0]
-		sysStmt, err := sql_system.NewSchemaColumnsStatement(
-			sql_system.WithSchemaColumnsStatementDatabaseName(conn.Database()),
-			sql_system.WithSchemaColumnsStatementTableNames([]string{table.TableName()}),
-		)
-		return sysStmt.Statement(), err
+func newSystemSelectQuery(conn Conn, stmt query.Select) (sql.Select, error) {
+	tables := stmt.From().Tables()
+	if len(tables) != 1 {
+		return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())
 	}
+	table := tables[0]
+	sysStmt, err := sql_system.NewSchemaColumnsStatement(
+		sql_system.WithSchemaColumnsStatementDatabaseName(conn.Database()),
+		sql_system.WithSchemaColumnsStatementTableNames([]string{table.TableName()}),
+	)
+	return sysStmt.Statement(), err
+}
 
-	selectObjectIds := func(stmt query.Select) ([]int32, error) {
-		objIDFromResponses := func(responses protocol.Responses, colName string) (int32, bool) {
-			for r, res := range responses {
-				if r == 0 {
-					continue
-				}
-				dataRow, ok := res.(*protocol.DataRow)
-				if !ok {
-					continue
-				}
-				if len(dataRow.Data) < 2 {
-					continue
-				}
-				columnName, ok := dataRow.Data[0].(string)
-				if !ok {
-					continue
-				}
-				if !strings.EqualFold(columnName, colName) {
-					continue
-				}
-				var objID int32
-				err := safecast.ToInt32(dataRow.Data[1], &objID)
-				if err != nil {
-					continue
-				}
-				return objID, true
-			}
-			return 0, false
-		}
-
-		query, err := newSystemSelectQuery(stmt)
-		if err != nil {
-			return nil, err
-		}
-		res, err := server.systemQueryExecutor.SystemSelect(conn, query)
-		if err != nil {
-			return nil, err
-		}
-		sels := stmt.Selectors()
-		objIDs := make([]int32, len(sels))
-		for n, sel := range sels {
-			selName := sel.Name()
-			objID, ok := objIDFromResponses(res, selName)
-			if !ok {
-				objIDs[n] = 0
+func selectObjectIds(conn Conn, executor SystemQueryExecutor, stmt query.Select) ([]int32, error) {
+	objIDFromResponses := func(responses protocol.Responses, colName string) (int32, bool) {
+		for r, res := range responses {
+			if r == 0 {
 				continue
 			}
-			objIDs[n] = objID
+			dataRow, ok := res.(*protocol.DataRow)
+			if !ok {
+				continue
+			}
+			if len(dataRow.Data) < 2 {
+				continue
+			}
+			columnName, ok := dataRow.Data[0].(string)
+			if !ok {
+				continue
+			}
+			if !strings.EqualFold(columnName, colName) {
+				continue
+			}
+			var objID int32
+			err := safecast.ToInt32(dataRow.Data[1], &objID)
+			if err != nil {
+				continue
+			}
+			return objID, true
 		}
-		return objIDs, nil
+		return 0, false
 	}
+	query, err := newSystemSelectQuery(conn, stmt)
+	if err != nil {
+		return nil, err
+	}
+	res, err := executor.SystemSelect(conn, query)
+	if err != nil {
+		return nil, err
+	}
+	sels := stmt.Selectors()
+	objIDs := make([]int32, len(sels))
+	for n, sel := range sels {
+		selName := sel.Name()
+		objID, ok := objIDFromResponses(res, selName)
+		if !ok {
+			objIDs[n] = 0
+			continue
+		}
+		objIDs[n] = objID
+	}
+	return objIDs, nil
+}
+
+// Describe handles a describe protocol.
+func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
 
 	switch msg.Type {
 	case protocol.PreparedStatement:
@@ -146,7 +146,7 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		objIDs := []int32{}
 		switch stmt := prepStmt.ParsedStatement.Object().(type) {
 		case query.Select:
-			objIDs, err = selectObjectIds(stmt)
+			objIDs, err = selectObjectIds(conn, server.systemQueryExecutor, stmt)
 			if err != nil {
 				return nil, err
 			}
