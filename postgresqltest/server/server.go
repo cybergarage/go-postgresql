@@ -28,9 +28,9 @@ type Server struct {
 }
 
 const (
-	serverKey  = "../certs/key.pem"
-	serverCert = "../certs/cert.pem"
-	rootCert   = "../certs/root_cert.pem"
+	serverKey  = "../certs/client-key.pem"
+	serverCert = "../certs/client-cert.pem"
+	rootCert   = "../certs/cacert.pem"
 )
 
 // NewServer returns a test server instance.

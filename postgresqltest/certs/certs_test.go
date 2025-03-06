@@ -21,9 +21,9 @@ import (
 )
 
 const (
-	certFile   = "./cert.pem"
-	keyFile    = "./key.pem"
-	caCertFile = "./root_cert.pem"
+	certFile   = "./client-cert.pem"
+	keyFile    = "./client-key.pem"
+	caCertFile = "./cacert.pem"
 )
 
 func TestCerts(t *testing.T) {

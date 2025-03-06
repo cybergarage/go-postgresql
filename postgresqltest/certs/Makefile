@@ -20,9 +20,10 @@ all: certgen
 # https://www.postgresql.org/docs/current/ssl-tcp.html#SSL-CERTIFICATE-CREATION
 
 certgen: clean
-	openssl req -new -x509 -days 36500 -nodes -text -out cert.pem -keyout key.pem -extensions san -config san.cfg -subj "/CN=localhost"
-	chmod og-rwx key.pem
-	cp cert.pem root_cert.pem
+	openssl req -new -x509 -days 36500 -nodes -text -out client-cert.pem -keyout client-key.pem -extensions san -config san.cfg -subj "/CN=localhost"
+	chmod og-rwx client-key.pem
+	cp client-cert.pem cacert.pem
+	cp *.pem ../sysbench
 
 clean:
-	rm -f cert.pem key.pem root_cert.pem
+	rm -f client-cert.pem client-key.pem cacert.pem

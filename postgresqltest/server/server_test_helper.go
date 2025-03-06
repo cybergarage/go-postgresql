@@ -134,9 +134,9 @@ func RunCertificateAuthenticatorTest(t *testing.T, server *Server, testDBName st
 	t.Helper()
 
 	const (
-		clientKey  = "../certs/key.pem"
-		clientCert = "../certs/cert.pem"
-		rootCert   = "../certs/root_cert.pem"
+		clientKey  = "../certs/client-key.pem"
+		clientCert = "../certs/client-cert.pem"
+		rootCert   = "../certs/cacert.pem"
 	)
 
 	auth.NewCertificateAuthenticator(auth.WithCommonNameRegexp("localhost"))
