@@ -247,27 +247,28 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			conn.ResponseError(err)
 			return err
 		}
-		if tlsConfig == nil {
+		if tlsConfig != nil {
+			err = conn.ResponseMessage(NewSSLResponseWith(SSLEnabled))
+			if err != nil {
+				return err
+			}
+			tlsConn := tls.Server(conn, tlsConfig)
+			if err := tlsConn.Handshake(); err != nil {
+				conn.ResponseError(err)
+				return err
+			}
+			ok, err := server.Manager.VerifyCertificate(tlsConn)
+			if !ok {
+				conn.ResponseError(err)
+				return err
+			}
+			conn = NewConnWith(tlsConn, WithConnTLSConn(tlsConn))
+		} else {
 			err = conn.ResponseMessage(NewSSLResponseWith(SSLDisabled))
 			if err != nil {
 				return err
 			}
 		}
-		err = conn.ResponseMessage(NewSSLResponseWith(SSLEnabled))
-		if err != nil {
-			return err
-		}
-		tlsConn := tls.Server(conn, tlsConfig)
-		if err := tlsConn.Handshake(); err != nil {
-			conn.ResponseError(err)
-			return err
-		}
-		ok, err := server.Manager.VerifyCertificate(tlsConn)
-		if !ok {
-			conn.ResponseError(err)
-			return err
-		}
-		conn = NewConnWith(tlsConn, WithConnTLSConn(tlsConn))
 	}
 
 	// Handle a Start-up
