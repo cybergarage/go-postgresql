@@ -56,6 +56,7 @@ func TestSysbench(t *testing.T) {
 	// Setup server
 
 	server := server.NewServer()
+	server.SetTLSConfig(nil)
 	err = server.Start()
 	if err != nil {
 		t.Error(err)
@@ -99,7 +100,7 @@ func TestSysbench(t *testing.T) {
 	// Setup sysbench configuation
 
 	cfg := NewDefaultConfig()
-	cft.SetPort(server.Port())
+	cfg.SetPort(server.Port())
 	cfg.SetDB(testDBName)
 
 	cmds := []string{
