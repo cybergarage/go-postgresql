@@ -1,13 +1,14 @@
 # Changelog
 
-## v1.6.0 (2025-xx-xx)
+## v1.8.0 (2025-xx-xx)
 - Improved:
   - Support for more data types.
   - SELECT:
     - Added tests for ORDER BY.
+  - Support for SCRAM-SHA-256.
 
-## v1.6.x (2025-xx-xx)
-- Support for SCRAM-SHA-256.
+## v1.6.4 (2025-xx-xx)
+- Changed to ignore TLS requests when TLS configuration is null
 
 ## v1.6.3 (2025-01-18)
 - Updated authenticator interface
