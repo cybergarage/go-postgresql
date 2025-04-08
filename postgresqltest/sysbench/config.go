@@ -17,6 +17,7 @@ package sysbench
 import (
 	"strconv"
 
+	"github.com/cybergarage/go-postgresql/postgresql"
 	"github.com/cybergarage/go-sqltest/sqltest/sysbench"
 )
 
@@ -41,7 +42,7 @@ func NewDefaultConfig() *Config {
 	}
 	cfg.SetDBDriver("pgsql")
 	cfg.SetHost("127.0.0.1")
-	cfg.SetPort(3306)
+	cfg.SetPort(postgresql.DefaultPort)
 	cfg.SetUser(sysbench.User())
 	cfg.SetPassword(sysbench.Password())
 	return cfg
