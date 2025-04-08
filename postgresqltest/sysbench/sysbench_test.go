@@ -99,15 +99,16 @@ func TestSysbench(t *testing.T) {
 	// Setup sysbench configuation
 
 	cfg := NewDefaultConfig()
+	cft.SetPort(server.Port())
 	cfg.SetDB(testDBName)
 
-	// cmds := []string{
-	// 	sysbench.OltpReadWrite,
-	// }
+	cmds := []string{
+		sysbench.OltpReadWrite,
+	}
 
-	// for _, cmd := range cmds {
-	// 	t.Run(cmd, func(t *testing.T) {
-	// 		sysbench.RunCommand(t, cmd, cfg.Config)
-	// 	})
-	// }
+	for _, cmd := range cmds {
+		t.Run(cmd, func(t *testing.T) {
+			sysbench.RunCommand(t, cmd, cfg.Config)
+		})
+	}
 }
