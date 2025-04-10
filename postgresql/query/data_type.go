@@ -43,43 +43,43 @@ func NewDataTypeFrom(t query.DataType) (*DataType, error) {
 // NewObjectIDFrom returns a data type from the specified query data type.
 func NewObjectIDFrom(t query.DataType) (ObjectID, error) {
 	switch t {
-	case query.BigIntData:
+	case query.BigIntType:
 		return system.Int8, nil
-	case query.BinaryData:
+	case query.BinaryType:
 		return system.Bytea, nil
-	case query.BitData:
+	case query.BitType:
 		return system.Bit, nil
-	case query.BlobData:
+	case query.BlobType:
 		return system.Bytea, nil
-	case query.BooleanData:
+	case query.BooleanType:
 		return system.Bool, nil
-	case query.CharData:
+	case query.CharType:
 		return system.Char, nil
-	case query.CharacterData:
+	case query.CharacterType:
 		return system.Varchar, nil
 	// case query.ClobData:
 	// 	return
-	case query.DateData:
+	case query.DateType:
 		return system.Date, nil
 	// case query.DecimalData:
 	// 	return
-	case query.DoubleData:
+	case query.DoubleType:
 		return system.Float8, nil
-	case query.FloatData:
+	case query.FloatType:
 		return system.Float4, nil
-	case query.IntData:
+	case query.IntType:
 		return system.Int4, nil
-	case query.IntegerData:
+	case query.IntegerType:
 		return system.Int4, nil
-	case query.LongBlobData:
+	case query.LongBlobType:
 		return system.Bytea, nil
-	case query.LongTextData:
+	case query.LongTextType:
 		return system.Text, nil
-	case query.MediumBlobData:
+	case query.MediumBlobType:
 		return system.Bytea, nil
 	// case query.MediumIntData:
 	// 	return
-	case query.MediumTextData:
+	case query.MediumTextType:
 		return system.Text, nil
 	// case query.NumericData:
 	// 	return
@@ -87,27 +87,27 @@ func NewObjectIDFrom(t query.DataType) (ObjectID, error) {
 	// 	return
 	// case query.SetData:
 	// 	return
-	case query.SmallIntData:
+	case query.SmallIntType:
 		return system.Int2, nil
-	case query.TextData:
+	case query.TextType:
 		return system.Text, nil
-	case query.TimeData:
+	case query.TimeType:
 		return system.Time, nil
-	case query.TimeStampData:
+	case query.TimeStampType:
 		return system.Timestamp, nil
-	case query.DateTimeData:
+	case query.DateTimeType:
 		return system.Timestamp, nil
-	case query.TinyBlobData:
+	case query.TinyBlobType:
 		return system.Bytea, nil
 	// case query.TinyIntData:
 	// 	return
-	case query.TinyTextData:
+	case query.TinyTextType:
 		return system.Text, nil
-	case query.VarBinaryData:
+	case query.VarBinaryType:
 		return system.Bytea, nil
-	case query.VarCharData:
+	case query.VarCharType:
 		return system.Varchar, nil
-	case query.VarCharacterData:
+	case query.VarCharacterType:
 		return system.Varchar, nil
 		// case query.YearData:
 		// 	return
