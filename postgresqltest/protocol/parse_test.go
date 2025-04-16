@@ -19,10 +19,11 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-logger/log/hexdump"
+	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-postgresql/postgresql/query"
 )
 
 func TestParsePacket(t *testing.T) {
-
 	type expected struct {
 	}
 	for _, test := range []struct {
@@ -49,24 +50,20 @@ func TestParsePacket(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			_ = bytes.NewReader(testBytes)
 
-			// pkt, err := protocol.NewParseWithReader(reader)
-			// if err != nil {
-			// 	t.Error(err)
-			// }
+			reader := protocol.NewMessageReaderWith(bytes.NewReader(testBytes))
 
-			// // Compare the packet bytes
+			pkt, err := protocol.NewParseWithReader(reader)
+			if err != nil {
+				t.Error(err)
+				return
+			}
 
-			// msgBytes, err := pkt.Bytes()
-			// if err != nil {
-			// 	t.Error(err)
-			// 	return
-			// }
-
-			// if !bytes.Equal(msgBytes, testBytes) {
-			// 	t.Errorf("expected %v, got %v", testBytes, msgBytes)
-			// }
+			parser := query.NewParser()
+			_, err = parser.ParseString(pkt.Query)
+			if err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
