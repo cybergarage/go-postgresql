@@ -191,10 +191,13 @@ func (store *Store) Insert(conn net.Conn, stmt query.Insert) error {
 		return errors.NewErrTableNotExist(tableName)
 	}
 
-	row := NewRowWith(table, stmt.Columns())
 	table.Lock()
 	defer table.Unlock()
-	table.Rows = append(table.Rows, row)
+
+	for _, value := range stmt.Values() {
+		row := NewRowWith(table, value.Columns())
+		table.Rows = append(table.Rows, row)
+	}
 
 	return nil
 }
