@@ -170,7 +170,7 @@ func (executor *defaultQueryExecutor) Insert(conn Conn, stmt query.Insert) (prot
 	if err != nil {
 		return nil, err
 	}
-	return protocol.NewInsertCompleteResponsesWith(1)
+	return protocol.NewInsertCompleteResponsesWith(len(stmt.Values()))
 }
 
 // Select handles a SELECT query.
