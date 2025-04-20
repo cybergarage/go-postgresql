@@ -38,6 +38,38 @@ func TestParsePacket(t *testing.T) {
 			"data/sysbench-parse-002.hex",
 			expected{},
 		},
+		{
+			"data/sysbench-parse-003.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-004.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-005.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-006.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-007.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-008.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-009.hex",
+			expected{},
+		},
+		{
+			"data/sysbench-parse-010.hex",
+			expected{},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			testData, err := testEmbedPacketFiles.ReadFile(test.name)
