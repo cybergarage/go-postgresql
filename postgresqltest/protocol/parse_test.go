@@ -21,6 +21,7 @@ import (
 	"github.com/cybergarage/go-logger/log/hexdump"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
+	"github.com/cybergarage/go-postgresql/postgresql/stmt"
 )
 
 func TestParsePacket(t *testing.T) {
@@ -101,14 +102,14 @@ func TestParsePacket(t *testing.T) {
 
 			reader := protocol.NewMessageReaderWith(bytes.NewReader(testBytes))
 
-			pkt, err := protocol.NewParseWithReader(reader)
+			parsePkt, err := protocol.NewParseWithReader(reader)
 			if err != nil {
 				t.Error(err)
 				return
 			}
 
 			parser := query.NewParser()
-			_, err = parser.ParseString(pkt.Query)
+			_, err = parser.ParseString(parsePkt.Query)
 			if err != nil {
 				t.Error(err)
 			}
@@ -117,10 +118,34 @@ func TestParsePacket(t *testing.T) {
 				return
 			}
 
-			_, err = protocol.NewDescribeWithReader(reader)
+			stmtMgr := stmt.NewPreparedManager()
+			conn := protocol.NewConnWith(nil)
+
+			err = stmtMgr.SetPreparedStatement(conn, parsePkt)
 			if err != nil {
 				t.Error(err)
 				return
+			}
+
+			descPkt, err := protocol.NewDescribeWithReader(reader)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			switch descPkt.Type {
+			case protocol.PreparedStatement:
+				_, err = stmtMgr.PreparedStatement(conn, descPkt.Name)
+				if err != nil {
+					t.Error(err)
+					return
+				}
+			case protocol.PreparedPortal:
+				_, err := stmtMgr.PreparedPortal(conn, descPkt.Name)
+				if err != nil {
+					t.Error(err)
+					return
+				}
 			}
 		})
 	}
