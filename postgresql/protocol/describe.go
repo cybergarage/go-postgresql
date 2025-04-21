@@ -22,8 +22,8 @@ package protocol
 // Describe represents a describe protocol.
 type Describe struct {
 	*RequestMessage
-	Type PreparedType
-	Name string
+	typ  PreparedType
+	name string
 }
 
 // NewDescribeWithReader returns a new describe message with the specified reader.
@@ -50,7 +50,17 @@ func NewDescribeWithReader(reader *MessageReader) (*Describe, error) {
 
 	return &Describe{
 		RequestMessage: msg,
-		Type:           dt,
-		Name:           name,
+		typ:            dt,
+		name:           name,
 	}, nil
+}
+
+// PreparedType returns the prepared type.
+func (desc *Describe) PreparedType() PreparedType {
+	return desc.typ
+}
+
+// Name returns the name.
+func (desc *Describe) Name() string {
+	return desc.name
 }

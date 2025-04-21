@@ -137,9 +137,9 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		return objIDs, nil
 	}
 
-	switch msg.Type {
+	switch msg.PreparedType() {
 	case protocol.PreparedStatement:
-		prepStmt, err := server.PreparedStatement(conn, msg.Name)
+		prepStmt, err := server.PreparedStatement(conn, msg.Name())
 		if err != nil {
 			return nil, err
 		}
@@ -159,7 +159,7 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 			paramDesc,
 			protocol.NewNoData()), nil
 	case protocol.PreparedPortal:
-		_, err := server.PreparedPortal(conn, msg.Name)
+		_, err := server.PreparedPortal(conn, msg.Name())
 		if err != nil {
 			return nil, err
 		}

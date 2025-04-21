@@ -133,15 +133,15 @@ func TestParsePacket(t *testing.T) {
 				return
 			}
 
-			switch descPkt.Type {
+			switch descPkt.PreparedType() {
 			case protocol.PreparedStatement:
-				_, err = stmtMgr.PreparedStatement(conn, descPkt.Name)
+				_, err = stmtMgr.PreparedStatement(conn, descPkt.Name())
 				if err != nil {
 					t.Error(err)
 					return
 				}
 			case protocol.PreparedPortal:
-				_, err := stmtMgr.PreparedPortal(conn, descPkt.Name)
+				_, err := stmtMgr.PreparedPortal(conn, descPkt.Name())
 				if err != nil {
 					t.Error(err)
 					return
