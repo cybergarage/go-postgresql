@@ -70,6 +70,10 @@ func TestParsePacket(t *testing.T) {
 			"data/sysbench-parse-010.hex",
 			expected{},
 		},
+		{
+			"data/go-pq-parse-001.hex",
+			expected{},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			testData, err := testEmbedPacketFiles.ReadFile(test.name)
