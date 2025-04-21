@@ -319,19 +319,19 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		case ParseMessage:
 			var reqMsg *Parse
 			reqMsg, reqErr = NewParseWithReader(conn.MessageReader())
-			if err == nil {
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Parse(conn, reqMsg)
 			}
 		case BindMessage:
 			var reqMsg *Bind
 			reqMsg, reqErr = NewBindWithReader(conn.MessageReader())
-			if err == nil {
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Bind(conn, reqMsg)
 			}
 		case DescribeMessage:
 			var reqMsg *Describe
 			reqMsg, reqErr = NewDescribeWithReader(conn.MessageReader())
-			if err == nil {
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Describe(conn, reqMsg)
 			}
 		case QueryMessage:
@@ -342,26 +342,26 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			}
 		case ExecuteMessage:
 			var reqMsg *Execute
-			reqMsg, err := NewExecuteWithReader(conn.MessageReader())
-			if err == nil {
+			reqMsg, reqErr = NewExecuteWithReader(conn.MessageReader())
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Execute(conn, reqMsg)
 			}
 		case CloseMessage:
 			var reqMsg *Close
-			reqMsg, err := NewCloseWithReader(conn.MessageReader())
-			if err == nil {
+			reqMsg, reqErr = NewCloseWithReader(conn.MessageReader())
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Close(conn, reqMsg)
 			}
 		case SyncMessage:
 			var reqMsg *Sync
-			reqMsg, err := NewSyncWithReader(conn.MessageReader())
-			if err == nil {
+			reqMsg, reqErr = NewSyncWithReader(conn.MessageReader())
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Sync(conn, reqMsg)
 			}
 		case FlushMessage:
 			var reqMsg *Flush
-			reqMsg, err := NewFlushWithReader(conn.MessageReader())
-			if err == nil {
+			reqMsg, reqErr = NewFlushWithReader(conn.MessageReader())
+			if reqErr == nil {
 				resMsgs, reqErr = server.MessageHandler.Flush(conn, reqMsg)
 			}
 		case TerminateMessage:
@@ -398,6 +398,7 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		}
 
 		// Return ReadyForQuery (B)
+
 		conn.StartSpan("ready")
 		err := conn.ReadyForMessage(TransactionIdle)
 		conn.FinishSpan()
