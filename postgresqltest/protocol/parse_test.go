@@ -27,51 +27,63 @@ func TestParsePacket(t *testing.T) {
 	type expected struct {
 	}
 	for _, test := range []struct {
-		name string
+		name        string
+		chkDescribe bool
 		expected
 	}{
 		{
 			"data/sysbench-parse-001.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-002.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-003.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-004.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-005.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-006.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-007.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-008.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-009.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/sysbench-parse-010.hex",
+			false,
 			expected{},
 		},
 		{
 			"data/go-pq-parse-001.hex",
+			true,
 			expected{},
 		},
 	} {
@@ -99,6 +111,16 @@ func TestParsePacket(t *testing.T) {
 			_, err = parser.ParseString(pkt.Query)
 			if err != nil {
 				t.Error(err)
+			}
+
+			if !test.chkDescribe {
+				return
+			}
+
+			_, err = protocol.NewDescribeWithReader(reader)
+			if err != nil {
+				t.Error(err)
+				return
 			}
 		})
 	}
