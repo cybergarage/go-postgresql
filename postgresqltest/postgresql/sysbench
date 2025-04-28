@@ -1,6 +1,6 @@
 #!/bin/bash
 export PGPASSWORD='passwd'
-psql --username=postgres --host=localhost -c "CREATE DATABASE IF NOT EXISTS sysbench"
+psql --username=postgres --host=localhost -c "CREATE DATABASE sysbench"
 ACTIONS=("prepare" "run" "cleanup")
 for action in "${ACTIONS[@]}"; do
   sysbench --pgsql-host=localhost --pgsql-port=5432 --db-debug=on --threads=1 --time=10 --table-size=100 --db-driver=pgsql --pgsql-user=postgres --pgsql-password=passwd --pgsql-db=sysbench oltp_read_write "$action"
