@@ -1,0 +1,2 @@
+#!/bin/bash
+sysbench --events=0 --pgsql-host=127.0.0.1 --pgsql-port=5432 --db-debug=on --threads=1 --time=10 --table-size=100 --db-driver=pgsql --pgsql-user=postgres --pgsql-password=passwd --pgsql-db=sysbench1745822121300268000 oltp_read_write run
