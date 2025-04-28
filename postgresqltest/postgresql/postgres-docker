@@ -1,3 +1,3 @@
 #!/bin/bash
-# The default postgres user and database are created in the entrypoint with initdb.
+# https://hub.docker.com/_/postgres
 docker run --name postgres -e POSTGRES_PASSWORD=passwd -d -p 5432:5432 postgres:16.8
