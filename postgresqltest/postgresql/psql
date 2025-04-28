@@ -1,1 +1,3 @@
-docker run -it --rm --network postgres postgres psql -h postgres -U postgres
+#!/bin/bash
+# https://hub.docker.com/_/postgres
+psql --username=postgres --host=localhost
