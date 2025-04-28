@@ -82,8 +82,7 @@ func TestSysbench(t *testing.T) {
 	}()
 
 	testDBName := sysbench.GenerateTempDBName()
-
-	err =se(testDBName)
+	err = client.CreateDatabase(testDBName)
 	if err != nil {
 		t.Error(err)
 		return
