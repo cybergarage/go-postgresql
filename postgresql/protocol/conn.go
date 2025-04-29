@@ -53,8 +53,8 @@ type TransactionConn interface {
 	LockTransaction() error
 	// UnlockTransaction unlocks the transaction.
 	UnlockTransaction() error
-	// IsTransactionLocked returns true if the transaction is locked.
-	IsTransactionLocked() bool
+	// TransactionStatus returns the transaction status.
+	TransactionStatus() TransactionStatus
 }
 
 // Conn represents a connection.

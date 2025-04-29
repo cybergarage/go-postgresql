@@ -177,9 +177,14 @@ func (conn *conn) UnlockTransaction() error {
 	return nil
 }
 
-// IsTransactionLocked returns true if the transaction is locked.
-func (conn *conn) IsTransactionLocked() bool {
-	return conn.txMutex.TryLock()
+// TransactionStatus returns the transaction status.
+func (conn *conn) TransactionStatus() TransactionStatus {
+	// Check if the transaction is locked
+	if conn.txMutex.TryLock() {
+		conn.txMutex.Unlock()
+		return TransactionIdle
+	}
+	return TransactionBlock
 }
 
 // ResponseMessage sends a response.
