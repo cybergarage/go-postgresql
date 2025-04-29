@@ -167,7 +167,9 @@ func (conn *conn) MessageReader() *MessageReader {
 
 // LockTransaction locks the transaction.
 func (conn *conn) LockTransaction() error {
-	conn.txMutex.Lock()
+	if !conn.txMutex.TryLock() {
+		return ErrTransactionBlocked
+	}
 	return nil
 }
 
