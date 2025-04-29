@@ -9,6 +9,8 @@
 
 ## v1.6.4 (2025-xx-xx)
 - Changed to ignore TLS requests when TLS configuration is null
+- Improved:
+  - ReadyForQuery returns transaction status correctly.
 
 ## v1.6.3 (2025-01-18)
 - Updated authenticator interface
