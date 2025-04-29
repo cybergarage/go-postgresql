@@ -214,7 +214,7 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			return err
 		}
 		// Return ReadyForQuery (B)
-		err = conn.ReadyForMessage(TransactionIdle)
+		err = conn.ReadyForMessage()
 		if err != nil {
 			return err
 		}
@@ -404,7 +404,7 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		// Return ReadyForQuery (B)
 
 		conn.StartSpan("ready")
-		err := conn.ReadyForMessage(TransactionIdle)
+		err := conn.ReadyForMessage()
 		conn.FinishSpan()
 		if err != nil {
 			loopSpan.Span().Finish()

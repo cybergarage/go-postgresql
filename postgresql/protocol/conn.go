@@ -36,7 +36,7 @@ type MessageConn interface {
 	// SkipMessage skips a
 	SkipMessage() error
 	// ReadyForMessage sends a ready for
-	ReadyForMessage(status TransactionStatus) error
+	ReadyForMessage() error
 }
 
 // TLSConn represents a TLS connection.

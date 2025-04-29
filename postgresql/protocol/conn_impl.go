@@ -247,8 +247,8 @@ func (conn *conn) SkipMessage() error {
 }
 
 // ReadyForMessage sends a ready for.
-func (conn *conn) ReadyForMessage(status TransactionStatus) error {
-	readyMsg, err := NewReadyForQueryWith(status)
+func (conn *conn) ReadyForMessage() error {
+	readyMsg, err := NewReadyForQueryWith(conn.TransactionStatus())
 	if err != nil {
 		return err
 	}
