@@ -16,8 +16,10 @@ package protocol
 
 import (
 	"io"
+	"time"
 
 	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
+	"github.com/cybergarage/go-postgresql/postgresql/net"
 )
 
 // Reader represents a message reader.
@@ -34,6 +36,16 @@ func NewReaderWith(reader io.Reader) *Reader {
 	}
 }
 
+// SetReadDeadline sets the read deadline.
+func (reader *Reader) SetReadDeadline(t time.Time) error {
+	conn, ok := reader.Reader.(net.Conn)
+	if !ok {
+		return ErrNotSupported
+	}
+	return conn.SetReadDeadline(t)
+}
+
+// ReadBytes reads a byte array.
 func (reader *Reader) ReadBytes(buf []byte) (int, error) {
 	nBufSize := len(buf)
 	nReadBuf := 0
@@ -53,6 +65,7 @@ func (reader *Reader) ReadBytes(buf []byte) (int, error) {
 	return nReadBuf, err
 }
 
+// ReadBytes reads a byte.
 func (reader *Reader) ReadByte() (byte, error) {
 	b := make([]byte, 1)
 	_, err := reader.ReadBytes(b)
@@ -62,6 +75,7 @@ func (reader *Reader) ReadByte() (byte, error) {
 	return b[0], nil
 }
 
+// PeekBytes reads bytes without removing them from the buffer.
 func (reader *Reader) PeekBytes(n int) ([]byte, error) {
 	buf := make([]byte, n)
 	nRead, err := reader.ReadBytes(buf)
@@ -110,6 +124,7 @@ func (reader *Reader) ReadInt16() (int16, error) {
 	return util.BytesToInt16(int16Bytes), nil
 }
 
+// ReadBytesUntil reads bytes until the specified delimiter.
 func (reader *Reader) ReadBytesUntil(delim byte) ([]byte, error) {
 	buf := make([]byte, 0)
 	for {
