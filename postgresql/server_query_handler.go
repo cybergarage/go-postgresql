@@ -263,14 +263,19 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 		// nolint: forcetypeassert
 		switch stmt.Object().StatementType() {
 		case sql.BeginStatement:
-			stmt := stmt.Object().(query.Begin)
-			res, err = server.queryExecutor.Begin(conn, stmt)
+			err = conn.LockTransaction()
+			if err != nil {
+				stmt := stmt.Object().(query.Begin)
+				res, err = server.queryExecutor.Begin(conn, stmt)
+			}
 		case sql.CommitStatement:
 			stmt := stmt.Object().(query.Commit)
 			res, err = server.queryExecutor.Commit(conn, stmt)
+			conn.UnlockTransaction()
 		case sql.RollbackStatement:
 			stmt := stmt.Object().(query.Rollback)
 			res, err = server.queryExecutor.Rollback(conn, stmt)
+			conn.UnlockTransaction()
 		case sql.CreateDatabaseStatement:
 			stmt := stmt.Object().(query.CreateDatabase)
 			res, err = server.queryExecutor.CreateDatabase(conn, stmt)
