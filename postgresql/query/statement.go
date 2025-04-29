@@ -63,9 +63,11 @@ func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 			return err
 		}
 	case query.Insert:
-		err := updateBindColumns(stmt.Columns(), bindParams)
-		if err != nil {
-			return err
+		for _, colums := range stmt.Values() {
+			err := updateBindColumns(colums, bindParams)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
