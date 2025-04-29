@@ -14,7 +14,10 @@
 
 package protocol
 
-import "io"
+import (
+	"io"
+	"time"
+)
 
 // Message represents a message of PostgreSQL packet.
 // See : PostgreSQL Packets
@@ -42,6 +45,16 @@ func (reader *MessageReader) PeekType() (Type, error) {
 		return 0, err
 	}
 	return Type(bytes[0]), nil
+}
+
+// PeekTypeNonBlocking peeks a message type without blocking.
+func (reader *MessageReader) PeekTypeNonBlocking() (Type, error) {
+	reader.Reader.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
+	reqType, err := reader.PeekType()
+	if err != nil {
+		return 0, err
+	}
+	return reqType, nil
 }
 
 // IsPeekType returns true whether the peeked message type is the specified type.
