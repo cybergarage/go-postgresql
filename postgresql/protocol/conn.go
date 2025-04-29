@@ -47,9 +47,20 @@ type TLSConn interface {
 	TLSConn() *tls.Conn
 }
 
+// TransactionConn represents a transaction connection.
+type TransactionConn interface {
+	// IsTransactionLocked returns true if the transaction is locked.
+	LockTransaction() error
+	// UnlockTransaction unlocks the transaction.
+	UnlockTransaction() error
+	// IsTransactionLocked returns true if the transaction is locked.
+	IsTransactionLocked() bool
+}
+
 // Conn represents a connection.
 type Conn interface {
 	net.Conn
 	MessageConn
 	TLSConn
+	TransactionConn
 }

@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/cybergarage/go-tracing/tracer"
@@ -38,6 +39,7 @@ type conn struct {
 	id            ConnID
 	tracerContext tracer.Context
 	tlsConn       *tls.Conn
+	txMutex       sync.Mutex
 }
 
 // NewConnWith returns a connection with a raw connection.
@@ -52,6 +54,7 @@ func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
 		id:            0,
 		tracerContext: nil,
 		tlsConn:       nil,
+		txMutex:       sync.Mutex{},
 	}
 	for _, opt := range opts {
 		opt(conn)
@@ -160,6 +163,23 @@ func (conn *conn) TLSConn() *tls.Conn {
 // MessageReader returns a message reader.
 func (conn *conn) MessageReader() *MessageReader {
 	return conn.msgReader
+}
+
+// LockTransaction locks the transaction.
+func (conn *conn) LockTransaction() error {
+	conn.txMutex.Lock()
+	return nil
+}
+
+// UnlockTransaction unlocks the transaction.
+func (conn *conn) UnlockTransaction() error {
+	conn.txMutex.Unlock()
+	return nil
+}
+
+// IsTransactionLocked returns true if the transaction is locked.
+func (conn *conn) IsTransactionLocked() bool {
+	return conn.txMutex.TryLock()
 }
 
 // ResponseMessage sends a response.
