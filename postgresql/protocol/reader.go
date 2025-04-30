@@ -17,10 +17,10 @@ package protocol
 import (
 	"bytes"
 	"io"
+	"net"
 	"time"
 
 	util "github.com/cybergarage/go-postgresql/postgresql/encoding/bytes"
-	"github.com/cybergarage/go-postgresql/postgresql/net"
 )
 
 // Reader represents a message reader.
@@ -33,25 +33,19 @@ type Reader struct {
 // ReaderOptionFunc is a function that modifies the Reader.
 type ReaderOption func(*Reader)
 
-// WithReaderIOReader sets the io.Reader for the Reader.
-func WithReaderIOReader(reader io.Reader) ReaderOption {
-	return func(r *Reader) {
-		r.Reader = reader
-	}
-}
-
 // WithReaderFile sets the file for the Reader.
 func WithReaderConn(conn net.Conn) ReaderOption {
-	return func(r *Reader) {
-		r.conn = conn
-		r.Reader = conn
+	return func(reader *Reader) {
+		reader.conn = conn
+		reader.Reader = conn
 	}
 }
 
 // WithReaderBytes sets the bytes for the Reader.
 func WithReaderBytes(b []byte) ReaderOption {
-	return func(r *Reader) {
-		r.Reader = bytes.NewReader(b)
+	return func(reader *Reader) {
+		reader.conn = nil
+		reader.Reader = bytes.NewReader(b)
 	}
 }
 
