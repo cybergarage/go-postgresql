@@ -24,7 +24,7 @@ func TestReader(t *testing.T) {
 	buf := []byte{0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x00}
 
 	// Test PeekInt32 and ReadInt32
-	reader := NewReaderWith(bytes.NewBuffer(buf))
+	reader := NewReaderWith(WithReaderIOReader(bytes.NewBuffer(buf)))
 	expectedInt32 := int32(0x61626364)
 	actualInt32, err := reader.PeekInt32()
 	if err != nil {
@@ -50,7 +50,7 @@ func TestReader(t *testing.T) {
 	}
 
 	// Test ReadInt16
-	reader = NewReaderWith(bytes.NewBuffer(buf))
+	reader = NewReaderWith(WithReaderIOReader(bytes.NewBuffer(buf)))
 	expectedInt16 := int16(0x6162)
 	actualInt16, err := reader.ReadInt16()
 	if err != nil {
@@ -61,7 +61,7 @@ func TestReader(t *testing.T) {
 	}
 
 	// Test ReadBytesUntil
-	reader = NewReaderWith(bytes.NewBuffer(buf))
+	reader = NewReaderWith(WithReaderIOReader(bytes.NewBuffer(buf)))
 	expectedBytes := []byte{0x61, 0x62, 0x63, 0x64}
 	actualBytes, err := reader.ReadBytesUntil(0x64)
 	if err != nil {
@@ -72,7 +72,7 @@ func TestReader(t *testing.T) {
 	}
 
 	// Test ReadString
-	reader = NewReaderWith(bytes.NewBuffer(buf))
+	reader = NewReaderWith(WithReaderIOReader(bytes.NewBuffer(buf)))
 	expectedString := "\x61\x62\x63\x64\x65\x66\x67\x68"
 	actualString, err := reader.ReadString()
 	if err != nil {

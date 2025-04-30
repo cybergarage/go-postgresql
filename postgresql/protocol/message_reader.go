@@ -32,7 +32,7 @@ type MessageReader struct {
 // NewMessageReader returns a new message reader.
 func NewMessageReaderWith(reader io.Reader) *MessageReader {
 	return &MessageReader{
-		Reader: NewReaderWith(reader),
+		Reader: NewReaderWith(WithReaderIOReader(reader)),
 		Type:   0,
 		Length: 0,
 	}

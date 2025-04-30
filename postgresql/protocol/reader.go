@@ -24,25 +24,48 @@ import (
 
 // Reader represents a message reader.
 type Reader struct {
+	conn net.Conn
 	io.Reader
 	peekBuf []byte
 }
 
+// ReaderOptionFunc is a function that modifies the Reader.
+type ReaderOption func(*Reader)
+
+// WithReaderIOReader sets the io.Reader for the Reader.
+func WithReaderIOReader(reader io.Reader) ReaderOption {
+	return func(r *Reader) {
+		r.Reader = reader
+	}
+}
+
+// WithReaderFile sets the file for the Reader.
+func WithReaderConn(conn net.Conn) ReaderOption {
+	return func(r *Reader) {
+		r.conn = conn
+		r.Reader = conn
+	}
+}
+
 // NewReader returns a new message reader.
-func NewReaderWith(reader io.Reader) *Reader {
-	return &Reader{
-		Reader:  reader,
+func NewReaderWith(opts ...ReaderOption) *Reader {
+	reader := &Reader{
+		Reader:  nil,
+		conn:    nil,
 		peekBuf: make([]byte, 0),
 	}
+	for _, opt := range opts {
+		opt(reader)
+	}
+	return reader
 }
 
 // SetReadDeadline sets the read deadline.
 func (reader *Reader) SetReadDeadline(t time.Time) error {
-	conn, ok := reader.Reader.(net.Conn)
-	if !ok {
+	if reader.conn == nil {
 		return ErrNotSupported
 	}
-	return conn.SetReadDeadline(t)
+	return reader.conn.SetReadDeadline(t)
 }
 
 // ReadBytes reads a byte array.
