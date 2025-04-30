@@ -15,6 +15,7 @@
 package protocol
 
 import (
+	"bytes"
 	"io"
 	"time"
 
@@ -44,6 +45,13 @@ func WithReaderConn(conn net.Conn) ReaderOption {
 	return func(r *Reader) {
 		r.conn = conn
 		r.Reader = conn
+	}
+}
+
+// WithReaderBytes sets the bytes for the Reader.
+func WithReaderBytes(b []byte) ReaderOption {
+	return func(r *Reader) {
+		r.Reader = bytes.NewReader(b)
 	}
 }
 
