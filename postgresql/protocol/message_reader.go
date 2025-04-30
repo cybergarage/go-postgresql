@@ -15,7 +15,7 @@
 package protocol
 
 import (
-	"io"
+	"net"
 	"time"
 )
 
@@ -23,19 +23,41 @@ import (
 // See : PostgreSQL Packets
 // https://www.postgresql.org/docs/16/protocol-overview.html
 
+// MessageReader represents a message reader.
 type MessageReader struct {
 	*Reader
 	Type   Type
 	Length int32
 }
 
+// MessageReaderOption is a function that modifies the MessageReader.
+type MessageReaderOption func(*MessageReader)
+
+// WithMessageReadeConn sets the connection for the MessageReader.
+func WithMessageReadeConn(conn net.Conn) MessageReaderOption {
+	return func(reader *MessageReader) {
+		reader.Reader = NewReaderWith(WithReaderConn(conn))
+	}
+}
+
+// WithMessageReadeBytes sets the bytes for the MessageReader.
+func WithMessageReadeBytes(b []byte) MessageReaderOption {
+	return func(reader *MessageReader) {
+		reader.Reader = NewReaderWith(WithReaderBytes(b))
+	}
+}
+
 // NewMessageReader returns a new message reader.
-func NewMessageReaderWith(reader io.Reader) *MessageReader {
-	return &MessageReader{
-		Reader: NewReaderWith(WithReaderIOReader(reader)),
+func NewMessageReaderWith(opts ...MessageReaderOption) *MessageReader {
+	reader := &MessageReader{
+		Reader: nil,
 		Type:   0,
 		Length: 0,
 	}
+	for _, opt := range opts {
+		opt(reader)
+	}
+	return reader
 }
 
 // PeekType peeks a message type.

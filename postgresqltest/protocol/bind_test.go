@@ -14,7 +14,6 @@
 package protocol
 
 import (
-	"bytes"
 	_ "embed"
 	"testing"
 
@@ -46,7 +45,7 @@ func TestBindPacket(t *testing.T) {
 				return
 			}
 
-			reader := protocol.NewMessageReaderWith(bytes.NewReader(testBytes))
+			reader := protocol.NewMessageReaderWith(WithMessageReadeBytes(testBytes))
 
 			_, err = protocol.NewBindWithReader(reader)
 			if err != nil {

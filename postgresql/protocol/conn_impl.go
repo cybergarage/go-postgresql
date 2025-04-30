@@ -43,11 +43,11 @@ type conn struct {
 }
 
 // NewConnWith returns a connection with a raw connection.
-func NewConnWith(netconn net.Conn, opts ...connOption) *conn {
+func NewConnWith(netConn net.Conn, opts ...connOption) *conn {
 	conn := &conn{
-		Conn:          netconn,
+		Conn:          netConn,
 		isClosed:      false,
-		msgReader:     NewMessageReaderWith(netconn),
+		msgReader:     NewMessageReaderWith(WithMessageReadeConn(netConn)),
 		db:            "",
 		ts:            time.Now(),
 		uuid:          uuid.New(),

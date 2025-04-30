@@ -14,7 +14,6 @@
 package protocol
 
 import (
-	"bytes"
 	_ "embed"
 	"testing"
 
@@ -100,7 +99,7 @@ func TestParsePacket(t *testing.T) {
 				return
 			}
 
-			reader := protocol.NewMessageReaderWith(bytes.NewReader(testBytes))
+			reader := protocol.NewMessageReaderWith(protocol.WithMessageReadeBytes(testBytes))
 
 			parsePkt, err := protocol.NewParseWithReader(reader)
 			if err != nil {

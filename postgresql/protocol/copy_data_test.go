@@ -15,8 +15,6 @@
 package protocol
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/hex"
 	"testing"
 )
@@ -47,7 +45,7 @@ func TestCopyData(t *testing.T) {
 			return
 		}
 
-		reader := NewMessageReaderWith(bufio.NewReader(bytes.NewReader(byteData)))
+		reader := NewMessageReaderWith(WithMessageReadeBytes(byteData))
 		copyData, err := NewCopyDataWithReader(reader)
 		if err != nil {
 			t.Error(err)
