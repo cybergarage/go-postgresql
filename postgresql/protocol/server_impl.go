@@ -403,10 +403,10 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 
 		// Return ReadyForQuery (B)
 
-		// _, err = reader.PeekTypeNonBlocking()
-		// if err == nil {
-		// 	continue
-		// }
+		_, err = reader.PeekTypeNonBlocking()
+		if err == nil {
+			continue
+		}
 
 		conn.StartSpan("ready")
 		err := conn.ReadyForMessage()

@@ -71,7 +71,13 @@ func (reader *MessageReader) PeekType() (Type, error) {
 
 // PeekTypeNonBlocking peeks a message type without blocking.
 func (reader *MessageReader) PeekTypeNonBlocking() (Type, error) {
-	reader.Reader.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
+	err := reader.Reader.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		reader.Reader.conn.SetReadDeadline(time.Time{})
+	}()
 	reqType, err := reader.PeekType()
 	if err != nil {
 		return 0, err
