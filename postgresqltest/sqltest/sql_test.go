@@ -35,6 +35,7 @@ func TestSQLTest(t *testing.T) {
 	defer server.Stop()
 
 	client := sqltest.NewPostgresClient()
+	client.SetPreparedStatementEnabled(false)
 
 	// NOTE: Add your test files in 'untests' directory into the filename array
 	testNames := []string{
