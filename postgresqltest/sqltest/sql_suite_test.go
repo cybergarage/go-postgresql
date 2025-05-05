@@ -35,6 +35,7 @@ func TestSQLTestSuite(t *testing.T) {
 	defer server.Stop()
 
 	client := sqltest.NewPostgresClient()
+	client.SetPreparedStatementEnabled(false)
 
 	testNames := []string{
 		"SmplCrud.*",
