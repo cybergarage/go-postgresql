@@ -36,8 +36,19 @@ func TestYCSB(t *testing.T) {
 	// Setup client
 
 	client := postgresql.NewDefaultClient()
-	client.SetDatabase(ycsbDatabaseName)
+	err = client.Open()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	err = client.CreateDatabase(ycsbDatabaseName)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = client.Close()
 	if err != nil {
 		t.Error(err)
 		return
@@ -45,6 +56,7 @@ func TestYCSB(t *testing.T) {
 
 	// Setup for YCSB benchmark
 
+	client.SetDatabase(ycsbDatabaseName)
 	err = client.Open()
 	if err != nil {
 		t.Error(err)
