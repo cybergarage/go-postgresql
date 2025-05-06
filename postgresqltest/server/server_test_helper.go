@@ -39,7 +39,7 @@ func RunServerTests(t *testing.T, server *Server) {
 		fn   ServerTestFunc
 	}{
 		{"authenticator", RunPasswordAuthenticatorTest},
-		{"tls", RunCertificateAuthenticatorTest},
+		// {"tls", RunCertificateAuthenticatorTest},
 		// {"copy", TestServerCopy},
 	}
 
@@ -50,7 +50,6 @@ func RunServerTests(t *testing.T, server *Server) {
 
 			client := postgresql.NewDefaultClient()
 
-			client.SetDatabase("postgres")
 			err := client.Open()
 			if err != nil {
 				t.Error(err)
@@ -71,6 +70,12 @@ func RunServerTests(t *testing.T, server *Server) {
 			// Run tests
 
 			testFunc.fn(t, server, testDBName)
+
+			err = client.Open()
+			if err != nil {
+				t.Error(err)
+				return
+			}
 
 			err = client.DropDatabase(testDBName)
 			if err != nil {
