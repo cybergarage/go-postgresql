@@ -148,6 +148,18 @@ func (row Row) IsMatched(cond query.Condition) bool {
 					return true
 				}
 			}
+		case time.Time:
+			var v2 time.Time
+			err := safecast.ToTime(r2, &v2)
+			if err == nil {
+				if v1.Equal(v2) {
+					return true
+				}
+			}
+		case nil:
+			if r2 == nil {
+				return true
+			}
 		}
 		return reflect.DeepEqual(r1, r2)
 	}
