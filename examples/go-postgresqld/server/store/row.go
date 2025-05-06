@@ -17,6 +17,7 @@ package store
 import (
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/cybergarage/go-safecast/safecast"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
@@ -32,21 +33,92 @@ func NewRow() Row {
 }
 
 // NewRowWith returns a new row with the specified columns.
-func NewRowWith(table *Table, cols query.Columns) Row {
+func NewRowWith(table *Table, cols query.Columns) (Row, error) {
 	row := NewRow()
-	for _, schemaCols := range table.Schema.Columns() {
+	for _, schemaCol := range table.Schema.Columns() {
 		var colValue any
-		colName := schemaCols.Name()
+		colName := schemaCol.Name()
 		col, err := cols.LookupColumn(colName)
-		if err == nil {
-			colValue = col.Value()
-		} else {
-			colValue = nil
+		if err != nil {
+			return nil, err
+		}
+		switch schemaCol.DataType() {
+		case query.BooleanType:
+			var v bool
+			err = safecast.ToBool(col.Value(), &v)
+			colValue = v
+		case query.TextType, query.VarCharType, query.CharType:
+			var v string
+			err = safecast.ToString(col.Value(), &v)
+			colValue = v
+		case query.IntType, query.IntegerType, query.SmallIntType:
+			var v int
+			err = safecast.ToInt(col.Value(), &v)
+			colValue = v
+		case query.FloatType:
+			var v float32
+			err = safecast.ToFloat32(col.Value(), &v)
+			colValue = v
+		case query.DoubleType:
+			var v float64
+			err = safecast.ToFloat64(col.Value(), &v)
+			colValue = v
+		case query.DateTimeType, query.TimeStampType:
+			var v time.Time
+			err = safecast.ToTime(col.Value(), &v)
+			colValue = v
+		}
+		if err != nil {
+			return nil, err
 		}
 		row[colName] = colValue
 	}
-	return row
+	return row, nil
 }
+
+/*
+	UnknownData DataType = iota
+	BigIntType
+	BinaryType
+	BitType
+	BlobType
+	BooleanType
+	CharType
+	CharacterType
+	ClobType
+	DateType
+	DateTimeType
+	DecimalType
+	DoubleType
+	DoublePrecisionType
+	FloatType
+	IntType
+	IntegerType
+	LongBlobType
+	LongTextType
+	MediumBlobType
+	MediumIntType
+	MediumTextType
+	NumericType
+	RealType
+	SetType
+	SmallIntType
+	TextType
+	TimeType
+	TimeStampType
+	TinyBlobType
+	TinyIntType
+	TinyTextType
+	VarBinaryType
+	VarCharType
+	VarCharacterType
+	YearType
+	// PostgreSQL
+	// https://www.postgresql.org/docs/current/datatype.html
+	SerialType
+	BigSerialType
+	SmallSerialType
+*/
 
 // IsMatched returns true if the row is matched with the specified condition.
 func (row Row) IsMatched(cond query.Condition) bool {

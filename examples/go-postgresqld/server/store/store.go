@@ -195,7 +195,10 @@ func (store *Store) Insert(conn net.Conn, stmt query.Insert) error {
 	defer table.Unlock()
 
 	for _, value := range stmt.Values() {
-		row := NewRowWith(table, value.Columns())
+		row, err := NewRowWith(table, value.Columns())
+		if err != nil {
+			return err
+		}
 		table.Rows = append(table.Rows, row)
 	}
 
