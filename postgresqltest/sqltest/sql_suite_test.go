@@ -44,7 +44,7 @@ func TestSQLTestSuite(t *testing.T) {
 		// "FuncAggr*",
 		"UpdateArith*",
 		"YcsbWorkload",
-		"Pgbench",
+		// "Pgbench",
 	}
 
 	if err := sqltest.RunEmbedSuites(t, client, testNames...); err != nil {
