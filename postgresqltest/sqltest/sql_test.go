@@ -41,6 +41,8 @@ func TestSQLTest(t *testing.T) {
 	testNames := []string{
 		// "SmplCrudInt",
 		// "SmplCrudText",
+		// "SmplCrudFloat",
+		// "SmplCrudDouble",
 		// "SmplCrudDatetime",
 	}
 
