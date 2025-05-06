@@ -45,7 +45,7 @@ func TestBindPacket(t *testing.T) {
 				return
 			}
 
-			reader := protocol.NewMessageReaderWith(WithMessageReadeBytes(testBytes))
+			reader := protocol.NewMessageReaderWith(protocol.WithMessageReadeBytes(testBytes))
 
 			_, err = protocol.NewBindWithReader(reader)
 			if err != nil {
