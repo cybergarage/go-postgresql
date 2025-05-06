@@ -47,11 +47,11 @@ func NewRowWith(table *Table, cols query.Columns) (Row, error) {
 			var v bool
 			err = safecast.ToBool(col.Value(), &v)
 			colValue = v
-		case query.TextType, query.VarCharType, query.CharType:
+		case query.TextType, query.VarCharType, query.LongTextType:
 			var v string
 			err = safecast.ToString(col.Value(), &v)
 			colValue = v
-		case query.IntType, query.IntegerType, query.SmallIntType:
+		case query.IntType, query.IntegerType, query.TinyIntType, query.SmallIntType, query.MediumIntType:
 			var v int
 			err = safecast.ToInt(col.Value(), &v)
 			colValue = v
@@ -75,50 +75,6 @@ func NewRowWith(table *Table, cols query.Columns) (Row, error) {
 	}
 	return row, nil
 }
-
-/*
-	UnknownData DataType = iota
-	BigIntType
-	BinaryType
-	BitType
-	BlobType
-	BooleanType
-	CharType
-	CharacterType
-	ClobType
-	DateType
-	DateTimeType
-	DecimalType
-	DoubleType
-	DoublePrecisionType
-	FloatType
-	IntType
-	IntegerType
-	LongBlobType
-	LongTextType
-	MediumBlobType
-	MediumIntType
-	MediumTextType
-	NumericType
-	RealType
-	SetType
-	SmallIntType
-	TextType
-	TimeType
-	TimeStampType
-	TinyBlobType
-	TinyIntType
-	TinyTextType
-	VarBinaryType
-	VarCharType
-	VarCharacterType
-	YearType
-	// PostgreSQL
-	// https://www.postgresql.org/docs/current/datatype.html
-	SerialType
-	BigSerialType
-	SmallSerialType
-*/
 
 // IsMatched returns true if the row is matched with the specified condition.
 func (row Row) IsMatched(cond query.Condition) bool {
