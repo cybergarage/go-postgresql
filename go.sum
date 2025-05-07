@@ -8,6 +8,8 @@ github.com/cybergarage/go-logger v1.3.10 h1:QkgHgYgQj9g1OvYgylDrI94GEwf7toE0pCDA
 github.com/cybergarage/go-logger v1.3.10/go.mod h1:a7B/AZjPoA1W8EU/458vdCv6YWtRJI7Q9rofUcZjiho=
 github.com/cybergarage/go-safecast v1.2.5 h1:ZDiKmdsE15RTKETRXKAKbYTDIhAzNONwJEfCaxmhkvU=
 github.com/cybergarage/go-safecast v1.2.5/go.mod h1:fw2lE/5DIOjmyPj5kx0aYZSAL2bSFoh/Zith5TWVTz8=
+github.com/cybergarage/go-safecast v1.2.6 h1:K12rvkueB2YRMDcV8JPoNL7M2dpVRy+3T5+4E37D3YU=
+github.com/cybergarage/go-safecast v1.2.6/go.mod h1:flFLUrI49kNK+U7ZeQDQxbaxxQyFVQGKpT7KYN3A4ew=
 github.com/cybergarage/go-sasl v1.2.5 h1:p/n77BpKwRSSZr0+4ANytDcQxAfZmI/izIxJ2+kQas0=
 github.com/cybergarage/go-sasl v1.2.5/go.mod h1:tgAGdhINFMElVjU/C2Ly6LkPDblUFpfQ8l8/0QoANVI=
 github.com/cybergarage/go-sqlparser v1.5.1-0.20250501135422-b8abcf9e4fd9 h1:IeG9OO739AKgWmYcC4bUu1t0/z1uQuRDzzA9VFF129M=
