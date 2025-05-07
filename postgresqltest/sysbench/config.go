@@ -32,7 +32,7 @@ const (
 
 // Config represents a sysbench config.
 type Config struct {
-	sysbench.Config
+	*sysbench.Config
 }
 
 // NewDefaultConfig returns a new default config.
