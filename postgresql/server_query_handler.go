@@ -264,7 +264,7 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 		switch stmt.Object().StatementType() {
 		case sql.BeginStatement:
 			err = conn.LockTransaction()
-			if err != nil {
+			if err == nil {
 				stmt := stmt.Object().(query.Begin)
 				res, err = server.queryExecutor.Begin(conn, stmt)
 			}
