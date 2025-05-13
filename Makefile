@@ -80,7 +80,7 @@ test_only:
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
 sysbench:
-	go test -v -run ^TestSysbench ${TEST_PKG}/sysbench
+	go test -v -p 1 -run ^TestSysbench ${TEST_PKG}/sysbench
 
 build: vet
 	go build -v ${BINARIES}
