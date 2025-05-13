@@ -79,6 +79,9 @@ test_only:
 	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
+sysbench:
+	go test -v -run ^TestSysbench ${TEST_PKG}/sysbench
+
 build: vet
 	go build -v ${BINARIES}
 
