@@ -273,17 +273,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	selectorNames := []string{}
 	for _, selector := range selectors {
-		if fn, ok := selector.(query.Function); ok {
-			for _, arg := range fn.Arguments() {
-				if arg.IsAsterisk() {
-					selectorNames = append(selectorNames, tbl.Selectors().SelectorNames()...)
-				} else {
-					selectorNames = append(selectorNames, arg.Name())
-				}
-			}
-		} else {
-			selectorNames = append(selectorNames, selector.Name())
-		}
+		selectorNames = append(selectorNames, selector.String())
 	}
 
 	// Row description response
