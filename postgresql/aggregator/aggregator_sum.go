@@ -14,9 +14,6 @@
 
 package aggregator
 
-type Row map[string]interface{}
-type Result map[string]interface{}
-
 type groupSum struct {
 	sum   float64
 	count int
