@@ -14,16 +14,42 @@
 
 package aggregator
 
+type Row map[string]interface{}
+type Result map[string]interface{}
+
+type groupSum struct {
+	sum   float64
+	count int
+}
 type Sum struct {
-	// Sum is the sum of the values.
-	Sum float64
-	// Count is the number of values.
-	Count int
+	// groupBy is the name of the column to group by.
+	groupBy string
+	// sum is the sum of the values.
+	sum map[any]float64
+	// count is the number of values.
+	count map[any]int
 }
 
-// NewSum creates a new Sum aggregator.
-func NewSum() *Sum {
-	return &Sum{}
+// SumOption is a function that configures the Sum aggregator.
+type SumOption func(*Sum)
+
+func NewSum(options ...SumOption) *Sum {
+	s := &Sum{
+		groupBy: "",
+		sum:     make(map[any]float64),
+		count:   make(map[any]int),
+	}
+	for _, opt := range options {
+		opt(s)
+	}
+	return s
+}
+
+// WithSubGroupBy sets the group by column for the Sum aggregator.
+func WithSubGroupBy(group string) SumOption {
+	return func(s *Sum) {
+		s.groupBy = group
+	}
 }
 
 // Name returns the name of the aggregator.
@@ -33,24 +59,43 @@ func (s *Sum) Name() string {
 
 // Reset resets the aggregator to its initial state.
 func (s *Sum) Reset() error {
-	s.Sum = 0
-	s.Count = 0
+	s.sum = make(map[any]float64)
+	s.count = make(map[any]int)
 	return nil
 }
 
 // Aggregate aggregates a row of data.
 func (s *Sum) Aggregate(row Row) error {
-	if value, ok := row["value"].(float64); ok {
-		s.Sum += value
-		s.Count++
+	if s.groupBy == "" {
+		return nil
 	}
+
+	groupValue, ok := row[s.groupBy]
+	if !ok {
+		return nil
+	}
+
+	value, ok := row["value"]
+	if !ok {
+		return nil
+	}
+
+	s.sum[groupValue] += value.(float64)
+	s.count[groupValue]++
+
 	return nil
 }
 
 // Finalize finalizes the aggregation and returns the result.
 func (s *Sum) Finalize() (Result, error) {
-	return Result{
-		"sum":   s.Sum,
-		"count": s.Count,
-	}, nil
+	result := make(Result)
+	for groupValue, sum := range s.sum {
+		count := s.count[groupValue]
+		if count > 0 {
+			result[groupValue] = sum / float64(count)
+		} else {
+			result[groupValue] = 0
+		}
+	}
+	return result, nil
 }
