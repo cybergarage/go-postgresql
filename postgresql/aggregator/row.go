@@ -14,12 +14,5 @@
 
 package aggregator
 
-type Result map[any]any
-
-// Aggregator is an interface for aggregating data.
-type Aggregator interface {
-	// Aggregate aggregates a row of data.
-	Aggregate(row Row) error
-	// Finalize finalizes the aggregation and returns the result.
-	Finalize() (Result, error)
-}
+// Row represents a row of data to be aggregated.
+type Row map[string]any
