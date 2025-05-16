@@ -28,24 +28,27 @@ type Sum struct {
 }
 
 // SumOption is a function that configures the Sum aggregator.
-type SumOption func(*Sum)
+type SumOption func(*Sum) error
 
-func NewSum(options ...SumOption) *Sum {
+func NewSum(options ...SumOption) (*Sum, error) {
 	s := &Sum{
 		groupBy: "",
 		sum:     make(map[any]float64),
 		count:   make(map[any]int),
 	}
 	for _, opt := range options {
-		opt(s)
+		if err := opt(s); err != nil {
+			return nil, err
+		}
 	}
-	return s
+	return s, nil
 }
 
 // WithSubGroupBy sets the group by column for the Sum aggregator.
 func WithSubGroupBy(group string) SumOption {
-	return func(s *Sum) {
+	return func(s *Sum) error {
 		s.groupBy = group
+		return nil
 	}
 }
 
