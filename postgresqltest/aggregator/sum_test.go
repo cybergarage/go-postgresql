@@ -15,6 +15,7 @@
 package aggregator
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/cybergarage/go-postgresql/postgresql/aggregator"
@@ -68,6 +69,22 @@ func TestSum(t *testing.T) {
 			expectedSumRows:  [][]int{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedRowCount: 4,
 		},
+		{
+			orderBy: "bar",
+			args:    []string{"foo"},
+			rows: []aggregator.Row{
+				{1, 1},
+				{2, 2},
+				{3, 3},
+				{4, 4},
+				{1, 1},
+				{2, 2},
+				{3, 3},
+				{4, 4},
+			},
+			expectedSumRows:  [][]int{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
+			expectedRowCount: 4,
+		},
 	}
 
 	for _, test := range tests {
@@ -102,6 +119,17 @@ func TestSum(t *testing.T) {
 			}
 			rsRows = append(rsRows, row)
 		}
+
+		sort.Slice(rsRows, func(i, j int) bool {
+			var ii, ij int
+			if err := safecast.ToInt(rsRows[i][0], &ii); err != nil {
+				return false
+			}
+			if err := safecast.ToInt(rsRows[j][0], &ij); err != nil {
+				return false
+			}
+			return ii < ij
+		})
 
 		if len(rsRows) != test.expectedRowCount {
 			t.Errorf("Expected %d rows, got %d", test.expectedRowCount, len(rsRows))
