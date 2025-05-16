@@ -21,3 +21,4 @@ import (
 var ErrNoData = errors.New("no data")
 var ErrNotSupported = errors.New("not supported")
 var ErrNotImplemented = errors.New("not implemented")
+var ErrInvalid = errors.New("invalid")
