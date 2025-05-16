@@ -15,4 +15,4 @@
 package aggregator
 
 // Row represents a row of data to be aggregated.
-type Row map[string]any
+type Row []any
