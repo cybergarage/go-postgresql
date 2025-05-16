@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-postgresql/postgresql/aggregator"
+	"github.com/cybergarage/go-safecast/safecast"
 
 	"github.com/cybergarage/go-logger/log"
 )
@@ -29,32 +30,32 @@ func TestSum(t *testing.T) {
 		orderBy          string
 		args             []string
 		rows             []aggregator.Row
-		expectedSums     [][]float64
+		expectedSumRows  [][]int
 		expectedRowCount int
 	}{
-		// {
-		// 	orderBy: "",
-		// 	args:    []string{"foo"},
-		// 	rows: []aggregator.Row{
-		// 		{1},
-		// 		{2},
-		// 		{3},
-		// 	},
-		// 	expectedSums:     [][]float64{{6}},
-		// 	expectedRowCount: 1,
-		// },
-		// {
-		// 	orderBy: "",
-		// 	args:    []string{"foo"},
-		// 	rows: []aggregator.Row{
-		// 		{1},
-		// 		{2},
-		// 		{3},
-		// 		{4},
-		// 	},
-		// 	expectedSums:     [][]float64{{10}},
-		// 	expectedRowCount: 1,
-		// },
+		{
+			orderBy: "",
+			args:    []string{"foo"},
+			rows: []aggregator.Row{
+				{1},
+				{2},
+				{3},
+			},
+			expectedSumRows:  [][]int{{6}},
+			expectedRowCount: 1,
+		},
+		{
+			orderBy: "",
+			args:    []string{"foo"},
+			rows: []aggregator.Row{
+				{1},
+				{2},
+				{3},
+				{4},
+			},
+			expectedSumRows:  [][]int{{10}},
+			expectedRowCount: 1,
+		},
 		{
 			orderBy: "bar",
 			args:    []string{"foo"},
@@ -64,7 +65,7 @@ func TestSum(t *testing.T) {
 				{3, 3},
 				{4, 4},
 			},
-			expectedSums:     [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedSumRows:  [][]int{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedRowCount: 4,
 		},
 	}
@@ -107,14 +108,19 @@ func TestSum(t *testing.T) {
 			continue
 		}
 
-		for i, expectedSum := range test.expectedSums {
-			if len(rsRows[i]) != len(expectedSum) {
-				t.Errorf("Expected %d columns, got %d", len(expectedSum), len(rsRows[i]))
+		for n, expectedSumRow := range test.expectedSumRows {
+			if len(rsRows[n]) != len(expectedSumRow) {
+				t.Errorf("Expected %d columns, got %d", len(expectedSumRow), len(rsRows[n]))
 				continue
 			}
-			for j, expected := range expectedSum {
-				if rsRows[i][j] != expected {
-					t.Errorf("Expected %f, got %f", expected, rsRows[i][j])
+			for i, expectedSum := range expectedSumRow {
+				var rowValue int
+				if err := safecast.ToInt(rsRows[n][i], &rowValue); err != nil {
+					t.Errorf("Error converting row value to int: %v", err)
+					continue
+				}
+				if rowValue != expectedSum {
+					t.Errorf("Expected %d, got %d", expectedSum, rowValue)
 					continue
 				}
 			}
