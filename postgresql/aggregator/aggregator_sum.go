@@ -14,10 +14,6 @@
 
 package aggregator
 
-type groupSum struct {
-	sum   float64
-	count int
-}
 type Sum struct {
 	args []string
 	// groupBy is the name of the column to group by.
@@ -76,36 +72,10 @@ func (s *Sum) Reset() error {
 
 // Aggregate aggregates a row of data.
 func (s *Sum) Aggregate(row Row) error {
-	if s.groupBy == "" {
-		return nil
-	}
-
-	groupValue, ok := row[s.groupBy]
-	if !ok {
-		return nil
-	}
-
-	value, ok := row["value"]
-	if !ok {
-		return nil
-	}
-
-	s.sum[groupValue] += value.(float64)
-	s.count[groupValue]++
-
 	return nil
 }
 
 // Finalize finalizes the aggregation and returns the result.
-func (s *Sum) Finalize() (Result, error) {
-	result := make(Result)
-	for groupValue, sum := range s.sum {
-		count := s.count[groupValue]
-		if count > 0 {
-			result[groupValue] = sum / float64(count)
-		} else {
-			result[groupValue] = 0
-		}
-	}
-	return result, nil
+func (s *Sum) Finalize() (ResultSet, error) {
+	return NewResultSet(), nil
 }
