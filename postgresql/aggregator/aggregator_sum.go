@@ -21,17 +21,12 @@ import (
 )
 
 type Sum struct {
-	// colums is the list of columns to sum.
-	colums []string
-	// sums is the sums of the values.
-	sums []float64
-	// counts is the number of values.
-	counts int
-	// groupBy is the name of the column to group by.
-	groupBy string
-	// groupSums is the sum of the values for each group.
-	groupSums map[any][]float64
-	// groupCounts is the count of the values for each group.
+	args        []string
+	colums      []string
+	sums        []float64
+	counts      int
+	groupBy     string
+	groupSums   map[any][]float64
 	groupCounts map[any]int
 }
 
@@ -41,6 +36,7 @@ type SumOption func(*Sum) error
 // NewSum creates a new Sum aggregator with the given options.
 func NewSum(options ...SumOption) (*Sum, error) {
 	s := &Sum{
+		args:        make([]string, 0),
 		colums:      make([]string, 0),
 		groupBy:     "",
 		sums:        make([]float64, 0),
@@ -65,7 +61,7 @@ func NewSum(options ...SumOption) (*Sum, error) {
 // WithSubArguments sets the arguments for the Sum aggregator.
 func WithSubArguments(args ...string) SumOption {
 	return func(s *Sum) error {
-		s.colums = args
+		s.args = args
 		return nil
 	}
 }
@@ -97,7 +93,7 @@ func (s *Sum) Reset() error {
 	if groupBy, ok := s.GroupBy(); ok {
 		s.colums = append(s.colums, groupBy)
 	}
-	for _, arg := range s.colums {
+	for _, arg := range s.args {
 		s.colums = append(s.colums, fmt.Sprintf("%s(%s)", s.Name(), arg))
 	}
 
@@ -159,15 +155,19 @@ func (s *Sum) Aggregate(row Row) error {
 func (s *Sum) Finalize() (ResultSet, error) {
 	rows := make([]Row, 0)
 	if _, ok := s.GroupBy(); ok {
-		for key, value := range s.groupSums {
+		for group, values := range s.groupSums {
 			row := make([]any, 0)
-			row = append(row, key)
-			row = append(row, value)
+			row = append(row, group)
+			for _, value := range values {
+				row = append(row, value)
+			}
 			rows = append(rows, row)
 		}
 	} else {
 		row := make([]any, 0)
-		row = append(row, s.sums)
+		for _, value := range s.sums {
+			row = append(row, value)
+		}
 		rows = append(rows, row)
 	}
 	return NewResultSet(
