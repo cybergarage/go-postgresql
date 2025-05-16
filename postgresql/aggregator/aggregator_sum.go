@@ -16,6 +16,8 @@ package aggregator
 
 import (
 	"fmt"
+
+	"github.com/cybergarage/go-safecast/safecast"
 )
 
 type Sum struct {
@@ -24,13 +26,13 @@ type Sum struct {
 	// sums is the sums of the values.
 	sums []float64
 	// counts is the number of values.
-	counts []int
+	counts int
 	// groupBy is the name of the column to group by.
 	groupBy string
 	// groupSums is the sum of the values for each group.
 	groupSums map[any][]float64
 	// groupCounts is the count of the values for each group.
-	groupCounts map[any][]int
+	groupCounts map[any]int
 }
 
 // SumOption is a function that configures the Sum aggregator.
@@ -42,9 +44,9 @@ func NewSum(options ...SumOption) (*Sum, error) {
 		colums:      make([]string, 0),
 		groupBy:     "",
 		sums:        make([]float64, 0),
-		counts:      make([]int, 0),
+		counts:      0,
 		groupSums:   make(map[any][]float64),
-		groupCounts: make(map[any][]int),
+		groupCounts: make(map[any]int),
 	}
 
 	for _, opt := range options {
@@ -111,10 +113,10 @@ func (s *Sum) Reset() error {
 	// Reset aggregator variables
 
 	s.sums = make([]float64, len(s.colums))
-	s.counts = make([]int, len(s.colums))
+	s.counts = 0
 
 	s.groupSums = make(map[any][]float64)
-	s.groupCounts = make(map[any][]int)
+	s.groupCounts = make(map[any]int)
 
 	return nil
 }
@@ -124,20 +126,32 @@ func (s *Sum) Aggregate(row Row) error {
 	if len(s.colums) != len(row) {
 		return fmt.Errorf("%w column count (%d != %d)", ErrInvalid, len(s.colums), len(row))
 	}
-	// for _, rowValue := range row {
-	// 	if _, ok := s.GroupBy(); ok {
-	// 		group := row[0]
-	// 		if _, ok := s.groupSum[group]; !ok {
-	// 			s.groupSum[group] = 0
-	// 			s.groupCount[group] = 0
-	// 		}
-	// 		s.groupSum[group] += row[1].Float64()
-	// 		s.groupCount[group]++
-	// 	} else {
-	// 		s.sum += row[0].Float64()
-	// 		s.count++
-	// 	}
-	// }
+
+	if _, ok := s.GroupBy(); ok {
+		group := row[0]
+		if _, ok := s.groupSums[group]; !ok {
+			s.groupSums[group] = make([]float64, (len(s.colums) - 1))
+			s.groupCounts[group] = 0
+		}
+		for n, rv := range row[1:] {
+			var fv float64
+			if err := safecast.ToFloat64(rv, &fv); err != nil {
+				return fmt.Errorf("[%d] %w row : %s", n, ErrInvalid, err)
+			}
+			s.groupSums[group][n-1] += fv
+		}
+		s.groupCounts[group]++
+	} else {
+		for n, rv := range row {
+			var fv float64
+			if err := safecast.ToFloat64(rv, &fv); err != nil {
+				return fmt.Errorf("[%d] %w row : %s", n, ErrInvalid, err)
+			}
+			s.sums[n] += fv
+		}
+		s.counts++
+	}
+
 	return nil
 }
 
