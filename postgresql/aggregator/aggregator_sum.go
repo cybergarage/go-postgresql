@@ -134,7 +134,7 @@ func (s *Sum) Aggregate(row Row) error {
 			if err := safecast.ToFloat64(rv, &fv); err != nil {
 				return fmt.Errorf("[%d] %w row : %s", n, ErrInvalid, err)
 			}
-			s.groupSums[group][n-1] += fv
+			s.groupSums[group][n] += fv
 		}
 		s.groupCounts[group]++
 	} else {
