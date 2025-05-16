@@ -26,36 +26,52 @@ func TestSum(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
 	tests := []struct {
+		orderBy          string
 		args             []string
 		rows             []aggregator.Row
 		expectedSums     [][]float64
 		expectedRowCount int
 	}{
+		// {
+		// 	orderBy: "",
+		// 	args:    []string{"foo"},
+		// 	rows: []aggregator.Row{
+		// 		{1},
+		// 		{2},
+		// 		{3},
+		// 	},
+		// 	expectedSums:     [][]float64{{6}},
+		// 	expectedRowCount: 1,
+		// },
+		// {
+		// 	orderBy: "",
+		// 	args:    []string{"foo"},
+		// 	rows: []aggregator.Row{
+		// 		{1},
+		// 		{2},
+		// 		{3},
+		// 		{4},
+		// 	},
+		// 	expectedSums:     [][]float64{{10}},
+		// 	expectedRowCount: 1,
+		// },
 		{
-			args: []string{"foo"},
+			orderBy: "bar",
+			args:    []string{"foo"},
 			rows: []aggregator.Row{
-				{1},
-				{2},
-				{3},
+				{1, 1},
+				{2, 2},
+				{3, 3},
+				{4, 4},
 			},
-			expectedSums:     [][]float64{{6}},
-			expectedRowCount: 1,
-		},
-		{
-			args: []string{"foo"},
-			rows: []aggregator.Row{
-				{1},
-				{2},
-				{3},
-				{4},
-			},
-			expectedSums:     [][]float64{{10}},
-			expectedRowCount: 1,
+			expectedSums:     [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedRowCount: 4,
 		},
 	}
 
 	for _, test := range tests {
 		aggr, err := aggregator.NewSum(
+			aggregator.WithSubGroupBy(test.orderBy),
 			aggregator.WithSubArguments(test.args...),
 		)
 		if err != nil {
