@@ -14,5 +14,12 @@
 
 package aggregator
 
-// Result represents the result of an aggregation.
-type Result map[any]any
+// ReseltSet is the result set of an aggregation.
+type ResultSet interface {
+	// Columns returns the column names.
+	Columns() []string
+	// Next returns the next row.
+	Next() bool
+	// Row returns the current row.
+	Row() (Row, error)
+}
