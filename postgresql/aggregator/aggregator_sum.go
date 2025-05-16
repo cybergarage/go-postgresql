@@ -91,5 +91,14 @@ func (s *Sum) Aggregate(row Row) error {
 
 // Finalize finalizes the aggregation and returns the result.
 func (s *Sum) Finalize() (ResultSet, error) {
-	return NewResultSet(), nil
+	colums := []string{}
+	if 0 < len(s.groupBy) {
+		colums = append(colums, s.groupBy)
+	}
+	for _, arg := range s.args {
+		colums = append(colums, fmt.Sprintf("%s(%s)", s.Name(), arg))
+	}
+	return NewResultSet(
+		WithColumns(colums),
+	), nil
 }
