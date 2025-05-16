@@ -19,7 +19,7 @@ import (
 )
 
 type Sum struct {
-	args []string
+	colums []string
 	// groupBy is the name of the column to group by.
 	groupBy string
 	// sum is the sum of the values.
@@ -34,7 +34,7 @@ type SumOption func(*Sum) error
 // NewSum creates a new Sum aggregator with the given options.
 func NewSum(options ...SumOption) (*Sum, error) {
 	s := &Sum{
-		args:    make([]string, 0),
+		colums:  make([]string, 0),
 		groupBy: "",
 		sum:     make(map[any]float64),
 		count:   make(map[any]int),
@@ -46,10 +46,10 @@ func NewSum(options ...SumOption) (*Sum, error) {
 	}
 
 	// Validate the arguments
-	if len(s.args) == 0 {
+	if len(s.colums) == 0 {
 		return nil, fmt.Errorf("no argument %w", ErrNotSupported)
 	}
-	if len(s.args) > 1 {
+	if len(s.colums) > 1 {
 		return nil, fmt.Errorf("multiple argument %w", ErrNotSupported)
 	}
 
@@ -59,7 +59,7 @@ func NewSum(options ...SumOption) (*Sum, error) {
 // WithSubArguments sets the arguments for the Sum aggregator.
 func WithSubArguments(args ...string) SumOption {
 	return func(s *Sum) error {
-		s.args = args
+		s.colums = args
 		return nil
 	}
 }
@@ -79,6 +79,14 @@ func (s *Sum) Name() string {
 
 // Reset resets the aggregator to its initial state.
 func (s *Sum) Reset() error {
+	s.colums = []string{}
+	if 0 < len(s.groupBy) {
+		s.colums = append(s.colums, s.groupBy)
+	}
+	for _, arg := range s.colums {
+		s.colums = append(s.colums, fmt.Sprintf("%s(%s)", s.Name(), arg))
+	}
+
 	s.sum = make(map[any]float64)
 	s.count = make(map[any]int)
 	return nil
@@ -91,14 +99,7 @@ func (s *Sum) Aggregate(row Row) error {
 
 // Finalize finalizes the aggregation and returns the result.
 func (s *Sum) Finalize() (ResultSet, error) {
-	colums := []string{}
-	if 0 < len(s.groupBy) {
-		colums = append(colums, s.groupBy)
-	}
-	for _, arg := range s.args {
-		colums = append(colums, fmt.Sprintf("%s(%s)", s.Name(), arg))
-	}
 	return NewResultSet(
-		WithColumns(colums),
+		WithColumns(s.colums),
 	), nil
 }
