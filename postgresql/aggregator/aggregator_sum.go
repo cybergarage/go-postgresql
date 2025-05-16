@@ -19,6 +19,7 @@ type groupSum struct {
 	count int
 }
 type Sum struct {
+	args []string
 	// groupBy is the name of the column to group by.
 	groupBy string
 	// sum is the sum of the values.
@@ -32,6 +33,7 @@ type SumOption func(*Sum) error
 
 func NewSum(options ...SumOption) (*Sum, error) {
 	s := &Sum{
+		args:    make([]string, 0),
 		groupBy: "",
 		sum:     make(map[any]float64),
 		count:   make(map[any]int),
@@ -42,6 +44,14 @@ func NewSum(options ...SumOption) (*Sum, error) {
 		}
 	}
 	return s, nil
+}
+
+// WithSubArguments sets the arguments for the Sum aggregator.
+func WithSubArguments(args ...string) SumOption {
+	return func(s *Sum) error {
+		s.args = args
+		return nil
+	}
 }
 
 // WithSubGroupBy sets the group by column for the Sum aggregator.
