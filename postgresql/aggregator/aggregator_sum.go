@@ -61,6 +61,9 @@ func NewSum(options ...SumOption) (*Sum, error) {
 // WithSubArguments sets the arguments for the Sum aggregator.
 func WithSubArguments(args ...string) SumOption {
 	return func(s *Sum) error {
+		if 1 < len(s.args) {
+			return fmt.Errorf("multiple argument %w : %v", ErrNotSupported, s.args)
+		}
 		s.args = args
 		return nil
 	}
@@ -101,9 +104,6 @@ func (s *Sum) Reset() error {
 
 	if len(s.colums) == 0 {
 		return fmt.Errorf("no argument %w", ErrNotSupported)
-	}
-	if 1 < len(s.colums) {
-		return fmt.Errorf("multiple argument %w", ErrNotSupported)
 	}
 
 	// Reset aggregator variables
