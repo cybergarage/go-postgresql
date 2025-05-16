@@ -14,6 +14,10 @@
 
 package aggregator
 
+import (
+	"fmt"
+)
+
 type Sum struct {
 	args []string
 	// groupBy is the name of the column to group by.
@@ -27,6 +31,7 @@ type Sum struct {
 // SumOption is a function that configures the Sum aggregator.
 type SumOption func(*Sum) error
 
+// NewSum creates a new Sum aggregator with the given options.
 func NewSum(options ...SumOption) (*Sum, error) {
 	s := &Sum{
 		args:    make([]string, 0),
@@ -39,6 +44,15 @@ func NewSum(options ...SumOption) (*Sum, error) {
 			return nil, err
 		}
 	}
+
+	// Validate the arguments
+	if len(s.args) == 0 {
+		return nil, fmt.Errorf("no argument %w", ErrNotSupported)
+	}
+	if len(s.args) > 1 {
+		return nil, fmt.Errorf("multiple argument %w", ErrNotSupported)
+	}
+
 	return s, nil
 }
 
