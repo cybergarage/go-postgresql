@@ -89,8 +89,8 @@ func TestSum(t *testing.T) {
 
 	for _, test := range tests {
 		aggr, err := aggregator.NewSum(
-			aggregator.WithSubGroupBy(test.orderBy),
-			aggregator.WithSubArguments(test.args...),
+			aggregator.WithSumGroupBy(test.orderBy),
+			aggregator.WithSumArguments(test.args...),
 		)
 		if err != nil {
 			t.Errorf("Error creating Sum: %v", err)
