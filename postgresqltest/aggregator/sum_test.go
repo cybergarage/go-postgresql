@@ -31,7 +31,7 @@ func TestSum(t *testing.T) {
 		orderBy          string
 		args             []string
 		rows             []aggregator.Row
-		expectedSumRows  [][]int
+		expectedSumRows  [][]float64
 		expectedRowCount int
 	}{
 		{
@@ -42,7 +42,7 @@ func TestSum(t *testing.T) {
 				{2},
 				{3},
 			},
-			expectedSumRows:  [][]int{{6}},
+			expectedSumRows:  [][]float64{{6}},
 			expectedRowCount: 1,
 		},
 		{
@@ -54,7 +54,7 @@ func TestSum(t *testing.T) {
 				{3},
 				{4},
 			},
-			expectedSumRows:  [][]int{{10}},
+			expectedSumRows:  [][]float64{{10}},
 			expectedRowCount: 1,
 		},
 		{
@@ -66,7 +66,7 @@ func TestSum(t *testing.T) {
 				{3, 3},
 				{4, 4},
 			},
-			expectedSumRows:  [][]int{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedSumRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedRowCount: 4,
 		},
 		{
@@ -82,7 +82,7 @@ func TestSum(t *testing.T) {
 				{3, 3},
 				{4, 4},
 			},
-			expectedSumRows:  [][]int{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
+			expectedSumRows:  [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
 			expectedRowCount: 4,
 		},
 	}
@@ -142,13 +142,13 @@ func TestSum(t *testing.T) {
 				continue
 			}
 			for i, expectedSum := range expectedSumRow {
-				var rowValue int
-				if err := safecast.ToInt(rsRows[n][i], &rowValue); err != nil {
+				var rowValue float64
+				if err := safecast.ToFloat64(rsRows[n][i], &rowValue); err != nil {
 					t.Errorf("Error converting row value to int: %v", err)
 					continue
 				}
 				if rowValue != expectedSum {
-					t.Errorf("Expected %d, got %d", expectedSum, rowValue)
+					t.Errorf("Expected %f, got %f", expectedSum, rowValue)
 					continue
 				}
 			}
