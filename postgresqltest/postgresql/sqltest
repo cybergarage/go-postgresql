@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+  echo "Usage: $0 <scenario file>"
+  exit 1
+fi
+~/go/bin/sqltest -protocol pg -user postgres -password passwd $1
