@@ -14,6 +14,7 @@
 
 package aggregator
 
+// Avg is an aggregator that calculates the average of values.
 type Avg struct {
 	*Aggr
 }
