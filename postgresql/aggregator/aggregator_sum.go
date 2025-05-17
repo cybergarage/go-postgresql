@@ -27,11 +27,19 @@ func NewSum(opts ...SumOption) (*Sum, error) {
 		Aggr: NewAggr(),
 	}
 
-	opts = append(opts, WithAggrAggreateFunc(
-		func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
-			return accumulatedValue + inputValue, nil
-		},
-	))
+	opts = append(opts,
+		WithAggrName("SUM"),
+		WithAggrAggreateFunc(
+			func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
+				return accumulatedValue + inputValue, nil
+			},
+		),
+		WithAggrFinalizeFunc(
+			func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error) {
+				return accumulatedValue, nil
+			},
+		),
+	)
 
 	for _, opt := range opts {
 		if err := opt(aggr.Aggr); err != nil {

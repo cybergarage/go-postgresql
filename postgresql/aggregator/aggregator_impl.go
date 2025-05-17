@@ -23,6 +23,9 @@ import (
 // AggrAggregateFunc is a function that performs aggregation on the given values.
 type AggrAggregateFunc func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error)
 
+// AggrFinalizeFunc is a function that finalizes the aggregation and returns the result.
+type AggrFinalizeFunc func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error)
+
 type Aggr struct {
 	name        string
 	args        []string
@@ -33,6 +36,7 @@ type Aggr struct {
 	groupAggrs  map[any][]float64
 	groupCounts map[any]int
 	aggFunc     AggrAggregateFunc
+	finalFunc   AggrFinalizeFunc
 }
 
 // AggrOption is a function that configures the Aggr aggregator.
@@ -50,6 +54,7 @@ func NewAggr(options ...AggrOption) *Aggr {
 		groupAggrs:  make(map[any][]float64),
 		groupCounts: make(map[any]int),
 		aggFunc:     nil,
+		finalFunc:   nil,
 	}
 	return aggr
 }
@@ -77,6 +82,14 @@ func WithAggrArguments(args ...string) AggrOption {
 func WithAggrAggreateFunc(aggFunc AggrAggregateFunc) AggrOption {
 	return func(aggr *Aggr) error {
 		aggr.aggFunc = aggFunc
+		return nil
+	}
+}
+
+// WithAggrFinalizeFunc sets the finalization function for the Aggr aggregator.
+func WithAggrFinalizeFunc(finalFunc AggrFinalizeFunc) AggrOption {
+	return func(aggr *Aggr) error {
+		aggr.finalFunc = finalFunc
 		return nil
 	}
 }
@@ -176,17 +189,29 @@ func (aggr *Aggr) Finalize() (ResultSet, error) {
 	rows := make([]Row, 0)
 	if _, ok := aggr.GroupBy(); ok {
 		for group, values := range aggr.groupAggrs {
+			groupCnt, ok := aggr.groupCounts[group]
+			if !ok {
+				return nil, fmt.Errorf("group count %w for group %v", ErrNotFound, group)
+			}
 			row := make([]any, 0)
 			row = append(row, group)
 			for _, value := range values {
-				row = append(row, value)
+				fv, err := aggr.finalFunc(aggr, value, groupCnt)
+				if err != nil {
+					return nil, err
+				}
+				row = append(row, fv)
 			}
 			rows = append(rows, row)
 		}
 	} else {
 		row := make([]any, 0)
 		for _, value := range aggr.aggrs {
-			row = append(row, value)
+			fv, err := aggr.finalFunc(aggr, value, aggr.counts)
+			if err != nil {
+				return nil, err
+			}
+			row = append(row, fv)
 		}
 		rows = append(rows, row)
 	}
