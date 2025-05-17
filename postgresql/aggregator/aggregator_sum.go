@@ -14,6 +14,7 @@
 
 package aggregator
 
+// Sum is an aggregator that calculates the sum of values.
 type Sum struct {
 	*Aggr
 }
