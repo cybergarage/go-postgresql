@@ -26,6 +26,8 @@ github.com/cybergarage/go-sqltest v1.5.2-0.20250510125257-35f67449fd09 h1:7RLTl0
 github.com/cybergarage/go-sqltest v1.5.2-0.20250510125257-35f67449fd09/go.mod h1:3qomdH0LNBJD0F6WCCRx+LGUXN4uOMrtseubeM3UPgc=
 github.com/cybergarage/go-sqltest v1.5.2-0.20250512073238-6581281332cf h1:5Qt25KG4hicnFsamKKmup9tX/vqsy5Ty/5V5pQfwptI=
 github.com/cybergarage/go-sqltest v1.5.2-0.20250512073238-6581281332cf/go.mod h1:3qomdH0LNBJD0F6WCCRx+LGUXN4uOMrtseubeM3UPgc=
+github.com/cybergarage/go-sqltest v1.6.1-0.20250517122858-9b30b1904ce4 h1:mdpSwqoJkkgOBNNd1D9TXoZQC2bD6GfynaY1/WAp/5w=
+github.com/cybergarage/go-sqltest v1.6.1-0.20250517122858-9b30b1904ce4/go.mod h1:3qomdH0LNBJD0F6WCCRx+LGUXN4uOMrtseubeM3UPgc=
 github.com/cybergarage/go-tracing v1.1.5 h1:woJLmGqTcRVpRQlOB3GqOwhujdZYUoIRr+XmdN3vhKg=
 github.com/cybergarage/go-tracing v1.1.5/go.mod h1:IhFImrr4JiKX88SPNyCPklWSlJdGFW2VdvyjsTcWs1Q=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
