@@ -20,15 +20,19 @@ import (
 	"github.com/cybergarage/go-safecast/safecast"
 )
 
+// AggrAggregateFunc is a function that performs aggregation on the given values.
+type AggrAggregateFunc func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error)
+
 type Aggr struct {
 	name        string
 	args        []string
 	colums      []string
-	sums        []float64
+	aggrs       []float64
 	counts      int
 	groupBy     string
-	groupSums   map[any][]float64
+	groupAggrs  map[any][]float64
 	groupCounts map[any]int
+	aggFunc     AggrAggregateFunc
 }
 
 // AggrOption is a function that configures the Aggr aggregator.
@@ -41,12 +45,12 @@ func NewAggr(options ...AggrOption) *Aggr {
 		args:        make([]string, 0),
 		colums:      make([]string, 0),
 		groupBy:     "",
-		sums:        make([]float64, 0),
+		aggrs:       make([]float64, 0),
 		counts:      0,
-		groupSums:   make(map[any][]float64),
+		groupAggrs:  make(map[any][]float64),
 		groupCounts: make(map[any]int),
+		aggFunc:     nil,
 	}
-
 	return aggr
 }
 
@@ -65,6 +69,14 @@ func WithAggrArguments(args ...string) AggrOption {
 			return fmt.Errorf("multiple argument %w : %v", ErrNotSupported, aggr.args)
 		}
 		aggr.args = args
+		return nil
+	}
+}
+
+// WithAggrAggreateFunc sets the aggregation function for the Aggr aggregator.
+func WithAggrAggreateFunc(aggFunc AggrAggregateFunc) AggrOption {
+	return func(aggr *Aggr) error {
+		aggr.aggFunc = aggFunc
 		return nil
 	}
 }
@@ -108,10 +120,10 @@ func (aggr *Aggr) Reset() error {
 
 	// Reset aggregator variables
 
-	aggr.sums = make([]float64, len(aggr.colums))
+	aggr.aggrs = make([]float64, len(aggr.colums))
 	aggr.counts = 0
 
-	aggr.groupSums = make(map[any][]float64)
+	aggr.groupAggrs = make(map[any][]float64)
 	aggr.groupCounts = make(map[any]int)
 
 	return nil
@@ -125,8 +137,8 @@ func (aggr *Aggr) Aggregate(row Row) error {
 
 	if _, ok := aggr.GroupBy(); ok {
 		group := row[0]
-		if _, ok := aggr.groupSums[group]; !ok {
-			aggr.groupSums[group] = make([]float64, (len(aggr.colums) - 1))
+		if _, ok := aggr.groupAggrs[group]; !ok {
+			aggr.groupAggrs[group] = make([]float64, (len(aggr.colums) - 1))
 			aggr.groupCounts[group] = 0
 		}
 		for n, rv := range row[1:] {
@@ -134,7 +146,11 @@ func (aggr *Aggr) Aggregate(row Row) error {
 			if err := safecast.ToFloat64(rv, &fv); err != nil {
 				return fmt.Errorf("[%d] %w row : %s", n, ErrInvalid, err)
 			}
-			aggr.groupSums[group][n] += fv
+			nv, err := aggr.aggFunc(aggr, aggr.groupAggrs[group][n], fv)
+			if err != nil {
+				return err
+			}
+			aggr.groupAggrs[group][n] = nv
 		}
 		aggr.groupCounts[group]++
 	} else {
@@ -143,7 +159,11 @@ func (aggr *Aggr) Aggregate(row Row) error {
 			if err := safecast.ToFloat64(rv, &fv); err != nil {
 				return fmt.Errorf("[%d] %w row : %s", n, ErrInvalid, err)
 			}
-			aggr.sums[n] += fv
+			nv, err := aggr.aggFunc(aggr, aggr.aggrs[n], fv)
+			if err != nil {
+				return err
+			}
+			aggr.aggrs[n] = nv
 		}
 		aggr.counts++
 	}
@@ -155,7 +175,7 @@ func (aggr *Aggr) Aggregate(row Row) error {
 func (aggr *Aggr) Finalize() (ResultSet, error) {
 	rows := make([]Row, 0)
 	if _, ok := aggr.GroupBy(); ok {
-		for group, values := range aggr.groupSums {
+		for group, values := range aggr.groupAggrs {
 			row := make([]any, 0)
 			row = append(row, group)
 			for _, value := range values {
@@ -165,7 +185,7 @@ func (aggr *Aggr) Finalize() (ResultSet, error) {
 		}
 	} else {
 		row := make([]any, 0)
-		for _, value := range aggr.sums {
+		for _, value := range aggr.aggrs {
 			row = append(row, value)
 		}
 		rows = append(rows, row)

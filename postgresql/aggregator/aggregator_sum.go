@@ -22,12 +22,18 @@ type Sum struct {
 type SumOption = AggrOption
 
 // NewSum creates a new Sum aggregator with the given options.
-func NewSum(options ...SumOption) (*Sum, error) {
+func NewSum(opts ...SumOption) (*Sum, error) {
 	aggr := &Sum{
 		Aggr: NewAggr(),
 	}
 
-	for _, opt := range options {
+	opts = append(opts, WithAggrAggreateFunc(
+		func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
+			return accumulatedValue + inputValue, nil
+		},
+	))
+
+	for _, opt := range opts {
 		if err := opt(aggr.Aggr); err != nil {
 			return nil, err
 		}
