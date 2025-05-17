@@ -150,3 +150,28 @@ func (aggr *Aggr) Aggregate(row Row) error {
 
 	return nil
 }
+
+// Finalize finalizes the aggregation and returns the result.
+func (aggr *Aggr) Finalize() (ResultSet, error) {
+	rows := make([]Row, 0)
+	if _, ok := aggr.GroupBy(); ok {
+		for group, values := range aggr.groupSums {
+			row := make([]any, 0)
+			row = append(row, group)
+			for _, value := range values {
+				row = append(row, value)
+			}
+			rows = append(rows, row)
+		}
+	} else {
+		row := make([]any, 0)
+		for _, value := range aggr.sums {
+			row = append(row, value)
+		}
+		rows = append(rows, row)
+	}
+	return NewResultSet(
+		WithRows(rows),
+		WithColumns(aggr.colums),
+	), nil
+}
