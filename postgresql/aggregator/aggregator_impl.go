@@ -20,6 +20,9 @@ import (
 	"github.com/cybergarage/go-safecast/safecast"
 )
 
+// AggrResetFunc is a function that resets the aggregation state.
+type AggrResetFunc func(aggr *Aggr) (float64, error)
+
 // AggrAggregateFunc is a function that performs aggregation on the given values.
 type AggrAggregateFunc func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error)
 
@@ -35,6 +38,7 @@ type Aggr struct {
 	groupBy     string
 	groupAggrs  map[any][]float64
 	groupCounts map[any]int
+	resetFunc   AggrResetFunc
 	aggFunc     AggrAggregateFunc
 	finalFunc   AggrFinalizeFunc
 }
@@ -53,6 +57,7 @@ func NewAggr(options ...AggrOption) *Aggr {
 		counts:      0,
 		groupAggrs:  make(map[any][]float64),
 		groupCounts: make(map[any]int),
+		resetFunc:   nil,
 		aggFunc:     nil,
 		finalFunc:   nil,
 	}
@@ -74,6 +79,14 @@ func WithAggrArguments(args ...string) AggrOption {
 			return fmt.Errorf("multiple argument %w : %v", ErrNotSupported, aggr.args)
 		}
 		aggr.args = args
+		return nil
+	}
+}
+
+// WithAggrResetFunc sets the reset function for the Aggr aggregator.
+func WithAggrResetFunc(resetFunc AggrResetFunc) AggrOption {
+	return func(aggr *Aggr) error {
+		aggr.resetFunc = resetFunc
 		return nil
 	}
 }
@@ -134,6 +147,14 @@ func (aggr *Aggr) Reset() error {
 	// Reset aggregator variables
 
 	aggr.aggrs = make([]float64, len(aggr.colums))
+	for n := range aggr.aggrs {
+		nv, err := aggr.resetFunc(aggr)
+		if err != nil {
+			return err
+		}
+		aggr.aggrs[n] = nv
+	}
+
 	aggr.counts = 0
 
 	aggr.groupAggrs = make(map[any][]float64)
@@ -152,6 +173,13 @@ func (aggr *Aggr) Aggregate(row Row) error {
 		group := row[0]
 		if _, ok := aggr.groupAggrs[group]; !ok {
 			aggr.groupAggrs[group] = make([]float64, (len(aggr.colums) - 1))
+			for n := range aggr.groupAggrs[group] {
+				nv, err := aggr.resetFunc(aggr)
+				if err != nil {
+					return err
+				}
+				aggr.groupAggrs[group][n] = nv
+			}
 			aggr.groupCounts[group] = 0
 		}
 		for n, rv := range row[1:] {
