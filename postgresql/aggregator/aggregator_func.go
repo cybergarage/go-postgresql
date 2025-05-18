@@ -20,15 +20,15 @@ import (
 )
 
 // AggregatorOption is a function that configures the Aggregator.
-type AggregatorOption = AggrOption
+type AggregatorOption = aggrOption
 
 // Aggregator is an interface that defines the methods for an aggregator.
 func WithAggregatorGroupBy(group string) AggregatorOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }
 
 // NewAggregator creates a new Aggregator with the given options.
-func NewAggregatorForName(name string, opts ...AggrOption) (Aggregator, error) {
+func NewAggregatorForName(name string, opts ...aggrOption) (Aggregator, error) {
 	switch strings.ToUpper(name) {
 	case "SUM":
 		return NewSum(opts...)

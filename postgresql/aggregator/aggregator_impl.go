@@ -21,15 +21,15 @@ import (
 )
 
 // AggrResetFunc is a function that resets the aggregation state.
-type AggrResetFunc func(aggr *Aggr) (float64, error)
+type AggrResetFunc func(aggr *aggrImpl) (float64, error)
 
 // AggrAggregateFunc is a function that performs aggregation on the given values.
-type AggrAggregateFunc func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error)
+type AggrAggregateFunc func(aggr *aggrImpl, accumulatedValue float64, inputValue float64) (float64, error)
 
 // AggrFinalizeFunc is a function that finalizes the aggregation and returns the result.
-type AggrFinalizeFunc func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error)
+type AggrFinalizeFunc func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error)
 
-type Aggr struct {
+type aggrImpl struct {
 	name        string
 	args        []string
 	colums      []string
@@ -43,12 +43,12 @@ type Aggr struct {
 	finalFunc   AggrFinalizeFunc
 }
 
-// AggrOption is a function that configures the Aggr aggregator.
-type AggrOption func(*Aggr) error
+// aggrOption is a function that configures the Aggr aggregator.
+type aggrOption func(*aggrImpl) error
 
-// NewAggr creates a new Aggr aggregator with the given options.
-func NewAggr(opts ...AggrOption) *Aggr {
-	aggr := &Aggr{
+// newAggr creates a new Aggr aggregator with the given options.
+func newAggr() *aggrImpl {
+	aggr := &aggrImpl{
 		name:        "",
 		args:        make([]string, 0),
 		colums:      make([]string, 0),
@@ -64,17 +64,17 @@ func NewAggr(opts ...AggrOption) *Aggr {
 	return aggr
 }
 
-// WithAggrName sets the name of the Aggr aggregator.
-func WithAggrName(name string) AggrOption {
-	return func(aggr *Aggr) error {
+// withAggrName sets the name of the Aggr aggregator.
+func withAggrName(name string) aggrOption {
+	return func(aggr *aggrImpl) error {
 		aggr.name = name
 		return nil
 	}
 }
 
-// WithAggrArguments sets the arguments for the Aggr aggregator.
-func WithAggrArguments(args ...string) AggrOption {
-	return func(aggr *Aggr) error {
+// withAggrArguments sets the arguments for the Aggr aggregator.
+func withAggrArguments(args ...string) aggrOption {
+	return func(aggr *aggrImpl) error {
 		if 1 < len(aggr.args) {
 			return fmt.Errorf("multiple argument %w : %v", ErrNotSupported, aggr.args)
 		}
@@ -83,45 +83,45 @@ func WithAggrArguments(args ...string) AggrOption {
 	}
 }
 
-// WithAggrResetFunc sets the reset function for the Aggr aggregator.
-func WithAggrResetFunc(resetFunc AggrResetFunc) AggrOption {
-	return func(aggr *Aggr) error {
+// withAggrResetFunc sets the reset function for the Aggr aggregator.
+func withAggrResetFunc(resetFunc AggrResetFunc) aggrOption {
+	return func(aggr *aggrImpl) error {
 		aggr.resetFunc = resetFunc
 		return nil
 	}
 }
 
-// WithAggrAggreateFunc sets the aggregation function for the Aggr aggregator.
-func WithAggrAggreateFunc(aggFunc AggrAggregateFunc) AggrOption {
-	return func(aggr *Aggr) error {
+// withAggrAggreateFunc sets the aggregation function for the Aggr aggregator.
+func withAggrAggreateFunc(aggFunc AggrAggregateFunc) aggrOption {
+	return func(aggr *aggrImpl) error {
 		aggr.aggFunc = aggFunc
 		return nil
 	}
 }
 
-// WithAggrFinalizeFunc sets the finalization function for the Aggr aggregator.
-func WithAggrFinalizeFunc(finalFunc AggrFinalizeFunc) AggrOption {
-	return func(aggr *Aggr) error {
+// withAggrFinalizeFunc sets the finalization function for the Aggr aggregator.
+func withAggrFinalizeFunc(finalFunc AggrFinalizeFunc) aggrOption {
+	return func(aggr *aggrImpl) error {
 		aggr.finalFunc = finalFunc
 		return nil
 	}
 }
 
-// WithAggrGroupBy sets the group by column for the Aggr aggregator.
-func WithAggrGroupBy(group string) AggrOption {
-	return func(aggr *Aggr) error {
+// withAggrGroupBy sets the group by column for the Aggr aggregator.
+func withAggrGroupBy(group string) aggrOption {
+	return func(aggr *aggrImpl) error {
 		aggr.groupBy = group
 		return nil
 	}
 }
 
 // Name returns the name of the aggregator.
-func (aggr *Aggr) Name() string {
+func (aggr *aggrImpl) Name() string {
 	return aggr.name
 }
 
 // GroupBy returns the group by column name and a boolean indicating if it is set.
-func (aggr *Aggr) GroupBy() (string, bool) {
+func (aggr *aggrImpl) GroupBy() (string, bool) {
 	if len(aggr.groupBy) == 0 {
 		return "", false
 	}
@@ -129,7 +129,7 @@ func (aggr *Aggr) GroupBy() (string, bool) {
 }
 
 // Reset resets the aggregator to its initial state.
-func (aggr *Aggr) Reset() error {
+func (aggr *aggrImpl) Reset() error {
 	aggr.colums = []string{}
 	if groupBy, ok := aggr.GroupBy(); ok {
 		aggr.colums = append(aggr.colums, groupBy)
@@ -164,7 +164,7 @@ func (aggr *Aggr) Reset() error {
 }
 
 // Aggregate aggregates a row of data.
-func (aggr *Aggr) Aggregate(row Row) error {
+func (aggr *aggrImpl) Aggregate(row Row) error {
 	if len(aggr.colums) != len(row) {
 		return fmt.Errorf("%w column count (%d != %d)", ErrInvalid, len(aggr.colums), len(row))
 	}
@@ -213,7 +213,7 @@ func (aggr *Aggr) Aggregate(row Row) error {
 }
 
 // Finalize finalizes the aggregation and returns the result.
-func (aggr *Aggr) Finalize() (ResultSet, error) {
+func (aggr *aggrImpl) Finalize() (ResultSet, error) {
 	rows := make([]Row, 0)
 	if _, ok := aggr.GroupBy(); ok {
 		for group, values := range aggr.groupAggrs {

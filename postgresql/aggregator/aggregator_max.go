@@ -20,42 +20,42 @@ import (
 
 // Max is an aggregator that calculates the sum of values.
 type Max struct {
-	*Aggr
+	*aggrImpl
 }
 
 // MaxOption is a function that configures the Max aggregator.
-type MaxOption = AggrOption
+type MaxOption = aggrOption
 
 // NewMax creates a new Max aggregator with the given options.
 func NewMax(opts ...MaxOption) (*Max, error) {
 	aggr := &Max{
-		Aggr: NewAggr(),
+		aggrImpl: newAggr(),
 	}
 
 	opts = append(opts,
-		WithAggrName("MAX"),
-		WithAggrResetFunc(
-			func(aggr *Aggr) (float64, error) {
+		withAggrName("MAX"),
+		withAggrResetFunc(
+			func(aggr *aggrImpl) (float64, error) {
 				return math.Inf(-1), nil
 			},
 		),
-		WithAggrAggreateFunc(
-			func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
+		withAggrAggreateFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, inputValue float64) (float64, error) {
 				if accumulatedValue < inputValue {
 					return inputValue, nil
 				}
 				return accumulatedValue, nil
 			},
 		),
-		WithAggrFinalizeFunc(
-			func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error) {
+		withAggrFinalizeFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error) {
 				return accumulatedValue, nil
 			},
 		),
 	)
 
 	for _, opt := range opts {
-		if err := opt(aggr.Aggr); err != nil {
+		if err := opt(aggr.aggrImpl); err != nil {
 			return nil, err
 		}
 	}
@@ -69,10 +69,10 @@ func NewMax(opts ...MaxOption) (*Max, error) {
 
 // WithMaxArguments sets the arguments for the Max aggregator.
 func WithMaxArguments(args ...string) MaxOption {
-	return WithAggrArguments(args...)
+	return withAggrArguments(args...)
 }
 
 // WithMaxGroupBy sets the group by column for the Max aggregator.
 func WithMaxGroupBy(group string) MaxOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }

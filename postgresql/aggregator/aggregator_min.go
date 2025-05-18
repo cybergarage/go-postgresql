@@ -20,42 +20,42 @@ import (
 
 // Min is an aggregator that calculates the minimum of values.
 type Min struct {
-	*Aggr
+	*aggrImpl
 }
 
 // MinOption is a function that configures the Min aggregator.
-type MinOption = AggrOption
+type MinOption = aggrOption
 
 // NewMin creates a new Min aggregator with the given options.
 func NewMin(opts ...MinOption) (*Min, error) {
 	aggr := &Min{
-		Aggr: NewAggr(),
+		aggrImpl: newAggr(),
 	}
 
 	opts = append(opts,
-		WithAggrName("MIN"),
-		WithAggrResetFunc(
-			func(aggr *Aggr) (float64, error) {
+		withAggrName("MIN"),
+		withAggrResetFunc(
+			func(aggr *aggrImpl) (float64, error) {
 				return math.MaxFloat64, nil
 			},
 		),
-		WithAggrAggreateFunc(
-			func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
+		withAggrAggreateFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, inputValue float64) (float64, error) {
 				if inputValue < accumulatedValue {
 					return inputValue, nil
 				}
 				return accumulatedValue, nil
 			},
 		),
-		WithAggrFinalizeFunc(
-			func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error) {
+		withAggrFinalizeFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error) {
 				return accumulatedValue, nil
 			},
 		),
 	)
 
 	for _, opt := range opts {
-		if err := opt(aggr.Aggr); err != nil {
+		if err := opt(aggr.aggrImpl); err != nil {
 			return nil, err
 		}
 	}
@@ -69,10 +69,10 @@ func NewMin(opts ...MinOption) (*Min, error) {
 
 // WithMinArguments sets the arguments for the Min aggregator.
 func WithMinArguments(args ...string) MinOption {
-	return WithAggrArguments(args...)
+	return withAggrArguments(args...)
 }
 
 // WithMinGroupBy sets the group by column for the Min aggregator.
 func WithMinGroupBy(group string) MinOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }

@@ -16,32 +16,32 @@ package aggregator
 
 // Avg is an aggregator that calculates the average of values.
 type Avg struct {
-	*Aggr
+	*aggrImpl
 }
 
 // AvgOption is a function that configures the Avg aggregator.
-type AvgOption = AggrOption
+type AvgOption = aggrOption
 
 // NewAvg creates a new Avg aggregator with the given options.
 func NewAvg(opts ...AvgOption) (*Avg, error) {
 	aggr := &Avg{
-		Aggr: NewAggr(),
+		aggrImpl: newAggr(),
 	}
 
 	opts = append(opts,
-		WithAggrName("AVG"),
-		WithAggrResetFunc(
-			func(aggr *Aggr) (float64, error) {
+		withAggrName("AVG"),
+		withAggrResetFunc(
+			func(aggr *aggrImpl) (float64, error) {
 				return 0, nil
 			},
 		),
-		WithAggrAggreateFunc(
-			func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
+		withAggrAggreateFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, inputValue float64) (float64, error) {
 				return accumulatedValue + inputValue, nil
 			},
 		),
-		WithAggrFinalizeFunc(
-			func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error) {
+		withAggrFinalizeFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error) {
 				if accumulatedCount == 0 {
 					return 0, nil
 				}
@@ -51,7 +51,7 @@ func NewAvg(opts ...AvgOption) (*Avg, error) {
 	)
 
 	for _, opt := range opts {
-		if err := opt(aggr.Aggr); err != nil {
+		if err := opt(aggr.aggrImpl); err != nil {
 			return nil, err
 		}
 	}
@@ -65,10 +65,10 @@ func NewAvg(opts ...AvgOption) (*Avg, error) {
 
 // WithAvgArguments sets the arguments for the Avg aggregator.
 func WithAvgArguments(args ...string) AvgOption {
-	return WithAggrArguments(args...)
+	return withAggrArguments(args...)
 }
 
 // WithAvgGroupBy sets the group by column for the Avg aggregator.
 func WithAvgGroupBy(group string) AvgOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }

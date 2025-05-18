@@ -16,39 +16,39 @@ package aggregator
 
 // Count is an aggregator that calculates the sum of values.
 type Count struct {
-	*Aggr
+	*aggrImpl
 }
 
 // CountOption is a function that configures the Count aggregator.
-type CountOption = AggrOption
+type CountOption = aggrOption
 
 // NewCount creates a new Count aggregator with the given options.
 func NewCount(opts ...CountOption) (*Count, error) {
 	aggr := &Count{
-		Aggr: NewAggr(),
+		aggrImpl: newAggr(),
 	}
 
 	opts = append(opts,
-		WithAggrName("COUNT"),
-		WithAggrResetFunc(
-			func(aggr *Aggr) (float64, error) {
+		withAggrName("COUNT"),
+		withAggrResetFunc(
+			func(aggr *aggrImpl) (float64, error) {
 				return 0, nil
 			},
 		),
-		WithAggrAggreateFunc(
-			func(aggr *Aggr, accumulatedValue float64, inputValue float64) (float64, error) {
+		withAggrAggreateFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, inputValue float64) (float64, error) {
 				return 0, nil
 			},
 		),
-		WithAggrFinalizeFunc(
-			func(aggr *Aggr, accumulatedValue float64, accumulatedCount int) (float64, error) {
+		withAggrFinalizeFunc(
+			func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error) {
 				return float64(accumulatedCount), nil
 			},
 		),
 	)
 
 	for _, opt := range opts {
-		if err := opt(aggr.Aggr); err != nil {
+		if err := opt(aggr.aggrImpl); err != nil {
 			return nil, err
 		}
 	}
@@ -62,10 +62,10 @@ func NewCount(opts ...CountOption) (*Count, error) {
 
 // WithCountArguments sets the arguments for the Count aggregator.
 func WithCountArguments(args ...string) CountOption {
-	return WithAggrArguments(args...)
+	return withAggrArguments(args...)
 }
 
 // WithCountGroupBy sets the group by column for the Count aggregator.
 func WithCountGroupBy(group string) CountOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }
