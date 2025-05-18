@@ -136,7 +136,7 @@ func TestAggregators(t *testing.T) {
 
 		t.Run(fmt.Sprintf("%02d", n), func(t *testing.T) {
 
-			aggrsFunc := []func() (aggregator.Aggregator, error){
+			aggrFuncs := []func() (aggregator.Aggregator, error){
 				func() (aggregator.Aggregator, error) {
 					return aggregator.NewSum(
 						aggregator.WithSumGroupBy(test.orderBy),
@@ -169,11 +169,11 @@ func TestAggregators(t *testing.T) {
 				},
 			}
 
-			for _, aggrs := range aggrsFunc {
+			for _, aggrFunc := range aggrFuncs {
 
 				// Aggregate
 
-				aggr, err := aggrs()
+				aggr, err := aggrFunc()
 				if err != nil {
 					t.Error(err)
 					continue
@@ -242,17 +242,17 @@ func TestAggregators(t *testing.T) {
 
 					for n, expectedRow := range expectedRows {
 						if len(rsRows[n]) != len(expectedRow) {
-							t.Errorf("Expected %s %d columns, got %d", aggr.Name(), len(expectedRow), len(rsRows[n]))
+							t.Errorf("%s(%v): Expected %d columns, got %d", aggr.Name(), test.rows, len(expectedRow), len(rsRows[n]))
 							continue
 						}
-						for i, expectedSum := range expectedRow {
+						for i, expectedValue := range expectedRow {
 							var rowValue float64
 							if err := safecast.ToFloat64(rsRows[n][i], &rowValue); err != nil {
-								t.Errorf("Error converting row value to int: %v", err)
+								t.Errorf("Error converting row value to float64: %v", err)
 								continue
 							}
-							if rowValue != expectedSum {
-								t.Errorf("Expected %s %f, got %f", aggr.Name(), expectedSum, rowValue)
+							if rowValue != expectedValue {
+								t.Errorf("%s(%v): Expected %v, got %v", aggr.Name(), test.rows, expectedValue, rowValue)
 								continue
 							}
 						}
