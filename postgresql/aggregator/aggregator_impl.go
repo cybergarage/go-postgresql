@@ -47,7 +47,7 @@ type Aggr struct {
 type AggrOption func(*Aggr) error
 
 // NewAggr creates a new Aggr aggregator with the given options.
-func NewAggr(options ...AggrOption) *Aggr {
+func NewAggr(opts ...AggrOption) *Aggr {
 	aggr := &Aggr{
 		name:        "",
 		args:        make([]string, 0),
