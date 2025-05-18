@@ -99,8 +99,8 @@ func TestAggregators(t *testing.T) {
 				{3, 6},
 				{4, 8},
 			},
-			expectedSumRows:   [][]float64{{1, 1}, {2, 6}, {3, 9}, {4, 12}},
-			expectedAvgRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
+			expectedSumRows:   [][]float64{{1, 3}, {2, 6}, {3, 9}, {4, 12}},
+			expectedAvgRows:   [][]float64{{1, 1.5}, {2, 3}, {3, 4.5}, {4, 6}},
 			expectedMinRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedMaxRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
 			expectedCountRows: [][]float64{{1, 2}, {2, 2}, {3, 2}, {4, 2}},
@@ -241,18 +241,19 @@ func TestAggregators(t *testing.T) {
 					}
 
 					for n, expectedRow := range expectedRows {
-						if len(rsRows[n]) != len(expectedRow) {
-							t.Errorf("%s(%v): Expected %d columns, got %d", aggr.Name(), test.rows, len(expectedRow), len(rsRows[n]))
+						rsRow := rsRows[n]
+						if len(rsRow) != len(expectedRow) {
+							t.Errorf("%s(%v): Expected %d columns, got %d", aggr.Name(), test.rows, len(expectedRow), len(rsRow))
 							continue
 						}
 						for i, expectedValue := range expectedRow {
-							var rowValue float64
-							if err := safecast.ToFloat64(rsRows[n][i], &rowValue); err != nil {
+							var rsRowValue float64
+							if err := safecast.ToFloat64(rsRow[i], &rsRowValue); err != nil {
 								t.Errorf("Error converting row value to float64: %v", err)
 								continue
 							}
-							if rowValue != expectedValue {
-								t.Errorf("%s(%v): Expected %v, got %v", aggr.Name(), test.rows, expectedValue, rowValue)
+							if rsRowValue != expectedValue {
+								t.Errorf("%s(%v): Expected %v, got %v", aggr.Name(), test.rows, expectedRow, rsRow)
 								continue
 							}
 						}
