@@ -264,6 +264,35 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		return nil, err
 	}
 
+	// Aggregate
+
+	isAggregateStmtFn := func(stmt query.Select) bool {
+		for _, selector := range stmt.Selectors() {
+			if fn, ok := selector.(query.Function); ok {
+				if fn.Type() == query.AggregateFunctionType {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	isAggregateStmt := isAggregateStmtFn(stmt)
+
+	if isAggregateStmt {
+		aggrFuncs := []query.Function{}
+		for _, selector := range stmt.Selectors() {
+			if fn, ok := selector.(query.Function); ok {
+				if fn.Type() == query.AggregateFunctionType {
+					aggrFuncs = append(aggrFuncs, fn)
+				}
+			}
+		}
+		if 1 < len(aggrFuncs) {
+			return nil, fmt.Errorf("multiple aggregate functions are not supported: %s", stmt.String())
+		}
+	}
+
 	// Selector column names
 
 	selectors := stmt.Selectors()
