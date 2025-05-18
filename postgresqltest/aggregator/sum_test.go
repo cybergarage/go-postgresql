@@ -15,6 +15,7 @@
 package aggregator
 
 import (
+	"fmt"
 	"sort"
 	"testing"
 
@@ -93,144 +94,171 @@ func TestAggregators(t *testing.T) {
 				{2, 2},
 				{3, 3},
 				{4, 4},
+				{1, 2},
+				{2, 4},
+				{3, 6},
+				{4, 8},
+			},
+			expectedSumRows:   [][]float64{{1, 1}, {2, 6}, {3, 9}, {4, 12}},
+			expectedAvgRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
+			expectedMinRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMaxRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
+			expectedCountRows: [][]float64{{1, 2}, {2, 2}, {3, 2}, {4, 2}},
+			expectedRowCount:  4,
+		},
+		{
+			orderBy: "bar",
+			args:    []string{"foo"},
+			rows: []aggregator.Row{
 				{1, 1},
 				{2, 2},
 				{3, 3},
 				{4, 4},
+				{1, 2},
+				{2, 4},
+				{3, 6},
+				{4, 8},
+				{1, 3},
+				{2, 6},
+				{3, 9},
+				{4, 12},
 			},
-			expectedSumRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
-			expectedAvgRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedSumRows:   [][]float64{{1, 6}, {2, 12}, {3, 18}, {4, 24}},
+			expectedAvgRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
 			expectedMinRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedMaxRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedCountRows: [][]float64{{1, 2}, {2, 2}, {3, 2}, {4, 2}},
+			expectedMaxRows:   [][]float64{{1, 3}, {2, 6}, {3, 9}, {4, 12}},
+			expectedCountRows: [][]float64{{1, 3}, {2, 3}, {3, 3}, {4, 3}},
 			expectedRowCount:  4,
 		},
 	}
 
-	for _, test := range tests {
+	for n, test := range tests {
 
-		aggrsFunc := []func() (aggregator.Aggregator, error){
-			func() (aggregator.Aggregator, error) {
-				return aggregator.NewSum(
-					aggregator.WithSumGroupBy(test.orderBy),
-					aggregator.WithSumArguments(test.args...),
-				)
-			},
-			func() (aggregator.Aggregator, error) {
-				return aggregator.NewAvg(
-					aggregator.WithAvgGroupBy(test.orderBy),
-					aggregator.WithAvgArguments(test.args...),
-				)
-			},
-			func() (aggregator.Aggregator, error) {
-				return aggregator.NewMin(
-					aggregator.WithMinGroupBy(test.orderBy),
-					aggregator.WithMinArguments(test.args...),
-				)
-			},
-			func() (aggregator.Aggregator, error) {
-				return aggregator.NewMax(
-					aggregator.WithMaxGroupBy(test.orderBy),
-					aggregator.WithMaxArguments(test.args...),
-				)
-			},
-			func() (aggregator.Aggregator, error) {
-				return aggregator.NewCount(
-					aggregator.WithCountGroupBy(test.orderBy),
-					aggregator.WithCountArguments(test.args...),
-				)
-			},
-		}
+		t.Run(fmt.Sprintf("%02d", n), func(t *testing.T) {
 
-		for _, aggrs := range aggrsFunc {
-
-			// Aggregate
-
-			aggr, err := aggrs()
-			if err != nil {
-				t.Error(err)
-				continue
+			aggrsFunc := []func() (aggregator.Aggregator, error){
+				func() (aggregator.Aggregator, error) {
+					return aggregator.NewSum(
+						aggregator.WithSumGroupBy(test.orderBy),
+						aggregator.WithSumArguments(test.args...),
+					)
+				},
+				func() (aggregator.Aggregator, error) {
+					return aggregator.NewAvg(
+						aggregator.WithAvgGroupBy(test.orderBy),
+						aggregator.WithAvgArguments(test.args...),
+					)
+				},
+				func() (aggregator.Aggregator, error) {
+					return aggregator.NewMin(
+						aggregator.WithMinGroupBy(test.orderBy),
+						aggregator.WithMinArguments(test.args...),
+					)
+				},
+				func() (aggregator.Aggregator, error) {
+					return aggregator.NewMax(
+						aggregator.WithMaxGroupBy(test.orderBy),
+						aggregator.WithMaxArguments(test.args...),
+					)
+				},
+				func() (aggregator.Aggregator, error) {
+					return aggregator.NewCount(
+						aggregator.WithCountGroupBy(test.orderBy),
+						aggregator.WithCountArguments(test.args...),
+					)
+				},
 			}
 
-			t.Run(aggr.Name(), func(t *testing.T) {
+			for _, aggrs := range aggrsFunc {
 
-				for _, row := range test.rows {
-					if err := aggr.Aggregate(row); err != nil {
-						t.Errorf("Error adding row: %v", err)
-						continue
-					}
-				}
+				// Aggregate
 
-				rs, err := aggr.Finalize()
+				aggr, err := aggrs()
 				if err != nil {
-					t.Errorf("Error finalizing Sum: %v", err)
-					return
+					t.Error(err)
+					continue
 				}
 
-				rsRows := []aggregator.Row{}
-				for rs.Next() {
-					row, err := rs.Row()
+				t.Run(aggr.Name(), func(t *testing.T) {
+
+					for _, row := range test.rows {
+						if err := aggr.Aggregate(row); err != nil {
+							t.Errorf("Error adding row: %v", err)
+							continue
+						}
+					}
+
+					rs, err := aggr.Finalize()
 					if err != nil {
-						t.Errorf("Error getting row: %v", err)
-						continue
+						t.Errorf("Error finalizing Sum: %v", err)
+						return
 					}
-					rsRows = append(rsRows, row)
-				}
 
-				sort.Slice(rsRows, func(i, j int) bool {
-					var ii, ij int
-					if err := safecast.ToInt(rsRows[i][0], &ii); err != nil {
-						return false
+					rsRows := []aggregator.Row{}
+					for rs.Next() {
+						row, err := rs.Row()
+						if err != nil {
+							t.Errorf("Error getting row: %v", err)
+							continue
+						}
+						rsRows = append(rsRows, row)
 					}
-					if err := safecast.ToInt(rsRows[j][0], &ij); err != nil {
-						return false
+
+					sort.Slice(rsRows, func(i, j int) bool {
+						var ii, ij int
+						if err := safecast.ToInt(rsRows[i][0], &ii); err != nil {
+							return false
+						}
+						if err := safecast.ToInt(rsRows[j][0], &ij); err != nil {
+							return false
+						}
+						return ii < ij
+					})
+
+					if len(rsRows) != test.expectedRowCount {
+						t.Errorf("Expected %d rows, got %d", test.expectedRowCount, len(rsRows))
+						return
 					}
-					return ii < ij
+
+					// Compare the result set with the expected rows
+
+					var expectedRows [][]float64
+
+					switch aggr.(type) {
+					case *aggregator.Sum:
+						expectedRows = test.expectedSumRows
+					case *aggregator.Avg:
+						expectedRows = test.expectedAvgRows
+					case *aggregator.Min:
+						expectedRows = test.expectedMinRows
+					case *aggregator.Max:
+						expectedRows = test.expectedMaxRows
+					case *aggregator.Count:
+						expectedRows = test.expectedCountRows
+					default:
+						t.Errorf("Unexpected aggregator type: %T", aggr)
+						return
+					}
+
+					for n, expectedRow := range expectedRows {
+						if len(rsRows[n]) != len(expectedRow) {
+							t.Errorf("Expected %s %d columns, got %d", aggr.Name(), len(expectedRow), len(rsRows[n]))
+							continue
+						}
+						for i, expectedSum := range expectedRow {
+							var rowValue float64
+							if err := safecast.ToFloat64(rsRows[n][i], &rowValue); err != nil {
+								t.Errorf("Error converting row value to int: %v", err)
+								continue
+							}
+							if rowValue != expectedSum {
+								t.Errorf("Expected %s %f, got %f", aggr.Name(), expectedSum, rowValue)
+								continue
+							}
+						}
+					}
 				})
-
-				if len(rsRows) != test.expectedRowCount {
-					t.Errorf("Expected %d rows, got %d", test.expectedRowCount, len(rsRows))
-					return
-				}
-
-				// Compare the result set with the expected rows
-
-				var expectedRows [][]float64
-
-				switch aggr.(type) {
-				case *aggregator.Sum:
-					expectedRows = test.expectedSumRows
-				case *aggregator.Avg:
-					expectedRows = test.expectedAvgRows
-				case *aggregator.Min:
-					expectedRows = test.expectedMinRows
-				case *aggregator.Max:
-					expectedRows = test.expectedMaxRows
-				case *aggregator.Count:
-					expectedRows = test.expectedCountRows
-				default:
-					t.Errorf("Unexpected aggregator type: %T", aggr)
-					return
-				}
-
-				for n, expectedRow := range expectedRows {
-					if len(rsRows[n]) != len(expectedRow) {
-						t.Errorf("Expected %d columns, got %d", len(expectedRow), len(rsRows[n]))
-						continue
-					}
-					for i, expectedSum := range expectedRow {
-						var rowValue float64
-						if err := safecast.ToFloat64(rsRows[n][i], &rowValue); err != nil {
-							t.Errorf("Error converting row value to int: %v", err)
-							continue
-						}
-						if rowValue != expectedSum {
-							t.Errorf("Expected %f, got %f", expectedSum, rowValue)
-							continue
-						}
-					}
-				}
-			})
-		}
+			}
+		})
 	}
 }
