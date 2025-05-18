@@ -28,14 +28,15 @@ func TestAggregators(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
 	tests := []struct {
-		orderBy          string
-		args             []string
-		rows             []aggregator.Row
-		expectedSumRows  [][]float64
-		expectedAvgRows  [][]float64
-		expectedMinRows  [][]float64
-		expectedMaxRows  [][]float64
-		expectedRowCount int
+		orderBy           string
+		args              []string
+		rows              []aggregator.Row
+		expectedSumRows   [][]float64
+		expectedAvgRows   [][]float64
+		expectedMinRows   [][]float64
+		expectedMaxRows   [][]float64
+		expectedCountRows [][]float64
+		expectedRowCount  int
 	}{
 		{
 			orderBy: "",
@@ -45,11 +46,12 @@ func TestAggregators(t *testing.T) {
 				{2},
 				{3},
 			},
-			expectedSumRows:  [][]float64{{6}},
-			expectedAvgRows:  [][]float64{{2}},
-			expectedMinRows:  [][]float64{{1}},
-			expectedMaxRows:  [][]float64{{3}},
-			expectedRowCount: 1,
+			expectedSumRows:   [][]float64{{6}},
+			expectedAvgRows:   [][]float64{{2}},
+			expectedMinRows:   [][]float64{{1}},
+			expectedMaxRows:   [][]float64{{3}},
+			expectedCountRows: [][]float64{{3}},
+			expectedRowCount:  1,
 		},
 		{
 			orderBy: "",
@@ -60,11 +62,12 @@ func TestAggregators(t *testing.T) {
 				{3},
 				{4},
 			},
-			expectedSumRows:  [][]float64{{10}},
-			expectedAvgRows:  [][]float64{{2.5}},
-			expectedMinRows:  [][]float64{{1}},
-			expectedMaxRows:  [][]float64{{4}},
-			expectedRowCount: 1,
+			expectedSumRows:   [][]float64{{10}},
+			expectedAvgRows:   [][]float64{{2.5}},
+			expectedMinRows:   [][]float64{{1}},
+			expectedMaxRows:   [][]float64{{4}},
+			expectedCountRows: [][]float64{{4}},
+			expectedRowCount:  1,
 		},
 		{
 			orderBy: "bar",
@@ -75,11 +78,12 @@ func TestAggregators(t *testing.T) {
 				{3, 3},
 				{4, 4},
 			},
-			expectedSumRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedAvgRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedMinRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedMaxRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedRowCount: 4,
+			expectedSumRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedAvgRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMinRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMaxRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedCountRows: [][]float64{{1, 1}, {2, 1}, {3, 1}, {4, 1}},
+			expectedRowCount:  4,
 		},
 		{
 			orderBy: "bar",
@@ -94,11 +98,12 @@ func TestAggregators(t *testing.T) {
 				{3, 3},
 				{4, 4},
 			},
-			expectedSumRows:  [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
-			expectedAvgRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedMinRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedMaxRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
-			expectedRowCount: 4,
+			expectedSumRows:   [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
+			expectedAvgRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMinRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMaxRows:   [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedCountRows: [][]float64{{1, 2}, {2, 2}, {3, 2}, {4, 2}},
+			expectedRowCount:  4,
 		},
 	}
 
@@ -127,6 +132,12 @@ func TestAggregators(t *testing.T) {
 				return aggregator.NewMax(
 					aggregator.WithMaxGroupBy(test.orderBy),
 					aggregator.WithMaxArguments(test.args...),
+				)
+			},
+			func() (aggregator.Aggregator, error) {
+				return aggregator.NewCount(
+					aggregator.WithCountGroupBy(test.orderBy),
+					aggregator.WithCountArguments(test.args...),
 				)
 			},
 		}
@@ -195,6 +206,8 @@ func TestAggregators(t *testing.T) {
 					expectedRows = test.expectedMinRows
 				case *aggregator.Max:
 					expectedRows = test.expectedMaxRows
+				case *aggregator.Count:
+					expectedRows = test.expectedCountRows
 				default:
 					t.Errorf("Unexpected aggregator type: %T", aggr)
 					return
