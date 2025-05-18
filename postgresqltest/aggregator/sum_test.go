@@ -34,6 +34,7 @@ func TestAggregators(t *testing.T) {
 		expectedSumRows  [][]float64
 		expectedAvgRows  [][]float64
 		expectedMinRows  [][]float64
+		expectedMaxRows  [][]float64
 		expectedRowCount int
 	}{
 		{
@@ -47,6 +48,7 @@ func TestAggregators(t *testing.T) {
 			expectedSumRows:  [][]float64{{6}},
 			expectedAvgRows:  [][]float64{{2}},
 			expectedMinRows:  [][]float64{{1}},
+			expectedMaxRows:  [][]float64{{3}},
 			expectedRowCount: 1,
 		},
 		{
@@ -61,6 +63,7 @@ func TestAggregators(t *testing.T) {
 			expectedSumRows:  [][]float64{{10}},
 			expectedAvgRows:  [][]float64{{2.5}},
 			expectedMinRows:  [][]float64{{1}},
+			expectedMaxRows:  [][]float64{{4}},
 			expectedRowCount: 1,
 		},
 		{
@@ -75,6 +78,7 @@ func TestAggregators(t *testing.T) {
 			expectedSumRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedAvgRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedMinRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMaxRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedRowCount: 4,
 		},
 		{
@@ -93,6 +97,7 @@ func TestAggregators(t *testing.T) {
 			expectedSumRows:  [][]float64{{1, 2}, {2, 4}, {3, 6}, {4, 8}},
 			expectedAvgRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedMinRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
+			expectedMaxRows:  [][]float64{{1, 1}, {2, 2}, {3, 3}, {4, 4}},
 			expectedRowCount: 4,
 		},
 	}
@@ -116,6 +121,12 @@ func TestAggregators(t *testing.T) {
 				return aggregator.NewMin(
 					aggregator.WithMinGroupBy(test.orderBy),
 					aggregator.WithMinArguments(test.args...),
+				)
+			},
+			func() (aggregator.Aggregator, error) {
+				return aggregator.NewMax(
+					aggregator.WithMaxGroupBy(test.orderBy),
+					aggregator.WithMaxArguments(test.args...),
 				)
 			},
 		}
@@ -182,6 +193,8 @@ func TestAggregators(t *testing.T) {
 					expectedRows = test.expectedAvgRows
 				case *aggregator.Min:
 					expectedRows = test.expectedMinRows
+				case *aggregator.Max:
+					expectedRows = test.expectedMaxRows
 				default:
 					t.Errorf("Unexpected aggregator type: %T", aggr)
 					return
