@@ -29,7 +29,7 @@ func NewAvg(opts ...AvgOption) (*Avg, error) {
 	}
 
 	opts = append(opts,
-		WithAggrName("SUM"),
+		WithAggrName("AVG"),
 		WithAggrResetFunc(
 			func(aggr *Aggr) (float64, error) {
 				return 0, nil
