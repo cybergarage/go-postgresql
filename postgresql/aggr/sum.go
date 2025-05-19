@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
-// Avg is an aggregator that calculates the average of values.
-type Avg struct {
+// Sum is an aggregator that calculates the sum of values.
+type Sum struct {
 	*aggrImpl
 }
 
-// AvgOption is a function that configures the Avg aggregator.
-type AvgOption = aggrOption
+// SumOption is a function that configures the Sum aggregator.
+type SumOption = aggrOption
 
-// NewAvg creates a new Avg aggregator with the given options.
-func NewAvg(opts ...AvgOption) (*Avg, error) {
-	aggr := &Avg{
+// NewSum creates a new Sum aggregator with the given options.
+func NewSum(opts ...SumOption) (*Sum, error) {
+	aggr := &Sum{
 		aggrImpl: newAggr(),
 	}
 
 	opts = append(opts,
-		withAggrName("AVG"),
+		withAggrName("SUM"),
 		withAggrResetFunc(
 			func(aggr *aggrImpl) (float64, error) {
 				return 0, nil
@@ -42,10 +42,7 @@ func NewAvg(opts ...AvgOption) (*Avg, error) {
 		),
 		withAggrFinalizeFunc(
 			func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error) {
-				if accumulatedCount == 0 {
-					return 0, nil
-				}
-				return accumulatedValue / float64(accumulatedCount), nil
+				return accumulatedValue, nil
 			},
 		),
 	)
@@ -63,12 +60,12 @@ func NewAvg(opts ...AvgOption) (*Avg, error) {
 	return aggr, nil
 }
 
-// WithAvgArguments sets the arguments for the Avg aggregator.
-func WithAvgArguments(args ...string) AvgOption {
+// WithSumArguments sets the arguments for the Sum aggregator.
+func WithSumArguments(args ...string) SumOption {
 	return withAggrArguments(args...)
 }
 
-// WithAvgGroupBy sets the group by column for the Avg aggregator.
-func WithAvgGroupBy(group string) AvgOption {
+// WithSumGroupBy sets the group by column for the Sum aggregator.
+func WithSumGroupBy(group string) SumOption {
 	return withAggrGroupBy(group)
 }

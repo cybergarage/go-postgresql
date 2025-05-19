@@ -12,37 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
-// Count is an aggregator that calculates the sum of values.
-type Count struct {
+import (
+	"math"
+)
+
+// Max is an aggregator that calculates the sum of values.
+type Max struct {
 	*aggrImpl
 }
 
-// CountOption is a function that configures the Count aggregator.
-type CountOption = aggrOption
+// MaxOption is a function that configures the Max aggregator.
+type MaxOption = aggrOption
 
-// NewCount creates a new Count aggregator with the given options.
-func NewCount(opts ...CountOption) (*Count, error) {
-	aggr := &Count{
+// NewMax creates a new Max aggregator with the given options.
+func NewMax(opts ...MaxOption) (*Max, error) {
+	aggr := &Max{
 		aggrImpl: newAggr(),
 	}
 
 	opts = append(opts,
-		withAggrName("COUNT"),
+		withAggrName("MAX"),
 		withAggrResetFunc(
 			func(aggr *aggrImpl) (float64, error) {
-				return 0, nil
+				return math.Inf(-1), nil
 			},
 		),
 		withAggrAggreateFunc(
 			func(aggr *aggrImpl, accumulatedValue float64, inputValue float64) (float64, error) {
-				return 0, nil
+				if accumulatedValue < inputValue {
+					return inputValue, nil
+				}
+				return accumulatedValue, nil
 			},
 		),
 		withAggrFinalizeFunc(
 			func(aggr *aggrImpl, accumulatedValue float64, accumulatedCount int) (float64, error) {
-				return float64(accumulatedCount), nil
+				return accumulatedValue, nil
 			},
 		),
 	)
@@ -60,12 +67,12 @@ func NewCount(opts ...CountOption) (*Count, error) {
 	return aggr, nil
 }
 
-// WithCountArguments sets the arguments for the Count aggregator.
-func WithCountArguments(args ...string) CountOption {
+// WithMaxArguments sets the arguments for the Max aggregator.
+func WithMaxArguments(args ...string) MaxOption {
 	return withAggrArguments(args...)
 }
 
-// WithCountGroupBy sets the group by column for the Count aggregator.
-func WithCountGroupBy(group string) CountOption {
+// WithMaxGroupBy sets the group by column for the Max aggregator.
+func WithMaxGroupBy(group string) MaxOption {
 	return withAggrGroupBy(group)
 }

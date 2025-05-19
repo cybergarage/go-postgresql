@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
-// Aggregator is an interface for aggregating data.
-type Aggregator interface {
-	// Name returns the name of the aggregator.
-	Name() string
-	// Reset resets the aggregator to its initial state.
-	Reset() error
-	// Aggregate aggregates a row of data.
-	Aggregate(row Row) error
-	// Finalize finalizes the aggregation and returns the result.
-	Finalize() (ResultSet, error)
-}
+import (
+	"errors"
+)
+
+var ErrNoData = errors.New("no data")
+var ErrNotFound = errors.New("not found")
+var ErrNotSupported = errors.New("not supported")
+var ErrNotImplemented = errors.New("not implemented")
+var ErrInvalid = errors.New("invalid")

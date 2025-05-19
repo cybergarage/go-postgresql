@@ -12,14 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
-import (
-	"errors"
-)
-
-var ErrNoData = errors.New("no data")
-var ErrNotFound = errors.New("not found")
-var ErrNotSupported = errors.New("not supported")
-var ErrNotImplemented = errors.New("not implemented")
-var ErrInvalid = errors.New("invalid")
+// Row represents a row of data to be aggregated.
+type Row []any

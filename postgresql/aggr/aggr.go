@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
-// ReseltSet is the result set of an aggregation.
-type ResultSet interface {
-	// Columns returns the column names.
-	Columns() []string
-	// Next returns the next row.
-	Next() bool
-	// Row returns the current row.
-	Row() (Row, error)
+// Aggregator is an interface for aggregating data.
+type Aggregator interface {
+	// Name returns the name of the aggregator.
+	Name() string
+	// Reset resets the aggregator to its initial state.
+	Reset() error
+	// Aggregate aggregates a row of data.
+	Aggregate(row Row) error
+	// Finalize finalizes the aggregation and returns the result.
+	Finalize() (ResultSet, error)
 }

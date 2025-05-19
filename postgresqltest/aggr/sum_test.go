@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
 import (
 	"fmt"
 	"sort"
 	"testing"
 
-	"github.com/cybergarage/go-postgresql/postgresql/aggregator"
+	"github.com/cybergarage/go-postgresql/postgresql/aggr"
 	"github.com/cybergarage/go-safecast/safecast"
 
 	"github.com/cybergarage/go-logger/log"
@@ -31,7 +31,7 @@ func TestAggregators(t *testing.T) {
 	tests := []struct {
 		orderBy           string
 		args              []string
-		rows              []aggregator.Row
+		rows              []aggr.Row
 		expectedSumRows   [][]float64
 		expectedAvgRows   [][]float64
 		expectedMinRows   [][]float64
@@ -42,7 +42,7 @@ func TestAggregators(t *testing.T) {
 		{
 			orderBy: "",
 			args:    []string{"foo"},
-			rows: []aggregator.Row{
+			rows: []aggr.Row{
 				{1},
 				{2},
 				{3},
@@ -57,7 +57,7 @@ func TestAggregators(t *testing.T) {
 		{
 			orderBy: "",
 			args:    []string{"foo"},
-			rows: []aggregator.Row{
+			rows: []aggr.Row{
 				{1},
 				{2},
 				{3},
@@ -73,7 +73,7 @@ func TestAggregators(t *testing.T) {
 		{
 			orderBy: "bar",
 			args:    []string{"foo"},
-			rows: []aggregator.Row{
+			rows: []aggr.Row{
 				{1, 1},
 				{2, 2},
 				{3, 3},
@@ -89,7 +89,7 @@ func TestAggregators(t *testing.T) {
 		{
 			orderBy: "bar",
 			args:    []string{"foo"},
-			rows: []aggregator.Row{
+			rows: []aggr.Row{
 				{1, 1},
 				{2, 2},
 				{3, 3},
@@ -109,7 +109,7 @@ func TestAggregators(t *testing.T) {
 		{
 			orderBy: "bar",
 			args:    []string{"foo"},
-			rows: []aggregator.Row{
+			rows: []aggr.Row{
 				{1, 1},
 				{2, 2},
 				{3, 3},
@@ -136,35 +136,35 @@ func TestAggregators(t *testing.T) {
 
 		t.Run(fmt.Sprintf("%02d", n), func(t *testing.T) {
 
-			aggrFuncs := []func() (aggregator.Aggregator, error){
-				func() (aggregator.Aggregator, error) {
-					return aggregator.NewSum(
-						aggregator.WithSumGroupBy(test.orderBy),
-						aggregator.WithSumArguments(test.args...),
+			aggrFuncs := []func() (aggr.Aggregator, error){
+				func() (aggr.Aggregator, error) {
+					return aggr.NewSum(
+						aggr.WithSumGroupBy(test.orderBy),
+						aggr.WithSumArguments(test.args...),
 					)
 				},
-				func() (aggregator.Aggregator, error) {
-					return aggregator.NewAvg(
-						aggregator.WithAvgGroupBy(test.orderBy),
-						aggregator.WithAvgArguments(test.args...),
+				func() (aggr.Aggregator, error) {
+					return aggr.NewAvg(
+						aggr.WithAvgGroupBy(test.orderBy),
+						aggr.WithAvgArguments(test.args...),
 					)
 				},
-				func() (aggregator.Aggregator, error) {
-					return aggregator.NewMin(
-						aggregator.WithMinGroupBy(test.orderBy),
-						aggregator.WithMinArguments(test.args...),
+				func() (aggr.Aggregator, error) {
+					return aggr.NewMin(
+						aggr.WithMinGroupBy(test.orderBy),
+						aggr.WithMinArguments(test.args...),
 					)
 				},
-				func() (aggregator.Aggregator, error) {
-					return aggregator.NewMax(
-						aggregator.WithMaxGroupBy(test.orderBy),
-						aggregator.WithMaxArguments(test.args...),
+				func() (aggr.Aggregator, error) {
+					return aggr.NewMax(
+						aggr.WithMaxGroupBy(test.orderBy),
+						aggr.WithMaxArguments(test.args...),
 					)
 				},
-				func() (aggregator.Aggregator, error) {
-					return aggregator.NewCount(
-						aggregator.WithCountGroupBy(test.orderBy),
-						aggregator.WithCountArguments(test.args...),
+				func() (aggr.Aggregator, error) {
+					return aggr.NewCount(
+						aggr.WithCountGroupBy(test.orderBy),
+						aggr.WithCountArguments(test.args...),
 					)
 				},
 			}
@@ -173,28 +173,28 @@ func TestAggregators(t *testing.T) {
 
 				// Aggregate
 
-				aggr, err := aggrFunc()
+				testAggr, err := aggrFunc()
 				if err != nil {
 					t.Error(err)
 					continue
 				}
 
-				t.Run(aggr.Name(), func(t *testing.T) {
+				t.Run(testAggr.Name(), func(t *testing.T) {
 
 					for _, row := range test.rows {
-						if err := aggr.Aggregate(row); err != nil {
+						if err := testAggr.Aggregate(row); err != nil {
 							t.Errorf("Error adding row: %v", err)
 							continue
 						}
 					}
 
-					rs, err := aggr.Finalize()
+					rs, err := testAggr.Finalize()
 					if err != nil {
 						t.Errorf("Error finalizing Sum: %v", err)
 						return
 					}
 
-					rsRows := []aggregator.Row{}
+					rsRows := []aggr.Row{}
 					for rs.Next() {
 						row, err := rs.Row()
 						if err != nil {
@@ -224,26 +224,26 @@ func TestAggregators(t *testing.T) {
 
 					var expectedRows [][]float64
 
-					switch aggr.(type) {
-					case *aggregator.Sum:
+					switch testAggr.(type) {
+					case *aggr.Sum:
 						expectedRows = test.expectedSumRows
-					case *aggregator.Avg:
+					case *aggr.Avg:
 						expectedRows = test.expectedAvgRows
-					case *aggregator.Min:
+					case *aggr.Min:
 						expectedRows = test.expectedMinRows
-					case *aggregator.Max:
+					case *aggr.Max:
 						expectedRows = test.expectedMaxRows
-					case *aggregator.Count:
+					case *aggr.Count:
 						expectedRows = test.expectedCountRows
 					default:
-						t.Errorf("Unexpected aggregator type: %T", aggr)
+						t.Errorf("Unexpected aggr type: %T", testAggr)
 						return
 					}
 
 					for n, expectedRow := range expectedRows {
 						rsRow := rsRows[n]
 						if len(rsRow) != len(expectedRow) {
-							t.Errorf("%s(%v): Expected %d columns, got %d", aggr.Name(), test.rows, len(expectedRow), len(rsRow))
+							t.Errorf("%s(%v): Expected %d columns, got %d", testAggr.Name(), test.rows, len(expectedRow), len(rsRow))
 							continue
 						}
 						for i, expectedValue := range expectedRow {
@@ -253,7 +253,7 @@ func TestAggregators(t *testing.T) {
 								continue
 							}
 							if rsRowValue != expectedValue {
-								t.Errorf("%s(%v): Expected %v, got %v", aggr.Name(), test.rows, expectedRow, rsRow)
+								t.Errorf("%s(%v): Expected %v, got %v", testAggr.Name(), test.rows, expectedRow, rsRow)
 								continue
 							}
 						}

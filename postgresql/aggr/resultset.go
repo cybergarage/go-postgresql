@@ -12,7 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aggregator
+package aggr
 
-// Row represents a row of data to be aggregated.
-type Row []any
+// ReseltSet is the result set of an aggregation.
+type ResultSet interface {
+	// Columns returns the column names.
+	Columns() []string
+	// Next returns the next row.
+	Next() bool
+	// Row returns the current row.
+	Row() (Row, error)
+}
