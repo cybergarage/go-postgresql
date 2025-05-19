@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql/aggr"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
 	"github.com/cybergarage/go-sqlparser/sql/net"
@@ -264,6 +265,13 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		return nil, err
 	}
 
+	// Selector column names
+
+	selectors := stmt.Selectors()
+	if selectors.IsAsterisk() {
+		selectors = tbl.Selectors()
+	}
+
 	// Aggregate
 
 	isAggregateStmtFn := func(stmt query.Select) bool {
@@ -291,14 +299,29 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		if 1 < len(aggrFuncs) {
 			return nil, fmt.Errorf("multiple aggregate functions are not supported: %s", stmt.String())
 		}
+
+		// orderBy := stmt.OrderBy()
+
+		columnNames := []string{}
+		for _, selector := range selectors {
+			if fn, ok := selector.(query.Function); ok {
+				args := fn.Arguments()
+				if len(args) != 1 {
+					return nil, fmt.Errorf("invalid argument count for %s: %d", fn.Name(), len(args))
+				}
+				columnNames = append(columnNames, args[0].Name())
+			} else {
+				columnNames = append(columnNames, selector.Name())
+			}
+		}
+
+		_, err := aggr.NewAggregatorForName(aggrFuncs[0].Name())
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Selector column names
-
-	selectors := stmt.Selectors()
-	if selectors.IsAsterisk() {
-		selectors = tbl.Selectors()
-	}
 
 	selectorNames := []string{}
 	for _, selector := range selectors {
