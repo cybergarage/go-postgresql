@@ -16,3 +16,13 @@ package aggr
 
 // Row represents a row of data to be aggregated.
 type Row []any
+
+// NewRow creates a new Row with the given values.
+func NewRow(values ...any) Row {
+	return Row(values)
+}
+
+// Append appends values to the row.
+func (r Row) Append(values ...any) Row {
+	return append(r, values...)
+}
