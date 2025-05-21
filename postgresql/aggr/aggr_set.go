@@ -28,3 +28,45 @@ func NewAggregatorSetForNames(names []string, opts ...aggrOption) (AggregatorSet
 	}
 	return aggrSet, nil
 }
+
+// Names returns the names of the aggregators in the set.
+func (aggrSet *AggregatorSet) Names() []string {
+	names := make([]string, len(*aggrSet))
+	for i, aggr := range *aggrSet {
+		names[i] = aggr.Name()
+	}
+	return names
+}
+
+// Reset resets all aggregators in the set.
+func (aggrSet *AggregatorSet) Reset() error {
+	for _, aggr := range *aggrSet {
+		if err := aggr.Reset(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Aggregate aggregates a row of data using all aggregators in the set.
+func (aggrSet *AggregatorSet) Aggregate(row Row) error {
+	for _, aggr := range *aggrSet {
+		if err := aggr.Aggregate(row); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Finalize finalizes the aggregation and returns the result set.
+func (aggrSet *AggregatorSet) Finalize() ([]ResultSet, error) {
+	resultSet := make([]ResultSet, len(*aggrSet))
+	for i, aggr := range *aggrSet {
+		result, err := aggr.Finalize()
+		if err != nil {
+			return nil, err
+		}
+		resultSet[i] = result
+	}
+	return resultSet, nil
+}
