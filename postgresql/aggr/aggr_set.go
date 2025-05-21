@@ -16,6 +16,9 @@ package aggr
 
 type AggregatorSet []Aggregator
 
+// AggregatorSetOption is an option for configuring the aggregator set.
+type AggregatorSetOption = aggrOption
+
 // WithAggregatorSetGroupBy is an option to set the group by clause for the aggregator.
 func WithAggregatorSetGroupBy(group string) AggregatorOption {
 	return withAggrGroupBy(group)
