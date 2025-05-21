@@ -303,8 +303,13 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	isAggregateStmt := isAggregateStmtFn(stmt)
 
 	if isAggregateStmt {
+		groupBy := stmt.GroupBy()
+
 		aggrNames := []string{}
 		aggrColumNames := []string{}
+		if groupBy != nil {
+			aggrColumNames = append(aggrColumNames, groupBy.ColumnName())
+		}
 		for _, selector := range stmt.Selectors() {
 			if fn, ok := selector.(query.Function); ok {
 				if fn.Type() == query.AggregateFunctionType {
@@ -320,19 +325,37 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 				}
 			}
 		}
-		_, err := aggr.NewAggregatorSetForNames(aggrNames)
+
+		aggrSetOpts := []aggr.AggregatorSetOption{}
+		if groupBy != nil {
+			aggrSetOpts = append(aggrSetOpts, aggr.WithAggregatorSetGroupBy(groupBy.ColumnName()))
+		}
+		aggrSet, err := aggr.NewAggregatorSetForNames(
+			aggrNames,
+			aggrSetOpts...)
 		if err != nil {
 			return nil, err
 		}
 
-		groupBy := stmt.GroupBy()
-
-		_, err = aggr.NewAggregatorSetForNames(
-			aggrNames,
-			aggr.WithAggregatorSetGroupBy(groupBy.ColumnName()),
-		)
-		if err != nil {
-			return nil, err
+		for _, row := range rows {
+			aggrRow := func(row Row, colums []string) (aggr.Row, error) {
+				aggrRow := aggr.NewRow()
+				for _, colum := range colums {
+					value, err := row.ValueByName(colum)
+					if err != nil {
+						return nil, err
+					}
+					aggrRow = append(aggrRow, value)
+				}
+				return aggrRow, nil
+			}
+			resultRow, err := aggrRow(row, aggrColumNames)
+			if err != nil {
+				return nil, err
+			}
+			if err := aggrSet.Aggregate(resultRow); err != nil {
+				return nil, err
+			}
 		}
 	}
 
