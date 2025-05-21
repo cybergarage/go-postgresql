@@ -6,7 +6,7 @@ require (
 	github.com/cybergarage/go-authenticator v1.0.4
 	github.com/cybergarage/go-logger v1.3.10
 	github.com/cybergarage/go-safecast v1.2.7
-	github.com/cybergarage/go-sqlparser v1.5.2-0.20250521052511-2f38af998797
+	github.com/cybergarage/go-sqlparser v1.5.2-0.20250521081850-e6f4b45ebb13
 	github.com/cybergarage/go-sqltest v1.6.1-0.20250517122858-9b30b1904ce4
 	github.com/cybergarage/go-tracing v1.1.5
 	github.com/google/gopacket v1.1.19
