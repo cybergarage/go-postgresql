@@ -67,5 +67,5 @@ func WithSumArguments(args ...string) SumOption {
 
 // WithSumGroupBy sets the group by column for the Sum aggregator.
 func WithSumGroupBy(group string) SumOption {
-	return withAggrGroupBy(group)
+	return WithAggrGroupBy(group)
 }

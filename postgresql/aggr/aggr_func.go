@@ -24,7 +24,7 @@ type AggregatorOption = aggrOption
 
 // Aggregator is an interface that defines the methods for an aggregator.
 func WithAggregatorGroupBy(group string) AggregatorOption {
-	return withAggrGroupBy(group)
+	return WithAggrGroupBy(group)
 }
 
 // NewAggregator creates a new Aggregator with the given options.

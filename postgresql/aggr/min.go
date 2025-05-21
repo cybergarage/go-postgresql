@@ -74,5 +74,5 @@ func WithMinArguments(args ...string) MinOption {
 
 // WithMinGroupBy sets the group by column for the Min aggregator.
 func WithMinGroupBy(group string) MinOption {
-	return withAggrGroupBy(group)
+	return WithAggrGroupBy(group)
 }
