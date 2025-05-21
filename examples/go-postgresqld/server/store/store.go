@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresql/aggr"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
 	"github.com/cybergarage/go-sqlparser/sql/net"
@@ -288,39 +289,52 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	// Aggregate
 
-	// isAggregateStmtFn := func(stmt query.Select) bool {
-	// 	for _, selector := range stmt.Selectors() {
-	// 		if fn, ok := selector.(query.Function); ok {
-	// 			if fn.Type() == query.AggregateFunctionType {
-	// 				return true
-	// 			}
-	// 		}
-	// 	}
-	// 	return false
-	// }
+	isAggregateStmtFn := func(stmt query.Select) bool {
+		for _, selector := range stmt.Selectors() {
+			if fn, ok := selector.(query.Function); ok {
+				if fn.Type() == query.AggregateFunctionType {
+					return true
+				}
+			}
+		}
+		return false
+	}
 
-	// isAggregateStmt := isAggregateStmtFn(stmt)
+	isAggregateStmt := isAggregateStmtFn(stmt)
 
-	// if isAggregateStmt {
-	// 	aggrFuncs := []query.Function{}
-	// 	for _, selector := range stmt.Selectors() {
-	// 		if fn, ok := selector.(query.Function); ok {
-	// 			if fn.Type() == query.AggregateFunctionType {
-	// 				aggrFuncs = append(aggrFuncs, fn)
-	// 			}
-	// 		}
-	// 	}
-	// 	if 1 < len(aggrFuncs) {
-	// 		return nil, fmt.Errorf("multiple aggregate functions are not supported: %s", stmt.String())
-	// 	}
+	if isAggregateStmt {
+		aggrNames := []string{}
+		aggrColumNames := []string{}
+		for _, selector := range stmt.Selectors() {
+			if fn, ok := selector.(query.Function); ok {
+				if fn.Type() == query.AggregateFunctionType {
+					aggrNames = append(aggrNames, fn.Name())
+					fnArgs := fn.Arguments()
+					switch {
+					case len(fnArgs) == 0:
+						return nil, query.NewErrStatementInvalid(stmt)
+					case 1 < len(fnArgs):
+						return nil, query.NewErrStatementInvalid(stmt)
+					}
+					aggrColumNames = append(aggrColumNames, fnArgs[0].Name())
+				}
+			}
+		}
+		_, err := aggr.NewAggregatorSetForNames(aggrNames)
+		if err != nil {
+			return nil, err
+		}
 
-	// 	// orderBy := stmt.OrderBy()
+		groupBy := stmt.GroupBy()
 
-	// 	_, err := aggr.NewAggregatorForName(aggrFuncs[0].Name())
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// }
+		_, err = aggr.NewAggregatorSetForNames(
+			aggrNames,
+			aggr.WithAggregatorSetGroupBy(groupBy.ColumnName()),
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// Row description response
 

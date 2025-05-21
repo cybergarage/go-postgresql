@@ -16,6 +16,11 @@ package aggr
 
 type AggregatorSet []Aggregator
 
+// WithAggregatorSetGroupBy is an option to set the group by clause for the aggregator.
+func WithAggregatorSetGroupBy(group string) AggregatorOption {
+	return withAggrGroupBy(group)
+}
+
 // NewAggregatorSetForNames creates a new AggregatorSet for the given names.
 func NewAggregatorSetForNames(names []string, opts ...aggrOption) (AggregatorSet, error) {
 	aggrSet := make(AggregatorSet, len(names))
