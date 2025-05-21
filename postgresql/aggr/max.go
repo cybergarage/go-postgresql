@@ -74,5 +74,5 @@ func WithMaxArguments(args ...string) MaxOption {
 
 // WithMaxGroupBy sets the group by column for the Max aggregator.
 func WithMaxGroupBy(group string) MaxOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }

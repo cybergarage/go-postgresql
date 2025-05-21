@@ -67,5 +67,5 @@ func WithCountArguments(args ...string) CountOption {
 
 // WithCountGroupBy sets the group by column for the Count aggregator.
 func WithCountGroupBy(group string) CountOption {
-	return WithAggrGroupBy(group)
+	return withAggrGroupBy(group)
 }

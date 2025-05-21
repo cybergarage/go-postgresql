@@ -107,8 +107,8 @@ func withAggrFinalizeFunc(finalFunc AggrFinalizeFunc) aggrOption {
 	}
 }
 
-// WithAggrGroupBy sets the group by column for the Aggr aggregator.
-func WithAggrGroupBy(group string) aggrOption {
+// withAggrGroupBy sets the group by column for the Aggr aggregator.
+func withAggrGroupBy(group string) aggrOption {
 	return func(aggr *aggrImpl) error {
 		if len(group) == 0 {
 			return nil
