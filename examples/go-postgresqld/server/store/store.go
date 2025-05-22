@@ -21,7 +21,6 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/aggr"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
-	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/net"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
@@ -292,8 +291,8 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	isAggregateStmtFn := func(stmt query.Select) bool {
 		for _, selector := range stmt.Selectors() {
-			if fx, ok := selector.(query.Function); ok {
-				if fx.Type() == fn.AggregateFunctionType {
+			if fn, ok := selector.(query.Function); ok {
+				if fn.IsAggregator() {
 					return true
 				}
 			}
@@ -304,59 +303,23 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	isAggregateStmt := isAggregateStmtFn(stmt)
 
 	if isAggregateStmt {
-		groupBy := stmt.GroupBy()
-
-		aggrNames := []string{}
-		aggrColumNames := []string{}
-		if groupBy != nil {
-			aggrColumNames = append(aggrColumNames, groupBy.ColumnName())
-		}
+		aggrFuncs := []query.Function{}
 		for _, selector := range stmt.Selectors() {
-			if fx, ok := selector.(query.Function); ok {
-				if fx.Type() == fn.AggregateFunctionType {
-					aggrNames = append(aggrNames, fx.Name())
-					fnArgs := fx.Arguments()
-					switch {
-					case len(fnArgs) == 0:
-						return nil, query.NewErrStatementInvalid(stmt)
-					case 1 < len(fnArgs):
-						return nil, query.NewErrStatementInvalid(stmt)
-					}
-					aggrColumNames = append(aggrColumNames, fnArgs[0].Name())
+			if fn, ok := selector.(query.Function); ok {
+				if fn.IsAggregator() {
+					aggrFuncs = append(aggrFuncs, fn)
 				}
 			}
 		}
-
-		aggrSetOpts := []aggr.AggregatorSetOption{}
-		if groupBy != nil {
-			aggrSetOpts = append(aggrSetOpts, aggr.WithAggregatorSetGroupBy(groupBy.ColumnName()))
+		if 1 < len(aggrFuncs) {
+			return nil, fmt.Errorf("multiple aggregate functions are not supported: %s", stmt.String())
 		}
-		aggrSet, err := aggr.NewAggregatorSetForNames(
-			aggrNames,
-			aggrSetOpts...)
+
+		// orderBy := stmt.OrderBy()
+
+		_, err := aggr.NewAggregatorForName(aggrFuncs[0].Name())
 		if err != nil {
 			return nil, err
-		}
-
-		for _, row := range rows {
-			aggrRow := func(row Row, colums []string) (aggr.Row, error) {
-				aggrRow := aggr.NewRow()
-				for _, colum := range colums {
-					value, err := row.ValueByName(colum)
-					if err != nil {
-						return nil, err
-					}
-					aggrRow = append(aggrRow, value)
-				}
-				return aggrRow, nil
-			}
-			resultRow, err := aggrRow(row, aggrColumNames)
-			if err != nil {
-				return nil, err
-			}
-			if err := aggrSet.Aggregate(resultRow); err != nil {
-				return nil, err
-			}
 		}
 	}
 
