@@ -21,6 +21,7 @@ import (
 	"github.com/cybergarage/go-postgresql/postgresql/aggr"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
+	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/net"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
@@ -291,8 +292,8 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	isAggregateStmtFn := func(stmt query.Select) bool {
 		for _, selector := range stmt.Selectors() {
-			if fn, ok := selector.(query.Function); ok {
-				if fn.Type() == query.AggregateFunctionType {
+			if fx, ok := selector.(query.Function); ok {
+				if fx.Type() == fn.AggregateFunctionType {
 					return true
 				}
 			}
@@ -311,10 +312,10 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 			aggrColumNames = append(aggrColumNames, groupBy.ColumnName())
 		}
 		for _, selector := range stmt.Selectors() {
-			if fn, ok := selector.(query.Function); ok {
-				if fn.Type() == query.AggregateFunctionType {
-					aggrNames = append(aggrNames, fn.Name())
-					fnArgs := fn.Arguments()
+			if fx, ok := selector.(query.Function); ok {
+				if fx.Type() == fn.AggregateFunctionType {
+					aggrNames = append(aggrNames, fx.Name())
+					fnArgs := fx.Arguments()
 					switch {
 					case len(fnArgs) == 0:
 						return nil, query.NewErrStatementInvalid(stmt)

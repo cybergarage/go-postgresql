@@ -14,21 +14,19 @@
 
 package system
 
-import (
-	"github.com/cybergarage/go-sqlparser/sql/query"
-)
+import "github.com/cybergarage/go-sqlparser/sql/fn"
 
 // PostgreSQL: Documentation: 16: 9.21. Aggregate Functions
 // https://www.postgresql.org/docs/16/functions-aggregate.html
 
 // GetFunctionDataType returns the data type of the specified function.
-func GetFunctionDataType(fn query.Function, dt *DataType) (*DataType, error) {
-	switch fn.Name() {
-	case query.MaxFunctionName:
+func GetFunctionDataType(fx fn.Function, dt *DataType) (*DataType, error) {
+	switch fx.Name() {
+	case fn.MaxFunctionName:
 		return dt, nil
-	case query.MinFunctionName:
+	case fn.MinFunctionName:
 		return dt, nil
-	case query.SumFunctionName:
+	case fn.SumFunctionName:
 		switch dt.OID() {
 		case Int2:
 			return dataTypes[Int8], nil
@@ -36,15 +34,15 @@ func GetFunctionDataType(fn query.Function, dt *DataType) (*DataType, error) {
 			return dataTypes[Int8], nil
 		}
 	// NOTE: bigint for any integer-type argument instead of numeric
-	case query.AvgFunctionName:
+	case fn.AvgFunctionName:
 		return dataTypes[Float8], nil
-	case query.CountFunctionName:
+	case fn.CountFunctionName:
 		return dataTypes[Int8], nil
-	case query.AbsFunctionName:
+	case fn.AbsFunctionName:
 		return dataTypes[Float8], nil
-	case query.FloorFunctionName:
+	case fn.FloorFunctionName:
 		return dataTypes[Float8], nil
-	case query.CeilFunctionName:
+	case fn.CeilFunctionName:
 		return dataTypes[Float8], nil
 	}
 	return dt, nil

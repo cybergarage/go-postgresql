@@ -19,6 +19,7 @@ import (
 
 	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
+	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
 )
@@ -172,7 +173,7 @@ func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.
 			switch selector.(type) {
 			case query.Function:
 				switch name {
-				case query.CountFunctionName:
+				case fn.CountFunctionName:
 					dataRow.AppendData(field, 0)
 				default:
 					dataRow.AppendData(field, nil)

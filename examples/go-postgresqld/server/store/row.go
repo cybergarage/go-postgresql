@@ -195,7 +195,7 @@ func (row Row) Update(colums []query.Column) {
 	for _, col := range colums {
 		colName := col.Name()
 		if fn, ok := col.IsFunction(); ok {
-			v, err := fn.Execute(col, row)
+			v, err := fn.Execute(col.Arguments(), row)
 			if err != nil {
 				continue
 			}
