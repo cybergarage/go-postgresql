@@ -68,41 +68,33 @@ func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescri
 func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
 	// Setups aggregate functions
 	aggrFns := []query.Function{}
-	aggrExecutors := []*query.AggregateFunction{}
+	aggrExecutors := []query.Aggregator{}
 	for _, selector := range selectors {
-		fn, ok := selector.(query.Function)
+		fx, ok := selector.(query.Function)
 		if !ok {
 			continue
 		}
-		executor, err := fn.Executor()
+		aggregator, err := fx.Aggregator(fn.WithAggregatorGroupBy(groupBy))
 		if err != nil {
-			return nil, err
+			continue
 		}
-		aggrExecutor, ok := executor.(*query.AggregateFunction)
-		if !ok {
-			return nil, fmt.Errorf("invalid aggregate function (%s)", fn.Name())
-		}
-		aggrFns = append(aggrFns, fn)
-		aggrExecutors = append(aggrExecutors, aggrExecutor)
+		aggrFns = append(aggrFns, fx)
+		aggrExecutors = append(aggrExecutors, aggregator)
 	}
 	// Executes aggregate functions
 	for _, row := range rows {
 		for n, aggrFn := range aggrFns {
-			var groupKey any
-			groupKey = query.GroupByNone
+			args := []any{}
 			if 0 < len(groupBy) {
 				v, ok := row[groupBy]
 				if !ok {
 					return nil, errors.NewErrGroupByColumnValueNotFound(groupBy)
 				}
-				groupKey = v
-			}
-			args := []any{
-				groupKey,
+				args = append(args, v)
 			}
 			for _, arg := range aggrFn.Arguments() {
 				if arg.IsAsterisk() {
-					args = append(args, arg.Name())
+					args = append(args, float64(0))
 					continue
 				}
 				v, ok := row[arg.Name()]
@@ -111,17 +103,20 @@ func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.
 				}
 				args = append(args, v)
 			}
-			_, err := aggrExecutors[n].Execute(args...)
+			err := aggrExecutors[n].Aggregate(args)
 			if err != nil {
 				return nil, err
 			}
 		}
 	}
 	// Gets aggregate group keys
-	aggrResultSets := map[string]query.AggregateResultSet{}
+	aggrResultSets := map[string]query.AggregatorResultSet{}
 	groupKeys := []any{}
 	for _, aggaggrExecutor := range aggrExecutors {
-		aggResultSet := aggaggrExecutor.ResultSet()
+		aggResultSet, err := aggaggrExecutor.Finalize()
+		if err != nil {
+			return nil, err
+		}
 		aggrResultSets[aggaggrExecutor.Name()] = aggResultSet
 		for aggrResultKey := range aggResultSet {
 			hasGroupKey := false
