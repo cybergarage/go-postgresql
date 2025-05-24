@@ -272,35 +272,11 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		selectors = tbl.Selectors()
 	}
 
-	selectorNames := []string{}
-	for _, selector := range selectors {
-		if fn, ok := selector.(query.Function); ok {
-			for _, arg := range fn.Arguments() {
-				if arg.IsAsterisk() {
-					selectorNames = append(selectorNames, tbl.Selectors().SelectorNames()...)
-				} else {
-					selectorNames = append(selectorNames, arg.Name())
-				}
-			}
-		} else {
-			selectorNames = append(selectorNames, selector.Name())
-		}
-	}
+	selectorNames := selectors.Names()
 
 	// Aggregate
 
-	isAggregateStmtFn := func(stmt query.Select) bool {
-		for _, selector := range stmt.Selectors() {
-			if fn, ok := selector.(query.Function); ok {
-				if fn.IsAggregator() {
-					return true
-				}
-			}
-		}
-		return false
-	}
-
-	isAggregateStmt := isAggregateStmtFn(stmt)
+	isAggregateStmt := stmt.HasAggregator()
 
 	if isAggregateStmt {
 		aggrFuncs := []query.Function{}
