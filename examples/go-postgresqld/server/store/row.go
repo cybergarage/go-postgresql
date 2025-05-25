@@ -194,15 +194,18 @@ func (row Row) IsMatched(cond query.Condition) bool {
 func (row Row) Update(colums []query.Column) {
 	for _, col := range colums {
 		colName := col.Name()
+		if col.HasValue() {
+			row[colName] = col.Value()
+		}
+	}
+	for _, col := range colums {
+		colName := col.Name()
 		if fn, ok := col.IsFunction(); ok {
-			v, err := fn.Execute(col.Arguments(), row)
-			if err != nil {
+			if exe, err := fn.Executor(); err == nil {
+				if v, err := exe.Execute(row); err != nil {
+					row[colName] = v
+				}
 				continue
-			}
-			row[colName] = v
-		} else {
-			if col.HasValue() {
-				row[colName] = col.Value()
 			}
 		}
 	}
