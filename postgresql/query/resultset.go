@@ -49,7 +49,7 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 	// Data row response
 
 	nRows := 0
-	if !selectors.HasAggregateFunction() {
+	if !selectors.HasAggregator() {
 		offset := stmt.Limit().Offset()
 		limit := stmt.Limit().Limit()
 		rowNo := 0
