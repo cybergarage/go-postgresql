@@ -26,6 +26,8 @@ github.com/cybergarage/go-sqlparser v1.5.2-0.20250521081850-e6f4b45ebb13 h1:K++q
 github.com/cybergarage/go-sqlparser v1.5.2-0.20250521081850-e6f4b45ebb13/go.mod h1:H7shLZO6Z2/AoZmYdX0PAI/67ddj1HIkRMf0LvUmYJo=
 github.com/cybergarage/go-sqlparser v1.5.2-0.20250522091456-e21c582b5fd5 h1:tLhyhXFRuaNqH4KHfnhP9TzywiCLCd49fxfQ6crTSCw=
 github.com/cybergarage/go-sqlparser v1.5.2-0.20250522091456-e21c582b5fd5/go.mod h1:H7shLZO6Z2/AoZmYdX0PAI/67ddj1HIkRMf0LvUmYJo=
+github.com/cybergarage/go-sqlparser v1.5.2-0.20250525104832-0a6cea0cb568 h1:ZJz6QEaJKgwcEEOZO2SI90H6FBM7egFh+ZyZWIytQVU=
+github.com/cybergarage/go-sqlparser v1.5.2-0.20250525104832-0a6cea0cb568/go.mod h1:H7shLZO6Z2/AoZmYdX0PAI/67ddj1HIkRMf0LvUmYJo=
 github.com/cybergarage/go-sqltest v1.5.1-0.20250506141934-3dab7b1318a4 h1:1azuLZom8hrHL6sDQfZe9Cqahh7we0qi+173mTbX0OE=
 github.com/cybergarage/go-sqltest v1.5.1-0.20250506141934-3dab7b1318a4/go.mod h1:k3LB6ewXmaEtjfhdu8+4srVX/n9dhr81NoupO6JxlaU=
 github.com/cybergarage/go-sqltest v1.5.1-0.20250507063239-62b3aa6171e6 h1:9cPHaunMJs0lxgHrSKoHKPf55l9FHY/34ikahRosbek=
