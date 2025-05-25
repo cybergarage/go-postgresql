@@ -84,7 +84,7 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 			rowObj := rsRow.Object()
 			queryRows = append(queryRows, rowObj)
 		}
-		dataRows, err := NewDataRowsForAggregateFunction(schema, rowDesc, selectors, queryRows, groupBy)
+		dataRows, err := NewDataRowsForAggregator(schema, rowDesc, selectors, queryRows, groupBy)
 		if err != nil {
 			return nil, err
 		}

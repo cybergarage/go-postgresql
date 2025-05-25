@@ -18,9 +18,9 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresql/aggr"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
+	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/net"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
@@ -293,7 +293,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 		// orderBy := stmt.OrderBy()
 
-		_, err := aggr.NewAggregatorForName(aggrFuncs[0].Name())
+		_, err := fn.NewAggregatorForName(aggrFuncs[0].Name())
 		if err != nil {
 			return nil, err
 		}

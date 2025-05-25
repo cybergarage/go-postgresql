@@ -15,9 +15,6 @@
 package query
 
 import (
-	"fmt"
-
-	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/query"
@@ -46,7 +43,7 @@ func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescri
 				}
 				args = append(args, v)
 			}
-			v, err := executor.Execute(args...)
+			v, err := executor.Execute(args)
 			if err != nil {
 				return nil, err
 			}
@@ -64,118 +61,50 @@ func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescri
 	return dataRow, nil
 }
 
-// NewDataRowsForAggregateFunction returns a new DataRow list from the specified rows.
-func NewDataRowsForAggregateFunction(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
-	// Setups aggregate functions
-	aggrFns := []query.Function{}
-	aggrExecutors := []query.Aggregator{}
-	for _, selector := range selectors {
-		fx, ok := selector.(query.Function)
-		if !ok {
-			continue
-		}
-		aggregator, err := fx.Aggregator(fn.WithAggregatorGroupBy(groupBy))
-		if err != nil {
-			continue
-		}
-		aggrFns = append(aggrFns, fx)
-		aggrExecutors = append(aggrExecutors, aggregator)
+// NewDataRowsForAggregator returns a new DataRow list from the specified rows.
+func NewDataRowsForAggregator(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
+	// Sets aggregate functions
+
+	aggrSet, err := selectors.Aggregators()
+	if err != nil {
+		return nil, err
 	}
+
+	err = aggrSet.Reset(fn.GroupBy(groupBy))
+	if err != nil {
+		return nil, err
+	}
+
 	// Executes aggregate functions
+
 	for _, row := range rows {
-		for n, aggrFn := range aggrFns {
-			args := []any{}
-			if 0 < len(groupBy) {
-				v, ok := row[groupBy]
-				if !ok {
-					return nil, errors.NewErrGroupByColumnValueNotFound(groupBy)
-				}
-				args = append(args, v)
-			}
-			for _, arg := range aggrFn.Arguments() {
-				if arg.IsAsterisk() {
-					args = append(args, float64(0))
-					continue
-				}
-				v, ok := row[arg.Name()]
-				if !ok {
-					return nil, errors.NewErrColumnValueNotExist(arg.Name())
-				}
-				args = append(args, v)
-			}
-			err := aggrExecutors[n].Aggregate(args)
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
-	// Gets aggregate group keys
-	aggrResultSets := map[string]query.AggregatorResultSet{}
-	groupKeys := []any{}
-	for _, aggaggrExecutor := range aggrExecutors {
-		aggResultSet, err := aggaggrExecutor.Finalize()
+		err := aggrSet.Aggregate(row)
 		if err != nil {
 			return nil, err
 		}
-		aggrResultSets[aggaggrExecutor.Name()] = aggResultSet
-		for aggrResultKey := range aggResultSet {
-			hasGroupKey := false
-			for _, groupKey := range groupKeys {
-				if groupKey == aggrResultKey {
-					hasGroupKey = true
-				}
-			}
-			if hasGroupKey {
-				continue
-			}
-			groupKeys = append(groupKeys, aggrResultKey)
-		}
 	}
-	// Add aggregate results
+
+	// Finalizes aggregate functions
+
+	resultSet, err := aggrSet.Finalize()
+	if err != nil {
+		return nil, err
+	}
+
+	// Creates DataRow list from the result set
+
 	dataRows := []*protocol.DataRow{}
-	if 0 < len(groupKeys) { // ResultSet is not empty
-		for _, groupKey := range groupKeys {
-			dataRow := protocol.NewDataRow()
-			for n, selector := range selectors {
-				field := rowDesc.Field(n)
-				name := selector.Name()
-				switch selector.(type) {
-				case query.Function:
-					aggResultSet, ok := aggrResultSets[name]
-					if !ok {
-						return nil, fmt.Errorf("invalid aggregate function (%s)", name)
-					}
-					aggResult, ok := aggResultSet[groupKey]
-					if ok {
-						dataRow.AppendData(field, aggResult)
-					} else {
-						dataRow.AppendData(field, nil)
-					}
-				default:
-					if name != groupBy {
-						return nil, fmt.Errorf("invalid column (%s)", name)
-					}
-					dataRow.AppendData(field, groupKey)
-				}
-			}
-			dataRows = append(dataRows, dataRow)
+	for resultSet.Next() {
+		m, err := resultSet.Map()
+		if err != nil {
+			return nil, err
 		}
-	} else { // ResultSet is empty
-		dataRow := protocol.NewDataRow()
-		for n, selector := range selectors {
-			field := rowDesc.Field(n)
-			name := selector.Name()
-			switch selector.(type) {
-			case query.Function:
-				switch name {
-				case fn.CountFunctionName:
-					dataRow.AppendData(field, 0)
-				default:
-					dataRow.AppendData(field, nil)
-				}
-			}
+		dataRow, err := NewDataRowForSelectors(schema, rowDesc, selectors, m)
+		if err != nil {
+			return nil, err
 		}
 		dataRows = append(dataRows, dataRow)
 	}
+
 	return dataRows, nil
 }
