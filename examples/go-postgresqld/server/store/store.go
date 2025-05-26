@@ -353,11 +353,22 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	for _, row := range rows {
 		rowValues := []any{}
 		for _, selector := range selectors {
-			selectorName := selector.Name()
 			var rowValue any
-			rowValue, err = row.ValueByName(selectorName)
-			if err != nil {
-				return nil, err
+			rowValue = nil
+			if fx, ok := selector.Function(); ok {
+				if executor, err := fx.Executor(); err == nil {
+					rowValue, err = executor.Execute(fn.NewMapWithMap(row))
+					if err != nil {
+						return nil, err
+					}
+				}
+			}
+			if rowValue == nil {
+				selectorName := selector.Name()
+				rowValue, err = row.ValueByName(selectorName)
+				if err != nil {
+					return nil, err
+				}
 			}
 			rowValues = append(rowValues, rowValue)
 		}
