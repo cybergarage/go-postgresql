@@ -272,8 +272,6 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		selectors = tbl.Selectors()
 	}
 
-	selectorNames := selectors.Names()
-
 	// Aggregate
 
 	isAggregateStmt := stmt.HasAggregator()
@@ -303,14 +301,23 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	schema := tbl.Schema
 	rsSchemaColums := []sql.ResultSetColumn{}
-	for _, selectorName := range selectorNames {
-		shemaColumn, err := schema.LookupColumn(selectorName)
-		if err != nil {
-			return nil, err
-		}
-		rsCchemaColumn, err := resultset.NewColumnFrom(shemaColumn)
-		if err != nil {
-			return nil, err
+	for _, selector := range stmt.Selectors() {
+		var rsCchemaColumn resultset.Column
+		if ok := selector.IsFunction(); !ok {
+			selectorName := selector.Name()
+			shemaColumn, err := schema.LookupColumn(selectorName)
+			if err != nil {
+				return nil, err
+			}
+			rsCchemaColumn, err = resultset.NewColumnFrom(shemaColumn)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			rsCchemaColumn = resultset.NewColumn(
+				resultset.WithColumnName(selector.Name()),
+				resultset.WithColumnType(query.TextType), // Default to TextType for function results
+			)
 		}
 		rsSchemaColums = append(rsSchemaColums, rsCchemaColumn)
 	}
@@ -326,7 +333,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	rsRows := []sql.ResultSetRow{}
 	for _, row := range rows {
 		rowValues := []any{}
-		for _, selectorName := range selectorNames {
+		for _, selectorName := range selectors.Names() {
 			value, err := row.ValueByName(selectorName)
 			if err != nil {
 				return nil, err
