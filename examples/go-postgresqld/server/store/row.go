@@ -118,7 +118,7 @@ func (row Row) Update(colums []query.Column) {
 	}
 	for _, col := range colums {
 		colName := col.Name()
-		if fn, ok := col.IsFunction(); ok {
+		if fn, ok := col.Function(); ok {
 			if exe, err := fn.Executor(); err == nil {
 				if v, err := exe.Execute(row); err != nil {
 					row[colName] = v
