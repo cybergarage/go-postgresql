@@ -32,8 +32,17 @@ func NewRow() Row {
 	return make(Row)
 }
 
-// NewRowWith returns a new row with the specified columns.
-func NewRowWith(table *Table, cols query.Columns) (Row, error) {
+// NewRowWithResultMap returns a new row with the specified result map.
+func NewRowWithResultMap(resultMap map[string]any) Row {
+	row := NewRow()
+	for k, v := range resultMap {
+		row[k] = v
+	}
+	return row
+}
+
+// NewRowFromColumns returns a new row with the specified columns.
+func NewRowFromColumns(table *Table, cols query.Columns) (Row, error) {
 	row := NewRow()
 	for _, schemaCol := range table.Schema.Columns() {
 		var colValue any

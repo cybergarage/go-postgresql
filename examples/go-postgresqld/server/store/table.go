@@ -59,7 +59,7 @@ func (tbl *Table) Select(cond query.Condition) ([]Row, error) {
 
 // Insert inserts a new row.
 func (tbl *Table) Insert(cols []query.Column) error {
-	row, err := NewRowWith(tbl, cols)
+	row, err := NewRowFromColumns(tbl, cols)
 	if err != nil {
 		return err
 	}
