@@ -32,6 +32,8 @@ github.com/cybergarage/go-sqlparser v1.5.2-0.20250525104832-0a6cea0cb568 h1:ZJz6
 github.com/cybergarage/go-sqlparser v1.5.2-0.20250525104832-0a6cea0cb568/go.mod h1:H7shLZO6Z2/AoZmYdX0PAI/67ddj1HIkRMf0LvUmYJo=
 github.com/cybergarage/go-sqlparser v1.5.2-0.20250526101557-1fb8ec9b031b h1:vhSvfsdiebHqoYQFG3gSBuXdhDpLMGu/Qf2YduHB9As=
 github.com/cybergarage/go-sqlparser v1.5.2-0.20250526101557-1fb8ec9b031b/go.mod h1:O/VLrVPnV23jNK/oXAqotpmbQv04CIn9itNnV2Ds3BE=
+github.com/cybergarage/go-sqlparser v1.5.2-0.20250526154457-94ec7fbae6a8 h1:IRuTHctDqNEx8nUjt2UrlcLJ3VKsZQ2sjwvFYGncdGk=
+github.com/cybergarage/go-sqlparser v1.5.2-0.20250526154457-94ec7fbae6a8/go.mod h1:O/VLrVPnV23jNK/oXAqotpmbQv04CIn9itNnV2Ds3BE=
 github.com/cybergarage/go-sqltest v1.5.1-0.20250506141934-3dab7b1318a4 h1:1azuLZom8hrHL6sDQfZe9Cqahh7we0qi+173mTbX0OE=
 github.com/cybergarage/go-sqltest v1.5.1-0.20250506141934-3dab7b1318a4/go.mod h1:k3LB6ewXmaEtjfhdu8+4srVX/n9dhr81NoupO6JxlaU=
 github.com/cybergarage/go-sqltest v1.5.1-0.20250507063239-62b3aa6171e6 h1:9cPHaunMJs0lxgHrSKoHKPf55l9FHY/34ikahRosbek=
@@ -42,6 +44,8 @@ github.com/cybergarage/go-sqltest v1.5.2-0.20250512073238-6581281332cf h1:5Qt25K
 github.com/cybergarage/go-sqltest v1.5.2-0.20250512073238-6581281332cf/go.mod h1:3qomdH0LNBJD0F6WCCRx+LGUXN4uOMrtseubeM3UPgc=
 github.com/cybergarage/go-sqltest v1.6.1-0.20250517122858-9b30b1904ce4 h1:mdpSwqoJkkgOBNNd1D9TXoZQC2bD6GfynaY1/WAp/5w=
 github.com/cybergarage/go-sqltest v1.6.1-0.20250517122858-9b30b1904ce4/go.mod h1:3qomdH0LNBJD0F6WCCRx+LGUXN4uOMrtseubeM3UPgc=
+github.com/cybergarage/go-sqltest v1.6.1-0.20250522120145-343a6f820843 h1:nv4JGjBpMJZbaFrqHxS7aPyg7uTkUF1YBQ7DnHT2lgc=
+github.com/cybergarage/go-sqltest v1.6.1-0.20250522120145-343a6f820843/go.mod h1:3qomdH0LNBJD0F6WCCRx+LGUXN4uOMrtseubeM3UPgc=
 github.com/cybergarage/go-tracing v1.1.5 h1:woJLmGqTcRVpRQlOB3GqOwhujdZYUoIRr+XmdN3vhKg=
 github.com/cybergarage/go-tracing v1.1.5/go.mod h1:IhFImrr4JiKX88SPNyCPklWSlJdGFW2VdvyjsTcWs1Q=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
