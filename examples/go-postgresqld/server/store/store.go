@@ -322,7 +322,17 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	rsSchemaColums := []sql.ResultSetColumn{}
 	for _, selector := range stmt.Selectors() {
 		var rsCchemaColumn resultset.Column
-		if ok := selector.IsFunction(); !ok {
+		fx, ok := selector.Function()
+		if ok {
+			dataType, err := query.NewDataTypeForFunction(fx)
+			if err != nil {
+				return nil, err
+			}
+			rsCchemaColumn = resultset.NewColumn(
+				resultset.WithColumnName(selector.String()),
+				resultset.WithColumnType(dataType),
+			)
+		} else {
 			selectorName := selector.Name()
 			shemaColumn, err := schema.LookupColumn(selectorName)
 			if err != nil {
@@ -332,11 +342,6 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 			if err != nil {
 				return nil, err
 			}
-		} else {
-			rsCchemaColumn = resultset.NewColumn(
-				resultset.WithColumnName(selector.String()),
-				resultset.WithColumnType(query.TextType),
-			)
 		}
 		rsSchemaColums = append(rsSchemaColums, rsCchemaColumn)
 	}
