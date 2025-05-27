@@ -49,48 +49,27 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 	// Data row response
 
 	nRows := 0
-	if !selectors.HasAggregator() {
-		offset := stmt.Limit().Offset()
-		limit := stmt.Limit().Limit()
-		rowNo := 0
-		for rs.Next() {
-			rowNo++
-			if 0 < offset && rowNo <= offset {
-				continue
-			}
-			rsRow, err := rs.Row()
-			if err != nil {
-				return nil, err
-			}
-			rowObj := rsRow.Object()
-			dataRow, err := NewDataRowForSelectors(schema, rowDesc, selectors, rowObj)
-			if err != nil {
-				return nil, err
-			}
-			res = res.Append(dataRow)
-			nRows++
-			if 0 < limit && limit <= nRows {
-				break
-			}
+	offset := stmt.Limit().Offset()
+	limit := stmt.Limit().Limit()
+	rowNo := 0
+	for rs.Next() {
+		rowNo++
+		if 0 < offset && rowNo <= offset {
+			continue
 		}
-	} else {
-		groupBy := stmt.GroupBy().ColumnName()
-		queryRows := []Row{}
-		for rs.Next() {
-			rsRow, err := rs.Row()
-			if err != nil {
-				return nil, err
-			}
-			rowObj := rsRow.Object()
-			queryRows = append(queryRows, rowObj)
-		}
-		dataRows, err := NewDataRowsForAggregator(schema, rowDesc, selectors, queryRows, groupBy)
+		rsRow, err := rs.Row()
 		if err != nil {
 			return nil, err
 		}
-		for _, dataRow := range dataRows {
-			res = res.Append(dataRow)
-			nRows++
+		rowObj := rsRow.Object()
+		dataRow, err := NewDataRowForSelectors(schema, rowDesc, selectors, rowObj)
+		if err != nil {
+			return nil, err
+		}
+		res = res.Append(dataRow)
+		nRows++
+		if 0 < limit && limit <= nRows {
+			break
 		}
 	}
 
