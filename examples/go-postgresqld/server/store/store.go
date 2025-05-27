@@ -331,6 +331,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 			rsCchemaColumn = resultset.NewColumn(
 				resultset.WithColumnName(selector.String()),
 				resultset.WithColumnType(dataType),
+				resultset.WithColumnFunction(fx),
 			)
 		} else {
 			selectorName := selector.Name()
