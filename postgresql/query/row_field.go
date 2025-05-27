@@ -21,7 +21,7 @@ import (
 
 // NewRowFieldFrom returns a new RowField from the specified selector.
 func NewRowFieldFrom(schema sql.ResultSetSchema, selector query.Selector, idx int) (*protocol.RowField, error) {
-	columnName := selector.Name()
+	columnName := selector.String()
 	schemaColumn, err := schema.LookupColumn(columnName)
 	if err != nil {
 		return nil, err
