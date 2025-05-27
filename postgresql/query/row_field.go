@@ -14,51 +14,21 @@
 package query
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
-	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
 // NewRowFieldFrom returns a new RowField from the specified selector.
 func NewRowFieldFrom(schema sql.ResultSetSchema, selector query.Selector, idx int) (*protocol.RowField, error) {
-	var columnName string
-	var dt *system.DataType
-	var err error
-	switch selector := selector.(type) {
-	case query.Function:
-		if !selector.IsAsterisk() {
-			args := selector.Arguments()
-			if len(args) != 1 {
-				return nil, fmt.Errorf("multiple arguments (%v)", args)
-			}
-			columnName = args[0].Name()
-			schemaColumn, err := schema.LookupColumn(columnName)
-			if err != nil {
-				return nil, err
-			}
-			dt, err = NewDataTypeFrom(schemaColumn.DataType())
-			if err != nil {
-				return nil, err
-			}
-		}
-		dt, err = system.GetFunctionDataType(selector, dt)
-		if err != nil {
-			return nil, err
-		}
-		columnName = selector.String()
-	default:
-		columnName = selector.Name()
-		schemaColumn, err := schema.LookupColumn(columnName)
-		if err != nil {
-			return nil, err
-		}
-		dt, err = NewDataTypeFrom(schemaColumn.DataType())
-		if err != nil {
-			return nil, err
-		}
+	columnName := selector.Name()
+	schemaColumn, err := schema.LookupColumn(columnName)
+	if err != nil {
+		return nil, err
+	}
+	dt, err := NewDataTypeFrom(schemaColumn.DataType())
+	if err != nil {
+		return nil, err
 	}
 	return protocol.NewRowFieldWith(columnName,
 		protocol.WithRowFieldNumber(int16(idx+1)),
