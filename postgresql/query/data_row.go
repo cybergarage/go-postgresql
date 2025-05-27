@@ -29,34 +29,13 @@ func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescri
 	dataRow := protocol.NewDataRow()
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
-		switch selector := selector.(type) {
-		case query.Function:
-			executor, err := selector.Executor()
-			if err != nil {
-				return nil, err
-			}
-			args := []any{}
-			for _, arg := range selector.Arguments() {
-				v, ok := row[arg.Name()]
-				if !ok {
-					v = nil
-				}
-				args = append(args, v)
-			}
-			v, err := executor.Execute(args)
-			if err != nil {
-				return nil, err
-			}
-			dataRow.AppendData(field, v)
-		default:
-			name := selector.Name()
-			v, ok := row[name]
-			if !ok {
-				dataRow.AppendData(field, nil)
-				continue
-			}
-			dataRow.AppendData(field, v)
+		name := selector.String()
+		v, ok := row[name]
+		if !ok {
+			dataRow.AppendData(field, nil)
+			continue
 		}
+		dataRow.AppendData(field, v)
 	}
 	return dataRow, nil
 }
