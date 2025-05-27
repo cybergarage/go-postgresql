@@ -37,7 +37,7 @@ func NewDataTypeFrom(t query.DataType) (*DataType, error) {
 	if err != nil {
 		return nil, err
 	}
-	return system.NewDataTypeFromObjectID(objectID)
+	return system.NewDataTypeFrom(objectID)
 }
 
 // NewObjectIDFrom returns a data type from the specified query data type.
