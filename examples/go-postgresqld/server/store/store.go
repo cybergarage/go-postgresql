@@ -335,7 +335,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		} else {
 			rsCchemaColumn = resultset.NewColumn(
 				resultset.WithColumnName(selector.String()),
-				resultset.WithColumnType(query.TextType), // Default to TextType for function results
+				resultset.WithColumnType(query.TextType),
 			)
 		}
 		rsSchemaColums = append(rsSchemaColums, rsCchemaColumn)
