@@ -354,6 +354,18 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		resultset.WithSchemaColumns(rsSchemaColums),
 	)
 
+	// offset and limit
+
+	offset := stmt.Limit().Offset()
+	if 0 < offset && len(rows) <= offset {
+		rows = rows[offset:]
+	}
+
+	limit := stmt.Limit().Limit()
+	if 0 < limit && limit < len(rows) {
+		rows = rows[:limit]
+	}
+
 	// Data row response
 
 	rsRows := []sql.ResultSetRow{}

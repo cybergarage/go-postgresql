@@ -20,21 +20,17 @@ import (
 )
 
 // NewResponseFromResultSet creates a response from a result set.
-func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Responses, error) {
+func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error) {
 	// Schema
 
 	schema := rs.Schema()
+	selectors := schema.Selectors()
 
 	// Responses
 
 	res := protocol.NewResponses()
 
 	// Row description response
-
-	selectors := stmt.Selectors()
-	if selectors.IsAsterisk() {
-		selectors = schema.Selectors()
-	}
 
 	rowDesc := protocol.NewRowDescription()
 	for n, selector := range selectors {
@@ -49,14 +45,7 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 	// Data row response
 
 	nRows := 0
-	offset := stmt.Limit().Offset()
-	limit := stmt.Limit().Limit()
-	rowNo := 0
 	for rs.Next() {
-		rowNo++
-		if 0 < offset && rowNo <= offset {
-			continue
-		}
 		rsRow, err := rs.Row()
 		if err != nil {
 			return nil, err
@@ -68,9 +57,6 @@ func NewResponseFromResultSet(stmt Select, rs resultset.ResultSet) (protocol.Res
 		}
 		res = res.Append(dataRow)
 		nRows++
-		if 0 < limit && limit <= nRows {
-			break
-		}
 	}
 
 	cmpRes, err := protocol.NewSelectCompleteWith(nRows)

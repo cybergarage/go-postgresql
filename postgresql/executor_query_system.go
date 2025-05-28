@@ -60,5 +60,5 @@ func (executor *defaultSystemQueryExecutor) SystemSelect(conn Conn, stmt query.S
 		return nil, err
 	}
 
-	return query.NewResponseFromResultSet(stmt, rs)
+	return query.NewResponseFromResultSet(rs)
 }

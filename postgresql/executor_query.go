@@ -184,7 +184,7 @@ func (executor *defaultQueryExecutor) Select(conn Conn, stmt query.Select) (prot
 		return nil, err
 	}
 
-	return query.NewResponseFromResultSet(stmt, rs)
+	return query.NewResponseFromResultSet(rs)
 }
 
 // Update handles a UPDATE query.
