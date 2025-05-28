@@ -130,7 +130,7 @@ func (row Row) Update(colums []query.Column) {
 		colName := col.Name()
 		if fx, ok := col.Function(); ok {
 			if exe, err := fx.Executor(); err == nil {
-				if v, err := exe.Execute(fn.NewMapWithMap(row)); err != nil {
+				if v, err := exe.Execute(fn.NewMapWithMap(row)); err == nil {
 					row[colName] = v
 				}
 				continue
