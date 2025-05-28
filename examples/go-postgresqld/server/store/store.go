@@ -295,7 +295,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		}
 
 		for _, row := range rows {
-			err := aggrSet.Aggregate(row)
+			err := aggrSet.Aggregate(fn.NewMapWithMap(row))
 			if err != nil {
 				return nil, err
 			}
@@ -383,7 +383,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 				}
 			}
 			if rowValue == nil {
-				selectorName := selector.Name()
+				selectorName := selector.String()
 				rowValue, err = row.ValueByName(selectorName)
 				if err != nil {
 					return nil, err
