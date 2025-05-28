@@ -21,6 +21,7 @@ import (
 
 	"github.com/cybergarage/go-safecast/safecast"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
+	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/query"
 )
 
@@ -127,9 +128,9 @@ func (row Row) Update(colums []query.Column) {
 	}
 	for _, col := range colums {
 		colName := col.Name()
-		if fn, ok := col.Function(); ok {
-			if exe, err := fn.Executor(); err == nil {
-				if v, err := exe.Execute(row); err != nil {
+		if fx, ok := col.Function(); ok {
+			if exe, err := fx.Executor(); err == nil {
+				if v, err := exe.Execute(fn.NewMapWithMap(row)); err != nil {
 					row[colName] = v
 				}
 				continue
