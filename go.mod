@@ -7,7 +7,7 @@ require (
 	github.com/cybergarage/go-logger v1.3.10
 	github.com/cybergarage/go-safecast v1.3.0
 	github.com/cybergarage/go-sqlparser v1.5.2-0.20250528144937-876e1d186763
-	github.com/cybergarage/go-sqltest v1.6.1-0.20250522120145-343a6f820843
+	github.com/cybergarage/go-sqltest v1.6.1-0.20250528133732-64ba8482da6f
 	github.com/cybergarage/go-tracing v1.1.5
 	github.com/google/gopacket v1.1.19
 	github.com/google/uuid v1.6.0
