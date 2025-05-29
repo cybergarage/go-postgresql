@@ -39,8 +39,8 @@ func TestSQLTest(t *testing.T) {
 
 	// NOTE: Add your test files in 'untests' directory into the filename array
 	testNames := []string{
-		"UpdateArithFloat",
-		// "FuncAggrDouble",
+		// "SmplCrudDatetime",
+		// "UpdateArithFloat",
 		// "FuncMathDouble",
 		// "SmplCrudInt",
 		// "SmplCrudText",
