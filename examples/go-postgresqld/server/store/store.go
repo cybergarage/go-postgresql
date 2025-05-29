@@ -221,7 +221,7 @@ func (store *Store) Update(conn net.Conn, stmt query.Update) (sql.ResultSet, err
 	}
 
 	return resultset.NewResultSet(
-		resultset.WithResultSetRowsAffected(uint64(n)),
+		resultset.WithResultSetRowsAffected(uint(n)),
 	), nil
 }
 
@@ -240,7 +240,7 @@ func (store *Store) Delete(conn net.Conn, stmt query.Delete) (sql.ResultSet, err
 	}
 
 	return resultset.NewResultSet(
-		resultset.WithResultSetRowsAffected(uint64(n)),
+		resultset.WithResultSetRowsAffected(uint(n)),
 	), nil
 }
 
@@ -276,7 +276,18 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		return nil, err
 	}
 
-	// Aggregate
+	// Row description response
+
+	schema := tbl.Schema
+
+	rsSchema := resultset.NewSchema(
+		resultset.WithSchemaDatabaseName(conn.Database()),
+		resultset.WithSchemaTableName(tblName),
+		resultset.WithSchemaQuerySchema(schema),
+		resultset.WithSchemaSelectors(selectors),
+	)
+
+	// Data row response
 
 	if stmt.HasAggregator() {
 		aggrSet, err := selectors.Aggregators()
@@ -316,31 +327,6 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		}
 	}
 
-	// Row description response
-
-	schema := tbl.Schema
-
-	rsSchema := resultset.NewSchema(
-		resultset.WithSchemaDatabaseName(conn.Database()),
-		resultset.WithSchemaTableName(tblName),
-		resultset.WithSchemaQuerySchema(schema),
-		resultset.WithSchemaSelectors(selectors),
-	)
-
-	// offset and limit
-
-	offset := stmt.Limit().Offset()
-	if 0 < offset && len(rows) <= offset {
-		rows = rows[offset:]
-	}
-
-	limit := stmt.Limit().Limit()
-	if 0 < limit && limit < len(rows) {
-		rows = rows[:limit]
-	}
-
-	// Data row response
-
 	rsRows := []sql.ResultSetRow{}
 	for _, row := range rows {
 		rowValues := []any{}
@@ -373,9 +359,13 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	// Return a result set
 
+	offset := stmt.Limit().Offset()
+	limit := stmt.Limit().Limit()
 	rs := resultset.NewResultSet(
+		resultset.WithResultSetOffset(offset),
+		resultset.WithResultSetLimit(limit),
 		resultset.WithResultSetSchema(rsSchema),
-		resultset.WithResultSetRowsAffected(uint64(len(rsRows))),
+		resultset.WithResultSetRowsAffected(uint(len(rsRows))),
 		resultset.WithResultSetRows(rsRows),
 	)
 
