@@ -288,9 +288,9 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	// Convert []Row to []map[string]any
 
-	mapRows := make([]map[string]any, len(rows))
-	for i, row := range rows {
-		mapRows[i] = row
+	mapRows := resultset.NewMapRows()
+	for _, row := range rows {
+		mapRows = append(mapRows, row)
 	}
 
 	// Map rows to result set rows
@@ -305,77 +305,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	if err != nil {
 		return nil, err
 	}
-	/*
-		// Data row response
 
-		if stmt.HasAggregator() {
-			aggrSet, err := selectors.Aggregators()
-			if err != nil {
-				return nil, err
-			}
-
-			resetOpts := []any{}
-			if stmt.GroupBy() != nil {
-				resetOpts = append(resetOpts, fn.GroupBy(stmt.GroupBy().ColumnName()))
-			}
-
-			err = aggrSet.Reset(resetOpts...)
-			if err != nil {
-				return nil, err
-			}
-
-			for _, row := range rows {
-				err := aggrSet.Aggregate(fn.NewMapWithMap(row))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			resultSet, err := aggrSet.Finalize()
-			if err != nil {
-				return nil, err
-			}
-
-			rows = []Row{}
-			for resultSet.Next() {
-				rowMap, err := resultSet.Map()
-				if err != nil {
-					return nil, err
-				}
-				rows = append(rows, NewRowWithResultMap(rowMap))
-			}
-		}
-
-		rsRows := []sql.ResultSetRow{}
-		for _, row := range rows {
-			rowValues := []any{}
-			for _, selector := range selectors {
-				var rowValue any
-				rowValue = nil
-				if fx, ok := selector.Function(); ok {
-					if executor, err := fx.Executor(); err == nil {
-						rowValue, err = executor.Execute(fn.NewMapWithMap(row))
-						if err != nil {
-							return nil, err
-						}
-					}
-				}
-				if rowValue == nil {
-					selectorName := selector.String()
-					rowValue, err = row.ValueByName(selectorName)
-					if err != nil {
-						return nil, err
-					}
-				}
-				rowValues = append(rowValues, rowValue)
-			}
-			rsRow := resultset.NewRow(
-				resultset.WithRowSchema(rsSchema),
-				resultset.WithRowValues(rowValues),
-			)
-			rsRows = append(rsRows, rsRow)
-		}
-	*/
 	// Return a result set
 
 	offset := stmt.Limit().Offset()
