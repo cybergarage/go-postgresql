@@ -7,10 +7,14 @@
     - Added tests for ORDER BY.
   - Support for SCRAM-SHA-256.
 
-## v1.6.4 (2025-xx-xx)
-- Changed to ignore TLS requests when TLS configuration is null
+## v1.6.4 (2025-05-30)
 - Improved:
   - ReadyForQuery returns transaction status correctly.
+  - Ignore TLS requests when TLS configuration is null
+  - Example (go-postgresql)
+    - Refactor to share code with go-mysql 
+    - Support for statement commands
+      - Math and Aggregate functions
 
 ## v1.6.3 (2025-01-18)
 - Updated authenticator interface
