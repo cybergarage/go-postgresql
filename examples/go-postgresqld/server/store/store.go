@@ -281,7 +281,6 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	rsSchema := resultset.NewSchema(
 		resultset.WithSchemaDatabaseName(conn.Database()),
-		resultset.WithSchemaTableName(tblName),
 		resultset.WithSchemaQuerySchema(schema),
 		resultset.WithSchemaSelectors(selectors),
 	)
