@@ -275,31 +275,14 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		return nil, err
 	}
 
-	// Row description response
-
-	schema := tbl.Schema
-
-	rsSchema := resultset.NewSchema(
-		resultset.WithSchemaDatabaseName(conn.Database()),
-		resultset.WithSchemaQuerySchema(schema),
-		resultset.WithSchemaSelectors(selectors),
-	)
-
-	// Convert []Row to []map[string]any
+	// Map rows to result set rows
 
 	mapRows := resultset.NewMapRows()
 	for _, row := range rows {
 		mapRows = append(mapRows, row)
 	}
 
-	// Map rows to result set rows
-
-	rsRows, err := resultset.NewRows(
-		resultset.WithRowsSchema(rsSchema),
-		resultset.WithRowsSelectors(selectors),
-		resultset.WithRowsGroupBy(stmt.GroupBy().ColumnName()),
-		resultset.WithRowsMapRows(mapRows),
-	)
+	rsRows, err := resultset.NewRowsFromMapRows(mapRows)
 
 	if err != nil {
 		return nil, err
@@ -307,17 +290,44 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 
 	// Return a result set
 
-	offset := stmt.Limit().Offset()
-	limit := stmt.Limit().Limit()
-	rs := resultset.NewResultSet(
-		resultset.WithResultSetOffset(offset),
-		resultset.WithResultSetLimit(limit),
+	if !selectors.HasAggregator() {
+		rsSchema := resultset.NewSchema(
+			resultset.WithSchemaDatabaseName(conn.Database()),
+			resultset.WithSchemaTableSchema(tbl.Schema),
+			resultset.WithSchemaSelectors(selectors),
+		)
+
+		return resultset.NewResultSetFrom(
+			resultset.WithResultSetOffset(stmt.Limit().Offset()),
+			resultset.WithResultSetLimit(stmt.Limit().Limit()),
+			resultset.WithResultSetSchema(rsSchema),
+			resultset.WithResultSetRowsAffected(uint(len(rsRows))),
+			resultset.WithResultSetRows(rsRows),
+		)
+	}
+
+	// Return an aggregated result set
+
+	rsSchema := resultset.NewSchema(
+		resultset.WithSchemaDatabaseName(conn.Database()),
+		resultset.WithSchemaTableSchema(tbl.Schema),
+		resultset.WithSchemaSelectors(tbl.Selectors()),
+	)
+
+	rs, err := resultset.NewResultSetFrom(
 		resultset.WithResultSetSchema(rsSchema),
-		resultset.WithResultSetRowsAffected(uint(len(rsRows))),
 		resultset.WithResultSetRows(rsRows),
 	)
 
-	return rs, nil
+	if err != nil {
+		return nil, err
+	}
+
+	return resultset.NewAggregatedResultSetFrom(
+		rs,
+		tbl.Schema,
+		selectors,
+		stmt.GroupBy())
 }
 
 // SystemSelect should handle a system SELECT statement.
