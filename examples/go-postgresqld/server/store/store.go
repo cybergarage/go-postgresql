@@ -324,10 +324,11 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	}
 
 	return resultset.NewAggregatedResultSetFrom(
-		rs,
-		tbl.Schema,
-		selectors,
-		stmt.GroupBy())
+		resultset.WithAggregatedResultSetTableSchema(tbl.Schema),
+		resultset.WithAggregatedResultSetSelectors(selectors),
+		resultset.WithAggregatedResultSetGroupBy(stmt.GroupBy()),
+		resultset.WithAggregatedResultSetSource(rs),
+	)
 }
 
 // SystemSelect should handle a system SELECT statement.
