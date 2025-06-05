@@ -51,7 +51,7 @@ BIN_BINARIES=\
 BINARIES=\
 	${EXAMPLE_BINARIES}
 
-.PHONY: clean test version
+.PHONY: clean test version sysbench
 .IGNORE: lint
 
 all: test
