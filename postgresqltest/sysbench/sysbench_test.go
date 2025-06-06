@@ -27,6 +27,12 @@ import (
 func TestSysbench(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 
+	// Check if sysbench is installed
+	if !sysbench.IsInstalled() {
+		t.Skip("sysbench is not installed, skipping test")
+		return
+	}
+
 	// Working directory
 
 	wkdir, err := os.Getwd()
