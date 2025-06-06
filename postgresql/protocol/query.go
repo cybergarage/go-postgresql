@@ -19,11 +19,18 @@ package protocol
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
 
+import (
+	"fmt"
+
+	"github.com/cybergarage/go-sqlparser/sql/stmt"
+)
+
 // Query represents a parse protocol.
 type Query struct {
 	*RequestMessage
 	Query string
 	BindParams
+	stmt.BindStatement
 }
 
 // NewQueryWithReader returns a new query message with specified reader.
@@ -36,18 +43,51 @@ func NewQueryWithReader(reader *MessageReader) (*Query, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Query{
+	q := &Query{
 		RequestMessage: msg,
 		Query:          query,
 		BindParams:     BindParams{},
-	}, nil
+	}
+	q.BindStatement = stmt.NewBindStatement(
+		stmt.WithBindStatementQuery(q.Query),
+	)
+	return q, nil
 }
 
 // NewQueryWith returns a new query message with specified parameters.
 func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
-	return &Query{
+	q := &Query{
 		RequestMessage: nil,
 		Query:          parseMsg.Query,
 		BindParams:     bindMsg.Params,
-	}, nil
+	}
+	bindParams := stmt.BindParams{}
+	for _, param := range bindMsg.Params {
+		bindParams = append(bindParams, stmt.NewBindParam(param.Value))
+	}
+	q.BindStatement = stmt.NewBindStatement(
+		stmt.WithBindStatementQuery(q.Query),
+		stmt.WithBindStatementParams(bindParams),
+	)
+	return q, nil
+}
+
+// Statement returns the bind statement of the query.
+func (q *Query) Statements() ([]stmt.Statement, error) {
+	return q.BindStatement.Statements()
+}
+
+// String returns the string representation of the query.
+func (q *Query) String() string {
+	s := q.Query
+	if 0 < len(q.BindParams) {
+		s += " WITH BIND PARAMS: "
+		for i, param := range q.BindParams {
+			if 0 < i {
+				s += ", "
+			}
+			s += fmt.Sprintf("%s", param.Value)
+		}
+	}
+	return s
 }

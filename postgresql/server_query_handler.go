@@ -215,18 +215,15 @@ func (server *server) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses,
 
 // Query handles a query protocol.
 func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
-	q := msg.Query
-
 	conn.StartSpan("parse")
-	parser := query.NewParser()
-	stmts, err := parser.ParseString(q)
+	stmts, err := msg.Statements()
 	conn.FinishSpan()
 	if err != nil {
 		// Is it a empty query for ping?
 		if stderrors.Is(err, sqlparser.ErrEmptyQuery) {
 			return protocol.NewEmptyCompleteResponses()
 		}
-		res, err := server.errorHandler.ParserError(conn, q, err)
+		res, err := server.errorHandler.ParserError(conn, msg.String(), err)
 		if err != nil {
 			return nil, err
 		}
@@ -252,78 +249,72 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 	}
 
 	for _, stmt := range stmts {
-		var err error
-		err = stmt.Bind(msg.BindParams)
-		if err != nil {
-			return nil, err
-		}
-
 		var res protocol.Responses
 
 		// nolint: forcetypeassert
-		switch stmt.Object().StatementType() {
+		switch stmt.StatementType() {
 		case sql.BeginStatement:
 			err = conn.LockTransaction()
 			if err == nil {
-				stmt := stmt.Object().(query.Begin)
+				stmt := stmt.(query.Begin)
 				res, err = server.queryExecutor.Begin(conn, stmt)
 			}
 		case sql.CommitStatement:
-			stmt := stmt.Object().(query.Commit)
+			stmt := stmt.(query.Commit)
 			res, err = server.queryExecutor.Commit(conn, stmt)
 			conn.UnlockTransaction()
 		case sql.RollbackStatement:
-			stmt := stmt.Object().(query.Rollback)
+			stmt := stmt.(query.Rollback)
 			res, err = server.queryExecutor.Rollback(conn, stmt)
 			conn.UnlockTransaction()
 		case sql.CreateDatabaseStatement:
-			stmt := stmt.Object().(query.CreateDatabase)
+			stmt := stmt.(query.CreateDatabase)
 			res, err = server.queryExecutor.CreateDatabase(conn, stmt)
 		case sql.CreateTableStatement:
-			stmt := stmt.Object().(query.CreateTable)
+			stmt := stmt.(query.CreateTable)
 			res, err = server.queryExecutor.CreateTable(conn, stmt)
 		case sql.CreateIndexStatement:
-			stmt := stmt.Object().(query.CreateIndex)
+			stmt := stmt.(query.CreateIndex)
 			res, err = server.exQueryExecutor.CreateIndex(conn, stmt)
 		case sql.AlterDatabaseStatement:
-			stmt := stmt.Object().(query.AlterDatabase)
+			stmt := stmt.(query.AlterDatabase)
 			res, err = server.queryExecutor.AlterDatabase(conn, stmt)
 		case sql.AlterTableStatement:
-			stmt := stmt.Object().(query.AlterTable)
+			stmt := stmt.(query.AlterTable)
 			res, err = server.queryExecutor.AlterTable(conn, stmt)
 		case sql.DropDatabaseStatement:
-			stmt := stmt.Object().(query.DropDatabase)
+			stmt := stmt.(query.DropDatabase)
 			res, err = server.queryExecutor.DropDatabase(conn, stmt)
 		case sql.DropTableStatement:
-			stmt := stmt.Object().(query.DropTable)
+			stmt := stmt.(query.DropTable)
 			res, err = server.queryExecutor.DropTable(conn, stmt)
 		case sql.DropIndexStatement:
-			stmt := stmt.Object().(query.DropIndex)
+			stmt := stmt.(query.DropIndex)
 			res, err = server.exQueryExecutor.DropIndex(conn, stmt)
 		case sql.InsertStatement:
-			stmt := stmt.Object().(query.Insert)
+			stmt := stmt.(query.Insert)
 			res, err = server.queryExecutor.Insert(conn, stmt)
 		case sql.SelectStatement:
-			stmt := stmt.Object().(query.Select)
+			stmt := stmt.(query.Select)
 			if stmt.From().HasSchemaTable(system.SystemSchemaNames...) {
 				res, err = server.systemQueryExecutor.SystemSelect(conn, stmt)
 			} else {
 				res, err = server.queryExecutor.Select(conn, stmt)
 			}
 		case sql.UpdateStatement:
-			stmt := stmt.Object().(query.Update)
+			stmt := stmt.(query.Update)
 			res, err = server.queryExecutor.Update(conn, stmt)
 		case sql.DeleteStatement:
-			stmt := stmt.Object().(query.Delete)
+			stmt := stmt.(query.Delete)
 			res, err = server.queryExecutor.Delete(conn, stmt)
 		case sql.TruncateStatement:
-			stmt := stmt.Object().(query.Truncate)
+			stmt := stmt.(query.Truncate)
 			res, err = server.exQueryExecutor.Truncate(conn, stmt)
 		case sql.VacuumStatement:
-			stmt := stmt.Object().(query.Vacuum)
+			stmt := stmt.(query.Vacuum)
 			res, err = server.exQueryExecutor.Vacuum(conn, stmt)
 		case sql.CopyStatement:
-			stmt := stmt.Object().(query.Copy)
+			stmt := stmt.(query.Copy)
 			res, err = handleCopyQuery(conn, stmt)
 		}
 
