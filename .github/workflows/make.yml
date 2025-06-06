@@ -21,6 +21,9 @@ jobs:
     - name: Set up golangci-lint
       run: sudo snap install golangci-lint --classic
 
+    - name: Set up sysbench
+      run: ssudo apt install -y sysbench
+
     - name: Test
       run: make test
 
