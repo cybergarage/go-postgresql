@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.8.0 (2025-xx-xx)
+## v1.7.0 (2025-xx-xx)
 - Improved:
   - Support for more data types.
   - SELECT:
@@ -12,8 +12,6 @@
   - Extended query executor for prepared statements.
   - Example (go-postgresql):
     - Enhanced support for `sysbench` workload.
-    - Enabled `sysbench` tests as default.
-      - Update github action tests to install `sysbench` package. 
 
 ## v1.6.4 (2025-05-30)
 - Improved:
