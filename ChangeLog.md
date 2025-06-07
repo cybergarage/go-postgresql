@@ -7,6 +7,13 @@
     - Added tests for ORDER BY.
   - Support for SCRAM-SHA-256.
 
+## v1.6.5 (2025-06-07)
+- Improved:
+  - Extended query executor for prepared statements.
+  - Example (go-postgresql):
+    - Enhanced support for `sysbench` workload.
+    - Enabled `sysbench` tests as default.
+
 ## v1.6.4 (2025-05-30)
 - Improved:
   - ReadyForQuery returns transaction status correctly.
