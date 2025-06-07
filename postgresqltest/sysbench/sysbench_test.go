@@ -109,7 +109,6 @@ func TestSysbench(t *testing.T) {
 	cfg.SetDB(testDBName)
 	cfg.SetDBDebug(true)
 	cfg.SetTableSize(100)
-	cfg.SetSkipOnError(true)
 
 	cmds := []string{
 		sysbench.OltpReadWrite,
