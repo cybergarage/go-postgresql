@@ -13,6 +13,7 @@
   - Example (go-postgresql):
     - Enhanced support for `sysbench` workload.
     - Enabled `sysbench` tests as default.
+      - Update github action tests to install `sysbench` package. 
 
 ## v1.6.4 (2025-05-30)
 - Improved:
