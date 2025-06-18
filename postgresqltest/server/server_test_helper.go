@@ -32,7 +32,7 @@ type ServerTestFunc = func(*testing.T, *Server, string)
 func RunServerTests(t *testing.T, server *Server) {
 	t.Helper()
 
-	log.SetStdoutDebugEnbled(true)
+	log.EnableStdoutDebug(true)
 
 	testFuncs := []struct {
 		name string

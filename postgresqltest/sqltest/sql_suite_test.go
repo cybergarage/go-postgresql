@@ -24,7 +24,7 @@ import (
 
 // TestSQLTestSuite runs already passed scenario test files.
 func TestSQLTestSuite(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	log.EnableStdoutDebug(true)
 
 	server := server.NewServer()
 	err := server.Start()

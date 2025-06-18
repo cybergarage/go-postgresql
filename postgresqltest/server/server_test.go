@@ -21,7 +21,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	log.EnableStdoutDebug(true)
 
 	server := NewServer()
 

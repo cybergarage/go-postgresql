@@ -25,7 +25,7 @@ import (
 )
 
 func TestSysbench(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	log.EnableStdoutDebug(true)
 
 	// Check if sysbench is installed
 	if !sysbench.IsInstalled() {

@@ -24,7 +24,7 @@ import (
 
 // TestSQLTest is a temporary debug test to check only the specified test cases.
 func TestSQLTest(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	log.EnableStdoutDebug(true)
 
 	server := server.NewServer()
 	err := server.Start()
