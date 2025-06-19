@@ -3,7 +3,7 @@ module github.com/cybergarage/go-postgresql
 go 1.24
 
 require (
-	github.com/cybergarage/go-authenticator v1.0.4
+	github.com/cybergarage/go-authenticator v1.0.5
 	github.com/cybergarage/go-logger v1.3.11
 	github.com/cybergarage/go-safecast v1.3.3
 	github.com/cybergarage/go-sqlparser v1.6.1-0.20250617035917-ed0ae4240277
@@ -17,7 +17,7 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
-	github.com/cybergarage/go-sasl v1.2.5 // indirect
+	github.com/cybergarage/go-sasl v1.2.6 // indirect
 	github.com/go-sql-driver/mysql v1.9.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
