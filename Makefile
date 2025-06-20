@@ -102,7 +102,7 @@ image-push: image
 	docker push ${EXAMPLES_DOCKER_TAG}
 
 rund: image
-	docker container run -it --rm -p 5432:5432 ${EXAMPLES_DOCKER_TAG}
+	docker container run -it --rm -p 5432:5432 ${EXAMPLES_DOCKER_TAG_LATEST}
 
 clean:
 	go clean -i ${PKG}
