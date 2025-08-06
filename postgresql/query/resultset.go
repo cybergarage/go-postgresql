@@ -22,6 +22,7 @@ import (
 // NewResponseFromResultSet creates a response from a result set.
 func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error) {
 	// Schema
+
 	schema := rs.Schema()
 	selectors := schema.Selectors()
 
@@ -32,35 +33,28 @@ func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error
 	// Row description response
 
 	rowDesc := protocol.NewRowDescription()
-
 	for n, selector := range selectors {
 		field, err := NewRowFieldFrom(schema, selector, n)
 		if err != nil {
 			return nil, err
 		}
-
 		rowDesc.AppendField(field)
 	}
-
 	res = res.Append(rowDesc)
 
 	// Data row response
 
 	nRows := 0
-
 	for rs.Next() {
 		rsRow, err := rs.Row()
 		if err != nil {
 			return nil, err
 		}
-
 		rowObj := rsRow.Object()
-
 		dataRow, err := NewDataRowForSelectors(schema, rowDesc, selectors, rowObj)
 		if err != nil {
 			return nil, err
 		}
-
 		res = res.Append(dataRow)
 		nRows++
 	}
@@ -69,7 +63,6 @@ func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error
 	if err != nil {
 		return nil, err
 	}
-
 	res = res.Append(cmpRes)
 
 	return res, nil

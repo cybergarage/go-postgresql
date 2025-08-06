@@ -54,7 +54,6 @@ func (executor *defaultQueryExecutor) Begin(conn Conn, stmt query.Begin) (protoc
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -68,7 +67,6 @@ func (executor *defaultQueryExecutor) Commit(conn Conn, stmt query.Commit) (prot
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -82,7 +80,6 @@ func (executor *defaultQueryExecutor) Rollback(conn Conn, stmt query.Rollback) (
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -96,7 +93,6 @@ func (executor *defaultQueryExecutor) CreateDatabase(conn Conn, stmt query.Creat
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -110,7 +106,6 @@ func (executor *defaultQueryExecutor) CreateTable(conn Conn, stmt query.CreateTa
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -124,7 +119,6 @@ func (executor *defaultQueryExecutor) AlterDatabase(conn Conn, stmt query.AlterD
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -138,7 +132,6 @@ func (executor *defaultQueryExecutor) AlterTable(conn Conn, stmt query.AlterTabl
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -152,7 +145,6 @@ func (executor *defaultQueryExecutor) DropDatabase(conn Conn, stmt query.DropDat
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -166,7 +158,6 @@ func (executor *defaultQueryExecutor) DropTable(conn Conn, stmt query.DropTable)
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewCommandCompleteResponsesWith(stmt.String())
 }
 
@@ -175,12 +166,10 @@ func (executor *defaultQueryExecutor) Insert(conn Conn, stmt query.Insert) (prot
 	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("INSERT")
 	}
-
 	err := executor.sqlExecutor.Insert(conn, stmt)
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewInsertCompleteResponsesWith(len(stmt.Values()))
 }
 
@@ -222,6 +211,5 @@ func (executor *defaultQueryExecutor) Delete(conn Conn, stmt query.Delete) (prot
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewDeleteCompleteResponsesWith(int(rs.RowsAffected()))
 }

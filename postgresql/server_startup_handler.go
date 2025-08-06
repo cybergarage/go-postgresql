@@ -36,7 +36,6 @@ func newProtocolStartupHandler() *protocolStartupHandler {
 	if err != nil {
 		log.Error(err)
 	}
-
 	return &protocolStartupHandler{
 		processID: int32(os.Getpid()),
 		secretKey: int32(r.Int64()),
@@ -48,7 +47,6 @@ func (server *server) ParameterStatuses(Conn) (protocol.Responses, error) {
 	m := map[string]string{}
 	m[protocol.ClientEncoding] = protocol.EncodingUTF8
 	m[protocol.ServerEncoding] = protocol.EncodingUTF8
-
 	return protocol.NewParameterStatusesWith(m)
 }
 

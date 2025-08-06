@@ -39,16 +39,13 @@ func (params BindParams) FindBindParam(id string) (*BindParam, error) {
 	if !strings.HasPrefix(id, bindParamPrefix) {
 		return nil, NewErrNotExist(id)
 	}
-
 	idx, err := strconv.Atoi(id[len(bindParamPrefix):])
 	if err != nil {
 		return nil, NewErrNotExist(id)
 	}
-
 	if len(params) < idx {
 		return nil, NewErrNotExist(id)
 	}
-
 	return params[idx-1], nil
 }
 
@@ -58,7 +55,6 @@ type BindParams []*BindParam
 // Bind represents a bind protocol.
 type Bind struct {
 	*RequestMessage
-
 	PortalName    string
 	StatementName string
 	Params        BindParams
@@ -92,12 +88,11 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 
 	// The parameter format codes. Each must presently be zero (text) or one (binary).
 	paramFmts := make([]int16, paramFmtNum)
-	for n := range paramFmtNum {
+	for n := 0; n < int(paramFmtNum); n++ {
 		fmt, err := reader.ReadInt16()
 		if err != nil {
 			return nil, err
 		}
-
 		paramFmts[n] = fmt
 	}
 
@@ -108,7 +103,7 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 	}
 
 	paramBytes := make([][]byte, paramValNum)
-	for n := range paramValNum {
+	for n := 0; n < int(paramValNum); n++ {
 		// The length of the parameter value, in bytes (this count does not include itself).
 		// Can be zero. As a special case, -1 indicates a NULL parameter value. No value bytes follow in the NULL case.
 		nBytes, err := reader.ReadInt32()
@@ -117,7 +112,6 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 		}
 		// The value of the parameter, in the format indicated by the associated format code. n is the above length.
 		var bytes []byte
-
 		switch nBytes {
 		case 0:
 			bytes = []byte{}
@@ -127,19 +121,15 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 			if nBytes <= 0 {
 				return nil, newInvalidLengthError(int(nBytes))
 			}
-
 			bytes = make([]byte, nBytes)
-
 			nRead, err := reader.Read(bytes)
 			if err != nil {
 				return nil, err
 			}
-
 			if nRead != int(nBytes) {
 				return nil, newShortMessageError(int(nBytes), nRead)
 			}
 		}
-
 		paramBytes[n] = bytes
 	}
 
@@ -151,36 +141,31 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 
 	// The result-column format codes. Each must presently be zero (text) or one (binary).
 	resFmts := make([]int16, resFmtNum)
-	for n := range resFmtNum {
+	for n := 0; n < int(resFmtNum); n++ {
 		fmt, err := reader.ReadInt16()
 		if err != nil {
 			return nil, err
 		}
-
 		resFmts[n] = fmt
 	}
 
 	params := make([]*BindParam, paramValNum)
-	for n := range paramValNum {
+	for n := 0; n < int(paramValNum); n++ {
 		paramFmt := TextFormat
-		if int(n) < len(paramFmts) {
+		if n < len(paramFmts) {
 			paramFmt = paramFmts[n]
 		}
-
 		paramValBytes := []byte{}
-		if int(n) < len(paramBytes) {
+		if n < len(paramBytes) {
 			paramValBytes = paramBytes[n]
 		}
-
 		var paramVal any
-
 		switch paramFmt {
 		case TextFormat:
 			paramVal = string(paramValBytes)
 		case BinaryFormat:
 			paramVal = paramValBytes
 		}
-
 		params[n] = &BindParam{
 			FormatCode: paramFmt,
 			Value:      paramVal,

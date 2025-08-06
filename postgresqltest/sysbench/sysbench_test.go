@@ -40,7 +40,6 @@ func TestSysbench(t *testing.T) {
 		t.Error(err)
 		return
 	}
-
 	t.Logf("Working directory: %s", wkdir)
 
 	// Check cert files if exists
@@ -64,7 +63,6 @@ func TestSysbench(t *testing.T) {
 
 	server := server.NewServer()
 	server.SetTLSConfig(nil)
-
 	err = server.Start()
 	if err != nil {
 		t.Error(err)
@@ -90,7 +88,6 @@ func TestSysbench(t *testing.T) {
 	}()
 
 	testDBName := sysbench.GenerateTempDBName()
-
 	err = client.CreateDatabase(testDBName)
 	if err != nil {
 		t.Error(err)

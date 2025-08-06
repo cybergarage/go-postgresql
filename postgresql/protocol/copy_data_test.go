@@ -46,7 +46,6 @@ func TestCopyData(t *testing.T) {
 		}
 
 		reader := NewMessageReaderWith(WithMessageReadeBytes(byteData))
-
 		copyData, err := NewCopyDataWithReader(reader)
 		if err != nil {
 			t.Error(err)

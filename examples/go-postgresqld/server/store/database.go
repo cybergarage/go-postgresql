@@ -26,7 +26,6 @@ func NewDatabaseWithName(name string) *Database {
 		name:   name,
 		tables: map[string]*Table{},
 	}
-
 	return db
 }
 
@@ -58,7 +57,6 @@ func (db *Database) DropTable(table *Table) bool {
 	name := table.TableName()
 	delete(db.tables, name)
 	_, ok := db.tables[name]
-
 	return !ok
 }
 
@@ -74,6 +72,5 @@ func (db *Database) Tables() []*Table {
 	for _, table := range db.tables {
 		tables = append(tables, table)
 	}
-
 	return tables
 }

@@ -26,7 +26,6 @@ type server struct {
 	protocol.Server
 	*protocolStartupHandler
 	*protocolQueryHandler
-
 	sqlExecutor         SQLExecutor
 	queryExecutor       QueryExecutor
 	systemQueryExecutor SystemQueryExecutor
@@ -55,9 +54,9 @@ func NewServer() Server {
 		server.queryExecutor,
 	)
 
-	server.SetProductName(PackageName)
-	server.SetProductVersion(Version)
-	server.SetMessageHandler(server)
+	server.Server.SetProductName(PackageName)
+	server.Server.SetProductVersion(Version)
+	server.Server.SetMessageHandler(server)
 
 	server.SetQueryExecutor(server.queryExecutor)
 	server.SetSystemQueryExecutor(server.systemQueryExecutor)
@@ -70,7 +69,6 @@ func NewServer() Server {
 // SetSQLExecutor sets a SQL server.
 func (server *server) SetSQLExecutor(sqlExeutor SQLExecutor) {
 	server.sqlExecutor = sqlExeutor
-
 	executors := []any{
 		server.queryExecutor,
 		server.exQueryExecutor,
@@ -82,11 +80,9 @@ func (server *server) SetSQLExecutor(sqlExeutor SQLExecutor) {
 		if executor == nil {
 			continue
 		}
-
 		if _, ok := executor.(Server); ok {
 			continue
 		}
-
 		if setter, ok := executor.(SQLExecutorSetter); ok {
 			setter.SetSQLExecutor(sqlExeutor)
 		}
@@ -153,7 +149,6 @@ func (server *server) Start() error {
 	type starter interface {
 		Start() error
 	}
-
 	starters := []starter{
 		server.Server,
 	}
@@ -162,7 +157,6 @@ func (server *server) Start() error {
 			return server.Stop()
 		}
 	}
-
 	return nil
 }
 
@@ -171,19 +165,15 @@ func (server *server) Stop() error {
 	type stopper interface {
 		Stop() error
 	}
-
 	stoppers := []stopper{
 		server.Server,
 	}
-
 	var err error
-
 	for _, s := range stoppers {
 		if e := s.Stop(); e != nil {
 			err = errors.Join(err, e)
 		}
 	}
-
 	return err
 }
 

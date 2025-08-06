@@ -36,7 +36,6 @@ func NewStore() *Store {
 	store := &Store{
 		Databases: NewDatabases(),
 	}
-
 	return store
 }
 
@@ -76,7 +75,6 @@ func (store *Store) Rollback(conn net.Conn, stmt query.Rollback) error {
 func (store *Store) Use(conn net.Conn, stmt query.Use) error {
 	log.Debugf("%v", stmt)
 	conn.SetDatabase(stmt.DatabaseName())
-
 	return nil
 }
 
@@ -85,13 +83,11 @@ func (store *Store) CreateDatabase(conn net.Conn, stmt query.CreateDatabase) err
 	log.Debugf("%v", stmt)
 
 	dbName := stmt.DatabaseName()
-
 	_, ok := store.LookupDatabase(dbName)
 	if ok {
 		if stmt.IfNotExists() {
 			return nil
 		}
-
 		return errors.NewErrDatabaseExist(dbName)
 	}
 
@@ -109,16 +105,13 @@ func (store *Store) DropDatabase(conn net.Conn, stmt query.DropDatabase) error {
 	log.Debugf("%v", stmt)
 
 	dbName := stmt.DatabaseName()
-
 	db, ok := store.LookupDatabase(dbName)
 	if !ok {
 		if stmt.IfExists() {
 			return nil
 		}
-
 		return errors.NewErrDatabaseNotExist(dbName)
 	}
-
 	return store.Databases.DropDatabase(db)
 }
 
@@ -127,14 +120,11 @@ func (store *Store) CreateTable(conn net.Conn, stmt query.CreateTable) error {
 	log.Debugf("%v", stmt)
 
 	dbName := conn.Database()
-
 	db, ok := store.LookupDatabase(dbName)
 	if !ok {
 		return errors.NewErrDatabaseNotExist(dbName)
 	}
-
 	tableName := stmt.TableName()
-
 	_, ok = db.LookupTable(tableName)
 	if !ok {
 		table := NewTableWith(tableName, stmt.Schema())
@@ -144,7 +134,6 @@ func (store *Store) CreateTable(conn net.Conn, stmt query.CreateTable) error {
 			return errors.NewErrTableExist(tableName)
 		}
 	}
-
 	return nil
 }
 
@@ -153,20 +142,16 @@ func (store *Store) AlterTable(conn net.Conn, stmt query.AlterTable) error {
 	log.Debugf("%v", stmt)
 
 	dbName := conn.Database()
-
 	db, ok := store.LookupDatabase(dbName)
 	if !ok {
 		return errors.NewErrDatabaseNotExist(dbName)
 	}
-
 	tableName := stmt.TableName()
-
 	tbl, ok := db.LookupTable(tableName)
 	if !ok {
 		return errors.NewErrTableExist(tableName)
 	}
-
-	return tbl.Alter(stmt)
+	return tbl.Schema.Alter(stmt)
 }
 
 // DropTable should handle a DROP table statement.
@@ -174,21 +159,17 @@ func (store *Store) DropTable(conn net.Conn, stmt query.DropTable) error {
 	log.Debugf("%v", stmt)
 
 	dbName := conn.Database()
-
 	db, ok := store.LookupDatabase(dbName)
 	if !ok {
 		return errors.NewErrDatabaseNotExist(dbName)
 	}
-
 	for _, table := range stmt.Tables() {
 		tableName := table.TableName()
-
 		table, ok := db.LookupTable(tableName)
 		if !ok {
 			if stmt.IfExists() {
 				continue
 			}
-
 			return errors.NewErrTableNotExist(tableName)
 		}
 
@@ -196,7 +177,6 @@ func (store *Store) DropTable(conn net.Conn, stmt query.DropTable) error {
 			return fmt.Errorf("%s could not deleted", table.TableName())
 		}
 	}
-
 	return nil
 }
 
@@ -206,7 +186,6 @@ func (store *Store) Insert(conn net.Conn, stmt query.Insert) error {
 
 	dbName := conn.Database()
 	tableName := stmt.TableName()
-
 	table, ok := store.LookupTableWithDatabase(dbName, tableName)
 	if !ok {
 		return errors.NewErrTableNotExist(tableName)
@@ -220,7 +199,6 @@ func (store *Store) Insert(conn net.Conn, stmt query.Insert) error {
 		if err != nil {
 			return err
 		}
-
 		table.Rows = append(table.Rows, row)
 	}
 
@@ -305,6 +283,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	}
 
 	rsRows, err := resultset.NewRowsFromMapRows(mapRows)
+
 	if err != nil {
 		return nil, err
 	}
@@ -339,6 +318,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 		resultset.WithResultSetSchema(rsSchema),
 		resultset.WithResultSetRows(rsRows),
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -364,20 +344,16 @@ func (store *Store) SystemSelect(conn net.Conn, stmt query.Select) (sql.ResultSe
 		if err != nil {
 			return nil, err
 		}
-
 		dbName := sysStmt.DatabaseName()
 		tblNames := sysStmt.TableNames()
 		schemas := []query.Schema{}
-
 		for _, tblName := range tblNames {
 			_, tbl, err := store.LookupDatabaseTable(conn, dbName, tblName)
 			if err != nil {
 				return nil, err
 			}
-
 			schemas = append(schemas, tbl.Schema)
 		}
-
 		return system.NewSchemaColumnsResultSetFromSchemas(schemas)
 	}
 

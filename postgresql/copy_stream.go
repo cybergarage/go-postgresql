@@ -35,7 +35,7 @@ func NewCopyStreamWithReader(reader *protocol.MessageReader) *CopyStream {
 
 // Next returns true if the next message is available.
 func (stream *CopyStream) Next() (*protocol.CopyData, error) {
-	t, err := stream.PeekType()
+	t, err := stream.MessageReader.PeekType()
 	if err != nil {
 		return nil, err
 	}
@@ -51,31 +51,25 @@ func (stream *CopyStream) Next() (*protocol.CopyData, error) {
 		if copyErr == nil {
 			return copyData, nil
 		}
-
 		if !errors.Is(copyErr, io.EOF) {
 			return nil, copyErr
 		}
-
-		ok, peekErr := stream.IsPeekType(protocol.CopyDoneMessage)
+		ok, peekErr := stream.MessageReader.IsPeekType(protocol.CopyDoneMessage)
 		if peekErr != nil {
 			return nil, peekErr
 		}
-
 		if !ok {
 			return nil, copyErr
 		}
-
 		if skipErr := skipCopyDone(stream.MessageReader); skipErr != nil {
 			return nil, skipErr
 		}
-
 		return nil, copyErr
 	case protocol.CopyDoneMessage:
 		err := skipCopyDone(stream.MessageReader)
 		if err != nil {
 			return nil, err
 		}
-
 		return nil, io.EOF
 	}
 

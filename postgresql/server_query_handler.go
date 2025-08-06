@@ -47,7 +47,6 @@ func (server *server) Parse(conn Conn, msg *protocol.Parse) (protocol.Responses,
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewResponsesWith(protocol.NewParseComplete()), nil
 }
 
@@ -78,13 +77,11 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		if len(tables) != 1 {
 			return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())
 		}
-
 		table := tables[0]
 		sysStmt, err := sql_system.NewSchemaColumnsStatement(
 			sql_system.WithSchemaColumnsStatementDatabaseName(conn.Database()),
 			sql_system.WithSchemaColumnsStatementTableNames([]string{table.TableName()}),
 		)
-
 		return sysStmt.Statement(), err
 	}
 
@@ -94,35 +91,27 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 				if r == 0 {
 					continue
 				}
-
 				dataRow, ok := res.(*protocol.DataRow)
 				if !ok {
 					continue
 				}
-
 				if len(dataRow.Data) < 2 {
 					continue
 				}
-
 				columnName, ok := dataRow.Data[0].(string)
 				if !ok {
 					continue
 				}
-
 				if !strings.EqualFold(columnName, colName) {
 					continue
 				}
-
 				var objID int32
-
 				err := safecast.ToInt32(dataRow.Data[1], &objID)
 				if err != nil {
 					continue
 				}
-
 				return objID, true
 			}
-
 			return 0, false
 		}
 
@@ -130,27 +119,21 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		if err != nil {
 			return nil, err
 		}
-
 		res, err := server.systemQueryExecutor.SystemSelect(conn, query)
 		if err != nil {
 			return nil, err
 		}
-
 		sels := stmt.Selectors()
-
 		objIDs := make([]int32, len(sels))
 		for n, sel := range sels {
 			selName := sel.Name()
-
 			objID, ok := objIDFromResponses(res, selName)
 			if !ok {
 				objIDs[n] = 0
 				continue
 			}
-
 			objIDs[n] = objID
 		}
-
 		return objIDs, nil
 	}
 
@@ -160,9 +143,7 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		if err != nil {
 			return nil, err
 		}
-
 		objIDs := []int32{}
-
 		switch stmt := prepStmt.ParsedStatement.Object().(type) {
 		case query.Select:
 			objIDs, err = selectObjectIds(stmt)
@@ -170,12 +151,10 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 				return nil, err
 			}
 		}
-
 		paramDesc, err := protocol.NewParameterDescriptionWith(objIDs...)
 		if err != nil {
 			return nil, err
 		}
-
 		return protocol.NewResponsesWith(
 			paramDesc,
 			protocol.NewNoData()), nil
@@ -184,11 +163,9 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		if err != nil {
 			return nil, err
 		}
-
 		return protocol.NewResponsesWith(
 			protocol.NewNoData()), nil
 	}
-
 	return nil, nil
 }
 
@@ -208,6 +185,7 @@ func (server *server) Close(conn Conn, msg *protocol.Close) (protocol.Responses,
 	// https://www.postgresql.org/docs/16/protocol-flow.html
 	// The Close message closes an existing prepared statement or portal and releases resources.
 	// It is not an error to issue Close against a nonexistent statement or portal name.
+
 	switch msg.Type {
 	case protocol.PreparedStatement:
 		_ = server.RemovePreparedStatement(conn, msg.Name)
@@ -238,22 +216,17 @@ func (server *server) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses,
 // Query handles a query protocol.
 func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
 	conn.StartSpan("parse")
-
 	stmts, err := msg.Statements()
-
 	conn.FinishSpan()
-
 	if err != nil {
 		// Is it a empty query for ping?
 		if stderrors.Is(err, sqlparser.ErrEmptyQuery) {
 			return protocol.NewEmptyCompleteResponses()
 		}
-
 		res, err := server.errorHandler.ParserError(conn, msg.String(), err)
 		if err != nil {
 			return nil, err
 		}
-
 		return res, nil
 	}
 
@@ -262,7 +235,6 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 		if err != nil || res.HasErrorResponse() {
 			return res, err
 		}
-
 		err = conn.ResponseMessages(res)
 		if err != nil {
 			return nil, err
@@ -352,7 +324,6 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 				return nil, err
 			}
 		}
-
 		if err != nil {
 			return nil, err
 		}

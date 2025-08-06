@@ -30,7 +30,6 @@ func NewFlushWithReader(reader *MessageReader) (*Flush, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &Flush{
 		RequestMessage: msg,
 	}, nil

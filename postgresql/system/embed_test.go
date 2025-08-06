@@ -21,7 +21,6 @@ func TestEmbedCatalogs(t *testing.T) {
 		t.Errorf("Catalogs: %v", len(Catalogs))
 		return
 	}
-
 	for name, bytes := range Catalogs {
 		if len(bytes) == 0 {
 			t.Errorf("%s bytes: %d", name, len(bytes))

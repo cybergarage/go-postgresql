@@ -32,7 +32,6 @@ func TestInt64Endode(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int64ToBytes(tv)
-
 		v := BytesToInt64(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
@@ -53,7 +52,6 @@ func TestInt32Endode(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int32ToBytes(tv)
-
 		v := BytesToInt32(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
@@ -74,7 +72,6 @@ func TestInt16Endode(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int16ToBytes(tv)
-
 		v := BytesToInt16(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)
@@ -95,7 +92,6 @@ func TestInt8Endode(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Int8ToBytes(tv)
-
 		v := BytesToInt8(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%d != %d)", tv, v)

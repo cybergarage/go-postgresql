@@ -23,7 +23,6 @@ import (
 // PreparedStatement represents a prepared statement.
 type PreparedStatement struct {
 	*protocol.Parse
-
 	ParsedStatement *query.Statement
 }
 
@@ -46,29 +45,24 @@ func (stmtMap PreparedStatementMap) PreparedStatement(name string) (*PreparedSta
 	if !oK {
 		return nil, errors.NewErrPreparedStatementNotExist(name)
 	}
-
 	return q, nil
 }
 
 // SetPreparedStatement sets a prepared statement.
 func (stmtMap PreparedStatementMap) SetPreparedStatement(msg *protocol.Parse) error {
 	parser := query.NewParser()
-
 	stmts, err := parser.ParseString(msg.Query)
 	if err != nil {
 		return err
 	}
-
 	if 1 < len(stmts) {
 		return errors.NewErrMultiplePreparedStatementNotSupported(msg.Query)
 	}
-
 	stmt := &PreparedStatement{
 		Parse:           msg,
 		ParsedStatement: stmts[0],
 	}
 	stmtMap[msg.Name] = stmt
-
 	return nil
 }
 
@@ -78,9 +72,7 @@ func (stmtMap PreparedStatementMap) RemovePreparedStatement(name string) error {
 	if !oK {
 		return errors.NewErrPreparedStatementNotExist(name)
 	}
-
 	delete(stmtMap, name)
-
 	return nil
 }
 
@@ -101,7 +93,6 @@ func (portalMap PreparedPortalMap) PreparedPortal(name string) (*PreparedPortal,
 	if !oK {
 		return nil, errors.NewErrPreparedPortalNotExist(name)
 	}
-
 	return &q, nil
 }
 
@@ -117,8 +108,6 @@ func (portalMap PreparedPortalMap) RemovePreparedPortal(name string) error {
 	if !oK {
 		return errors.NewErrPreparedPortalNotExist(name)
 	}
-
 	delete(portalMap, name)
-
 	return nil
 }

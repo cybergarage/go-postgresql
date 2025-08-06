@@ -35,7 +35,6 @@ func NewTableWith(name string, schema query.Schema) *Table {
 		Schema: schema,
 		Rows:   []Row{},
 	}
-
 	return tbl
 }
 
@@ -49,15 +48,12 @@ func (tbl *Table) Select(cond query.Condition) ([]Row, error) {
 	}
 
 	rows := []Row{}
-
 	for _, row := range tbl.Rows {
 		if !row.IsMatched(cond) {
 			continue
 		}
-
 		rows = append(rows, row)
 	}
-
 	return rows, nil
 }
 
@@ -67,12 +63,9 @@ func (tbl *Table) Insert(cols []query.Column) error {
 	if err != nil {
 		return err
 	}
-
 	tbl.Lock()
 	defer tbl.Unlock()
-
 	tbl.Rows = append(tbl.Rows, row)
-
 	return nil
 }
 
@@ -108,7 +101,6 @@ func (tbl *Table) Delete(cond query.Condition) (int, error) {
 			if !row.IsEqual(r) {
 				continue
 			}
-
 			tbl.Rows = append(tbl.Rows[:n], tbl.Rows[n+1:]...)
 		}
 	}

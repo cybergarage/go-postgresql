@@ -25,6 +25,5 @@ func NewAuthenticationMD5Password(salt []byte) (*ResponseMessage, error) {
 	msg := NewResponseMessageWith(AuthenticationMD5PasswordMessage)
 	msg.AppendInt32(AuthenticationMD5PasswordRequired)
 	msg.AppendBytes(salt)
-
 	return msg, nil
 }

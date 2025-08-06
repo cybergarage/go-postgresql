@@ -30,7 +30,6 @@ func NewTerminateWithReader(reader *MessageReader) (*Terminate, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &Terminate{
 		RequestMessage: msg,
 	}, nil

@@ -30,7 +30,6 @@ const (
 // Message represents a message of PostgreSQL packet.
 type Message struct {
 	*MessageReader
-
 	Type   Type
 	Length int32
 }
@@ -41,12 +40,10 @@ func NewMessageWithReader(reader *MessageReader) (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	l, err := reader.ReadLength()
 	if err != nil {
 		return nil, err
 	}
-
 	return &Message{
 		MessageReader: reader,
 		Type:          t,
@@ -75,13 +72,10 @@ func (msg *Message) ReadMessageData() ([]byte, error) {
 	if dataLen < 0 {
 		return nil, newInvalidLengthError(int(dataLen))
 	}
-
 	data := make([]byte, dataLen)
-
 	_, err := msg.ReadBytes(data)
 	if err != nil {
 		return nil, err
 	}
-
 	return data, nil
 }

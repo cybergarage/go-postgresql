@@ -48,6 +48,5 @@ func NewPreparedTypeWithByte(bt byte) (PreparedType, error) {
 	case PreparedPortalByte:
 		return PreparedPortal, nil
 	}
-
 	return 0, fmt.Errorf("%w prepared type (%d)", ErrInvalid, bt)
 }

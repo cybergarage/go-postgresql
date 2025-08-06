@@ -29,7 +29,6 @@ func NewRequestMessageWithReader(reader *MessageReader) (*RequestMessage, error)
 	if err != nil {
 		return nil, err
 	}
-
 	return &RequestMessage{
 		Message: msg,
 	}, nil

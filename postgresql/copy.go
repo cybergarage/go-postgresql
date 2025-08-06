@@ -30,6 +30,7 @@ import (
 func NewCopyInResponsesFrom(q query.Copy, schema sql.Schema) (protocol.Responses, error) {
 	// PostgreSQL: Documentation: 16: COPY
 	// https://www.postgresql.org/docs/16/sql-copy.html
+
 	copyColums := q.Columns()
 	if 0 < len(copyColums) {
 		for _, copyColumn := range q.Columns() {
@@ -44,7 +45,7 @@ func NewCopyInResponsesFrom(q query.Copy, schema sql.Schema) (protocol.Responses
 
 	// Support only text format
 	res := protocol.NewCopyInResponseWith(protocol.TextCopy)
-	for range copyColums {
+	for n := 0; n < len(copyColums); n++ {
 		res.AppendFormatCode(protocol.TextFormat)
 	}
 
@@ -66,15 +67,12 @@ func NewCopyQueryFrom(schema query.Schema, copyColumns sql.Columns, copyData *pr
 		if len(copyColumnData) == 0 {
 			copyColumnData = "NULL"
 		}
-
 		columns[idx] = sql.NewColumnWithOptions(
 			sql.WithColumnName(copyColumn.Name()),
 			sql.WithColumnLiteral(sql.NewLiteralWith(copyColumnData)),
 		)
 	}
-
 	values := []sql.Columns{columns}
-
 	return sql.NewInsertWith(sql.NewTableWith(schema.TableName()), values), nil
 }
 
@@ -85,10 +83,8 @@ func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, s
 		if err != nil {
 			return err
 		}
-
 		log.Tracef("%s", q.String())
 		_, err = queryExecutor.Insert(conn, q)
-
 		return err
 	}
 
@@ -99,16 +95,17 @@ func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, s
 
 	nCopy := 0
 	nFail := 0
-
 	cpData, err := stream.Next()
-	for err == nil {
+	for {
+		if err != nil {
+			break
+		}
 		if err := copyData(schema, copyColums, cpData); err != nil {
 			nFail++
 			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)
 		} else {
 			nCopy++
 		}
-
 		cpData, err = stream.Next()
 	}
 

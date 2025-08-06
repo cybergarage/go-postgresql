@@ -39,12 +39,10 @@ func NewQueryWithReader(reader *MessageReader) (*Query, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	query, err := reader.ReadString()
 	if err != nil {
 		return nil, err
 	}
-
 	q := &Query{
 		RequestMessage: msg,
 		Query:          query,
@@ -53,7 +51,6 @@ func NewQueryWithReader(reader *MessageReader) (*Query, error) {
 	q.BindStatement = stmt.NewBindStatement(
 		stmt.WithBindStatementQuery(q.Query),
 	)
-
 	return q, nil
 }
 
@@ -64,17 +61,14 @@ func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
 		Query:          parseMsg.Query,
 		BindParams:     bindMsg.Params,
 	}
-
 	bindParams := stmt.BindParams{}
 	for _, param := range bindMsg.Params {
 		bindParams = append(bindParams, stmt.NewBindParam(param.Value))
 	}
-
 	q.BindStatement = stmt.NewBindStatement(
 		stmt.WithBindStatementQuery(q.Query),
 		stmt.WithBindStatementParams(bindParams),
 	)
-
 	return q, nil
 }
 
@@ -88,15 +82,12 @@ func (q *Query) String() string {
 	s := q.Query
 	if 0 < len(q.BindParams) {
 		s += " WITH BIND PARAMS: "
-
 		for i, param := range q.BindParams {
 			if 0 < i {
 				s += ", "
 			}
-
 			s += fmt.Sprintf("%s", param.Value)
 		}
 	}
-
 	return s
 }

@@ -44,7 +44,6 @@ func RunYCSBWorkload(t *testing.T, defaultWorkload string) error {
 	t.Helper()
 	outputYcsbParams := func(t *testing.T, ycsbEnvs []string, ycsbParams []string) {
 		t.Helper()
-
 		for n, ycsbEnv := range ycsbEnvs {
 			t.Logf("%s = %s", ycsbEnv, ycsbParams[n])
 		}
@@ -66,11 +65,9 @@ func RunYCSBWorkload(t *testing.T, defaultWorkload string) error {
 		if v, ok := os.LookupEnv(ycsbEnv); ok {
 			ycsbParams[n] = v
 		}
-
 		if len(ycsbParams[n]) == 0 {
 			outputYcsbParams(t, ycsbEnvs, ycsbParams)
 			t.Skipf("%s is not specified", ycsbEnv)
-
 			return nil
 		}
 	}
@@ -79,7 +76,6 @@ func RunYCSBWorkload(t *testing.T, defaultWorkload string) error {
 
 	ycsbPath := ycsbParams[0]
 	ycsbCmd := filepath.Join(ycsbPath, "bin/ycsb.sh")
-
 	_, err := os.Stat(ycsbCmd)
 	if err != nil {
 		t.Error(err)
@@ -111,19 +107,16 @@ func RunYCSBWorkload(t *testing.T, defaultWorkload string) error {
 			cmdStr := strings.Join(ycsbArgs, " ")
 			log.Debugf("%v", cmdStr)
 			t.Logf("%v", cmdStr)
-
 			out, err := exec.Command(ycsbCmd, ycsbArgs[1:]...).CombinedOutput()
 			if err != nil {
 				t.Error(err)
 				return
 			}
-
 			outStr := string(out)
 			if strings.Contains(outStr, "FAILED") {
 				t.Errorf("%s", outStr)
 				return
 			}
-
 			t.Logf("%s", outStr)
 		})
 	}

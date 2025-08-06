@@ -22,7 +22,6 @@ package protocol
 // Execute represents an execute protocol.
 type Execute struct {
 	*RequestMessage
-
 	PortalName string
 	MaxRows    int32
 }
@@ -45,7 +44,6 @@ func NewExecuteWithReader(reader *MessageReader) (*Execute, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &Execute{
 		RequestMessage: msg,
 		PortalName:     portal,

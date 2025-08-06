@@ -17,7 +17,6 @@ package protocol
 // Password represents a password protocol.
 type Password struct {
 	*RequestMessage
-
 	Password string
 }
 

@@ -27,26 +27,23 @@ type Row = map[string]any
 // NewDataRowForSelectors returns a new DataRow from the specified row.
 func NewDataRowForSelectors(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, row Row) (*protocol.DataRow, error) {
 	dataRow := protocol.NewDataRow()
-
 	for n, selector := range selectors {
 		field := rowDesc.Field(n)
 		name := selector.String()
-
 		v, ok := row[name]
 		if !ok {
 			dataRow.AppendData(field, nil)
 			continue
 		}
-
 		dataRow.AppendData(field, v)
 	}
-
 	return dataRow, nil
 }
 
 // NewDataRowsForAggregator returns a new DataRow list from the specified rows.
 func NewDataRowsForAggregator(schema resultset.Schema, rowDesc *protocol.RowDescription, selectors query.Selectors, rows []Row, groupBy string) ([]*protocol.DataRow, error) {
 	// Sets aggregate functions
+
 	aggrSet, err := selectors.Aggregators()
 	if err != nil {
 		return nil, err
@@ -76,18 +73,15 @@ func NewDataRowsForAggregator(schema resultset.Schema, rowDesc *protocol.RowDesc
 	// Creates DataRow list from the result set
 
 	dataRows := []*protocol.DataRow{}
-
 	for resultSet.Next() {
 		m, err := resultSet.Map()
 		if err != nil {
 			return nil, err
 		}
-
 		dataRow, err := NewDataRowForSelectors(schema, rowDesc, selectors, m)
 		if err != nil {
 			return nil, err
 		}
-
 		dataRows = append(dataRows, dataRow)
 	}
 

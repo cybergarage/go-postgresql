@@ -28,7 +28,6 @@ func TestFloat32Encode(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Float32ToBytes(tv)
-
 		v := BytesToFloat32(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%f != %f)", tv, v)
@@ -45,7 +44,6 @@ func TestFloat64Encode(t *testing.T) {
 
 	for _, tv := range ts {
 		b := Float64ToBytes(tv)
-
 		v := BytesToFloat64(b)
 		if tv != v {
 			t.Errorf("Failed to convert (%f != %f)", tv, v)

@@ -30,7 +30,6 @@ func NewDataTypeFrom(oid ObjectID) (*DataType, error) {
 	if !ok {
 		return nil, newDataTypeNotFound(oid)
 	}
-
 	return dt, nil
 }
 
@@ -40,7 +39,6 @@ func newDataType(name string, oid ObjectID, size int) *DataType {
 		oid:  oid,
 		size: size,
 	}
-
 	return dt
 }
 
@@ -65,7 +63,6 @@ func (dt *DataType) FormatCode() FormatCode {
 	case Bytea:
 		return BinaryFormat
 	}
-
 	return TextFormat
 }
 

@@ -45,31 +45,30 @@ func NewDefaultConfig() *Config {
 	cfg.SetPort(postgresql.DefaultPort)
 	cfg.SetUser(sysbench.User())
 	cfg.SetPassword(sysbench.Password())
-
 	return cfg
 }
 
 // SetHost sets the host.
 func (cfg *Config) SetHost(host string) {
-	cfg.Set(PgSQLHost, host)
+	cfg.Config.Set(PgSQLHost, host)
 }
 
 // SetPort sets the port.
 func (cfg *Config) SetPort(port int) {
-	cfg.Set(PgSQLPort, strconv.Itoa(port))
+	cfg.Config.Set(PgSQLPort, strconv.Itoa(port))
 }
 
 // SetUser sets the user.
 func (cfg *Config) SetUser(user string) {
-	cfg.Set(PgSQLUser, user)
+	cfg.Config.Set(PgSQLUser, user)
 }
 
 // SetPassword sets the password.
 func (cfg *Config) SetPassword(password string) {
-	cfg.Set(PgSQLPassword, password)
+	cfg.Config.Set(PgSQLPassword, password)
 }
 
 // SetDB sets the db.
 func (cfg *Config) SetDB(db string) {
-	cfg.Set(PgSQLDB, db)
+	cfg.Config.Set(PgSQLDB, db)
 }

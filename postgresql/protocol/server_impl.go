@@ -45,7 +45,6 @@ func NewServer() Server {
 		MessageHandler: nil,
 		Manager:        auth.NewManager(),
 	}
-
 	return server
 }
 
@@ -98,14 +97,11 @@ func (server *server) Stop() error {
 // open opens a listen socket.
 func (server *server) open() error {
 	var err error
-
 	addr := net.JoinHostPort(server.Address(), strconv.Itoa(server.Port()))
-
 	server.tcpListener, err = net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -128,7 +124,10 @@ func (server *server) serve() error {
 	defer server.close()
 
 	l := server.tcpListener
-	for l != nil {
+	for {
+		if l == nil {
+			break
+		}
 		conn, err := l.Accept()
 		if err != nil {
 			return err
@@ -152,22 +151,18 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			if !ok {
 				return false, nil
 			}
-
 			authMsg, err := NewAuthenticationCleartextPassword()
 			if err != nil {
 				return false, err
 			}
-
 			err = conn.ResponseMessage(authMsg)
 			if err != nil {
 				return false, err
 			}
-
 			msg, err := NewPasswordWithReader(conn.MessageReader())
 			if err != nil {
 				return false, err
 			}
-
 			q, err := auth.NewQuery(
 				auth.WithQueryUsername(clientUsername),
 				auth.WithQueryPassword(msg.Password),
@@ -175,7 +170,6 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			if err != nil {
 				return false, err
 			}
-
 			return server.VerifyCredential(conn, q)
 		}
 
@@ -183,11 +177,9 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return nil, err
 		}
-
 		if ok {
 			return NewAuthenticationOk()
 		}
-
 		return NewErrorResponse(), nil
 	}
 
@@ -199,27 +191,24 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return err
 		}
-
 		err = conn.ResponseMessage(res)
 		if err != nil {
 			return err
 		}
 		// Return ParameterStatus (S)
-		reses, err := server.ParameterStatuses(conn)
+		reses, err := server.MessageHandler.ParameterStatuses(conn)
 		if err != nil {
 			return err
 		}
-
 		err = conn.ResponseMessages(reses)
 		if err != nil {
 			return err
 		}
 		// Return BackendKeyData (K)
-		res, err = server.BackendKeyData(conn)
+		res, err = server.MessageHandler.BackendKeyData(conn)
 		if err != nil {
 			return err
 		}
-
 		err = conn.ResponseMessage(res)
 		if err != nil {
 			return err
@@ -229,12 +218,10 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		if err != nil {
 			return err
 		}
-
 		return nil
 	}
 
 	conn := NewConnWith(netConn)
-
 	defer func() {
 		conn.Close()
 	}()
@@ -255,31 +242,26 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 			conn.ResponseError(err)
 			return err
 		}
-
-		tlsConfig, err := server.TLSConfig()
+		tlsConfig, err := server.Config.TLSConfig()
 		if err != nil {
 			conn.ResponseError(err)
 			return err
 		}
-
 		if tlsConfig != nil {
 			err = conn.ResponseMessage(NewSSLResponseWith(SSLEnabled))
 			if err != nil {
 				return err
 			}
-
 			tlsConn := tls.Server(conn, tlsConfig)
 			if err := tlsConn.Handshake(); err != nil {
 				conn.ResponseError(err)
 				return err
 			}
-
-			ok, err := server.VerifyCertificate(tlsConn)
+			ok, err := server.Manager.VerifyCertificate(tlsConn)
 			if !ok {
 				conn.ResponseError(err)
 				return err
 			}
-
 			conn = NewConnWith(tlsConn, WithConnTLSConn(tlsConn))
 		} else {
 			err = conn.ResponseMessage(NewSSLResponseWith(SSLDisabled))
@@ -313,30 +295,25 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 	if db, ok := startupMsg.Database(); ok {
 		dbname = db
 	}
-
 	conn.SetDatabase(dbname)
 
 	// Add the connection to the connection manager.
 
 	server.AddConn(conn)
-
 	defer func() {
 		server.RemoveConn(conn)
 	}()
 
 	for {
-		var (
-			reqErr  error
-			reqType Type
-		)
-
+		var reqErr error
+		var reqType Type
 		reqType, reqErr = reader.PeekType()
 		if reqErr != nil {
 			conn.ResponseError(reqErr)
 			break
 		}
 
-		loopSpan := server.StartSpan(server.ProductName())
+		loopSpan := server.Tracer.StartSpan(server.ProductName())
 		conn.SetSpanContext(loopSpan)
 		conn.StartSpan(reqType.String())
 
@@ -345,66 +322,57 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		switch reqType { // nolint:exhaustive
 		case ParseMessage:
 			var reqMsg *Parse
-
 			reqMsg, reqErr = NewParseWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Parse(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Parse(conn, reqMsg)
 			}
 		case BindMessage:
 			var reqMsg *Bind
-
 			reqMsg, reqErr = NewBindWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Bind(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Bind(conn, reqMsg)
 			}
 		case DescribeMessage:
 			var reqMsg *Describe
-
 			reqMsg, reqErr = NewDescribeWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Describe(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Describe(conn, reqMsg)
 			}
 		case QueryMessage:
 			var reqMsg *Query
-
 			reqMsg, reqErr = NewQueryWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Query(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Query(conn, reqMsg)
 			}
 		case ExecuteMessage:
 			var reqMsg *Execute
-
 			reqMsg, reqErr = NewExecuteWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Execute(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Execute(conn, reqMsg)
 			}
 		case CloseMessage:
 			var reqMsg *Close
-
 			reqMsg, reqErr = NewCloseWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Close(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Close(conn, reqMsg)
 			}
 		case SyncMessage:
 			var reqMsg *Sync
-
 			reqMsg, reqErr = NewSyncWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Sync(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Sync(conn, reqMsg)
 			}
 		case FlushMessage:
 			var reqMsg *Flush
-
 			reqMsg, reqErr = NewFlushWithReader(reader)
 			if reqErr == nil {
-				resMsgs, reqErr = server.Flush(conn, reqMsg)
+				resMsgs, reqErr = server.MessageHandler.Flush(conn, reqMsg)
 			}
 		case TerminateMessage:
 			_, reqErr = NewTerminateWithReader(reader)
 			if reqErr == nil {
 				conn.FinishSpan()
 				loopSpan.Span().Finish()
-
 				return nil
 			}
 		default:
@@ -420,7 +388,6 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn.StartSpan("response")
 		err = conn.ResponseMessages(resMsgs)
 		conn.FinishSpan()
-
 		if err != nil {
 			loopSpan.Span().Finish()
 			return err
@@ -444,7 +411,6 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		conn.StartSpan("ready")
 		err := conn.ReadyForMessage()
 		conn.FinishSpan()
-
 		if err != nil {
 			loopSpan.Span().Finish()
 			return err

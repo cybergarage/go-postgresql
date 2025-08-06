@@ -24,7 +24,6 @@ func BytesToInt64(b []byte) int64 {
 		int64(b[5])<<16 |
 		int64(b[6])<<8 |
 		int64(b[7])
-
 	return v
 }
 
@@ -39,7 +38,6 @@ func Int64ToBytes(v int64) []byte {
 	b[5] = byte(v >> 16)
 	b[6] = byte(v >> 8)
 	b[7] = byte(v)
-
 	return b
 }
 
@@ -49,7 +47,6 @@ func BytesToInt32(b []byte) int32 {
 		int32(b[1])<<16 |
 		int32(b[2])<<8 |
 		int32(b[3])
-
 	return v
 }
 
@@ -60,7 +57,6 @@ func Int32ToBytes(v int32) []byte {
 	b[1] = byte(v >> 16)
 	b[2] = byte(v >> 8)
 	b[3] = byte(v)
-
 	return b
 }
 
@@ -75,7 +71,6 @@ func Int16ToBytes(v int16) []byte {
 	b := make([]byte, 2)
 	b[0] = byte(v >> 8)
 	b[1] = byte(v)
-
 	return b
 }
 
@@ -88,6 +83,5 @@ func BytesToInt8(b []byte) int8 {
 func Int8ToBytes(v int8) []byte {
 	b := make([]byte, 1)
 	b[0] = byte(v)
-
 	return b
 }

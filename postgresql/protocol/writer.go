@@ -30,7 +30,6 @@ type Writer struct {
 // NewWriter returns a new message writer.
 func NewWriter() *Writer {
 	buffer := &bytes.Buffer{}
-
 	return &Writer{
 		Buffer: buffer,
 		Writer: bufio.NewWriter(buffer),
@@ -76,7 +75,6 @@ func (writer *Writer) AppendString(s string) error {
 			return err
 		}
 	}
-
 	return writer.AppendTerminator()
 }
 
@@ -101,6 +99,5 @@ func (writer *Writer) Bytes() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return writer.Buffer.Bytes(), nil
 }

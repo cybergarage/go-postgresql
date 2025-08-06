@@ -93,7 +93,6 @@ func TestParsePacket(t *testing.T) {
 				t.Error(err)
 				return
 			}
-
 			testBytes, err := hexdump.NewBytesWithHexdumpBytes(testData)
 			if err != nil {
 				t.Error(err)
@@ -109,7 +108,6 @@ func TestParsePacket(t *testing.T) {
 			}
 
 			parser := query.NewParser()
-
 			_, err = parser.ParseString(parsePkt.Query)
 			if err != nil {
 				t.Error(err)

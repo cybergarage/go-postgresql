@@ -30,7 +30,6 @@ func NewSyncWithReader(reader *MessageReader) (*Sync, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &Sync{
 		RequestMessage: msg,
 	}, nil

@@ -41,13 +41,11 @@ func BenchmarkPgBench(b *testing.B) {
 
 	for _, script := range scripts {
 		cmd := exec.Command(script)
-
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			b.Skip(err)
 			return
 		}
-
 		b.Log(string(output))
 	}
 

@@ -26,7 +26,6 @@ import (
 // MessageReader represents a message reader.
 type MessageReader struct {
 	*Reader
-
 	Type   Type
 	Length int32
 }
@@ -58,36 +57,31 @@ func NewMessageReaderWith(opts ...MessageReaderOption) *MessageReader {
 	for _, opt := range opts {
 		opt(reader)
 	}
-
 	return reader
 }
 
 // PeekType peeks a message type.
 func (reader *MessageReader) PeekType() (Type, error) {
-	bytes, err := reader.PeekBytes(1)
+	bytes, err := reader.Reader.PeekBytes(1)
 	if err != nil {
 		return 0, err
 	}
-
 	return Type(bytes[0]), nil
 }
 
 // PeekTypeNonBlocking peeks a message type without blocking.
 func (reader *MessageReader) PeekTypeNonBlocking() (Type, error) {
-	err := reader.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
+	err := reader.Reader.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
 	if err != nil {
 		return 0, err
 	}
-
 	defer func() {
-		reader.conn.SetReadDeadline(time.Time{})
+		reader.Reader.conn.SetReadDeadline(time.Time{})
 	}()
-
 	reqType, err := reader.PeekType()
 	if err != nil {
 		return 0, err
 	}
-
 	return reqType, nil
 }
 
@@ -97,26 +91,23 @@ func (reader *MessageReader) IsPeekType(t Type) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	return pt == t, nil
 }
 
 // ReadType reads a message type.
 func (reader *MessageReader) ReadType() (Type, error) {
-	t, err := reader.ReadByte()
+	t, err := reader.Reader.ReadByte()
 	if err != nil {
 		return 0, err
 	}
-
 	return Type(t), nil
 }
 
 // ReadLength reads a message length.
 func (reader *MessageReader) ReadLength() (int32, error) {
-	l, err := reader.ReadInt32()
+	l, err := reader.Reader.ReadInt32()
 	if err != nil {
 		return 0, err
 	}
-
 	return l, nil
 }

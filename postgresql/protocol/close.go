@@ -22,7 +22,6 @@ package protocol
 // Close represents a close protocol.
 type Close struct {
 	*RequestMessage
-
 	Type PreparedType
 	Name string
 }

@@ -38,19 +38,16 @@ type Startup struct {
 // NewStartupWithReader returns a new startup message with the specified reader.
 func NewStartupWithReader(reader *MessageReader) (*Startup, error) {
 	readLen := 0
-
 	msgLen, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
 	}
-
 	readLen += 4
 
 	ver, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
 	}
-
 	readLen += 4
 
 	majorVer := ver >> 16
@@ -63,19 +60,15 @@ func NewStartupWithReader(reader *MessageReader) (*Startup, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		kl := len(k)
-
 		readLen += kl + 1
 		if kl == 0 {
 			break
 		}
-
 		v, err := reader.ReadString()
 		if err != nil {
 			return nil, err
 		}
-
 		readLen += len(v) + 1
 		params[k] = v
 	}

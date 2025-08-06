@@ -34,18 +34,15 @@ func NewParameterDescription() *ParameterDescription {
 // NewParameterDescriptionWith returns a parameter description response instance with the specified parameters.
 func NewParameterDescriptionWith(objectIDs ...ObjectID) (*ParameterDescription, error) {
 	msg := NewParameterDescription()
-
 	err := msg.AppendInt16(int16(len(objectIDs)))
 	if err != nil {
 		return nil, err
 	}
-
 	for _, objectID := range objectIDs {
 		err := msg.AppendInt32(objectID)
 		if err != nil {
 			return nil, err
 		}
 	}
-
 	return msg, nil
 }

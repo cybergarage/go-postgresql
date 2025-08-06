@@ -22,17 +22,14 @@ import (
 // NewRowFieldFrom returns a new RowField from the specified selector.
 func NewRowFieldFrom(schema sql.ResultSetSchema, selector query.Selector, idx int) (*protocol.RowField, error) {
 	columnName := selector.String()
-
 	schemaColumn, err := schema.LookupColumn(columnName)
 	if err != nil {
 		return nil, err
 	}
-
 	dt, err := NewDataTypeFrom(schemaColumn.DataType())
 	if err != nil {
 		return nil, err
 	}
-
 	return protocol.NewRowFieldWith(columnName,
 		protocol.WithRowFieldNumber(int16(idx+1)),
 		protocol.WithRowFieldDataType(dt),

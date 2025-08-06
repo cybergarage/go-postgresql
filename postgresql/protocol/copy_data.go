@@ -35,7 +35,6 @@ const (
 // CopyData represents a copy data protocol.
 type CopyData struct {
 	*RequestMessage
-
 	Data []string
 }
 
@@ -52,7 +51,6 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 	}
 
 	dataBytes := make([]byte, dataLen)
-
 	_, err = reader.ReadBytes(dataBytes)
 	if err != nil {
 		return nil, err
@@ -66,7 +64,6 @@ func NewCopyDataWithReader(reader *MessageReader) (*CopyData, error) {
 				return false
 			}
 		}
-
 		return true
 	}
 
