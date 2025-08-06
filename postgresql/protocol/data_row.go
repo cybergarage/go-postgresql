@@ -31,6 +31,7 @@ import (
 // DataRow represents a data row protocol.
 type DataRow struct {
 	*ResponseMessage
+
 	Data []any
 }
 
@@ -51,6 +52,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToBool(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Int2:
@@ -59,6 +61,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToInt16(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Int4:
@@ -67,6 +70,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToInt32(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Int8:
@@ -75,6 +79,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToInt64(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Float4:
@@ -83,6 +88,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToFloat32(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Float8:
@@ -91,6 +97,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToFloat64(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Text, system.Varchar:
@@ -99,6 +106,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToString(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.Timestamp:
@@ -107,6 +115,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToTime(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	}
@@ -125,6 +134,7 @@ func (msg *DataRow) AppendData(rowField *RowField, v any) error { // nolint:gocy
 			if err := safecast.ToString(v, &to); err != nil {
 				return err
 			}
+
 			v = to
 		}
 	case system.BinaryFormat:
@@ -145,12 +155,14 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 	if err != nil {
 		return nil, err
 	}
+
 	for _, v := range msg.Data {
 		switch v := v.(type) {
 		case []byte:
 			if err := msg.AppendInt32(int32(len(v))); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendBytes(v); err != nil {
 				return nil, err
 			}
@@ -158,6 +170,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(int32(len(v))); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendBytes([]byte(v)); err != nil {
 				return nil, err
 			}
@@ -165,6 +178,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(1); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendInt8(v); err != nil {
 				return nil, err
 			}
@@ -172,6 +186,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(2); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendInt16(v); err != nil {
 				return nil, err
 			}
@@ -179,6 +194,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(4); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendInt32(v); err != nil {
 				return nil, err
 			}
@@ -186,6 +202,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(8); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendInt64(v); err != nil {
 				return nil, err
 			}
@@ -193,6 +210,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(8); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendInt64(int64(v)); err != nil {
 				return nil, err
 			}
@@ -200,6 +218,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(4); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendFloat32(v); err != nil {
 				return nil, err
 			}
@@ -207,6 +226,7 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			if err := msg.AppendInt32(8); err != nil {
 				return nil, err
 			}
+
 			if err := msg.AppendFloat64(v); err != nil {
 				return nil, err
 			}
@@ -218,5 +238,6 @@ func (msg *DataRow) Bytes() ([]byte, error) { // nolint:gocyclo
 			return nil, newColumnTypeNotSuppotedError(v)
 		}
 	}
+
 	return msg.ResponseMessage.Bytes()
 }

@@ -24,6 +24,7 @@ package protocol
 // RowDescription represents a row description protocol.
 type RowDescription struct {
 	*ResponseMessage
+
 	fileds []*RowField
 }
 
@@ -48,11 +49,13 @@ func (msg *RowDescription) Field(n int) *RowField {
 // Bytes appends a length of the message content bytes, and returns the message bytes.
 func (msg *RowDescription) Bytes() ([]byte, error) {
 	msg.AppendInt16(int16(len(msg.fileds)))
+
 	for _, field := range msg.fileds {
 		err := field.WirteBytes(msg.Writer)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	return msg.ResponseMessage.Bytes()
 }

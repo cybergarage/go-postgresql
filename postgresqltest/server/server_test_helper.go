@@ -45,9 +45,9 @@ func RunServerTests(t *testing.T, server *Server) {
 
 	for _, testFunc := range testFuncs {
 		testDBName := fmt.Sprintf("%s%d", testDBNamePrefix, time.Now().UnixNano())
+
 		t.Run(testFunc.name, func(t *testing.T) {
 			// Create a test database
-
 			client := postgresql.NewDefaultClient()
 
 			err := client.Open()
@@ -105,6 +105,7 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 	)
 	server.SetCredential(cred)
 	server.SetCredentialStore(server)
+
 	defer func() {
 		server.SetCredentialStore(nil)
 	}()
@@ -113,6 +114,7 @@ func RunPasswordAuthenticatorTest(t *testing.T, server *Server, testDBName strin
 	client.SetUser(username)
 	client.SetPassword(password)
 	client.SetDatabase(testDBName)
+
 	err := client.Open()
 	if err != nil {
 		t.Error(err)
@@ -176,6 +178,7 @@ func RunServerCopyTest(t *testing.T, server *Server, testDBName string) {
 
 	client := postgresql.NewPgxClient()
 	client.SetDatabase(testDBName)
+
 	err := client.Open()
 	if err != nil {
 		t.Error(err)
@@ -205,8 +208,10 @@ func RunServerCopyTest(t *testing.T, server *Server, testDBName string) {
 	if rows.Err() != nil {
 		t.Error(rows.Err())
 		rows.Close()
+
 		return
 	}
+
 	rows.Close()
 
 	conn := client.Conn()
@@ -223,7 +228,6 @@ func RunServerCopyTest(t *testing.T, server *Server, testDBName string) {
 		[]string{"ctext", "cint", "cfloat"},
 		pgx.CopyFromRows(copyRows),
 	)
-
 	if err != nil {
 		t.Error(err)
 		return

@@ -37,6 +37,7 @@ func NewDataTypeFrom(t query.DataType) (*DataType, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return system.NewDataTypeFrom(objectID)
 }
 
@@ -112,5 +113,6 @@ func NewObjectIDFrom(t query.DataType) (ObjectID, error) {
 		// case query.YearData:
 		// 	return
 	}
+
 	return 0, fmt.Errorf("data type (%s) %w", t, errors.ErrNotSupported)
 }

@@ -43,16 +43,20 @@ func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 			if !column.HasValue() {
 				continue
 			}
+
 			v, ok := column.Value().(query.BindParam)
 			if !ok {
 				continue
 			}
+
 			bindParam, err := params.FindBindParam(v.Name())
 			if err != nil {
 				return err
 			}
+
 			column.SetValue(bindParam.Value)
 		}
+
 		return nil
 	}
 
@@ -70,5 +74,6 @@ func (stmt *Statement) Bind(bindParams protocol.BindParams) error {
 			}
 		}
 	}
+
 	return nil
 }

@@ -30,17 +30,21 @@ func NewDatabases() Databases {
 func (dbs Databases) AddDatabase(db *Database) error {
 	dbName := db.Name()
 	dbs[dbName] = db
+
 	return nil
 }
 
 // DropDatabase remove the specified database.
 func (dbs Databases) DropDatabase(db *Database) error {
 	name := db.Name()
+
 	_, ok := dbs[name]
 	if !ok {
 		return errors.NewErrDatabaseNotExist(name)
 	}
+
 	delete(dbs, name)
+
 	return nil
 }
 
@@ -56,5 +60,6 @@ func (dbs *Databases) LookupTableWithDatabase(dbName string, tableName string) (
 	if !ok {
 		return nil, false
 	}
+
 	return db.LookupTable(tableName)
 }

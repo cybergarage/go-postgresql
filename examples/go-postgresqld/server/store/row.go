@@ -39,6 +39,7 @@ func NewRowWithResultMap(resultMap map[string]any) Row {
 	for k, v := range resultMap {
 		row[k] = v
 	}
+
 	return row
 }
 
@@ -48,46 +49,59 @@ func NewRowFromColumns(table *Table, cols query.Columns) (Row, error) {
 
 	for _, col := range cols {
 		colName := col.Name()
-		schemaCol, err := table.Schema.LookupColumn(colName)
+
+		schemaCol, err := table.LookupColumn(colName)
 		if err != nil {
 			return nil, err
 		}
+
 		var colValue any
+
 		switch schemaCol.DataType() {
 		case query.BooleanType:
 			var v bool
+
 			err = safecast.ToBool(col.Value(), &v)
 			colValue = v
 		case query.TextType, query.VarCharType, query.LongTextType:
 			var v string
+
 			err = safecast.ToString(col.Value(), &v)
 			colValue = v
 		case query.IntType, query.IntegerType, query.TinyIntType, query.SmallIntType, query.MediumIntType:
 			var v int
+
 			err = safecast.ToInt(col.Value(), &v)
 			colValue = v
 		case query.SerialType, query.BigSerialType, query.SmallSerialType:
 			var v int
+
 			err = safecast.ToInt(col.Value(), &v)
 			colValue = v
 		case query.FloatType:
 			var v float32
+
 			err = safecast.ToFloat32(col.Value(), &v)
 			colValue = v
 		case query.DoubleType:
 			var v float64
+
 			err = safecast.ToFloat64(col.Value(), &v)
 			colValue = v
 		case query.DateTimeType, query.TimeStampType:
 			var v time.Time
+
 			err = safecast.ToTime(col.Value(), &v)
 			colValue = v
 		}
+
 		if err != nil {
 			return nil, err
 		}
+
 		row[colName] = colValue
 	}
+
 	return row, nil
 }
 
@@ -102,6 +116,7 @@ func (row Row) IsMatched(cond query.Condition) bool {
 		if !ok {
 			return false
 		}
+
 		return safecast.Equal(rv, v)
 	}
 
@@ -109,6 +124,7 @@ func (row Row) IsMatched(cond query.Condition) bool {
 	switch expr := expr.(type) {
 	case *query.CmpExpr:
 		name := expr.Left().Name()
+
 		value := expr.Right().Value()
 		switch expr.Operator() {
 		case query.EQ:
@@ -131,6 +147,7 @@ func (row Row) Update(colums []query.Column) error {
 			row[colName] = col.Value()
 		}
 	}
+
 	for _, col := range colums {
 		colName := col.Name()
 		if fx, ok := col.Function(); ok {
@@ -139,10 +156,12 @@ func (row Row) Update(colums []query.Column) error {
 				if err != nil {
 					return err
 				}
+
 				row[colName] = v
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -167,5 +186,6 @@ func (row Row) ValueByName(name string) (any, error) {
 	if !ok {
 		return nil, fmt.Errorf("row (%s) %w", name, errors.ErrNotExist)
 	}
+
 	return v, nil
 }

@@ -41,6 +41,7 @@ func NewDefaultConfig() Config {
 		port:           defaultPort,
 		CertConfig:     tls.NewCertConfig(),
 	}
+
 	return config
 }
 

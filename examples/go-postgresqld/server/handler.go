@@ -31,9 +31,11 @@ func (server *Server) ParserError(conn postgresql.Conn, q string, err error) (pr
 
 	resErr := fmt.Errorf("parser error : %w", err)
 	log.Warn(err.Error())
+
 	res, err := protocol.NewErrorResponseWith(resErr)
 	if err != nil {
 		return nil, err
 	}
+
 	return protocol.NewResponsesWith(res), nil
 }

@@ -50,7 +50,6 @@ func (executor *defaultSystemQueryExecutor) SystemSelect(conn Conn, stmt query.S
 	// https://www.postgresql.org/docs/8.0/catalogs.html
 	// PostgreSQL: Documentation: 16: Part IV. Client Interfaces
 	// https://www.postgresql.org/docs/current/client-interfaces.html
-
 	if executor.sqlExecutor == nil {
 		return nil, errors.NewErrNotImplemented("SELECT")
 	}

@@ -40,6 +40,7 @@ func (mgr *PreparedManager) PreparedStatement(conn Conn, name string) (*Prepared
 	if !ok {
 		return nil, errors.NewErrPreparedStatementNotExist(name)
 	}
+
 	return preState.PreparedStatement(name)
 }
 
@@ -50,6 +51,7 @@ func (mgr *PreparedManager) SetPreparedStatement(conn Conn, msg *protocol.Parse)
 		preState = NewPreparedStatementMap()
 		mgr.stateMap[conn.UUID()] = preState
 	}
+
 	return preState.SetPreparedStatement(msg)
 }
 
@@ -59,6 +61,7 @@ func (mgr *PreparedManager) RemovePreparedStatement(conn Conn, name string) erro
 	if !ok {
 		return errors.NewErrPreparedStatementNotExist(name)
 	}
+
 	return preState.RemovePreparedStatement(name)
 }
 
@@ -68,6 +71,7 @@ func (mgr *PreparedManager) PreparedPortal(conn Conn, name string) (*PreparedPor
 	if !ok {
 		return nil, errors.NewErrPreparedPortalNotExist(name)
 	}
+
 	return prePortal.PreparedPortal(name)
 }
 
@@ -78,6 +82,7 @@ func (mgr *PreparedManager) SetPreparedPortal(conn Conn, name string, query *Pre
 		prePortal = NewPreparedPortalMap()
 		mgr.potalMap[conn.UUID()] = prePortal
 	}
+
 	return prePortal.SetPreparedPortal(name, query)
 }
 
@@ -87,5 +92,6 @@ func (mgr *PreparedManager) RemovePreparedPortal(conn Conn, name string) error {
 	if !ok {
 		return errors.NewErrPreparedPortalNotExist(name)
 	}
+
 	return prePortal.RemovePreparedPortal(name)
 }

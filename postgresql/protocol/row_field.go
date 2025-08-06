@@ -49,6 +49,7 @@ func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 	for _, opt := range opts {
 		opt(field)
 	}
+
 	return field
 }
 
@@ -108,23 +109,30 @@ func (field *RowField) WirteBytes(w *Writer) error {
 	if err := w.AppendString(field.Name); err != nil {
 		return err
 	}
+
 	if err := w.AppendInt32(field.TableID); err != nil {
 		return err
 	}
+
 	if err := w.AppendInt16(field.Number); err != nil {
 		return err
 	}
+
 	if err := w.AppendInt32(field.ObjectID); err != nil {
 		return err
 	}
+
 	if err := w.AppendInt16(field.DataTypeSize); err != nil {
 		return err
 	}
+
 	if err := w.AppendInt32(field.TypeModifier); err != nil {
 		return err
 	}
+
 	if err := w.AppendInt16(field.FormatCode); err != nil {
 		return err
 	}
+
 	return nil
 }

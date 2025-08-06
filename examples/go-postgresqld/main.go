@@ -56,9 +56,11 @@ func main() {
 	if *isTraceEnabled {
 		logLevel = clog.LevelTrace
 	}
+
 	if *isDebugEnabled {
 		logLevel = clog.LevelDebug
 	}
+
 	clog.SetSharedLogger(clog.NewStdoutLogger(logLevel))
 
 	if *isProfileEnabled {
@@ -71,6 +73,7 @@ func main() {
 	// Start server
 
 	server := server.NewServer()
+
 	err := server.Start()
 	if err != nil {
 		log.Printf("%s couldn't be started (%s)", ProgramName, err.Error())
@@ -93,6 +96,7 @@ func main() {
 			switch s {
 			case syscall.SIGHUP:
 				log.Printf("Caught SIGHUP, restarting...")
+
 				err = server.Restart()
 				if err != nil {
 					log.Printf("%s couldn't be restarted (%s)", ProgramName, err.Error())
@@ -100,11 +104,13 @@ func main() {
 				}
 			case syscall.SIGINT, syscall.SIGTERM:
 				log.Printf("Caught %s, stopping...", s.String())
+
 				err = server.Stop()
 				if err != nil {
 					log.Printf("%s couldn't be stopped (%s)", ProgramName, err.Error())
 					os.Exit(1)
 				}
+
 				exitCh <- 0
 			}
 		}

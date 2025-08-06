@@ -30,6 +30,7 @@ func NewCopyDoneWithReader(reader *MessageReader) (*CopyDone, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &CopyDone{
 		RequestMessage: msg,
 	}, nil

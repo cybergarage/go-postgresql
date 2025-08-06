@@ -43,5 +43,6 @@ func (server *Server) CopyData(conn postgresql.Conn, q query.Copy, stream *postg
 		log.Error(err)
 		return nil, err
 	}
+
 	return postgresql.NewCopyCompleteResponsesFrom(q, stream, conn, tbl.Schema, server.QueryExecutor())
 }

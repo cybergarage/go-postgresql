@@ -33,6 +33,7 @@ func NewCommandCompleteResponsesWith(msg string) (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -42,6 +43,7 @@ func NewInsertCompleteResponsesWith(n int) (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -51,6 +53,7 @@ func NewUpdateCompleteResponsesWith(n int) (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -60,6 +63,7 @@ func NewSelectCompleteResponsesWith(n int) (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -69,6 +73,7 @@ func NewDeleteCompleteResponsesWith(n int) (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -78,6 +83,7 @@ func NewCopyCompleteResponsesWith(n int) (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -87,6 +93,7 @@ func NewEmptyCompleteResponses() (Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return Responses{res}, nil
 }
 
@@ -102,5 +109,6 @@ func (responses Responses) HasErrorResponse() bool {
 			return true
 		}
 	}
+
 	return false
 }

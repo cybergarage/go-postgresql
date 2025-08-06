@@ -47,7 +47,6 @@ func NewGetPartitionResponseForPgbench() (protocol.Responses, error) {
 	// 00000050  00 00 00 14 00 03 00 00  00 01 32 ff ff ff ff 00   ........ ..2.....
 	// 00000060  00 00 01 30 43 00 00 00  0d 53 45 4c 45 43 54 20   ...0C... .SELECT
 	// 00000070  31 00 5a 00 00 00 05 49                            1.Z....I
-
 	rowDesc := protocol.NewRowDescription()
 	dataRow := protocol.NewDataRow()
 
@@ -91,6 +90,7 @@ func NewGetPartitionResponseForPgbench() (protocol.Responses, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	res = res.Append(cmpRes)
 
 	return res, nil

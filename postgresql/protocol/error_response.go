@@ -67,6 +67,7 @@ func (msg *ErrorResponse) AppendField(t ErrorType, v string) error {
 	if err := msg.AppendByte(byte(t)); err != nil {
 		return err
 	}
+
 	return msg.AppendString(v)
 }
 
@@ -75,6 +76,7 @@ func (msg *ErrorResponse) AddCode(code int32) error {
 	if err := msg.AppendByte(byte(CodeError)); err != nil {
 		return err
 	}
+
 	return msg.AppendInt32(code)
 }
 
@@ -83,6 +85,7 @@ func (msg *ErrorResponse) AddError(err error) error {
 	if err := msg.AppendByte(byte(MessageError)); err != nil {
 		return err
 	}
+
 	return msg.AppendString(err.Error())
 }
 
@@ -91,5 +94,6 @@ func (msg *ErrorResponse) Bytes() ([]byte, error) {
 	if err := msg.AppendTerminator(); err != nil {
 		return nil, err
 	}
+
 	return msg.ResponseMessage.Bytes()
 }

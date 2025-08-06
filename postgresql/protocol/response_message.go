@@ -56,11 +56,15 @@ func (msg *ResponseMessage) Bytes() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	l := len(msgBytes)
+
 	b := make([]byte, 0, 1+4+l)
 	if msg.typ != NoneMessage {
 		b = append(b, byte(msg.typ))
 	}
+
 	b = append(b, util.Int32ToBytes(int32(l+4))...)
+
 	return append(b, msgBytes...), nil
 }

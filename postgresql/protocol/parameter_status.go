@@ -64,23 +64,28 @@ func NewParameterStatus() *ParameterStatus {
 // NewParameterStatusWith returns a parameter status response instance with the specified parameter status.
 func NewParameterStatusWith(name string, value string) (*ParameterStatus, error) {
 	msg := NewParameterStatus()
+
 	err := msg.AppendParameters(name, value)
 	if err != nil {
 		return nil, err
 	}
+
 	return msg, nil
 }
 
 // NewParameterStatusesWith returns parameter status response instances with the specified parameter statuses.
 func NewParameterStatusesWith(m map[string]string) (Responses, error) {
 	msgs := Responses{}
+
 	for k, v := range m {
 		msg, err := NewParameterStatusWith(k, v)
 		if err != nil {
 			return nil, err
 		}
+
 		msgs = append(msgs, msg)
 	}
+
 	return msgs, nil
 }
 
@@ -92,5 +97,6 @@ func (msg *ParameterStatus) AppendParameters(s ...string) error {
 			return err
 		}
 	}
+
 	return nil
 }

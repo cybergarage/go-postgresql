@@ -33,13 +33,16 @@ func NewSSLRequestWithReader(reader *MessageReader) (*SSLRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	code, err := reader.ReadInt32()
 	if err != nil {
 		return nil, err
 	}
+
 	if code != SSLRequestCode {
 		return nil, newErrInvalidSSLRequestCode(code)
 	}
+
 	return &SSLRequest{
 		RequestCode: code,
 	}, nil

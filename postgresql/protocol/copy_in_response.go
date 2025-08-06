@@ -34,6 +34,7 @@ const (
 // CopyInResponse represents a command complete protocol.
 type CopyInResponse struct {
 	*ResponseMessage
+
 	formatCodes []int16
 }
 
@@ -44,6 +45,7 @@ func NewCopyInResponseWith(fmt CopyFormat) *CopyInResponse {
 		formatCodes:     []int16{},
 	}
 	msg.AppendInt8(fmt)
+
 	return msg
 }
 
@@ -55,11 +57,13 @@ func (msg *CopyInResponse) AppendFormatCode(formatCode int16) {
 // Bytes appends a length of the message content bytes, and returns the message bytes.
 func (msg *CopyInResponse) Bytes() ([]byte, error) {
 	msg.AppendInt16(int16(len(msg.formatCodes)))
+
 	for _, field := range msg.formatCodes {
 		err := msg.AppendInt16(field)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	return msg.ResponseMessage.Bytes()
 }

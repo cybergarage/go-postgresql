@@ -31,6 +31,7 @@ type connOption = func(*conn)
 // conn represents a connection of PostgreSQL binary protocol.
 type conn struct {
 	net.Conn
+
 	isClosed      bool
 	msgReader     *MessageReader
 	db            string
@@ -59,6 +60,7 @@ func NewConnWith(netConn net.Conn, opts ...connOption) *conn {
 	for _, opt := range opts {
 		opt(conn)
 	}
+
 	return conn
 }
 
@@ -88,10 +90,13 @@ func (conn *conn) Close() error {
 	if conn.isClosed {
 		return nil
 	}
+
 	if err := conn.Conn.Close(); err != nil {
 		return err
 	}
+
 	conn.isClosed = true
+
 	return nil
 }
 
@@ -170,6 +175,7 @@ func (conn *conn) LockTransaction() error {
 	if !conn.txMutex.TryLock() {
 		return ErrTransactionBlocked
 	}
+
 	return nil
 }
 
@@ -186,6 +192,7 @@ func (conn *conn) TransactionStatus() TransactionStatus {
 		conn.txMutex.Unlock()
 		return TransactionIdle
 	}
+
 	return TransactionBlock
 }
 
@@ -194,13 +201,16 @@ func (conn *conn) ResponseMessage(resMsg Response) error {
 	if resMsg == nil {
 		return nil
 	}
+
 	resBytes, err := resMsg.Bytes()
 	if err != nil {
 		return err
 	}
-	if _, err := conn.Conn.Write(resBytes); err != nil {
+
+	if _, err := conn.Write(resBytes); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -209,12 +219,14 @@ func (conn *conn) ResponseMessages(resMsgs Responses) error {
 	if len(resMsgs) == 0 {
 		return nil
 	}
+
 	for _, resMsg := range resMsgs {
 		err := conn.ResponseMessage(resMsg)
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -223,15 +235,19 @@ func (conn *conn) ResponseError(err error) error {
 	if err == nil {
 		return nil
 	}
+
 	errMsg, err := NewErrorResponseWith(err)
 	if err != nil {
 		return err
 	}
+
 	errBytes, err := errMsg.Bytes()
 	if err != nil {
 		return err
 	}
-	_, err = conn.Conn.Write(errBytes)
+
+	_, err = conn.Write(errBytes)
+
 	return err
 }
 
@@ -241,10 +257,12 @@ func (conn *conn) SkipMessage() error {
 	if err != nil {
 		return err
 	}
+
 	_, err = msg.ReadMessageData()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -254,9 +272,11 @@ func (conn *conn) ReadyForMessage() error {
 	if err != nil {
 		return err
 	}
+
 	err = conn.ResponseMessage(readyMsg)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

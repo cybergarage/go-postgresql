@@ -24,6 +24,7 @@ func BytesToUint64(b []byte) uint64 {
 		uint64(b[5])<<16 |
 		uint64(b[6])<<8 |
 		uint64(b[7])
+
 	return v
 }
 
@@ -38,6 +39,7 @@ func Uint64ToBytes(v uint64) []byte {
 	b[5] = byte(v >> 16)
 	b[6] = byte(v >> 8)
 	b[7] = byte(v)
+
 	return b
 }
 
@@ -47,6 +49,7 @@ func BytesToUint32(b []byte) uint32 {
 		uint32(b[1])<<16 |
 		uint32(b[2])<<8 |
 		uint32(b[3])
+
 	return v
 }
 
@@ -57,6 +60,7 @@ func Uint32ToBytes(v uint32) []byte {
 	b[1] = byte(v >> 16)
 	b[2] = byte(v >> 8)
 	b[3] = byte(v)
+
 	return b
 }
 
@@ -71,6 +75,7 @@ func Uint16ToBytes(v uint16) []byte {
 	b := make([]byte, 2)
 	b[0] = byte(v >> 8)
 	b[1] = byte(v)
+
 	return b
 }
 
@@ -83,5 +88,6 @@ func BytesToUint8(b []byte) uint8 {
 func Uint8ToBytes(v uint8) []byte {
 	b := make([]byte, 1)
 	b[0] = v
+
 	return b
 }

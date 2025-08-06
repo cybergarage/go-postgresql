@@ -59,6 +59,7 @@ func NewReaderWith(opts ...ReaderOption) *Reader {
 	for _, opt := range opts {
 		opt(reader)
 	}
+
 	return reader
 }
 
@@ -67,6 +68,7 @@ func (reader *Reader) SetReadDeadline(t time.Time) error {
 	if reader.conn == nil {
 		return ErrNotSupported
 	}
+
 	return reader.conn.SetReadDeadline(t)
 }
 
@@ -74,43 +76,54 @@ func (reader *Reader) SetReadDeadline(t time.Time) error {
 func (reader *Reader) ReadBytes(buf []byte) (int, error) {
 	nBufSize := len(buf)
 	nReadBuf := 0
+
 	if 0 < len(reader.peekBuf) {
 		nCopy := copy(buf, reader.peekBuf)
 		reader.peekBuf = reader.peekBuf[nCopy:]
 		nReadBuf = nCopy
 	}
+
 	if nBufSize <= nReadBuf {
 		return nReadBuf, nil
 	}
+
 	nRead, err := io.ReadAtLeast(reader.Reader, buf[nReadBuf:], nBufSize-nReadBuf)
 	if err != nil {
 		return nReadBuf, err
 	}
+
 	nReadBuf += nRead
+
 	return nReadBuf, err
 }
 
 // ReadBytes reads a byte.
 func (reader *Reader) ReadByte() (byte, error) {
 	b := make([]byte, 1)
+
 	_, err := reader.ReadBytes(b)
 	if err != nil {
 		return 0, err
 	}
+
 	return b[0], nil
 }
 
 // PeekBytes reads bytes without removing them from the buffer.
 func (reader *Reader) PeekBytes(n int) ([]byte, error) {
 	buf := make([]byte, n)
+
 	nRead, err := reader.ReadBytes(buf)
 	if err != nil {
 		return nil, err
 	}
+
 	if nRead != n {
 		return nil, newShortMessageError(n, nRead)
 	}
+
 	reader.peekBuf = append(reader.peekBuf, buf...)
+
 	return buf, nil
 }
 
@@ -120,48 +133,58 @@ func (reader *Reader) PeekInt32() (int32, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	return util.BytesToInt32(int32Bytes), nil
 }
 
 // ReadInt32 reads a 32-bit integer.
 func (reader *Reader) ReadInt32() (int32, error) {
 	int32Bytes := make([]byte, 4)
+
 	nRead, err := reader.ReadBytes(int32Bytes)
 	if err != nil {
 		return 0, err
 	}
+
 	if nRead != 4 {
 		return 0, newShortMessageError(4, nRead)
 	}
+
 	return util.BytesToInt32(int32Bytes), nil
 }
 
 // ReadInt16 reads a 16-bit integer.
 func (reader *Reader) ReadInt16() (int16, error) {
 	int16Bytes := make([]byte, 2)
+
 	nRead, err := reader.ReadBytes(int16Bytes)
 	if err != nil {
 		return 0, err
 	}
+
 	if nRead != 2 {
 		return 0, newShortMessageError(2, nRead)
 	}
+
 	return util.BytesToInt16(int16Bytes), nil
 }
 
 // ReadBytesUntil reads bytes until the specified delimiter.
 func (reader *Reader) ReadBytesUntil(delim byte) ([]byte, error) {
 	buf := make([]byte, 0)
+
 	for {
 		b, err := reader.ReadByte()
 		if err != nil {
 			return nil, err
 		}
+
 		buf = append(buf, b)
 		if b == delim {
 			break
 		}
 	}
+
 	return buf, nil
 }
 
@@ -171,5 +194,6 @@ func (reader *Reader) ReadString() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(strBytes[:len(strBytes)-1]), nil
 }
