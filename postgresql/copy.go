@@ -45,7 +45,7 @@ func NewCopyInResponsesFrom(q query.Copy, schema sql.Schema) (protocol.Responses
 
 	// Support only text format
 	res := protocol.NewCopyInResponseWith(protocol.TextCopy)
-	for n := 0; n < len(copyColums); n++ {
+	for range copyColums {
 		res.AppendFormatCode(protocol.TextFormat)
 	}
 
@@ -96,10 +96,7 @@ func NewCopyCompleteResponsesFrom(q query.Copy, stream *CopyStream, conn Conn, s
 	nCopy := 0
 	nFail := 0
 	cpData, err := stream.Next()
-	for {
-		if err != nil {
-			break
-		}
+	for err == nil {
 		if err := copyData(schema, copyColums, cpData); err != nil {
 			nFail++
 			log.Errorf("%s (%d/%d) (%s)", q.String(), nCopy, nFail, err)

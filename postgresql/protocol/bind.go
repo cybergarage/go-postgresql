@@ -55,6 +55,7 @@ type BindParams []*BindParam
 // Bind represents a bind protocol.
 type Bind struct {
 	*RequestMessage
+
 	PortalName    string
 	StatementName string
 	Params        BindParams
@@ -88,7 +89,7 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 
 	// The parameter format codes. Each must presently be zero (text) or one (binary).
 	paramFmts := make([]int16, paramFmtNum)
-	for n := 0; n < int(paramFmtNum); n++ {
+	for n := range paramFmtNum {
 		fmt, err := reader.ReadInt16()
 		if err != nil {
 			return nil, err
@@ -103,7 +104,7 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 	}
 
 	paramBytes := make([][]byte, paramValNum)
-	for n := 0; n < int(paramValNum); n++ {
+	for n := range paramValNum {
 		// The length of the parameter value, in bytes (this count does not include itself).
 		// Can be zero. As a special case, -1 indicates a NULL parameter value. No value bytes follow in the NULL case.
 		nBytes, err := reader.ReadInt32()
@@ -141,7 +142,7 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 
 	// The result-column format codes. Each must presently be zero (text) or one (binary).
 	resFmts := make([]int16, resFmtNum)
-	for n := 0; n < int(resFmtNum); n++ {
+	for n := range resFmtNum {
 		fmt, err := reader.ReadInt16()
 		if err != nil {
 			return nil, err
@@ -150,13 +151,13 @@ func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 	}
 
 	params := make([]*BindParam, paramValNum)
-	for n := 0; n < int(paramValNum); n++ {
+	for n := range paramValNum {
 		paramFmt := TextFormat
-		if n < len(paramFmts) {
+		if int(n) < len(paramFmts) {
 			paramFmt = paramFmts[n]
 		}
 		paramValBytes := []byte{}
-		if n < len(paramBytes) {
+		if int(n) < len(paramBytes) {
 			paramValBytes = paramBytes[n]
 		}
 		var paramVal any

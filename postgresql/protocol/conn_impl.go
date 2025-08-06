@@ -31,6 +31,7 @@ type connOption = func(*conn)
 // conn represents a connection of PostgreSQL binary protocol.
 type conn struct {
 	net.Conn
+
 	isClosed      bool
 	msgReader     *MessageReader
 	db            string

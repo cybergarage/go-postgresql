@@ -22,6 +22,7 @@ package protocol
 // Execute represents an execute protocol.
 type Execute struct {
 	*RequestMessage
+
 	PortalName string
 	MaxRows    int32
 }

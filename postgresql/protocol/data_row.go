@@ -31,6 +31,7 @@ import (
 // DataRow represents a data row protocol.
 type DataRow struct {
 	*ResponseMessage
+
 	Data []any
 }
 

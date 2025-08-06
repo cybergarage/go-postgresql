@@ -35,6 +35,7 @@ const (
 // CopyData represents a copy data protocol.
 type CopyData struct {
 	*RequestMessage
+
 	Data []string
 }
 

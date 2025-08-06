@@ -23,6 +23,7 @@ import (
 // PreparedStatement represents a prepared statement.
 type PreparedStatement struct {
 	*protocol.Parse
+
 	ParsedStatement *query.Statement
 }
 

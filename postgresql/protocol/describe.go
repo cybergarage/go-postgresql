@@ -22,6 +22,7 @@ package protocol
 // Describe represents a describe protocol.
 type Describe struct {
 	*RequestMessage
+
 	typ  PreparedType
 	name string
 }

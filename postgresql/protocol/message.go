@@ -30,6 +30,7 @@ const (
 // Message represents a message of PostgreSQL packet.
 type Message struct {
 	*MessageReader
+
 	Type   Type
 	Length int32
 }

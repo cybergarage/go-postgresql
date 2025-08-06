@@ -22,6 +22,7 @@ package protocol
 // Parse represents a parse protocol.
 type Parse struct {
 	*RequestMessage
+
 	Name         string
 	Query        string
 	NumDataTypes int16
@@ -55,7 +56,7 @@ func NewParseWithReader(reader *MessageReader) (*Parse, error) {
 	}
 
 	types := make([]int32, num)
-	for n := int16(0); n < num; n++ {
+	for n := range num {
 		// Specifies the object ID of the parameter data type. Placing a zero here is equivalent to leaving the type unspecified.
 		typ, err := reader.ReadInt32()
 		if err != nil {

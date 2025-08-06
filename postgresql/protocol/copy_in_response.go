@@ -34,6 +34,7 @@ const (
 // CopyInResponse represents a command complete protocol.
 type CopyInResponse struct {
 	*ResponseMessage
+
 	formatCodes []int16
 }
 

@@ -26,6 +26,7 @@ import (
 // MessageReader represents a message reader.
 type MessageReader struct {
 	*Reader
+
 	Type   Type
 	Length int32
 }

@@ -26,6 +26,7 @@ type server struct {
 	protocol.Server
 	*protocolStartupHandler
 	*protocolQueryHandler
+
 	sqlExecutor         SQLExecutor
 	queryExecutor       QueryExecutor
 	systemQueryExecutor SystemQueryExecutor

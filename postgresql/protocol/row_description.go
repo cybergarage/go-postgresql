@@ -24,6 +24,7 @@ package protocol
 // RowDescription represents a row description protocol.
 type RowDescription struct {
 	*ResponseMessage
+
 	fileds []*RowField
 }
 
