@@ -1,6 +1,12 @@
 module github.com/cybergarage/go-postgresql
 
-go 1.25
+<<<<<<< HEAD
+go 1.22
+=======
+go 1.22
+
+toolchain go1.24.1
+>>>>>>> a7a4b64 (Update go.mod)
 
 require (
 	github.com/cybergarage/go-authenticator v1.0.5
