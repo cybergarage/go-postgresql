@@ -14,6 +14,27 @@ go-postgresql implements the [PostgreSQL wire protocol](https://www.postgresql.o
 
 All startup and system messages are handled for you. Provide implementations for the SQL execution interfaces and you have a functioning PostgreSQL‑compatible server.
 
+## Features
+
+Core capabilities provided by go-postgresql:
+
+- Full PostgreSQL wire protocol handling (startup, authentication prompts, message flow, ready states)
+- Pluggable SQL execution via the `go-sqlparser` executor interface
+- Extensible authentication (password / TLS client cert integration via `go-authenticator`)
+- Structured error response generation matching PostgreSQL fields
+- COPY (simple) stream handling helpers
+- Prepared statement and portal management
+- Tracing hooks (span start/finish) using `go-tracing`
+- Modular connection and message reader abstractions
+- Integration helpers for system catalog style queries
+
+Optional integrations (via related Cybergarage projects):
+
+- Test harness utilities (`go-sqltest`)
+- Safe numeric and type conversion (`go-safecast`)
+- SASL authentication flows (`go-sasl`)
+- Deterministic logging and debugging (`go-logger`)
+
 ## Table of Contents
 
 - [Getting Started](doc/getting-started.md)
@@ -27,6 +48,28 @@ Representative example projects built with go-postgresql:
 - [go-postgresqld](examples/go-postgresqld) – Minimal in‑memory server example. [![Docker Image Version](https://img.shields.io/docker/v/cybergarage/go-postgresqld)](https://hub.docker.com/repository/docker/cybergarage/go-postgresqld/)
 - [go-sqlserver](https://github.com/cybergarage/go-sqlserver) – Alternative SQL server implementation. [![Docker Image Version](https://img.shields.io/docker/v/cybergarage/go-sqlserver)](https://hub.docker.com/repository/docker/cybergarage/go-sqlserver/)
 - [PuzzleDB](https://github.com/cybergarage/puzzledb-go) – Pluggable multi‑model database. [![Docker Image Version](https://img.shields.io/docker/v/cybergarage/puzzledb)](https://hub.docker.com/repository/docker/cybergarage/puzzledb/)
+
+### Quick Docker Run (Examples)
+
+Run the example in‑memory server (`go-postgresqld`) locally:
+
+```bash
+docker run --rm -p 5432:5432 cybergarage/go-postgresqld:latest
+```
+
+Connect using `psql` (requires it installed):
+
+```bash
+psql "host=127.0.0.1 port=5432 user=postgres sslmode=disable"
+```
+
+Run the PuzzleDB example image:
+
+```bash
+docker run --rm -p 5432:5432 cybergarage/puzzledb:latest
+```
+
+Tip: Use `-e POSTGRES_INIT=...` (if the image supports custom init scripts) or mount volumes for persistence in extended setups.
 
 ## Related Projects
 
