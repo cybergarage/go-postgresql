@@ -47,6 +47,7 @@ func NewQueryWithReader(reader *MessageReader) (*Query, error) {
 		RequestMessage: msg,
 		Query:          query,
 		BindParams:     BindParams{},
+		BindStatement:  nil,
 	}
 	q.BindStatement = stmt.NewBindStatement(
 		stmt.WithBindStatementQuery(q.Query),
@@ -60,6 +61,7 @@ func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
 		RequestMessage: nil,
 		Query:          parseMsg.Query,
 		BindParams:     bindMsg.Params,
+		BindStatement:  nil,
 	}
 	bindParams := stmt.BindParams{}
 	for _, param := range bindMsg.Params {

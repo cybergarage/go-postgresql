@@ -129,10 +129,8 @@ func (store *Store) CreateTable(conn net.Conn, stmt query.CreateTable) error {
 	if !ok {
 		table := NewTableWith(tableName, stmt.Schema())
 		db.AddTable(table)
-	} else {
-		if !stmt.IfNotExists() {
-			return errors.NewErrTableExist(tableName)
-		}
+	} else if !stmt.IfNotExists() {
+		return errors.NewErrTableExist(tableName)
 	}
 	return nil
 }

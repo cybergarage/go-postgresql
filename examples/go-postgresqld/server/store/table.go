@@ -31,6 +31,7 @@ type Table struct {
 // NewTable returns a new table.
 func NewTableWith(name string, schema query.Schema) *Table {
 	tbl := &Table{
+		Mutex:  sync.Mutex{},
 		Name:   name,
 		Schema: schema,
 		Rows:   []Row{},

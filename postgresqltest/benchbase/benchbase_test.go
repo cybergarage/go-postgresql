@@ -103,7 +103,7 @@ func TestBenchBase(t *testing.T) {
 
 	// Each workload is run as a subtest for isolated reporting in go test output.
 	for _, wl := range workloads {
-		wl := wl // shadow for closure capture
+		// shadow for closure capture
 		t.Run(wl, func(t *testing.T) {
 			benchbase.RunWorkload(t, wl /*cfg.Config*/)
 		})
