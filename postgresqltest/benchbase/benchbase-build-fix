@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# BenchBase Java 23 Build Fix Script
+# This script fixes Java 23 build errors in BenchBase project
+
+set -e
+
+echo "🔧 BenchBase Build Fix Script"
+echo "=============================="
+
+# Check if current directory is a BenchBase project
+if [ ! -f "pom.xml" ] || ! grep -q "benchbase" pom.xml; then
+    echo "❌ Error: Please run this script in the BenchBase project root directory"
+    exit 1
+fi
+
+echo "📁 Project verification: OK"
+
+# Create backup
+echo "💾 Creating backup..."
+cp pom.xml pom.xml.backup
+echo "   pom.xml -> pom.xml.backup"
+
+# 1. Fix maven-compiler-plugin configuration (Java 23 support)
+echo "🔨 Fixing Maven Compiler Plugin..."
+sed -i '' 's/<source>${maven.compiler.source}<\/source>/<release>23<\/release>/' pom.xml
+sed -i '' '/<target>${maven.compiler.target}<\/target>/d' pom.xml
+echo "   ✅ Set Java 23 --release option"
+
+# 2. Fix assembly plugin finalName
+echo "📦 Fixing Assembly Plugin..."
+sed -i '' 's/${project.artifactId}-${classifier}/${project.artifactId}-${project.version}/' pom.xml
+echo "   ✅ Fixed finalName configuration"
+
+# 3. Remove ${classifier} from assembly files
+if [ -d "src/main/assembly" ]; then
+    echo "🗂️  Fixing Assembly descriptors..."
+    sed -i '' 's/-\${classifier}//g' src/main/assembly/*.xml
+    echo "   ✅ Fixed Assembly XML files"
+else
+    echo "   ⚠️  Assembly directory not found"
+fi
+
+echo ""
+echo "✅ Fix completed!"
+echo ""
+echo "📋 Applied fixes:"
+echo "   1. Java 23 --release option configuration"
+echo "   2. Assembly plugin classifier issue fix"
+echo "   3. Archive filename normalization"
+echo ""
+echo "🚀 To run build:"
+echo "   ./mvnw clean package"
+echo ""
+echo "🔄 To revert changes:"
+echo "   mv pom.xml.backup pom.xml"

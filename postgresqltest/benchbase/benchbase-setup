@@ -16,10 +16,13 @@
 # Usage Guide BenchBase
 # https://github.com/cmu-db/benchbase?tab=readme-ov-file#usage-guide
 
-BENCHBASE=benchbase
+BENCHBASE_DIR=benchbase
 
-if [ ! -d ${BENCHBASE} ]; then
+if [ ! -d ${BENCHBASE_DIR} ]; then
     git clone --depth 1 https://github.com/cmu-db/benchbase.git
-    cd ${BENCHBASE}
+    cd ${BENCHBASE_DIR}
+    # ../benchbase-build-fix
     ./mvnw clean package -P postgres
+    cd target
+    tar xvzf benchbase-postgres.tgz
 fi
