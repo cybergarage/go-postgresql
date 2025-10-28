@@ -20,9 +20,10 @@ BENCHBASE_DIR=benchbase
 
 if [ ! -d ${BENCHBASE_DIR} ]; then
     git clone --depth 1 https://github.com/cmu-db/benchbase.git
-    cd ${BENCHBASE_DIR}
-    # ../benchbase-build-fix
-    ./mvnw clean package -P postgres
-    cd target
-    tar xvzf benchbase-postgres.tgz
 fi
+
+cd ${BENCHBASE_DIR}
+# ../benchbase-build-fix
+./mvnw package -P postgres
+cd target
+tar xvzf benchbase-postgres.tgz
