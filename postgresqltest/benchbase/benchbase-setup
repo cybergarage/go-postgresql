@@ -20,14 +20,23 @@
 BENCHBASE_GITURL=https://github.com/cybergarage/
 BENCHBASE_DIR=benchbase
 BENCHBASE_TARGET=postgres
-BENCHBASE_TARGET_JAR=${BENCHBASE_DIR}/target/benchbase-${BENCHBASE_TARGET}/benchbase.jar
+BENCHBASE_JAR=benchbase.jar
+BENCHBASE_TARGET_DIR=${BENCHBASE_DIR}/target/benchbase-${BENCHBASE_TARGET}
+BENCHBASE_TARGET_JAR=${BENCHBASE_TARGET_DIR}/${BENCHBASE_JAR}
 
-if [ ! -f ${BENCHBASE_TARGET_JAR} ]; then
+if [ ! -f ${BENCHBASE_JAR} ]; then
     rm -rf ${BENCHBASE_DIR}
     git clone --depth 1 ${BENCHBASE_GITURL}/benchbase.git
     cd ${BENCHBASE_DIR}
     ./mvnw package -P ${BENCHBASE_TARGET}
     cd target
     tar xvzf benchbase-${BENCHBASE_TARGET}.tgz
+    cd ../..
+    cp ${BENCHBASE_TARGET_JAR} .
+    mv ${BENCHBASE_TARGET_DIR}/lib .
+    mv ${BENCHBASE_TARGET_DIR}/data .
+    mv ${BENCHBASE_TARGET_DIR}/config .
+    mv ${BENCHBASE_TARGET_DIR}/scripts .
 fi
 echo "BenchBase setup completed."
+java -jar ${BENCHBASE_JAR} -h
