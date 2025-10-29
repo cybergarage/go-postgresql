@@ -25,7 +25,7 @@ BENCHBASE_TARGET_DIR=${BENCHBASE_DIR}/target/benchbase-${BENCHBASE_TARGET}
 BENCHBASE_TARGET_JAR=${BENCHBASE_TARGET_DIR}/${BENCHBASE_JAR}
 
 if [ ! -f ${BENCHBASE_JAR} ]; then
-    rm -rf ${BENCHBASE_DIR}
+    rm -rf ${BENCHBASE_DIR} lib data config scripts
     git clone --depth 1 ${BENCHBASE_GITURL}/benchbase.git
     cd ${BENCHBASE_DIR}
     ./mvnw package -P ${BENCHBASE_TARGET}
@@ -37,6 +37,7 @@ if [ ! -f ${BENCHBASE_JAR} ]; then
     mv ${BENCHBASE_TARGET_DIR}/data .
     mv ${BENCHBASE_TARGET_DIR}/config .
     mv ${BENCHBASE_TARGET_DIR}/scripts .
+    cp config/${BENCHBASE_TARGET}/sample_tpcc_config.xml tpcc_config.xml
 fi
 echo "BenchBase setup completed."
 java -jar ${BENCHBASE_JAR} -h
