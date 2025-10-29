@@ -16,14 +16,18 @@
 # Usage Guide BenchBase
 # https://github.com/cmu-db/benchbase?tab=readme-ov-file#usage-guide
 
+#BENCHBASE_GITURL=https://github.com/cmu-db
+BENCHBASE_GITURL=https://github.com/cybergarage/
 BENCHBASE_DIR=benchbase
+BENCHBASE_TARGET=postgres
+BENCHBASE_TARGET_JAR=${BENCHBASE_DIR}/target/benchbase-${BENCHBASE_TARGET}/benchbase.jar
 
-if [ ! -d ${BENCHBASE_DIR} ]; then
-    git clone --depth 1 https://github.com/cmu-db/benchbase.git
+if [ ! -f ${BENCHBASE_TARGET_JAR} ]; then
+    rm -rf ${BENCHBASE_DIR}
+    git clone --depth 1 ${BENCHBASE_GITURL}/benchbase.git
+    cd ${BENCHBASE_DIR}
+    ./mvnw package -P ${BENCHBASE_TARGET}
+    cd target
+    tar xvzf benchbase-${BENCHBASE_TARGET}.tgz
 fi
-
-cd ${BENCHBASE_DIR}
-# ../benchbase-build-fix
-./mvnw package -P postgres
-cd target
-tar xvzf benchbase-postgres.tgz
+echo "BenchBase setup completed."
