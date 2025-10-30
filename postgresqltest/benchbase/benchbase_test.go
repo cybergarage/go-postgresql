@@ -21,7 +21,6 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/go-postgresql/postgresqltest"
 	"github.com/cybergarage/go-postgresql/postgresqltest/server"
 	"github.com/cybergarage/go-sqltest/sqltest/benchbase"
 )
@@ -37,10 +36,10 @@ func TestBenchBase(t *testing.T) {
 	log.EnableStdoutDebug(true)
 
 	// Skip early if BenchBase tooling is not available on this system.
-	// if !benchbase.IsInstalled() {
-	// 	t.Skip("BenchBase is not installed; skipping test")
-	// 	return
-	// }
+	if !benchbase.IsInstalled() {
+		t.Skip("BenchBase is not installed; skipping test")
+		return
+	}
 
 	// Log working directory to help debug path-related issues or relative resource lookups.
 	wkdir, err := os.Getwd()
@@ -59,53 +58,17 @@ func TestBenchBase(t *testing.T) {
 	}
 	defer srv.Stop()
 
-	// Open a client connection to manage test database lifecycle.
-	client := postgresqltest.NewClient()
-	if err := client.Open(); err != nil {
-		t.Error(err)
-		return
-	}
-	defer func() {
-		if cerr := client.Close(); cerr != nil {
-			t.Error(cerr)
-		}
-	}()
-
-	// Create a temporary database for isolation. Fall back to a static name if helper is absent.
-	// testDBName := benchbase.GenerateTempDBName()
-	// if testDBName == "" {
-	// 	testDBName = "benchbase_tempdb"
-	// }
-	// if err := client.CreateDatabase(testDBName); err != nil {
-	// 	t.Error(err)
-	// 	return
-	// }
-	// defer func() {
-	// 	if derr := client.DropDatabase(testDBName); derr != nil {
-	// 		t.Error(derr)
-	// 	}
-	// }()
-
-	// // Build a BenchBase config tailored for the spawned server.
-	// cfg := NewDefaultConfig()
-	// cfg.SetHost("127.0.0.1")
-	// cfg.SetPort(srv.Port())
-	// cfg.SetDB(testDBName)
-	// // If SetUser / SetPassword are required, ensure they're configured:
-	// cfg.SetUser("postgres")
-	// cfg.SetPassword("postgres")
-
-	// List of workloads to execute; expand as needed.
-	// Common BenchBase workloads include: tpcc, tatp, smallbank, ycsb, epinions, etc.
-	workloads := []string{
+	// List of benches to execute; expand as needed.
+	// Common BenchBase benches include: tpcc, tatp, smallbank, ycsb, epinions, etc.
+	benches := []string{
 		"tpcc",
 	}
 
-	// Each workload is run as a subtest for isolated reporting in go test output.
-	for _, wl := range workloads {
+	// Each bench is run as a subtest for isolated reporting in go test output.
+	for _, bench := range benches {
 		// shadow for closure capture
-		t.Run(wl, func(t *testing.T) {
-			benchbase.RunWorkload(t, wl /*cfg.Config*/)
+		t.Run(bench, func(t *testing.T) {
+			benchbase.RunWorkload(t, bench)
 		})
 	}
 }
