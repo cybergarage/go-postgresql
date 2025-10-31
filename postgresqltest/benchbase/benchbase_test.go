@@ -27,10 +27,6 @@ import (
 
 // TestBenchBase runs one or more BenchBase workloads against a temporary database.
 // It mirrors the structure of the sysbench integration test.
-//
-// Skip Conditions:
-// - BenchBase CLI/tooling not installed.
-// - Missing workload runner API (adjust TODO sections as needed).
 func TestBenchBase(t *testing.T) {
 	// Enable verbose debug logging to observe benchmark progress.
 	log.EnableStdoutDebug(true)
