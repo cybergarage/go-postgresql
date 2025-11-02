@@ -37,7 +37,7 @@ if [ ! -f ${BENCHBASE_JAR} ]; then
     mv ${BENCHBASE_TARGET_DIR}/data .
     mv ${BENCHBASE_TARGET_DIR}/config .
     mv ${BENCHBASE_TARGET_DIR}/scripts .
-    cp config/${BENCHBASE_TARGET}/sample_tpcc_config.xml tpcc_config.xml
+    # cp config/${BENCHBASE_TARGET}/sample_tpcc_config.xml tpcc_config.xml
 fi
 echo "BenchBase setup completed."
 java -jar ${BENCHBASE_JAR} -h
