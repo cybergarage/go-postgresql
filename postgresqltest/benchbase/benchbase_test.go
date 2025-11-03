@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/go-postgresql/postgresqltest"
 	"github.com/cybergarage/go-postgresql/postgresqltest/server"
 	"github.com/cybergarage/go-sqltest/sqltest/benchbase"
 )
@@ -53,6 +54,33 @@ func TestBenchBase(t *testing.T) {
 		return
 	}
 	defer srv.Stop()
+
+	// Create a temporary database for the benchmark tests.
+	client := postgresqltest.NewClient()
+	err = client.Open()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+	testDBName := benchbase.DatabaseName()
+	err = client.CreateDatabase(testDBName)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		err := client.DropDatabase(testDBName)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}()
 
 	// List of benches to execute; expand as needed.
 	// Common BenchBase benches include: tpcc, tatp, smallbank, ycsb, epinions, etc.
