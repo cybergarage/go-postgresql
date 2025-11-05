@@ -19,14 +19,16 @@ import (
 )
 
 const (
-	defaultAddr = ""
-	defaultPort = 5432
+	defaultAddr          = ""
+	defaultPort          = 5432
+	defaultServerVersion = "16.0"
 )
 
 // config stores server configuration parammeters.
 type config struct {
 	productName    string
 	productVersion string
+	serverVersion  string
 	addr           string
 	port           int
 	tls.CertConfig
@@ -37,6 +39,7 @@ func NewDefaultConfig() Config {
 	config := &config{
 		productName:    "",
 		productVersion: "",
+		serverVersion:  defaultServerVersion,
 		addr:           defaultAddr,
 		port:           defaultPort,
 		CertConfig:     tls.NewCertConfig(),
@@ -82,4 +85,14 @@ func (config *config) ProductName() string {
 // ProductVersion returns the product version from the configuration.
 func (config *config) ProductVersion() string {
 	return config.productVersion
+}
+
+// SetServerVersion sets the server version to the configuration.
+func (config *config) SetServerVersion(v string) {
+	config.serverVersion = v
+}
+
+// ServerVersion returns the server version from the configuration.
+func (config *config) ServerVersion() string {
+	return config.serverVersion
 }

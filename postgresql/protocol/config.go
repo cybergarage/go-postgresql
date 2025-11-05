@@ -26,10 +26,14 @@ type Config interface {
 	SetProductName(v string)
 	// SetProductVersion sets a product version to the configuration.
 	SetProductVersion(v string)
+	// SetServerVersion sets the server version to the configuration.
+	SetServerVersion(v string)
 	// ProductName returns the product name from the configuration.
 	ProductName() string
 	// ProductVersion returns the product version from the configuration.
 	ProductVersion() string
+	// ServerVersion returns the server version from the configuration.
+	ServerVersion() string
 	// SetAddress sets a listen address to the configuration.
 	SetAddress(addr string)
 	// SetPort sets a listen port to the configuration.
