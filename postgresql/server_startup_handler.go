@@ -16,6 +16,7 @@ package postgresql
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math"
 	"math/big"
 	"os"
@@ -44,9 +45,15 @@ func newProtocolStartupHandler() *protocolStartupHandler {
 
 // ParameterStatuses returns the parameter statuses.
 func (server *server) ParameterStatuses(Conn) (protocol.Responses, error) {
+	serverVersion := fmt.Sprintf(
+		"%s (%s %s)",
+		server.ServerVersion(),
+		server.ProductName(),
+		server.ProductVersion())
 	m := map[string]string{}
 	m[protocol.ClientEncoding] = protocol.EncodingUTF8
 	m[protocol.ServerEncoding] = protocol.EncodingUTF8
+	m[protocol.ServerVersion] = serverVersion
 	return protocol.NewParameterStatusesWith(m)
 }
 
