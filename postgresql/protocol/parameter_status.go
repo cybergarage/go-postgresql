@@ -18,27 +18,25 @@ package protocol
 // https://www.postgresql.org/docs/16/protocol-flow.html
 // PostgreSQL: Documentation: 16: 55.7. Message Formats
 // https://www.postgresql.org/docs/16/protocol-message-formats.html
+// 54.2.7. Asynchronous Operations
+// https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-ASYNC
 
 const (
-	ApplicationName = "application_name"
-	ClientEncoding  = "client_encoding"
-	ServerEncoding  = "server_ encoding"
-	DateStyle       = "DateStyle"
-	TimeZone        = "TimeZone"
-	IntervalStyle   = "IntervalStyle"
-)
-
-// on/off parameters.
-const (
-	DefaultTransactiOnReadOnly = "default_transaction_read_only"
+	ApplicationName            = "application_name"
+	ScramIterations            = "scram_iterations"
+	ClientEncoding             = "client_encoding"
+	SearchPath                 = "search_path"
+	DateStyle                  = "DateStyle"
+	ServerEncoding             = "server_encoding"
+	DefaultTransactionReadOnly = "default_transaction_read_only"
+	ServerVersion              = "server_version"
 	InHotStandby               = "in_hot_standby"
+	SessionAuth                = "session_authorization"
+	IntegerDatetimes           = "integer_datetimes"
+	StandardConformingStrings  = "standard_conforming_strings"
 	IsSuperuser                = "is_superuser"
-	OntegerDatetimes           = "integer_datetimes"
-)
-
-const (
-	ServerVersion             = "#server_version"
-	StandardConformingStrings = "#standard_conforming_strings"
+	IntervalStyle              = "IntervalStyle"
+	TimeZone                   = "TimeZone"
 )
 
 const (
