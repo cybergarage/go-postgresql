@@ -242,6 +242,12 @@ func (store *Store) Delete(conn net.Conn, stmt query.Delete) (sql.ResultSet, err
 }
 
 func (store *Store) selectSystem(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
+	// rows := []Row{}
+	for _, selector := range stmt.Selectors().Selectors() {
+		switch {
+		case selector.IsFunction():
+		}
+	}
 	return nil, errors.NewErrNotSupported(stmt.String())
 }
 
