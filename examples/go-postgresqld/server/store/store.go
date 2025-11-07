@@ -241,16 +241,23 @@ func (store *Store) Delete(conn net.Conn, stmt query.Delete) (sql.ResultSet, err
 	), nil
 }
 
+func (store *Store) selectSystem(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
+	return nil, errors.NewErrNotSupported(stmt.String())
+}
+
 // Select should handle a SELECT statement.
 func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
 	log.Debugf("%v", stmt)
 
-	// Select the target table
-
 	from := stmt.From()
-	if len(from) != 1 {
+	switch {
+	case len(from) == 0:
+		return store.selectSystem(conn, stmt)
+	case 1 < len(from):
 		return nil, errors.NewErrMultipleTableNotSupported(from.String())
 	}
+
+	// Select the target table
 
 	tblName := from[0].TableName()
 
