@@ -246,6 +246,14 @@ func (store *Store) selectSystem(conn net.Conn, stmt query.Select) (sql.ResultSe
 	for _, selector := range stmt.Selectors().Selectors() {
 		switch {
 		case selector.IsFunction():
+			fn, ok := selector.Function()
+			if !ok {
+				continue
+			}
+			_, err := fn.Executor()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return nil, errors.NewErrNotSupported(stmt.String())

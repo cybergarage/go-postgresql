@@ -21,9 +21,6 @@ import (
 // Executor represents a function executor.
 type Executor = fn.Executor
 
-// ExecutorOption represents a function executor option.
-type ExecutorOption = fn.ExecutorOption
-
 // NewExecutorForName returns a function executor with the specified name.
 func NewExecutorForName(name string, opts ...ExecutorOption) (Executor, error) {
 	return fn.NewExecutorForName(name, opts...)
