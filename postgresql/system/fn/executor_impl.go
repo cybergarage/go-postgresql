@@ -15,6 +15,7 @@
 package fn
 
 import (
+	"github.com/cybergarage/go-sqlparser/sql/fn"
 	"github.com/cybergarage/go-sqlparser/sql/net"
 )
 
@@ -23,23 +24,8 @@ type ExecutorOption func(*execImpl)
 
 // execImpl represents a base math function.
 type execImpl struct {
-	name string
-	args []string
+	fn.Executor
 	conn net.Conn
-}
-
-// WithExecutorName sets the name for the executor.
-func WithExecutorName(name string) ExecutorOption {
-	return func(ex *execImpl) {
-		ex.name = name
-	}
-}
-
-// WithExecutorArguments sets the arguments for the executor.
-func WithExecutorArguments(args []string) ExecutorOption {
-	return func(ex *execImpl) {
-		ex.args = args
-	}
 }
 
 // WithExecutorConn sets the connection for the executor.
@@ -50,28 +36,27 @@ func WithExecutorConn(conn net.Conn) ExecutorOption {
 }
 
 // NewExecutorWith returns a new function executor with options.
-func NewExecutorWith(opts ...ExecutorOption) Executor {
+func NewExecutorWith(opts ...any) Executor {
 	return newExecutorWith(opts...)
 }
 
-func newExecutorWith(opts ...ExecutorOption) *execImpl {
-	ex := &execImpl{
-		name: "",
-		args: []string{},
-		conn: nil,
-	}
+func newExecutorWith(opts ...any) *execImpl {
+	fnOpts := []fn.ExecutorOption{}
+	systemOpts := []ExecutorOption{}
 	for _, opt := range opts {
+		switch v := opt.(type) {
+		case fn.ExecutorOption:
+			fnOpts = append(fnOpts, v)
+		case ExecutorOption:
+			systemOpts = append(systemOpts, v)
+		}
+	}
+	ex := &execImpl{
+		Executor: fn.NewExecutorWith(fnOpts...),
+		conn:     nil,
+	}
+	for _, opt := range systemOpts {
 		opt(ex)
 	}
 	return ex
-}
-
-// Name returns the name of the function.
-func (ex *execImpl) Name() string {
-	return ex.name
-}
-
-// Arguments returns the arguments of the executor.
-func (ex *execImpl) Arguments() []string {
-	return ex.args
 }

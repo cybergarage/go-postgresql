@@ -22,6 +22,6 @@ import (
 type Executor = fn.Executor
 
 // NewExecutorForName returns a function executor with the specified name.
-func NewExecutorForName(name string, opts ...ExecutorOption) (Executor, error) {
-	return fn.NewExecutorForName(name, opts...)
+func NewExecutorForName(name string, opts ...any) (Executor, error) {
+	return NewExecutorWith(opts...), nil
 }
