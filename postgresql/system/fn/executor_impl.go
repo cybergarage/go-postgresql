@@ -42,21 +42,25 @@ func NewExecutorWith(opts ...any) Executor {
 
 func newExecutorWith(opts ...any) *execImpl {
 	fnOpts := []fn.ExecutorOption{}
-	systemOpts := []ExecutorOption{}
+	fnExOpts := []ExecutorOption{}
 	for _, opt := range opts {
 		switch v := opt.(type) {
 		case fn.ExecutorOption:
 			fnOpts = append(fnOpts, v)
 		case ExecutorOption:
-			systemOpts = append(systemOpts, v)
+			fnExOpts = append(fnExOpts, v)
 		}
 	}
 	ex := &execImpl{
 		Executor: fn.NewExecutorWith(fnOpts...),
 		conn:     nil,
 	}
-	for _, opt := range systemOpts {
+	for _, opt := range fnExOpts {
 		opt(ex)
 	}
 	return ex
+}
+
+func (ex *execImpl) Conn() net.Conn {
+	return ex.conn
 }

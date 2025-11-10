@@ -14,7 +14,52 @@
 
 package fn
 
+import (
+	"strings"
+
+	"github.com/cybergarage/go-sqlparser/sql/fn"
+)
+
 // PostgreSQL: Documentation: 18: 9.27. System Information Functions and Operators
 // https://www.postgresql.org/docs/current/functions-info.html
 // 9.27.1. Session Information Functions
 // https://www.postgresql.org/docs/current/functions-info.html#FUNCTIONS-INFO-SESSION
+
+const (
+	CurrentDatabaseFunctionName = "current_database"
+	CurrentCatalogFunctionName  = "current_catalog"
+	CurrentSchemaFunctionName   = "current_schema"
+	CurrentSchemasFunctionName  = "current_schemas"
+	CurrentUserFunctionName     = "current_user"
+)
+
+// execImpl represents a base math function.
+type sessionFunction struct {
+	*execImpl
+}
+
+// NewSessionExecutor returns a new session function executor.
+func NewSessionExecutor(name string, opts ...any) (Executor, error) {
+	ex := &sessionFunction{
+		execImpl: nil,
+	}
+	opts = append(opts,
+		fn.WithExecutorName(strings.ToLower(name)),
+		fn.WithExecutorType(fn.SessionFunction),
+		fn.WithExecutorFunc(ex.execute),
+	)
+	ex.execImpl = newExecutorWith(opts...)
+	return ex, nil
+}
+
+// Execute returns the executed value with the specified arguments.
+func (ex *sessionFunction) execute(args ...any) (any, error) {
+	conn := ex.Conn()
+	switch ex.Name() {
+	case CurrentDatabaseFunctionName:
+		return conn.Database(), nil
+	case CurrentCatalogFunctionName:
+		return conn.Database(), nil
+	}
+	return nil, fn.NewErrNotSupportedFunction(ex.Name())
+}
