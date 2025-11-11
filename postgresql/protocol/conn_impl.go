@@ -112,7 +112,18 @@ func (conn *conn) Database() string {
 
 // SetSchemas sets the schema names.
 func (conn *conn) SetSchemas(schemas ...string) {
-	conn.schemas = schemas
+	for _, schema := range schemas {
+		found := false
+		for _, existing := range conn.schemas {
+			if existing == schema {
+				found = true
+				break
+			}
+		}
+		if !found {
+			conn.schemas = append(conn.schemas, schema)
+		}
+	}
 }
 
 // Schemas returns the schema names.
