@@ -35,6 +35,8 @@ type conn struct {
 	isClosed      bool
 	msgReader     *MessageReader
 	db            string
+	schemas       []string
+	user          string
 	ts            time.Time
 	uuid          uuid.UUID
 	id            ConnID
@@ -50,6 +52,8 @@ func NewConnWith(netConn net.Conn, opts ...connOption) *conn {
 		isClosed:      false,
 		msgReader:     NewMessageReaderWith(WithMessageReadeConn(netConn)),
 		db:            "",
+		schemas:       []string{},
+		user:          "",
 		ts:            time.Now(),
 		uuid:          uuid.New(),
 		id:            0,
@@ -104,6 +108,26 @@ func (conn *conn) SetDatabase(db string) {
 // Database returns the database name.
 func (conn *conn) Database() string {
 	return conn.db
+}
+
+// SetSchemas sets the schema names.
+func (conn *conn) SetSchemas(schemas ...string) {
+	conn.schemas = schemas
+}
+
+// Schemas returns the schema names.
+func (conn *conn) Schemas() []string {
+	return conn.schemas
+}
+
+// SetUser sets the user name.
+func (conn *conn) SetUser(user string) {
+	conn.user = user
+}
+
+// User returns the user name.
+func (conn *conn) User() string {
+	return conn.user
 }
 
 // Timestamp returns the creation time of the connection.

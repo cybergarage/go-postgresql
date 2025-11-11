@@ -15,8 +15,6 @@
 package fn
 
 import (
-	"strings"
-
 	"github.com/cybergarage/go-sqlparser/sql/fn"
 )
 
@@ -27,8 +25,8 @@ type Executor = fn.Executor
 func NewExecutorForName(name string, opts ...any) (Executor, error) {
 	var ex Executor
 	var err error
-	switch strings.ToLower(name) {
-	case CurrentDatabaseFunctionName, CurrentCatalogFunctionName:
+	switch {
+	case IsSessionFunctionName(name):
 		ex, err = NewSessionExecutor(name, opts...)
 	default:
 		return nil, fn.NewErrNotSupportedFunction(name)

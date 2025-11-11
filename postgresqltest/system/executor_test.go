@@ -22,13 +22,11 @@ import (
 )
 
 func TestSystemFunction(t *testing.T) {
-	functionNames := []string{
-		fn.CurrentDatabaseFunctionName,
-		fn.CurrentCatalogFunctionName,
-	}
 	con := net.NewConnWith(nil)
+	con.SetUser("user")
 	con.SetDatabase("testdb")
-	for _, functionName := range functionNames {
+	con.SetSchemas("test")
+	for _, functionName := range fn.SessionFunctionNames() {
 		t.Run(functionName, func(t *testing.T) {
 			executor, err := fn.NewExecutorForName(
 				functionName,
@@ -37,10 +35,21 @@ func TestSystemFunction(t *testing.T) {
 			if err != nil {
 				t.Errorf("Failed to create executor for function '%s': %v", functionName, err)
 			}
-			_, err = executor.Execute(nil)
+			v, err := executor.Execute(nil)
 			if err != nil {
 				t.Errorf("Failed to execute function '%s': %v", functionName, err)
 			}
+			switch v := v.(type) {
+			case string:
+				if 0 < len(v) {
+					return
+				}
+			case []string:
+				if 0 < len(v) {
+					return
+				}
+			}
+			t.Errorf("Failed to execute function '%s': %v", functionName, v)
 		})
 	}
 }

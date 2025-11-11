@@ -15,6 +15,7 @@
 package fn
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/cybergarage/go-sqlparser/sql/fn"
@@ -31,7 +32,34 @@ const (
 	CurrentSchemaFunctionName   = "current_schema"
 	CurrentSchemasFunctionName  = "current_schemas"
 	CurrentUserFunctionName     = "current_user"
+	CurrentRoleFunctionName     = "current_role"
+	SessionUserFunctionName     = "session_user"
+	UserFunctionName            = "user"
 )
+
+// SessionFunctionNames returns the all names of session functions.
+func SessionFunctionNames() []string {
+	return []string{
+		CurrentDatabaseFunctionName,
+		CurrentCatalogFunctionName,
+		CurrentSchemaFunctionName,
+		CurrentSchemasFunctionName,
+		CurrentUserFunctionName,
+		CurrentRoleFunctionName,
+		SessionUserFunctionName,
+		UserFunctionName,
+	}
+}
+
+// IsSessionFunctionName returns true if the specified name is a session function name.
+func IsSessionFunctionName(name string) bool {
+	for _, fnName := range SessionFunctionNames() {
+		if strings.EqualFold(fnName, name) {
+			return true
+		}
+	}
+	return false
+}
 
 // execImpl represents a base math function.
 type sessionFunction struct {
@@ -55,11 +83,22 @@ func NewSessionExecutor(name string, opts ...any) (Executor, error) {
 // Execute returns the executed value with the specified arguments.
 func (ex *sessionFunction) execute(args ...any) (any, error) {
 	conn := ex.Conn()
+	if conn == nil {
+		return nil, fmt.Errorf("%s: %w connection", ex.Name(), fn.ErrInvalid)
+	}
 	switch ex.Name() {
-	case CurrentDatabaseFunctionName:
+	case CurrentDatabaseFunctionName, CurrentCatalogFunctionName:
 		return conn.Database(), nil
-	case CurrentCatalogFunctionName:
-		return conn.Database(), nil
+	case CurrentSchemasFunctionName:
+		return conn.Schemas(), nil
+	case CurrentSchemaFunctionName:
+		schemas := conn.Schemas()
+		if 0 < len(schemas) {
+			return schemas[0], nil
+		}
+		return "", nil
+	case CurrentUserFunctionName, CurrentRoleFunctionName, SessionUserFunctionName, UserFunctionName:
+		return conn.User(), nil
 	}
 	return nil, fn.NewErrNotSupportedFunction(ex.Name())
 }
