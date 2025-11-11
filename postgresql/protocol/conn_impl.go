@@ -103,6 +103,7 @@ func (conn *conn) Close() error {
 // SetDatabase sets the database name.
 func (conn *conn) SetDatabase(db string) {
 	conn.db = db
+	conn.schemas = []string{}
 }
 
 // Database returns the database name.
