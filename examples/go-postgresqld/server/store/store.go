@@ -241,24 +241,6 @@ func (store *Store) Delete(conn net.Conn, stmt query.Delete) (sql.ResultSet, err
 	), nil
 }
 
-func (store *Store) selectSystem(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
-	// rows := []Row{}
-	for _, selector := range stmt.Selectors().Selectors() {
-		switch {
-		case selector.IsFunction():
-			fn, ok := selector.Function()
-			if !ok {
-				continue
-			}
-			_, err := fn.Executor()
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
-	return nil, errors.NewErrNotSupported(stmt.String())
-}
-
 // Select should handle a SELECT statement.
 func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
 	log.Debugf("%v", stmt)
@@ -266,7 +248,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	from := stmt.From()
 	switch {
 	case len(from) == 0:
-		return store.selectSystem(conn, stmt)
+		return store.SystemSelect(conn, stmt)
 	case 1 < len(from):
 		return nil, errors.NewErrMultipleTableNotSupported(from.String())
 	}
@@ -356,6 +338,20 @@ func (store *Store) SystemSelect(conn net.Conn, stmt query.Select) (sql.ResultSe
 	log.Debugf("%v", q)
 
 	switch {
+	case len(stmt.From()) == 0:
+		for _, selector := range stmt.Selectors().Selectors() {
+			switch {
+			case selector.IsFunction():
+				fn, ok := selector.Function()
+				if !ok {
+					continue
+				}
+				_, err := fn.Executor()
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
 	case system.IsSchemaColumsQuery(stmt):
 		sysStmt, err := system.NewSchemaColumnsStatement(
 			system.WithSchemaColumnsStatementSelect(stmt),
