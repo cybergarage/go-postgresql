@@ -299,6 +299,9 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 			if stmt.From().HasSchemaTable(system.SystemSchemaNames...) {
 				res, err = server.systemQueryExecutor.SystemSelect(conn, stmt)
 			} else {
+				for _, table := range stmt.From().Tables() {
+					conn.SetSchemas(table.TableName())
+				}
 				res, err = server.queryExecutor.Select(conn, stmt)
 			}
 		case sql.UpdateStatement:
