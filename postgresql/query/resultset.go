@@ -15,6 +15,9 @@
 package query
 
 import (
+	"fmt"
+
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
 )
@@ -24,6 +27,9 @@ func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error
 	// Schema
 
 	schema := rs.Schema()
+	if schema == nil {
+		return protocol.NewResponses(), fmt.Errorf("%w result set schema", errors.ErrInvalid)
+	}
 	selectors := schema.Selectors()
 
 	// Responses
