@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-logger/log"
+	systemFn "github.com/cybergarage/go-postgresql/postgresql/system/fn"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
 	"github.com/cybergarage/go-sqlparser/sql/net"
@@ -339,19 +340,39 @@ func (store *Store) SystemSelect(conn net.Conn, stmt query.Select) (sql.ResultSe
 
 	switch {
 	case len(stmt.From()) == 0:
-		for _, selector := range stmt.Selectors().Selectors() {
+		executor := func(selector query.Selector) (any, error) {
 			switch {
 			case selector.IsFunction():
-				fn, ok := selector.Function()
+				selFunc, ok := selector.Function()
 				if !ok {
-					continue
+					return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
 				}
-				_, err := fn.Executor()
+				selEx, err := selFunc.Executor()
+				if err != nil {
+					selEx, err = systemFn.NewExecutorForName(
+						selector.Name(),
+						systemFn.WithExecutorConn(conn),
+					)
+				}
 				if err != nil {
 					return nil, err
 				}
+				return selEx.Execute(nil)
 			}
+			return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
 		}
+		rowObj := map[string]any{}
+		for _, selector := range stmt.Selectors().Selectors() {
+			v, err := executor(selector)
+			if err != nil {
+				return nil, err
+			}
+			rowObj[selector.Name()] = v
+		}
+		return resultset.NewResultSetFrom(
+			resultset.WithResultSetRowsAffected(1),
+			resultset.WithResultSetRowsOf([]map[string]any{rowObj}),
+		)
 	case system.IsSchemaColumsQuery(stmt):
 		sysStmt, err := system.NewSchemaColumnsStatement(
 			system.WithSchemaColumnsStatementSelect(stmt),
