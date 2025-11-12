@@ -333,6 +333,68 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	)
 }
 
+func (store *Store) SystemSelectFunction(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
+	executor := func(selector query.Selector) (any, error) {
+		switch {
+		case selector.IsFunction():
+			selFunc, ok := selector.Function()
+			if !ok {
+				return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
+			}
+			selEx, err := selFunc.Executor()
+			if err != nil {
+				selEx, err = systemFn.NewExecutorForName(
+					selector.Name(),
+					systemFn.WithExecutorConn(conn),
+				)
+			}
+			if err != nil {
+				return nil, err
+			}
+			return selEx.Execute(nil)
+		}
+		return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
+	}
+	rowObjs := []map[string]any{}
+	for _, selector := range stmt.Selectors().Selectors() {
+		v, err := executor(selector)
+		if err != nil {
+			return nil, err
+		}
+		switch v := v.(type) {
+		case string:
+			rowObj := map[string]any{
+				selector.Name(): v,
+			}
+			rowObjs = append(rowObjs, rowObj)
+		case []string:
+			for _, sv := range v {
+				rowObj := map[string]any{
+					selector.Name(): sv,
+				}
+				rowObjs = append(rowObjs, rowObj)
+			}
+		default:
+			return nil, fmt.Errorf("%w %s result: %v", errors.ErrInvalid, selector.Name(), v)
+		}
+	}
+	if len(rowObjs) == 0 {
+		return nil, fmt.Errorf("no rows returned for query: %s", q)
+	}
+	schame, err := resultset.NewSchemaFrom(
+		resultset.WithSchemaDatabaseName(conn.Database()),
+		resultset.WithSchemaRowObject(rowObjs[0]),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return resultset.NewResultSetFrom(
+		resultset.WithResultSetRowsAffected(1),
+		resultset.WithResultSetSchema(schame),
+		resultset.WithResultSetRowsOf(rowObjs),
+	)
+}
+
 // SystemSelect should handle a system SELECT statement.
 func (store *Store) SystemSelect(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
 	q := stmt.String()
@@ -340,39 +402,7 @@ func (store *Store) SystemSelect(conn net.Conn, stmt query.Select) (sql.ResultSe
 
 	switch {
 	case len(stmt.From()) == 0:
-		executor := func(selector query.Selector) (any, error) {
-			switch {
-			case selector.IsFunction():
-				selFunc, ok := selector.Function()
-				if !ok {
-					return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
-				}
-				selEx, err := selFunc.Executor()
-				if err != nil {
-					selEx, err = systemFn.NewExecutorForName(
-						selector.Name(),
-						systemFn.WithExecutorConn(conn),
-					)
-				}
-				if err != nil {
-					return nil, err
-				}
-				return selEx.Execute(nil)
-			}
-			return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
-		}
-		rowObj := map[string]any{}
-		for _, selector := range stmt.Selectors().Selectors() {
-			v, err := executor(selector)
-			if err != nil {
-				return nil, err
-			}
-			rowObj[selector.Name()] = v
-		}
-		return resultset.NewResultSetFrom(
-			resultset.WithResultSetRowsAffected(1),
-			resultset.WithResultSetRowsOf([]map[string]any{rowObj}),
-		)
+		return store.SystemSelectFunction(conn, stmt)
 	case system.IsSchemaColumsQuery(stmt):
 		sysStmt, err := system.NewSchemaColumnsStatement(
 			system.WithSchemaColumnsStatementSelect(stmt),
