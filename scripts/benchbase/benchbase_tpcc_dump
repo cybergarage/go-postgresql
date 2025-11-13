@@ -3,8 +3,8 @@ set -eu
 
 PG_CONTAINER_NAME="postgres"
 PG_VERSION="16.10"
-PG_USER="postgres"
-PG_PASSWORD="mysecretpassword"
+PG_USER="admin"
+PG_PASSWORD="password"
 PG_PORT=5432
 BENCHBASE_JAR="benchbase.jar"
 
@@ -19,6 +19,9 @@ docker run --name $PG_CONTAINER_NAME \
 
 echo "Waiting for PostgreSQL to be ready..."
 sleep 10
+
+echo "Creating Benchbase database..."
+PGPASSWORD=$PG_PASSWORD psql -h localhost -p $PG_PORT -U $PG_USER -c "CREATE DATABASE benchbase;"
 
 echo "Starting tcpdump on port $PG_PORT..."
 sudo tcpdump -i lo port $PG_PORT -w $DUMP_FILE &
