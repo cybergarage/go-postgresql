@@ -16,7 +16,9 @@
 # https://github.com/cmu-db/benchbase?tab=readme-ov-file#usage-guide
 
 # Variables
+#BENCHBASE_GITURL := https://github.com/cmu-db
 BENCHBASE_GITURL := https://github.com/cybergarage
+
 BENCHBASE_DIR := benchbase
 BENCHBASE_TARGET := postgres
 BENCHBASE_JAR := benchbase.jar
