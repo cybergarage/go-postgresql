@@ -1,2 +1,2 @@
 #!/bin/bash
-make -f ../../scripts/benchbase/postgres/Makefile setup
+make -f ../../scripts/benchbase/Makefile setup
