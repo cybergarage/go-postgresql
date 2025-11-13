@@ -20,6 +20,7 @@ BENCHBASE_GITURL := https://github.com/cybergarage
 BENCHBASE_DIR := benchbase
 BENCHBASE_TARGET := postgres
 BENCHBASE_JAR := benchbase.jar
+BENCHBASE_CONFIG := tpcc_config.xml
 BENCHBASE_TARGET_DIR := $(BENCHBASE_DIR)/target/benchbase-$(BENCHBASE_TARGET)
 BENCHBASE_TARGET_JAR := $(BENCHBASE_TARGET_DIR)/$(BENCHBASE_JAR)
 
@@ -29,7 +30,7 @@ BENCHBASE_TARGET_JAR := $(BENCHBASE_TARGET_DIR)/$(BENCHBASE_JAR)
 all: setup
 
 # Setup BenchBase
-setup: $(BENCHBASE_JAR)
+setup: $(BENCHBASE_JAR) $(BENCHBASE_CONFIG)
 	@echo "BenchBase setup completed."
 	java -jar $(BENCHBASE_JAR) -h
 
@@ -45,6 +46,10 @@ $(BENCHBASE_JAR):
 	mv $(BENCHBASE_TARGET_DIR)/data .
 	mv $(BENCHBASE_TARGET_DIR)/config .
 	mv $(BENCHBASE_TARGET_DIR)/scripts .
+
+$(BENCHBASE_CONFIG):
+	@echo "Creating default BenchBase configuration..."
+	cp config/postgres/sample_tpcc_config.xml tpcc_config.xml;
 
 # Clean up generated files
 clean:
