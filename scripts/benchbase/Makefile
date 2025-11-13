@@ -56,6 +56,11 @@ clean:
 	rm -rf $(BENCHBASE_DIR) lib data config scripts $(BENCHBASE_JAR)
 	@echo "Cleaned up BenchBase files."
 
+# Run BenchBase with specified configuration
+run: $(BENCHBASE_JAR) $(BENCHBASE_CONFIG)
+	@echo "Running BenchBase with configuration $(BENCHBASE_CONFIG)..."
+	java -jar $(BENCHBASE_JAR) -b tpcc -c $(BENCHBASE_CONFIG) --create=true --load=true --execute=true
+
 # Show help
 help:
 	@echo "BenchBase Makefile"

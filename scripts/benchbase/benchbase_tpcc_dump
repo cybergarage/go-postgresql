@@ -1,18 +1,21 @@
 #!/bin/bash
 set -eu
 
-PG_CONTAINER_NAME="my-postgres"
+PG_CONTAINER_NAME="postgres"
+PG_VERSION="16.10"
+PG_USER="postgres"
 PG_PASSWORD="mysecretpassword"
 PG_PORT=5432
+BENCHBASE_JAR="benchbase.jar"
 
 DUMP_FILE="benchbase-run-$(date +%Y%m%d%H%M%S).pcap"
-BENCHBASE_CMD="benchbase -b tpcc -c config/postgres/sample_postgres_config.xml --execute=true"
 
 echo "Starting PostgreSQL Docker container..."
 docker run --name $PG_CONTAINER_NAME \
+  -e POSTGRES_USER=$PG_USER \
   -e POSTGRES_PASSWORD=$PG_PASSWORD \
   -p $PG_PORT:5432 \
-  -d postgres
+  -d postgres:$PG_VERSION
 
 echo "Waiting for PostgreSQL to be ready..."
 sleep 10
@@ -22,7 +25,7 @@ sudo tcpdump -i lo port $PG_PORT -w $DUMP_FILE &
 TCPDUMP_PID=$!
 
 echo "Running Benchbase TPC-C benchmark..."
-$BENCHBASE_CMD
+make run
 
 echo "Stopping tcpdump..."
 sudo kill $TCPDUMP_PID
