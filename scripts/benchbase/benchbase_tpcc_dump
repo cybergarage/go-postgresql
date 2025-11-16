@@ -8,9 +8,9 @@ PG_PASSWORD="password"
 PG_PORT=5432
 BENCHBASE_JAR="benchbase.jar"
 
-DUMP_FILE="benchbase-run-$(date +%Y%m%d%H%M%S).pcap"
+DUMP_FILE="postgres-benchbase-$(date +%Y%m%d-%H%M%S).pcap"
 
-echo "Starting PostgreSQL Docker container..."
+sudo echo "Starting PostgreSQL Docker container..."
 docker run --name $PG_CONTAINER_NAME \
   -e POSTGRES_USER=$PG_USER \
   -e POSTGRES_PASSWORD=$PG_PASSWORD \
