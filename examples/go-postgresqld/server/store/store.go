@@ -379,7 +379,7 @@ func (store *Store) SystemSelectFunction(conn net.Conn, stmt query.Select) (sql.
 		}
 	}
 	if len(rowObjs) == 0 {
-		return nil, fmt.Errorf("no rows returned for query: %s", q)
+		return nil, fmt.Errorf("no rows returned for query: %s", stmt.String())
 	}
 	schame, err := resultset.NewSchemaFrom(
 		resultset.WithSchemaDatabaseName(conn.Database()),
