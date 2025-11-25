@@ -74,6 +74,13 @@ func WithConnDatabase(name string) func(*conn) {
 	}
 }
 
+// WithConnSchemas sets schema names.
+func WithConnSchemas(schemas ...string) func(*conn) {
+	return func(conn *conn) {
+		conn.schemas = schemas
+	}
+}
+
 // WithConnTracer sets a tracer context.
 func WithConnTracer(t tracer.Context) func(*conn) {
 	return func(conn *conn) {

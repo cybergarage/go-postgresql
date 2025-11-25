@@ -22,6 +22,7 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/go-postgresql/postgresql/auth"
 	pgnet "github.com/cybergarage/go-postgresql/postgresql/net"
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-tracing/tracer"
 )
 
@@ -218,7 +219,10 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 		return nil
 	}
 
-	conn := NewConnWith(netConn)
+	conn := NewConnWith(
+		netConn,
+		WithConnSchemas(system.DefaultSchema),
+	)
 	defer func() {
 		conn.Close()
 	}()
@@ -259,7 +263,11 @@ func (server *server) receive(netConn net.Conn) error { //nolint:gocyclo,maintid
 				conn.ResponseError(err)
 				return err
 			}
-			conn = NewConnWith(tlsConn, WithConnTLSConn(tlsConn))
+			conn = NewConnWith(
+				tlsConn,
+				WithConnTLSConn(tlsConn),
+				WithConnSchemas(system.DefaultSchema),
+			)
 		} else {
 			err = conn.ResponseMessage(NewSSLResponseWith(SSLDisabled))
 			if err != nil {

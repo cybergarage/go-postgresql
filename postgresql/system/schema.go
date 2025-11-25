@@ -15,12 +15,19 @@
 package system
 
 const (
+	// DefaultSchema represents the default schema name.
+	DefaultSchema = PubclicSchema
+)
+
+const (
 	// SystemDatabaseName represents a system database name.
 	SystemDatabaseName = "postgres"
 	// SystemSchemaName represents a system schema name.
 	SystemSchemaName = "pg_catalog"
 	// SystemInformationSchema represents a system information schema name.
 	SystemInformationSchema = "information_schema"
+	// PublicSchema represents the public schema name.
+	PubclicSchema = "public"
 )
 
 // SystemSchemaNames represents system schema names.
