@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cybergarage/go-postgresql/postgresql/system"
 	"github.com/cybergarage/go-tracing/tracer"
 	"github.com/google/uuid"
 )
@@ -110,7 +111,7 @@ func (conn *conn) Close() error {
 // SetDatabase sets the database name.
 func (conn *conn) SetDatabase(db string) {
 	conn.db = db
-	conn.schemas = []string{}
+	conn.schemas = []string{system.DefaultSchema}
 }
 
 // Database returns the database name.
