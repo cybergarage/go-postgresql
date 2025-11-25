@@ -296,7 +296,20 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 			res, err = server.queryExecutor.Insert(conn, stmt)
 		case sql.SelectStatement:
 			stmt := stmt.(query.Select)
-			if stmt.From().HasSchemaTable(system.SystemSchemaNames...) {
+			isSystemSelect := func(query.Select) bool {
+				from := stmt.From()
+				if from == nil {
+					return false
+				}
+				if len(from.Tables()) == 0 {
+					return true
+				}
+				if from.HasSchemaTable(system.SystemSchemaNames...) {
+					return true
+				}
+				return false
+			}
+			if isSystemSelect(stmt) {
 				res, err = server.systemQueryExecutor.SystemSelect(conn, stmt)
 			} else {
 				res, err = server.queryExecutor.Select(conn, stmt)

@@ -249,7 +249,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 	from := stmt.From()
 	switch {
 	case len(from) == 0:
-		return store.SystemSelect(conn, stmt)
+		return nil, errors.NewErrNoTable(stmt.String())
 	case 1 < len(from):
 		return nil, errors.NewErrMultipleTableNotSupported(from.String())
 	}
