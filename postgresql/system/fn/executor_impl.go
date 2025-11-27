@@ -52,7 +52,7 @@ func newExecutorWith(opts ...any) *execImpl {
 		}
 	}
 	ex := &execImpl{
-		Executor: fn.NewExecutorWith(fnOpts...),
+		Executor: fn.NewExecutor(fnOpts...),
 		conn:     nil,
 	}
 	for _, opt := range fnExOpts {

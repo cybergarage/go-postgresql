@@ -14,6 +14,15 @@
 
 package system
 
+import (
+	"fmt"
+
+	systemFn "github.com/cybergarage/go-postgresql/postgresql/system/fn"
+	"github.com/cybergarage/go-sqlparser/sql/fn"
+	"github.com/cybergarage/go-sqlparser/sql/query"
+	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
+)
+
 const (
 	// DefaultSchema represents the default schema name.
 	DefaultSchema = PubclicSchema
@@ -87,3 +96,38 @@ const (
 	InformationSchemaColumnsGenerationExpression   = "generation_expression"
 	InformationSchemaColumnsIsUpdatable            = "is_updatable"
 )
+
+// NewSchemaForSelect returns a new schema for the specified system select query.
+func NewSchemaForSelect(selectQuery query.Select) (resultset.Schema, error) {
+	from := selectQuery.From()
+	switch {
+	case len(from) == 0:
+		columns := []resultset.Column{}
+		for _, selector := range selectQuery.Selectors() {
+			switch {
+			case selector.IsFunction():
+				selFn, ok := selector.Function()
+				if !ok {
+					return nil, fmt.Errorf("%w selector: %s", ErrInvalid, selector.Name())
+				}
+				fnName := selFn.Name()
+				switch {
+				case systemFn.IsSessionFunctionName(fnName):
+					column := resultset.NewColumn(
+						resultset.WithColumnType(query.NameType),
+						resultset.WithColumnName(fnName),
+					)
+					columns = append(columns, column)
+				default:
+					return nil, fmt.Errorf("%w selector: %s", fn.ErrNotSupported, selector.Name())
+				}
+			}
+		}
+		return resultset.NewSchemaFrom(
+			resultset.WithSchemaDatabaseName(""),
+			resultset.WithSchemaTableName(""),
+			resultset.WithSchemaColumns(columns),
+		)
+	}
+	return nil, fmt.Errorf("%w: %s", fn.ErrNotImplemented, selectQuery.String())
+}

@@ -334,7 +334,7 @@ func (store *Store) Select(conn net.Conn, stmt query.Select) (sql.ResultSet, err
 }
 
 func (store *Store) SystemSelectFunction(conn net.Conn, stmt query.Select) (sql.ResultSet, error) {
-	executor := func(selector query.Selector) (any, error) {
+	selectorExecutor := func(selector query.Selector) (any, error) {
 		switch {
 		case selector.IsFunction():
 			selFunc, ok := selector.Function()
@@ -356,8 +356,8 @@ func (store *Store) SystemSelectFunction(conn net.Conn, stmt query.Select) (sql.
 		return nil, fmt.Errorf("%w selector: %s", errors.ErrInvalid, selector.Name())
 	}
 	rowObjs := []map[string]any{}
-	for _, selector := range stmt.Selectors().Selectors() {
-		v, err := executor(selector)
+	for _, selector := range stmt.Selectors() {
+		v, err := selectorExecutor(selector)
 		if err != nil {
 			return nil, err
 		}
