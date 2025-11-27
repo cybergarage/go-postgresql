@@ -15,12 +15,22 @@
 package system
 
 import (
-	"errors"
 	"fmt"
+
+	"github.com/cybergarage/go-postgresql/postgresql/errors"
 )
 
 // ErrNotFound represents a not found error.
-var ErrNotFound = errors.New("not found")
+var ErrNotFound = errors.ErrNotFound
+
+// ErrNotImplemented represents a not implemented error.
+var ErrNotImplemented = errors.ErrNotImplemented
+
+// ErrNotSupported represents a not supported error.
+var ErrNotSupported = errors.ErrNotSupported
+
+// ErrInvalid represents an invalid error.
+var ErrInvalid = errors.ErrInvalid
 
 func newDataTypeNotFound(oid ObjectID) error {
 	return fmt.Errorf("data type (%d) is %w", oid, ErrNotFound)
