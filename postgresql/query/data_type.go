@@ -53,6 +53,8 @@ func NewObjectIDFrom(t query.DataType) (ObjectID, error) {
 		return system.Bytea, nil
 	case query.BooleanType:
 		return system.Bool, nil
+	case query.NameType:
+		return system.Name, nil
 	case query.CharType:
 		return system.Char, nil
 	case query.CharacterType:
