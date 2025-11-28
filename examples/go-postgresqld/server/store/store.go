@@ -18,7 +18,8 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-logger/log"
-	systemFn "github.com/cybergarage/go-postgresql/postgresql/system/fn"
+	pgSystem "github.com/cybergarage/go-postgresql/postgresql/system"
+	pgSystemFn "github.com/cybergarage/go-postgresql/postgresql/system/fn"
 	"github.com/cybergarage/go-sqlparser/sql"
 	"github.com/cybergarage/go-sqlparser/sql/errors"
 	"github.com/cybergarage/go-sqlparser/sql/net"
@@ -343,9 +344,9 @@ func (store *Store) SystemSelectFunction(conn net.Conn, stmt query.Select) (sql.
 			}
 			selEx, err := selFunc.Executor()
 			if err != nil {
-				selEx, err = systemFn.NewExecutorForName(
+				selEx, err = pgSystemFn.NewExecutorForName(
 					selector.Name(),
-					systemFn.WithExecutorConn(conn),
+					pgSystemFn.WithExecutorConn(conn),
 				)
 			}
 			if err != nil {
@@ -381,16 +382,13 @@ func (store *Store) SystemSelectFunction(conn net.Conn, stmt query.Select) (sql.
 	if len(rowObjs) == 0 {
 		return nil, fmt.Errorf("no rows returned for query: %s", stmt.String())
 	}
-	schame, err := resultset.NewSchemaFrom(
-		resultset.WithSchemaDatabaseName(conn.Database()),
-		resultset.WithSchemaRowObject(rowObjs[0]),
-	)
+	schema, err := pgSystem.NewSchemaForSelect(stmt)
 	if err != nil {
 		return nil, err
 	}
 	return resultset.NewResultSetFrom(
 		resultset.WithResultSetRowsAffected(1),
-		resultset.WithResultSetSchema(schame),
+		resultset.WithResultSetSchema(schema),
 		resultset.WithResultSetRowsOf(rowObjs),
 	)
 }
