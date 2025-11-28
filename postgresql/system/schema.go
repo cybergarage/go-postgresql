@@ -115,7 +115,7 @@ func NewSchemaForSelect(selectQuery query.Select) (resultset.Schema, error) {
 				case systemFn.IsSessionFunctionName(fnName):
 					column := resultset.NewColumn(
 						resultset.WithColumnType(query.NameType),
-						resultset.WithColumnName(fnName),
+						resultset.WithColumnName(selector.Name()),
 					)
 					columns = append(columns, column)
 				default:
