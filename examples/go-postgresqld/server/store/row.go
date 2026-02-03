@@ -16,6 +16,7 @@ package store
 
 import (
 	"fmt"
+	"maps"
 	"reflect"
 	"time"
 
@@ -36,9 +37,7 @@ func NewRow() Row {
 // NewRowWithResultMap returns a new row with the specified result map.
 func NewRowWithResultMap(resultMap map[string]any) Row {
 	row := NewRow()
-	for k, v := range resultMap {
-		row[k] = v
-	}
+	maps.Copy(row, resultMap)
 	return row
 }
 

@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"slices"
 	"sync"
 	"time"
 
@@ -122,13 +123,7 @@ func (conn *conn) Database() string {
 // SetSchemas sets the schema names.
 func (conn *conn) SetSchemas(schemas ...string) {
 	for _, schema := range schemas {
-		found := false
-		for _, existing := range conn.schemas {
-			if existing == schema {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(conn.schemas, schema)
 		if !found {
 			conn.schemas = append(conn.schemas, schema)
 		}

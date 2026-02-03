@@ -21,6 +21,7 @@ package protocol
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cybergarage/go-sqlparser/sql/stmt"
 )
@@ -81,15 +82,16 @@ func (q *Query) Statements() ([]stmt.Statement, error) {
 
 // String returns the string representation of the query.
 func (q *Query) String() string {
-	s := q.Query
+	var s strings.Builder
+	s.WriteString(q.Query)
 	if 0 < len(q.BindParams) {
-		s += " WITH BIND PARAMS: "
+		s.WriteString(" WITH BIND PARAMS: ")
 		for i, param := range q.BindParams {
 			if 0 < i {
-				s += ", "
+				s.WriteString(", ")
 			}
-			s += fmt.Sprintf("%s", param.Value)
+			s.WriteString(fmt.Sprintf("%s", param.Value))
 		}
 	}
-	return s
+	return s.String()
 }
