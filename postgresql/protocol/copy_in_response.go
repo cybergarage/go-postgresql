@@ -38,7 +38,7 @@ type CopyInResponse struct {
 	formatCodes []int16
 }
 
-// NewCopyInResponse returns a new command complete message instance.
+// NewCopyInResponseWith returns a new CopyInResponse message with the specified format.
 func NewCopyInResponseWith(fmt CopyFormat) *CopyInResponse {
 	msg := &CopyInResponse{
 		ResponseMessage: NewResponseMessageWith(CopyInResponseMessage),

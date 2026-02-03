@@ -62,7 +62,7 @@ func (msg *Message) MessageLength() int32 {
 	return msg.Length
 }
 
-// MessageLength returns a message data length without the message header.
+// MessageDataLength returns a message data length without the message header.
 func (msg *Message) MessageDataLength() int32 {
 	return msg.Length - MessageLengthSize
 }

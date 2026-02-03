@@ -24,7 +24,7 @@ type Sync struct {
 	*RequestMessage
 }
 
-// NewSync returns a new sync protocol.
+// NewSyncWithReader returns a new sync protocol.
 func NewSyncWithReader(reader *MessageReader) (*Sync, error) {
 	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {

@@ -36,7 +36,7 @@ func (server *Server) Copy(conn postgresql.Conn, q query.Copy) (protocol.Respons
 	return postgresql.NewCopyInResponsesFrom(q, tbl.Schema)
 }
 
-// Copy handles a COPY DATA protocol.
+// CopyData handles a COPY DATA protocol.
 func (server *Server) CopyData(conn postgresql.Conn, q query.Copy, stream *postgresql.CopyStream) (protocol.Responses, error) {
 	_, tbl, err := server.LookupDatabaseTable(conn, conn.Database(), q.TableName())
 	if err != nil {

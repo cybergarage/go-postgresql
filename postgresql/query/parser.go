@@ -18,7 +18,7 @@ import (
 	"github.com/cybergarage/go-sqlparser/sql"
 )
 
-// Parse returns a SQL parser.
+// Parser represents a SQL parser.
 type Parser struct {
 	sql.Parser
 }

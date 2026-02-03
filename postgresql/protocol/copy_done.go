@@ -24,7 +24,7 @@ type CopyDone struct {
 	*RequestMessage
 }
 
-// NewCopyDataWithReader returns a new copy data message with the specified reader.
+// NewCopyDoneWithReader returns a new copy done message with the specified reader.
 func NewCopyDoneWithReader(reader *MessageReader) (*CopyDone, error) {
 	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {

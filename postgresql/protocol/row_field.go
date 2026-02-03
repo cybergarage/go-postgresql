@@ -35,7 +35,7 @@ type RowField struct {
 // RowFieldOption represents a row description field option.
 type RowFieldOption = func(*RowField)
 
-// NewRowField returns a new row description field.
+// NewRowFieldWith returns a new row description field.
 func NewRowFieldWith(name string, opts ...RowFieldOption) *RowField {
 	field := &RowField{
 		Name:         name,

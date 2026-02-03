@@ -75,7 +75,7 @@ func NewQueryWith(parseMsg *Parse, bindMsg *Bind) (*Query, error) {
 	return q, nil
 }
 
-// Statement returns the bind statement of the query.
+// Statements returns the bind statement of the query.
 func (q *Query) Statements() ([]stmt.Statement, error) {
 	return q.BindStatement.Statements()
 }

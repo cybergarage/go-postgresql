@@ -24,7 +24,7 @@ type Terminate struct {
 	*RequestMessage
 }
 
-// NewTerminate returns a new terminate protocol.
+// NewTerminateWithReader returns a new terminate protocol.
 func NewTerminateWithReader(reader *MessageReader) (*Terminate, error) {
 	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {

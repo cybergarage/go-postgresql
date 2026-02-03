@@ -22,12 +22,16 @@ import (
 )
 
 const (
-	// https://github.com/akopytov/sysbench
-	PgSQLHost     = "pgsql-host"
-	PgSQLPort     = "pgsql-port"
-	PgSQLUser     = "pgsql-user"
+	// PgSQLHost is the sysbench option name for the PostgreSQL host.
+	PgSQLHost = "pgsql-host"
+	// PgSQLPort is the sysbench option name for the PostgreSQL port.
+	PgSQLPort = "pgsql-port"
+	// PgSQLUser is the sysbench option name for the PostgreSQL user.
+	PgSQLUser = "pgsql-user"
+	// PgSQLPassword is the sysbench option name for the PostgreSQL password.
 	PgSQLPassword = "pgsql-password"
-	PgSQLDB       = "pgsql-db"
+	// PgSQLDB is the sysbench option name for the PostgreSQL database.
+	PgSQLDB = "pgsql-db"
 )
 
 // Config represents a sysbench config.

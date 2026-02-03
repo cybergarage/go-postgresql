@@ -61,7 +61,7 @@ type Bind struct {
 	Params        BindParams
 }
 
-// NewBind returns a new bind protocol.
+// NewBindWithReader returns a new bind protocol.
 func NewBindWithReader(reader *MessageReader) (*Bind, error) {
 	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {

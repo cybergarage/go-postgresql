@@ -31,7 +31,7 @@ var ErrNotExist = errors.New("not exist")
 // ErrExist is returned when the specified object is exist.
 var ErrExist = errors.New("exist")
 
-// ErTransactionBlocked is returned when the transaction is blocked.
+// ErrTransactionBlocked is returned when the transaction is blocked.
 var ErrTransactionBlocked = errors.New("transaction blocked")
 
 func newShortMessageError(expected int, actual int) error {

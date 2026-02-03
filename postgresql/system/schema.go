@@ -35,7 +35,7 @@ const (
 	SystemSchemaName = "pg_catalog"
 	// SystemInformationSchema represents a system information schema name.
 	SystemInformationSchema = "information_schema"
-	// PublicSchema represents the public schema name.
+	// PubclicSchema represents the public schema name.
 	PubclicSchema = "public"
 )
 

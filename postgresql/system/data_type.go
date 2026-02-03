@@ -57,7 +57,7 @@ func (dt *DataType) Size() int {
 	return dt.size
 }
 
-// FormatCodeFrom returns a format code from the specified data type.
+// FormatCode returns a format code from the specified data type.
 func (dt *DataType) FormatCode() FormatCode {
 	switch dt.oid {
 	case Bytea:

@@ -37,7 +37,7 @@ func NewCommandComplete() *CommandComplete {
 	}
 }
 
-// NewInsertCompleteWith returns a new command complete message for insert query.
+// NewCommandCompleteWith returns a new command complete message with the specified tag.
 func NewCommandCompleteWith(tag string) (*CommandComplete, error) {
 	msg := NewCommandComplete()
 	return msg, msg.AppendString(tag)

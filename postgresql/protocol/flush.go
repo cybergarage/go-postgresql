@@ -24,7 +24,7 @@ type Flush struct {
 	*RequestMessage
 }
 
-// NewFlush returns a new flush protocol.
+// NewFlushWithReader returns a new flush protocol.
 func NewFlushWithReader(reader *MessageReader) (*Flush, error) {
 	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {

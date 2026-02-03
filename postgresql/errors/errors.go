@@ -28,7 +28,7 @@ var ErrNotSupported = errors.New("not supported")
 // ErrNotExist is returned when the specified object is not exist.
 var ErrNotExist = errors.New("not exist")
 
-// ErrExists is returned when the specified object is already exists.
+// ErrExist is returned when the specified object is already exists.
 var ErrExist = errors.New("exist")
 
 // ErrNotEqual is returned when the specified object is not equal.

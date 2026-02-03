@@ -32,7 +32,7 @@ func NewDefaultClient() Client {
 	return sqltest.NewPostgresClient()
 }
 
-// NewPgClient returns a new pq client.
+// NewPqClient returns a new pq client.
 func NewPqClient() *sqltest.PqClient {
 	return sqltest.NewPqClient()
 }

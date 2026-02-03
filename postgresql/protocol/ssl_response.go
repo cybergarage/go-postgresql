@@ -31,7 +31,7 @@ type SSLResponse struct {
 	Enabled byte
 }
 
-// NewSSLResponse returns a new SSLResponse protocol.
+// NewSSLResponseWith returns a new SSLResponse protocol.
 func NewSSLResponseWith(enabled rune) *SSLResponse {
 	return &SSLResponse{
 		Enabled: byte(enabled),

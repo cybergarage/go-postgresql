@@ -27,7 +27,7 @@ type Execute struct {
 	MaxRows    int32
 }
 
-// NewExecute returns a new execute protocol.
+// NewExecuteWithReader returns a new execute protocol.
 func NewExecuteWithReader(reader *MessageReader) (*Execute, error) {
 	msg, err := NewRequestMessageWithReader(reader)
 	if err != nil {

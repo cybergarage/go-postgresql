@@ -31,7 +31,7 @@ func NewStatementWith(stmt query.Statement) *Statement {
 	}
 }
 
-// Statement returns a statement object.
+// Object returns a statement object.
 func (stmt *Statement) Object() query.Statement {
 	return stmt.obj
 }

@@ -48,7 +48,7 @@ func WithMessageReadeBytes(b []byte) MessageReaderOption {
 	}
 }
 
-// NewMessageReader returns a new message reader.
+// NewMessageReaderWith returns a new message reader.
 func NewMessageReaderWith(opts ...MessageReaderOption) *MessageReader {
 	reader := &MessageReader{
 		Reader: nil,

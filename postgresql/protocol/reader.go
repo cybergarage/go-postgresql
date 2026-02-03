@@ -30,10 +30,10 @@ type Reader struct {
 	peekBuf []byte
 }
 
-// ReaderOptionFunc is a function that modifies the Reader.
+// ReaderOption is a function that modifies the Reader.
 type ReaderOption func(*Reader)
 
-// WithReaderFile sets the file for the Reader.
+// WithReaderConn sets the connection for the Reader.
 func WithReaderConn(conn net.Conn) ReaderOption {
 	return func(reader *Reader) {
 		reader.conn = conn
@@ -49,7 +49,7 @@ func WithReaderBytes(b []byte) ReaderOption {
 	}
 }
 
-// NewReader returns a new message reader.
+// NewReaderWith returns a new message reader.
 func NewReaderWith(opts ...ReaderOption) *Reader {
 	reader := &Reader{
 		Reader:  nil,
@@ -90,7 +90,7 @@ func (reader *Reader) ReadBytes(buf []byte) (int, error) {
 	return nReadBuf, err
 }
 
-// ReadBytes reads a byte.
+// ReadByte reads a byte.
 func (reader *Reader) ReadByte() (byte, error) {
 	b := make([]byte, 1)
 	_, err := reader.ReadBytes(b)
