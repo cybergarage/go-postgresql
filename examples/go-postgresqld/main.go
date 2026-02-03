@@ -59,7 +59,7 @@ func main() {
 	if *isDebugEnabled {
 		logLevel = clog.LevelDebug
 	}
-	clog.SetSharedLogger(clog.NewStdoutLogger(logLevel))
+	clog.SetDefault(clog.NewStdoutLogger(logLevel))
 
 	if *isProfileEnabled {
 		go func() {

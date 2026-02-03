@@ -68,7 +68,7 @@ func (db *Database) LookupTable(name string) (*Table, bool) {
 
 // Tables returns all tables in the database.
 func (db *Database) Tables() []*Table {
-	tables := make([]*Table, 0)
+	tables := make([]*Table, 0, len(db.tables))
 	for _, table := range db.tables {
 		tables = append(tables, table)
 	}
