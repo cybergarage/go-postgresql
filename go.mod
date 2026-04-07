@@ -1,6 +1,6 @@
 module github.com/cybergarage/go-postgresql
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/cybergarage/go-authenticator v1.0.5
@@ -8,7 +8,7 @@ require (
 	github.com/cybergarage/go-safecast v1.3.5
 	github.com/cybergarage/go-sqlparser v1.6.1-0.20251127121345-13c5a03ca55c
 	github.com/cybergarage/go-sqltest v1.6.2-0.20251103145359-271a22450d34
-	github.com/cybergarage/go-tracing v1.1.5
+	github.com/cybergarage/go-tracing v1.1.7
 	github.com/google/gopacket v1.1.19
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
@@ -24,6 +24,6 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 )
