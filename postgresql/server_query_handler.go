@@ -16,17 +16,14 @@ package postgresql
 
 import (
 	stderrors "errors"
-	"strings"
 
-	"github.com/cybergarage/go-postgresql/postgresql/errors"
 	"github.com/cybergarage/go-postgresql/postgresql/protocol"
 	"github.com/cybergarage/go-postgresql/postgresql/query"
 	"github.com/cybergarage/go-postgresql/postgresql/stmt"
 	"github.com/cybergarage/go-postgresql/postgresql/system"
-	"github.com/cybergarage/go-safecast/safecast"
 	sqlparser "github.com/cybergarage/go-sqlparser/sql/parser"
 	sql "github.com/cybergarage/go-sqlparser/sql/query"
-	sql_system "github.com/cybergarage/go-sqlparser/sql/system"
+	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
 )
 
 // protocolQueryHandler represents a protocol query server.
@@ -72,69 +69,51 @@ func (server *server) Bind(conn Conn, msg *protocol.Bind) (protocol.Responses, e
 
 // Describe handles a describe protocol.
 func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Responses, error) {
-	newSystemSelectQuery := func(stmt query.Select) (sql.Select, error) {
-		tables := stmt.From().Tables()
-		if len(tables) != 1 {
-			return nil, errors.NewErrMultipleTableNotSupported(stmt.From().String())
+	isSystemSelect := func(stmt query.Select) bool {
+		from := stmt.From()
+		if len(from) == 0 {
+			return true
 		}
-		table := tables[0]
-		sysStmt, err := sql_system.NewSchemaColumnsStatement(
-			sql_system.WithSchemaColumnsStatementDatabaseName(conn.Database()),
-			sql_system.WithSchemaColumnsStatementTableNames([]string{table.TableName()}),
-		)
-		return sysStmt.Statement(), err
+		if from.HasSchemaTable(system.SystemSchemaNames...) {
+			return true
+		}
+		return false
 	}
 
-	selectObjectIds := func(stmt query.Select) ([]int32, error) {
-		objIDFromResponses := func(responses protocol.Responses, colName string) (int32, bool) {
-			for r, res := range responses {
-				if r == 0 {
-					continue
-				}
-				dataRow, ok := res.(*protocol.DataRow)
-				if !ok {
-					continue
-				}
-				if len(dataRow.Data) < 2 {
-					continue
-				}
-				columnName, ok := dataRow.Data[0].(string)
-				if !ok {
-					continue
-				}
-				if !strings.EqualFold(columnName, colName) {
-					continue
-				}
-				var objID int32
-				err := safecast.ToInt32(dataRow.Data[1], &objID)
-				if err != nil {
-					continue
-				}
-				return objID, true
-			}
-			return 0, false
+	newRowDescriptionResponse := func(schema resultset.Schema) (protocol.Responses, error) {
+		rowDesc, err := query.NewRowDescriptionFromSchema(schema)
+		if err != nil {
+			return nil, err
 		}
+		return protocol.NewResponsesWith(rowDesc), nil
+	}
 
-		query, err := newSystemSelectQuery(stmt)
-		if err != nil {
-			return nil, err
-		}
-		res, err := server.systemQueryExecutor.SystemSelect(conn, query)
-		if err != nil {
-			return nil, err
-		}
-		sels := stmt.Selectors()
-		objIDs := make([]int32, len(sels))
-		for n, sel := range sels {
-			selName := sel.Name()
-			objID, ok := objIDFromResponses(res, selName)
-			if !ok {
-				objIDs[n] = 0
-				continue
+	newPortalDescribeResponses := func(stmt query.Select) (protocol.Responses, error) {
+		if isSystemSelect(stmt) {
+			schema, err := system.NewSchemaForSelect(stmt)
+			if err == nil {
+				return newRowDescriptionResponse(schema)
 			}
-			objIDs[n] = objID
 		}
-		return objIDs, nil
+		return protocol.NewResponsesWith(protocol.NewNoData()), nil
+	}
+
+	newStatementDescribeResponses := func(prepStmt *stmt.PreparedStatement, stmt query.Select) (protocol.Responses, error) {
+		paramDesc, err := protocol.NewParameterDescriptionWith(prepStmt.DataTypes...)
+		if err != nil {
+			return nil, err
+		}
+		if isSystemSelect(stmt) {
+			schema, err := system.NewSchemaForSelect(stmt)
+			if err == nil {
+				rowDesc, err := query.NewRowDescriptionFromSchema(schema)
+				if err != nil {
+					return nil, err
+				}
+				return protocol.NewResponsesWith(paramDesc, rowDesc), nil
+			}
+		}
+		return protocol.NewResponsesWith(paramDesc, protocol.NewNoData()), nil
 	}
 
 	switch msg.PreparedType() {
@@ -143,15 +122,11 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 		if err != nil {
 			return nil, err
 		}
-		objIDs := []int32{}
 		switch stmt := prepStmt.ParsedStatement.Object().(type) {
 		case query.Select:
-			objIDs, err = selectObjectIds(stmt)
-			if err != nil {
-				return nil, err
-			}
+			return newStatementDescribeResponses(prepStmt, stmt)
 		}
-		paramDesc, err := protocol.NewParameterDescriptionWith(objIDs...)
+		paramDesc, err := protocol.NewParameterDescriptionWith(prepStmt.DataTypes...)
 		if err != nil {
 			return nil, err
 		}
@@ -159,12 +134,23 @@ func (server *server) Describe(conn Conn, msg *protocol.Describe) (protocol.Resp
 			paramDesc,
 			protocol.NewNoData()), nil
 	case protocol.PreparedPortal:
-		_, err := server.PreparedPortal(conn, msg.Name())
+		prepPortal, err := server.PreparedPortal(conn, msg.Name())
 		if err != nil {
 			return nil, err
 		}
-		return protocol.NewResponsesWith(
-			protocol.NewNoData()), nil
+		stmts, err := prepPortal.Statements()
+		if err != nil {
+			return nil, err
+		}
+		if len(stmts) != 1 {
+			return protocol.NewResponsesWith(protocol.NewNoData()), nil
+		}
+		switch stmt := stmts[0].(type) {
+		case query.Select:
+			return newPortalDescribeResponses(stmt)
+		default:
+			return protocol.NewResponsesWith(protocol.NewNoData()), nil
+		}
 	}
 	return nil, nil
 }
@@ -176,7 +162,7 @@ func (server *server) Execute(conn Conn, msg *protocol.Execute) (protocol.Respon
 		return nil, err
 	}
 
-	return server.Query(conn, q)
+	return server.executeQuery(conn, q, false)
 }
 
 // Close handles a close protocol.
@@ -215,6 +201,10 @@ func (server *server) Flush(conn Conn, msg *protocol.Flush) (protocol.Responses,
 
 // Query handles a query protocol.
 func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses, error) {
+	return server.executeQuery(conn, msg, true)
+}
+
+func (server *server) executeQuery(conn Conn, msg *protocol.Query, sendRowDescription bool) (protocol.Responses, error) {
 	conn.StartSpan("parse")
 	stmts, err := msg.Statements()
 	conn.FinishSpan()
@@ -298,10 +288,7 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 			stmt := stmt.(query.Select)
 			isSystemSelect := func(query.Select) bool {
 				from := stmt.From()
-				if from == nil {
-					return false
-				}
-				if len(from.Tables()) == 0 {
+				if len(from) == 0 {
 					return true
 				}
 				if from.HasSchemaTable(system.SystemSchemaNames...) {
@@ -313,6 +300,11 @@ func (server *server) Query(conn Conn, msg *protocol.Query) (protocol.Responses,
 				res, err = server.systemQueryExecutor.SystemSelect(conn, stmt)
 			} else {
 				res, err = server.queryExecutor.Select(conn, stmt)
+			}
+			if !sendRowDescription && 0 < len(res) {
+				if _, ok := res[0].(*protocol.RowDescription); ok {
+					res = res[1:]
+				}
 			}
 		case sql.UpdateStatement:
 			stmt := stmt.(query.Update)

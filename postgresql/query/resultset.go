@@ -22,6 +22,25 @@ import (
 	"github.com/cybergarage/go-sqlparser/sql/query/response/resultset"
 )
 
+// NewRowDescriptionFromSchema creates a row description from a result set schema.
+func NewRowDescriptionFromSchema(schema resultset.Schema) (*protocol.RowDescription, error) {
+	if schema == nil {
+		return nil, fmt.Errorf("%w result set schema", errors.ErrInvalid)
+	}
+
+	selectors := schema.Selectors()
+	rowDesc := protocol.NewRowDescription()
+	for n, selector := range selectors {
+		field, err := NewRowFieldFrom(schema, selector, n)
+		if err != nil {
+			return nil, err
+		}
+		rowDesc.AppendField(field)
+	}
+
+	return rowDesc, nil
+}
+
 // NewResponseFromResultSet creates a response from a result set.
 func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error) {
 	// Schema
@@ -38,13 +57,9 @@ func NewResponseFromResultSet(rs resultset.ResultSet) (protocol.Responses, error
 
 	// Row description response
 
-	rowDesc := protocol.NewRowDescription()
-	for n, selector := range selectors {
-		field, err := NewRowFieldFrom(schema, selector, n)
-		if err != nil {
-			return nil, err
-		}
-		rowDesc.AppendField(field)
+	rowDesc, err := NewRowDescriptionFromSchema(schema)
+	if err != nil {
+		return nil, err
 	}
 	res = res.Append(rowDesc)
 
